@@ -4,9 +4,11 @@
   "private": true,
   "description": "Static systems mockups for the Warcraft-inspired incremental game.",
   "scripts": {
-    "dev": "node dev-server.mjs"
+    "dev": "node dev-server.mjs",
+    "simulation:test": "node mockup/simulation/smoke-test.js"
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "type": "module"
 }
