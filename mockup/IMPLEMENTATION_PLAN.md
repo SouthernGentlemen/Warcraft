@@ -40,6 +40,14 @@ The target is not a collection of separately themed mockups. The target is one r
 | WOWUI-009 | Base management redesign | WOWUI-001, WOWUI-002, WOWUI-003 |
 | WOWUI-010 | Simulation lab reskin | WOWUI-001, WOWUI-002, WOWUI-003 |
 | WOWUI-011 | Cross-screen consistency and accessibility pass | WOWUI-004 through WOWUI-010 |
+| WOWUI-012 | Canonical Classic race/class expansion | WOWUI-011 |
+| WOWUI-013 | Simplify talents to two tiers plus one capstone | WOWUI-012 |
+| WOWUI-014 | Slot picker gear flow and trinket support | WOWUI-011 |
+| WOWUI-015 | Building levels 1–5 and tier mapping | WOWUI-011 |
+| WOWUI-016 | Roster management and five saved party loadouts | WOWUI-012, WOWUI-014 |
+| WOWUI-017 | Quest Board meta-progression | WOWUI-015, WOWUI-016 |
+| WOWUI-018 | Unified hero management workspace | WOWUI-013, WOWUI-014, WOWUI-016 |
+| WOWUI-019 | Gameplay-management integration acceptance | WOWUI-012 through WOWUI-018 |
 
 ---
 
@@ -467,3 +475,322 @@ Finish the migration and remove legacy visual language that survived individual 
 - Color is not the only indicator for locked/quality/error states.
 - `npm run dev` still rebuilds and opens the mockup.
 - `npm run simulation:test` passes.
+
+---
+
+## Gameplay / Progression Management Wave
+
+This wave starts after the cross-screen UI consistency pass. It intentionally changes prototype gameplay-management contracts that the earlier WOWUI tasks preserved.
+
+### Product Rules For This Wave
+
+- Use **WoW Classic / original-era race-class combinations** as the authority for playable race/class availability.
+- Do not invent class talent names, talent identities, or talent icons. Talent content represented in the prototype must be traceable to the corresponding Classic class talent tree and use the icon for that actual talent.
+- Talent trees are intentionally simplified for this prototype. Preserve Classic identity/content, not Classic's full prerequisite graph.
+- Item tier, building tier, talent tier, and item quality are separate concepts.
+- Persistent T1/T2/T3/T4/T5 badges should not clutter equipment or building chrome. Show tier detail in the shared tooltip/hover/focus surface unless a progression decision requires the tier to be visible.
+- Roster, party loadouts, quests, gear, and talents must share one hero identity/state model rather than maintaining disconnected screen-local copies.
+
+---
+
+## WOWUI-012 — Canonical Classic Race/Class Expansion
+
+### Objective
+
+Add Night Elf and Tauren to hero creation and make race/class availability conform to Classic WoW instead of prototype guesses.
+
+### Work
+
+- Add **Night Elf** as an Alliance race.
+- Night Elf available classes must be exactly:
+  - Druid
+  - Hunter
+  - Priest
+  - Rogue
+  - Warrior
+- Add **Tauren** as a Horde race.
+- Tauren available classes must be exactly:
+  - Druid
+  - Hunter
+  - Shaman
+  - Warrior
+- Audit any existing race/class matrix touched by this work so the UI never enables a combination that conflicts with the Classic source-of-truth matrix.
+- Keep unavailable classes visible in the race selector only when useful for comparison, but render them locked/desaturated and non-selectable.
+- Add/update race icons, faction treatment, racial tooltip data, hero seed data, and roster presentation for both races using the existing shared icon/tooltip contracts.
+- Keep race and class data JSON-backed; do not hard-code a second availability matrix in screen JS.
+- Add a small validation contract/test that rejects invalid race/class combinations in source data.
+
+### Acceptance Criteria
+
+- Night Elf can select only Druid, Hunter, Priest, Rogue, or Warrior.
+- Tauren can select only Druid, Hunter, Shaman, or Warrior.
+- Invalid Classic race/class combinations cannot be created through the UI or accepted by the validation layer.
+- Race selector, roster, gear, talents, and battle surfaces can render Night Elf and Tauren heroes without fallback text or broken icons.
+- Race/class availability has one authoritative data source.
+
+---
+
+## WOWUI-013 — Simplify Talents To Two Tiers Plus One Capstone
+
+### Objective
+
+Reduce every represented class talent tree to a compact prototype model while keeping talent identity and iconography faithful to the corresponding Classic talent tree.
+
+### Work
+
+- Replace the current multi-tier/prerequisite presentation with:
+  - **Talent Tier 1**
+  - **Talent Tier 2**
+  - **one Capstone**
+- Remove prerequisite connector lines/arrows entirely.
+- Remove per-node dependency chains. Talent choice inside an unlocked tier should be flexible.
+- Use tier-level gating only:
+  - Tier 1 is the entry tier.
+  - Tier 2 unlocks from the tree's configured spend/progression threshold.
+  - The capstone unlocks from the tree's configured final threshold.
+- Do not create fictional talent names, abilities, spell icons, or “close enough” icon mappings.
+- For every displayed talent:
+  - record the canonical Classic talent/tree identity in data,
+  - use the icon belonging to that actual talent,
+  - keep the talent under the correct class talent tree/spec.
+- If a canonical talent/icon cannot be verified, omit it from this prototype until it can be sourced rather than inventing a replacement.
+- Keep left-click learn and right-click unlearn behavior where it remains useful.
+- Preserve point totals/reset behavior but update validation for the simplified two-tier + capstone model.
+- Make clear in code/data that these **talent tiers** are unrelated to item/building T1–T5 progression.
+
+### Acceptance Criteria
+
+- Every class talent tree rendered by the prototype has exactly two normal tiers and one capstone tier.
+- No talent connector lines remain.
+- No talent requires a specific predecessor node.
+- All represented talents use the icon for that actual Classic talent and belong to the correct class tree.
+- No invented talent content remains.
+- Tier and capstone unlock rules are data-driven and validated.
+- Reset, learn, unlearn, point-total, keyboard, and tooltip behavior still work.
+
+---
+
+## WOWUI-014 — Slot Picker Gear Flow And Trinket Support
+
+### Objective
+
+Make equipment management slot-first and compact: clicking a paper-doll slot should immediately let the player choose among items that can legally fill that slot.
+
+### Work
+
+- Change every equipment slot into an interactive picker trigger.
+- Clicking either an empty or occupied slot opens a small anchored menu/popover containing the currently available, eligible items for that slot.
+- Picker entries should show icon + item name/quality state; move secondary metadata such as tier into the shared tooltip.
+- Keep item comparison available from the picker.
+- Selecting an entry equips/replaces the item immediately.
+- Include an explicit Unequip action for occupied slots.
+- Add **one Trinket slot** to the paper doll.
+- Add `Trinket` as a supported equipment slot/item family in data and filtering.
+- Add trinket items to the armory/catalog so the slot is functional, not decorative.
+- Update equipment counts, stats aggregation, filtering, accessibility labels, reset behavior, and persistence from six slots to seven.
+- Remove redundant persistent `T1`/`T2`/`T3` labels from gear icons/cards; show tier on hover/focus tooltip instead.
+- Preserve class/armor/weapon eligibility checks for non-trinket gear.
+
+### Acceptance Criteria
+
+- Clicking any gear slot opens an eligible-item picker for that exact slot.
+- The picker supports equip, replace, compare, and unequip without requiring the user to hunt through the full armory first.
+- One functional Trinket slot exists.
+- Trinket items can be filtered, selected, equipped, unequipped, persisted, and included in stats.
+- Hero equipment summary correctly reports seven slots.
+- No redundant always-visible equipment tier badge remains; tier remains available from tooltip/focus details.
+
+---
+
+## WOWUI-015 — Building Levels 1–5 And Tier Mapping
+
+### Objective
+
+Give every building one consistent five-level progression contract tied directly to world/meta progression tiers.
+
+### Work
+
+- Every building supports levels **1, 2, 3, 4, 5**.
+- Map building level to progression tier one-to-one:
+  - Level 1 = Tier 1
+  - Level 2 = Tier 2
+  - Level 3 = Tier 3
+  - Level 4 = Tier 4
+  - Level 5 = Tier 5
+- Store current level, maximum level, upgrade cost, upgrade requirements, and unlocked capabilities in building data.
+- Make upgrade rows/actions data-driven instead of screen-specific.
+- Ensure no building can skip levels or exceed level 5.
+- Surface the current level prominently enough for upgrade decisions.
+- Do not repeat persistent `T1`–`T5` badges where “Level 1–5” already communicates the same information; expose tier equivalence in the shared building tooltip.
+- Define hooks so building level can unlock Quest Board mission tiers and future profession/base capabilities.
+
+### Acceptance Criteria
+
+- Every building begins within 1–5 and can progress sequentially to level 5.
+- Building level and progression tier always agree.
+- Upgrade cost/requirements come from data.
+- Invalid level jumps and level 6+ states are rejected.
+- Base UI and tooltips clearly communicate current level, next upgrade, and tier equivalence without redundant badge clutter.
+
+---
+
+## WOWUI-016 — Roster Management And Five Saved Party Loadouts
+
+### Objective
+
+Turn the roster into the authoritative hero-management source and let players save reusable parties for group content.
+
+### Work
+
+- Flesh out roster management around one authoritative hero collection.
+- Each roster entry should expose at minimum:
+  - hero identity/name
+  - faction
+  - race
+  - class
+  - selected talent tree/build summary
+  - equipment summary
+  - quest/availability state
+  - party-loadout membership
+- Add filtering/sorting useful for party construction, including class and availability.
+- Add a party-loadout manager inside the same roster system.
+- Support exactly **five saved loadout slots**.
+- Each saved loadout can be configured as one of these exact party sizes:
+  - 3 heroes
+  - 5 heroes
+  - 10 heroes
+  - 20 heroes
+- Prevent duplicate use of the same hero within one loadout.
+- Validate that a loadout marked ready contains exactly its selected party size.
+- Allow a hero to appear in multiple saved templates, but resolve actual availability when a quest is launched.
+- Give loadouts editable names and clear size/readiness indicators.
+- Persist roster edits and the five saved loadouts through the same state layer used by hero gear/talents.
+
+### Acceptance Criteria
+
+- There are exactly five saveable party loadout slots.
+- Each loadout supports only 3/5/10/20 member configurations.
+- Ready-state validation enforces exact party size and no duplicate hero within the same loadout.
+- Roster changes immediately appear in loadouts and hero-management surfaces.
+- Loadouts do not maintain detached copies of hero gear/talent data.
+- Unavailable/on-quest heroes are visibly distinguishable during party selection.
+
+---
+
+## WOWUI-017 — Quest Board Meta-Progression
+
+### Objective
+
+Add a Quest Board that converts base progression and roster depth into structured dispatch content.
+
+### Work
+
+- Add a **Quest Board** building/surface to Base management.
+- Quest Board access and mission availability are governed by building/progression tier.
+- Define five quest tiers with exact required dispatch sizes:
+  - **Tier 1 → 1 hero**
+  - **Tier 2 → 3 heroes**
+  - **Tier 3 → 5 heroes**
+  - **Tier 4 → 10 heroes**
+  - **Tier 5 → 20 heroes**
+- Tier 1 supports direct solo-hero selection.
+- Tier 2–5 can launch from a compatible saved party loadout or from an ad-hoc roster selection that meets the exact required size.
+- The Quest Board must show:
+  - quest tier
+  - required hero count
+  - availability/lock reason
+  - selected hero/party
+  - dispatch action
+  - active/completed state hooks
+  - reward/meta-progression hooks
+- Do not implement detached quest copies of heroes; dispatched heroes reference roster hero IDs and become unavailable through shared roster state.
+- Quest completion/reward math can remain prototype-simple in this task, but its data contract must support future expansion without changing the 1/3/5/10/20 tier-size mapping.
+
+### Acceptance Criteria
+
+- Quest tiers require exactly 1, 3, 5, 10, and 20 heroes for T1–T5 respectively.
+- Locked quest tiers clearly state the building/progression requirement.
+- A quest cannot launch with the wrong party size or an unavailable hero.
+- T2–T5 can consume a compatible saved loadout.
+- Dispatch availability is reflected immediately in the roster/loadout manager.
+- Quest state is data-driven and persists with the rest of prototype state.
+
+---
+
+## WOWUI-018 — Unified Hero Management Workspace
+
+### Objective
+
+Tie roster management, hero inspection, gear selection, talents, and party membership together so a player does not need to bounce between disconnected screens to manage one hero.
+
+### Work
+
+- Create one unified hero-management workspace driven by the authoritative roster.
+- Use a compact roster list/rail to select a hero.
+- For the selected hero, provide one easy interface for:
+  - identity/race/class summary
+  - availability/quest state
+  - paper-doll equipment and slot pickers
+  - one Trinket slot
+  - current stats
+  - simplified talent allocation
+  - talent tree/spec selection
+  - party-loadout membership
+- Changes to gear or talents update the selected roster hero immediately.
+- Changes to roster identity/status update gear/talent/loadout views immediately.
+- Keep dedicated Gear and Talent screens only if they remain useful as expanded views; they must read/write the same hero state and not duplicate it.
+- Provide clear navigation between roster-level decisions and selected-hero detail without full-page context loss.
+- Keep keyboard navigation/focus and shared tooltip behavior intact.
+
+### Acceptance Criteria
+
+- Selecting a hero from the roster exposes that hero's gear, talents, stats, availability, and loadout membership in one workspace.
+- Gear and talent changes have one authoritative state and appear everywhere immediately.
+- The player can move among heroes without losing unsaved screen-local state because hero state is no longer screen-local.
+- The interface supports all seven equipment slots, simplified talents, and all five party loadouts.
+- Quest dispatch status is visible from hero management.
+
+---
+
+## WOWUI-019 — Gameplay-Management Integration Acceptance
+
+### Objective
+
+Prove the new race/class, talent, equipment, building, roster, loadout, and Quest Board contracts work together and cannot drift into contradictory state.
+
+### Work
+
+- Add validation/tests for:
+  - Classic race/class availability for Night Elf and Tauren
+  - rejection of invalid race/class combinations
+  - two talent tiers + one capstone per represented tree
+  - absence of prerequisite connectors/dependency edges
+  - canonical talent identity/icon metadata being present for every displayed talent
+  - seven equipment slots including exactly one Trinket
+  - slot picker filtering by legal slot/equipment rules
+  - no persistent equipment tier badges required for normal browsing
+  - every building constrained to levels 1–5
+  - building level ↔ tier equivalence
+  - exactly five saved party loadouts
+  - party sizes restricted to 3/5/10/20
+  - Quest Board dispatch sizes of 1/3/5/10/20 for T1–T5
+  - roster availability changing when heroes are dispatched
+  - shared hero gear/talent state across roster, Gear, Talents, loadouts, and Quest Board
+- Add a headless happy-path scenario:
+  - create/select a valid Night Elf or Tauren hero
+  - assign simplified talents
+  - equip gear through slot picker including a trinket
+  - add hero to a saved party loadout
+  - upgrade the Quest Board/building progression
+  - dispatch a correctly sized party
+  - verify roster availability and persisted state
+- Keep deterministic combat smoke tests green.
+
+### Acceptance Criteria
+
+- All new validation/tests pass.
+- No screen can create contradictory hero copies.
+- Invalid race/class, talent, equipment, building-level, loadout-size, or quest-party states are rejected.
+- Existing deterministic simulation smoke tests remain green.
+- `npm run dev` still rebuilds/serves the full mockup suite.
+
