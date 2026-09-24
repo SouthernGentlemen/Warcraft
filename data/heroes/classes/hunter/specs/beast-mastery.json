@@ -7,10 +7,10 @@
   "class": "Hunter",
   "specialization": "Beast Mastery",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Ranged damage / pet support",
+    "resource": "Mana",
+    "primary_stat": "Agility",
+    "auto_attack": "Beast Shot — ranged weapon damage; companion follows for 30% of shot damage"
   },
   "talents": {
     "tier_1": [

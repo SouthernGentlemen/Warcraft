@@ -7,10 +7,10 @@
   "class": "Shaman",
   "specialization": "Enhancement",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Elemental melee damage",
+    "resource": "Mana",
+    "primary_stat": "Agility",
+    "auto_attack": "Storm Strike — melee weapon damage with Nature component"
   },
   "talents": {
     "tier_1": [

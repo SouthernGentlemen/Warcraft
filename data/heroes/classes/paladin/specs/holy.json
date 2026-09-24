@@ -7,10 +7,10 @@
   "class": "Paladin",
   "specialization": "Holy",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Healing / support",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Holy Light — heals the lowest-health ally"
   },
   "talents": {
     "tier_1": [

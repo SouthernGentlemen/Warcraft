@@ -7,10 +7,10 @@
   "class": "Shaman",
   "specialization": "Restoration",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Healing / support",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Water Bolt — heals the lowest-health ally"
   },
   "talents": {
     "tier_1": [

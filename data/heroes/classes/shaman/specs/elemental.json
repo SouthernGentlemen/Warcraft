@@ -7,10 +7,10 @@
   "class": "Shaman",
   "specialization": "Elemental",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Ranged elemental spell damage",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Lightning Bolt — ranged Nature damage"
   },
   "talents": {
     "tier_1": [

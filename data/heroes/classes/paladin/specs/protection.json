@@ -7,10 +7,10 @@
   "class": "Paladin",
   "specialization": "Protection",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Tank / party protection",
+    "resource": "Mana",
+    "primary_stat": "Strength",
+    "auto_attack": "Guarded Strike — defensive melee Holy damage"
   },
   "talents": {
     "tier_1": [

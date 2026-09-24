@@ -7,10 +7,10 @@
   "class": "Hunter",
   "specialization": "Survival",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Ranged damage / control / utility",
+    "resource": "Mana",
+    "primary_stat": "Agility",
+    "auto_attack": "Tactical Shot — ranged weapon damage"
   },
   "talents": {
     "tier_1": [

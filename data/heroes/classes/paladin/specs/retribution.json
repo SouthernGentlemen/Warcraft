@@ -7,10 +7,10 @@
   "class": "Paladin",
   "specialization": "Retribution",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Holy melee damage",
+    "resource": "Mana",
+    "primary_stat": "Strength",
+    "auto_attack": "Crusader Strike — melee Holy weapon damage"
   },
   "talents": {
     "tier_1": [
