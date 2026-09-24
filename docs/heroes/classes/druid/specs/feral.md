@@ -2,68 +2,50 @@
 
 ## Identity
 
-- Role direction: Melee damage or defense through form
+- Role: Melee damage or defense through form
 - Resource: Energy in Cat Form; Rage in Bear Form
-- Primary stat direction: Agility
-- Auto-attack: Cat Claw or Bear Swipe
-
-## Spec Theme
-
-Cat Energy offense, Bear Rage defense, form-driven flexibility.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Cat Claw or Bear Swipe** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Agility
+- Auto-attack: Cat Claw in Cat Form; Bear Swipe in Bear Form
 
 ## Talent Tree
 
-The Feral tree contains:
+The first talent point spent in this tree selects **Feral** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Feral becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Druid trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Predatory Instincts** | Cat Claw deals 15% more damage. |
+| **Thick Hide** | Bear Form takes 10% less direct damage. |
+| **Wild Momentum** | Cat Claw and Bear Swipe auto-attack bars fill 10% faster. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Cat Energy offense
-- Bear Rage defense
-- Form-driven flexibility
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Primal Fury** | Critical Cat Claws restore 5 Energy; critical Bear Swipes generate 5 additional Rage. |
+| **Savage Instinct** | Equipped cooldown abilities deal 15% more damage in Cat Form and grant 10% damage reduction for 3 seconds in Bear Form. |
+| **Natural Shifter** | Begin each combat with 50% of the active form's maximum resource. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Feral specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Apex Predator** | Cat Form becomes the Feral combat form: gain 20% Agility from gear, Cat Claw deals 20% more damage, and Bear Form cannot be used during combat. |
+| **Guardian Beast** | Bear Form becomes the Feral combat form: gain 20% Stamina from gear, take 15% less damage, and Cat Form cannot be used during combat. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Feral specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
