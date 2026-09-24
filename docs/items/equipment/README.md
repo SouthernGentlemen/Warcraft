@@ -46,6 +46,7 @@ Class armor access follows a World of Warcraft-style proficiency hierarchy: clas
 | Warlock | Cloth |
 | Rogue | Cloth, Leather |
 | Druid | Cloth, Leather |
+| Hunter | Cloth, Leather, Mail |
 | Shaman | Cloth, Leather, Mail |
 | Paladin | Cloth, Leather, Mail, Plate |
 | Warrior | Cloth, Leather, Mail, Plate |
@@ -64,10 +65,29 @@ Initial weapon families include:
 - Dagger
 - Staff
 - Wand
+- Bow
+- Gun
+- Crossbow
 
 Additional weapon families may be added later if they create useful class or profession distinctions.
 
 Class-specific weapon proficiency rules are not fixed yet and should be defined when the individual class specifications are expanded.
+
+## Crafted Gear Progression
+
+Crafted equipment has a fixed quality and stat structure by level.
+
+| Level | Quality | Primary Stats | Tertiary Stats |
+| --- | --- | ---: | ---: |
+| 1 | White | 0 | 0 |
+| 2 | Green | 1 | 0 |
+| 3 | Blue | 2 | 0 |
+| 4 | Epic | 2 | 1 |
+| 5 | Epic | 2 | 2 |
+
+Primary and tertiary stat families are defined in [Content / Stats](../../content/stats/README.md).
+
+This structure defines how many stat lines crafted gear receives. Exact stat values, roll ranges, and selection rules remain open.
 
 ## Trinkets
 
@@ -89,7 +109,7 @@ At minimum, equipment eligibility may depend on:
 
 ## Tiering
 
-Equipment progression should align with the five hero levels and five game tiers.
+Equipment progression aligns with the five hero levels and five game tiers.
 
 Higher-tier equipment should support higher-tier content without making earlier equipment categories structurally obsolete.
 
@@ -98,9 +118,9 @@ Higher-tier equipment should support higher-tier content without making earlier 
 Later equipment design must define:
 
 - class weapon proficiencies
-- whether armor proficiency changes by hero level
-- primary stats and secondary stats
-- rarity and quality
+- exact primary-stat values
+- exact tertiary-stat values
+- stat roll and selection rules
 - item power within a tier
 - set bonuses, if any
 - trinket slots and restrictions
