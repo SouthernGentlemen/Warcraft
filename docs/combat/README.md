@@ -42,9 +42,11 @@ Every class has a fixed core combat package:
 - 2 cooldown abilities
 - 1 ultimate ability
 
-Cooldown abilities are governed by their own cooldown timers.
+Each class defines a pool of cooldown abilities in its class `abilities/README.md`.
 
-Exact ability activation behavior, priorities, targeting, and cooldown lengths will be defined in the class specifications.
+A hero equips exactly two cooldown abilities. The deterministic simulator automatically uses the first equipped cooldown that is ready, affordable, and has a valid target.
+
+Cooldown timing is expressed in fixed 60 Hz simulation ticks and advances through the same Haste accumulator used by the authoritative combat simulation.
 
 ## Ultimate
 
@@ -54,7 +56,16 @@ The ultimate bar builds during combat.
 
 When the bar is full, that class's ultimate becomes available.
 
-The exact sources and rate of ultimate-bar generation remain open.
+The prototype ultimate bar uses a 10,000-point integer scale.
+
+Current simulation generation:
+
+- successful auto-attack or auto-heal: +1,000
+- successful cooldown action: +2,000
+- taking direct damage: +300
+- ultimate use: consumes the full bar
+
+These values are prototype tuning and are documented in [Simulation](./simulation/README.md).
 
 ## Combat Stats
 
@@ -62,7 +73,22 @@ Combat uses the primary and tertiary stat families defined in [Content / Stats](
 
 The stat model includes primary attributes such as Strength, Agility, Intellect, Stamina, and Spirit as well as tertiary combat modifiers such as Crit, Haste, Spell Power, Healing Power, Hit Rating, and Mastery.
 
-Exact formulas are intentionally deferred until the systems are fully specified.
+The current prototype mappings are defined in [Content / Stats](../content/stats/README.md) and [Simulation](./simulation/README.md). Production balance can change the numbers without changing the deterministic action contract.
+
+## Deterministic Simulation
+
+The combat prototype follows the deterministic fixed-tick model used by Hexframe:
+
+- 60 fixed ticks per second
+- one simulation `step()` advances exactly one tick
+- no wall-clock or browser delta-time inside simulation logic
+- authoritative arithmetic uses integers
+- percentages use 10,000 basis points
+- seeded RNG is carried in simulation state
+- actor-index order resolves all ties deterministically
+- every tick produces a frame report and deterministic state hash
+
+See [Simulation](./simulation/README.md).
 
 ## Party Capability
 
@@ -113,15 +139,11 @@ Exact consequences remain open.
 
 Later combat specifications need to define:
 
-- primary-stat formulas
-- tertiary-stat formulas
-- damage formulas
-- healing formulas
+- final production stat curves
+- final damage and healing tuning
 - defenses
 - targeting
 - base attack-bar timing
-- cooldown timing
-- ultimate-bar generation
 - buffs and debuffs
 - threat or tanking
 - class abilities

@@ -6,7 +6,7 @@ Stats are shared numerical attributes used by heroes, equipment, crafting, and c
 
 The stat system is split into primary stats and tertiary stats.
 
-Exact formulas, scaling curves, caps, and conversion rates are not defined here yet.
+Production balance is not final. The deterministic combat prototype uses the explicit formulas below so every stat already maps to an authoritative action or resource hook.
 
 ## Primary Stats
 
@@ -76,6 +76,58 @@ Improves a class-specific mechanic or scaling rule.
 
 Each class will define what Mastery modifies.
 
+## Prototype Simulation Mapping
+
+The simulation uses integer arithmetic and a 10,000-point basis-point scale.
+
+### Baseline Stats by Hero Level
+
+These are prototype naked-hero baselines before equipment.
+
+| Level | Major Primary | Minor Primary | Stamina | Spirit | Crit | Haste | Hit Rating | Mastery |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 12 | 4 | 14 | 10 | 0 | 0 | 0 | 0 |
+| 2 | 20 | 6 | 22 | 16 | 1 | 1 | 1 | 0 |
+| 3 | 30 | 8 | 32 | 23 | 2 | 2 | 2 | 1 |
+| 4 | 42 | 10 | 44 | 31 | 4 | 4 | 3 | 2 |
+| 5 | 56 | 12 | 58 | 40 | 6 | 6 | 4 | 4 |
+
+The class/spec primary stat receives **Major Primary**. The other Strength, Agility, and Intellect values receive **Minor Primary**.
+
+### Direct Mappings
+
+- **Stamina** -> `Max Health = 500 + Stamina × 50`
+- **Strength / Agility** -> `Physical Power = max(Strength, Agility) × 10`
+- **Intellect + Spell Power** -> `Spell Power Total = Intellect × 10 + Spell Power × 10`
+- **Intellect + Healing Power** -> `Healing Power Total = Intellect × 8 + Healing Power × 12`
+- **Intellect** -> `Max Mana = 500 + Intellect × 20`
+- **Spirit** -> `Mana Regen / second = 10 + Spirit × 2`
+- **Crit** -> `Crit Chance BP = min(5000, 500 + Crit × 100)`
+- **Hit Rating** -> `Hit Chance BP = min(10000, 9000 + Hit Rating × 200)`
+- **Haste** -> `Haste BP = Haste × 100`
+- **Mastery** -> prototype fallback `Mastery Output BP = Mastery × 100`
+
+The Mastery fallback is only to keep the stat live in simulation. Each specialization can replace that generic output multiplier with its own Mastery hook later.
+
+### Resources
+
+- Mana starts full and regenerates through Spirit.
+- Energy has a 100-point maximum and regenerates 10 points per second.
+- Rage has a 100-point maximum, starts at 0, gains 10 on successful auto-attacks and 5 when taking direct damage.
+- Druid resource type is selected from the active form/spec configuration.
+
+### Haste Timing
+
+Auto-attack and cooldown progress use accumulators.
+
+Each simulation tick adds:
+
+`10,000 + Haste BP`
+
+to the relevant progress accumulator.
+
+Every 10,000 accumulated progress advances one base timing tick. This keeps Haste deterministic without floating-point frame durations.
+
 ## Crafted Gear Stat Counts
 
 Crafted gear uses these stat families according to its level.
@@ -96,15 +148,9 @@ Exact values and whether duplicate stat types can appear on the same item remain
 
 Later stat design must define:
 
-- exact stat formulas
+- final production stat curves
 - stat values by equipment tier
 - class-to-primary-stat relationships
-- health scaling from Stamina
-- Spirit behavior
-- Haste conversion
-- Crit conversion
-- Hit Rating rules and caps
-- Spell Power scaling
-- Healing Power scaling
+- final Stamina, Spirit, Haste, Crit, Hit, Spell Power, and Healing Power tuning
 - class-specific Mastery effects
 - stat caps and diminishing returns, if any
