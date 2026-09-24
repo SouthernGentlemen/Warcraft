@@ -7,6 +7,7 @@ Static review screens backed by the root-level `/data/` JSON mirror.
 - `index.html` — mockup launcher
 - `race-selector.html` — faction, body type, race, class availability, and racial review
 - `talent-calculator.html` — class/spec browser and five-point talent calculator
+- `simulation/` — deterministic 60 Hz combat lab for 1-person and 3-person battles with full frame reports
 - `battle.html` — interactive six-on-six battleground combat mockup with team HP, combat FX, pause, reset, and 1×/2×/4× speed controls
 - `base.html` — Realm-Grinder-inspired persistent base management mockup with resource bar, building map, profession buildings, filters, selection detail, and interactive upgrades
 
@@ -33,3 +34,14 @@ You do not need to find or kill ports manually. Running `npm run dev` again repl
 Once the rebuilt server is listening, the selected `/mockup/` URL is opened automatically in your default browser. The active URL is also printed in the terminal, and the root URL redirects to `/mockup/`.
 
 `HOST` and `PORT` can still be supplied when needed, but occupied ports are handled automatically. Set `NO_OPEN=1` only when you intentionally want to suppress automatic browser launch.
+
+
+## Simulation Smoke Test
+
+Run:
+
+```bash
+npm run simulation:test
+```
+
+The smoke test runs the 1-person and 3-person scenarios twice with the same seed and fails if either the final state hash or full combat-log hash differs.
