@@ -206,7 +206,8 @@ function buildHeroes(classIndex) {
       level:blueprint.level,
       spec:blueprint.spec,
       primary:blueprint.primary,
-      portrait:Icons.resolveSlug("class", classMeta.id),
+      portrait:Icons.resolveSlug("race", blueprint.race),
+      classIcon:Icons.resolveSlug("class", classMeta.id),
       equipment:{}
     };
 
@@ -258,7 +259,7 @@ function itemTooltipModel(item, hero, options) {
   return {
     variant:"item",
     title:item.name,
-    type:item.quality + " " + item.slot,
+    type:item.slot,
     quality:item.qualityKey,
     badge:config.badge || "",
     icon:{slug:item.icon, quality:item.qualityKey},
@@ -272,7 +273,8 @@ function itemTooltipModel(item, hero, options) {
     meta:[
       {label:"Quality", value:item.quality},
       {label:"Tier", value:"T" + item.tier},
-      {label:"Equipped", value:equippedBySelectedHero(item) ? "Yes" : "No"}
+      {label:"Equipped", value:equippedBySelectedHero(item) ? "Yes" : "No"},
+      {label:"Availability", value:equippedBySelectedHero(item) ? "Equipped" : eligibility.ok ? "Equippable" : "Unavailable"}
     ],
     locked:eligibility.ok ? [] : [eligibility.reason]
   };
@@ -302,17 +304,20 @@ function renderRoster() {
     button.type = "button";
     button.className = "hero-roster-card" + (hero.id === state.selectedHeroId ? " active" : "");
     button.innerHTML =
-      '<span class="roster-avatar ' + (hero.faction === "Horde" ? "horde" : "alliance") + ' wow-icon-frame wow-icon-frame--class-' + hero.classId + '">' +
+      '<span class="roster-avatar wow-icon-frame">' +
         '<img src="' + Icons.iconUrl(hero.portrait) + '" alt="">' +
+        '<span class="roster-class-badge wow-icon-frame wow-icon-frame--class-' + hero.classId + '" aria-hidden="true">' +
+          '<img src="' + Icons.iconUrl(hero.classIcon) + '" alt="">' +
+        '</span>' +
         '<b>' + hero.level + '</b>' +
       '</span>' +
       '<span class="roster-copy">' +
         '<strong>' + escapeHtml(hero.name) + '</strong>' +
-        '<small>' + escapeHtml(hero.race) + ' ' + escapeHtml(hero.classLabel) + '</small>' +
-        '<em>' + escapeHtml(hero.spec) + ' · ' + equipped + '/6 gear</em>' +
+        '<small>' + escapeHtml(hero.race) + ' · ' + escapeHtml(hero.faction) + '</small>' +
+        '<em class="wow-class--' + hero.classId + '">' + escapeHtml(hero.classLabel) + ' · ' + escapeHtml(hero.spec) + ' · ' + equipped + '/6</em>' +
       '</span>' +
       '<span class="roster-arrow">›</span>';
-    Icons.bindFallback(button.querySelector("img"));
+    button.querySelectorAll("img").forEach(Icons.bindFallback);
     button.addEventListener("click", function() {
       state.selectedHeroId = hero.id;
       render();
@@ -444,12 +449,12 @@ function renderHeroHeader() {
   const classIcon = $("heroClassIcon");
   classIcon.className = "gear-class-icon wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-" + hero.classId;
   const classImage = classIcon.querySelector("img");
-  classImage.src = Icons.resolve("class", hero.classId);
+  classImage.src = Icons.iconUrl(hero.classIcon);
   classImage.alt = hero.classLabel + " class icon";
   Icons.bindFallback(classImage);
 
   const portrait = $("heroPortrait");
-  portrait.src = Icons.resolve("race", hero.race);
+  portrait.src = Icons.iconUrl(hero.portrait);
   portrait.alt = hero.race + " character portrait";
   Icons.bindFallback(portrait);
 
@@ -522,6 +527,7 @@ function renderArmory() {
 }
 
 function render() {
+  Tooltips.hide();
   renderRoster();
   renderHeroHeader();
   renderSlots();
