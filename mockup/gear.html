@@ -6,8 +6,9 @@
   <title>Gear — Warcraft Mockup</title>
   <link rel="stylesheet" href="./ui/wow-ui.css">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./gear.css">
 </head>
-<body class="gear-page">
+<body class="gear-page wow-ui">
   <header class="wow-game-shell" data-wow-nav-active="gear">
     <a class="wow-game-shell__brand" href="./index.html">
       <span class="wow-game-shell__mark">W</span>
@@ -36,11 +37,7 @@
           </div>
           <span id="rosterCount" class="gear-count">0 heroes</span>
         </div>
-        <div class="gear-roster-summary">
-          <span>One hero per class</span>
-          <small>Select a hero to manage their six equipment slots.</small>
-        </div>
-        <div id="heroRoster" class="hero-roster"></div>
+        <div id="heroRoster" class="hero-roster wow-scroll"></div>
       </aside>
 
       <section class="gear-character-panel">
@@ -73,7 +70,6 @@
                   <img id="heroPortrait" alt="" src="">
                   <span id="heroLevelBadge" class="gear-portrait-level">1</span>
                 </div>
-                <span class="gear-character-caption">Character portrait</span>
               </div>
               <div class="gear-proficiency">
                 <span>Armor proficiency</span>
@@ -88,13 +84,12 @@
             <div id="rightSlots" class="gear-slot-column"></div>
           </div>
 
-          <section class="gear-stats">
+          <section class="gear-stats wow-inset">
             <div class="gear-stats-head">
               <div>
                 <span class="panel-kicker">COMBAT PREVIEW</span>
                 <h3>Hero Stats</h3>
               </div>
-              <small>Prototype values; gear balance is not final.</small>
             </div>
             <div id="heroStats" class="gear-stat-grid"></div>
           </section>
@@ -115,11 +110,11 @@
             <span class="wow-label">Tier</span>
             <select id="tierFilter" class="wow-select">
               <option value="all">All tiers</option>
-              <option value="1">Tier 1 · Common</option>
-              <option value="2">Tier 2 · Uncommon</option>
-              <option value="3">Tier 3 · Rare</option>
-              <option value="4">Tier 4 · Epic</option>
-              <option value="5">Tier 5 · Epic</option>
+              <option value="1">Tier 1</option>
+              <option value="2">Tier 2</option>
+              <option value="3">Tier 3</option>
+              <option value="4">Tier 4</option>
+              <option value="5">Tier 5</option>
             </select>
           </label>
           <label class="wow-field">
@@ -153,11 +148,11 @@
           <span><b class="wow-tier-label">T5</b><em class="wow-quality--epic">Epic</em></span>
         </div>
 
-        <div id="armoryList" class="armory-list armory-grid" aria-label="Armory item grid"></div>
+        <div id="armoryList" class="armory-list armory-grid wow-scroll" aria-label="Armory item grid"></div>
       </aside>
     </section>
 
-    <div id="gearToast" class="base-toast" hidden></div>
+    <div id="gearToast" class="base-toast" role="status" aria-live="polite" hidden></div>
   </main>
 
   <script src="./ui/wow-icons.js"></script>
