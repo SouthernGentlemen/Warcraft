@@ -268,6 +268,8 @@ Turn the current loadout-manager presentation into a compact WoW-style paper dol
 
 ## WOWUI-006 — Race Selector Redesign
 
+**Status:** Complete — 2026-09-24
+
 ### Objective
 
 Make hero creation/readout feel like a Warcraft character selection surface.
