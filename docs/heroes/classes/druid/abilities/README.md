@@ -15,7 +15,7 @@ All timing is authored in **60 Hz simulation ticks**. These are prototype combat
 | starfire | Starfire | damage | spell | enemy | 125 | 9000 | 420 | mana | 110 | none |
 | shred | Shred | damage | physical | enemy | 115 | 9000 | 300 | energy | 35 | none |
 | regrowth | Regrowth | heal | healing | lowest-ally | 135 | 9000 | 420 | mana | 115 | none |
-| mangle | Mangle | damage | physical | enemy | 110 | 8500 | 360 | rage | 25 | none |
+| mangle | Mangle | damage | physical | enemy | 110 | 8500 | 360 | energy | 25 | none |
 
 ## Ultimates
 
