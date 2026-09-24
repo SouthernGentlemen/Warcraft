@@ -42,6 +42,7 @@ Shared classes:
 - Warrior
 - Priest
 - Druid
+- Hunter
 
 Faction-exclusive classes:
 
@@ -76,6 +77,12 @@ The intended range is:
 - Level 4–5 Raids
 - Level 5 Sieges
 
+## Combat
+
+Combat resolves in real time.
+
+Heroes perform auto-attacks as their attack bars fill. Each class has two cooldown abilities and one ultimate ability tied to an ultimate bar.
+
 ## Base and Crafting
 
 The player maintains a persistent base that supports hero progression and resource production.
@@ -89,6 +96,8 @@ Known crafting paths include:
 - Alchemy: potions and flasks using elemental reagents including Air, Water, Earth, Fire, and Undeath
 - Engineering: devices, utility items, and crafted technology to be defined
 
+Crafted gear progresses from Level 1 white gear with no stats to Level 5 epic gear with two primary and two tertiary stat lines.
+
 ## Documentation Sections
 
 - [World](./world/README.md)
@@ -97,6 +106,7 @@ Known crafting paths include:
 - [Base](./base/README.md)
 - [Crafting](./crafting/README.md)
 - [Items](./items/README.md)
+- [Content Definitions](./content/README.md)
 - [Progression](./progression/README.md)
 
 ## Documentation Rule
