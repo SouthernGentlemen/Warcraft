@@ -38,6 +38,10 @@ Horde:
 - Undead
 - Troll
 
+Each race provides exactly one passive racial bonus.
+
+See [Races](./races/README.md).
+
 ## Classes
 
 Shared:
@@ -55,17 +59,30 @@ Faction-exclusive:
 - Paladin — Alliance
 - Shaman — Horde
 
+See [Classes](./classes/README.md).
+
+## Hero Setup
+
+A hero's build is defined by:
+
+- gear choices
+- talent choices
+- 2 selected cooldown abilities
+- 1 selected ultimate ability
+
+The hero's specialization determines its auto-attack.
+
+The first talent point chooses the specialization. The other two talent trees remain locked until the hero completes the chosen tree's Level 3 capstone.
+
 ## Hero Roles
 
-Classes will provide different contributions to a party such as:
+Classes and specializations provide different contributions to a party such as:
 
 - damage
 - defense
 - healing
 - support
 - utility
-
-Every class will ultimately define its combat package around auto-attacks, two cooldown abilities, and one ultimate ability.
 
 ## Roster Pressure
 
@@ -88,6 +105,7 @@ Expected hero development systems include:
 - experience
 - leveling
 - class progression
+- talents
 - equipment
 - consumables
 - party composition
@@ -98,10 +116,12 @@ Expected hero development systems include:
 The following require later specification:
 
 - exact XP curves
-- class ability kits
-- race bonuses
+- exact class talent nodes
+- class cooldown pools
+- class ultimate pools
+- exact racial bonuses
 - recruitment generation
 - roster capacity
 - class weapon restrictions
 - recovery rules
-- respec or specialization rules
+- respec rules
