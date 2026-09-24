@@ -7,51 +7,71 @@
   <link rel="stylesheet" href="./ui/wow-ui.css">
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
-  <main class="launcher shell">
-    <header class="hero-header">
-      <p class="eyebrow">SYSTEM REVIEW</p>
-      <h1>Warcraft Prototype Mockups</h1>
-      <p class="lede">Static review screens driven by the JSON mirror in <code>/data/</code>.</p>
-    </header>
-    <section class="launcher-grid">
-      <a class="launcher-card alliance-card" href="./race-selector.html">
-        <span class="card-kicker">Heroes</span>
-        <h2>Race Selector</h2>
-        <p>Flip faction and body type, inspect racial bonuses, and review available classes.</p>
-        <span class="card-action">Open selector →</span>
-      </a>
-      <a class="launcher-card horde-card" href="./talent-calculator.html">
-        <span class="card-kicker">Classes</span>
-        <h2>Talent Calculator</h2>
-        <p>Browse all three specs per class and test the Level 1–5 talent progression rules.</p>
-        <span class="card-action">Open calculator →</span>
-      </a>
-      <a class="launcher-card alliance-card" href="./simulation/">
-        <span class="card-kicker">Simulation</span>
-        <h2>Combat Simulation Lab</h2>
-        <p>Run deterministic 1-person and 3-person battles, inspect stat/action mappings, verify hashes, and review the full combat log.</p>
-        <span class="card-action">Open simulation →</span>
-      </a>
-      <a class="launcher-card gear-card" href="./gear.html">
-        <span class="card-kicker">Heroes</span>
-        <h2>Gear &amp; Equipment</h2>
-        <p>Cycle through one hero of every class, inspect six-slot loadouts, and equip sample gear across Tiers 1–5.</p>
-        <span class="card-action">Open gear →</span>
-      </a>
-      <a class="launcher-card battle-card" href="./battle.html">
-        <span class="card-kicker">Combat</span>
-        <h2>Battle Mockup</h2>
-        <p>Review a Batomon-style six-on-six autobattle with team health, combat FX, pause, and fast-forward controls.</p>
-        <span class="card-action">Open battle →</span>
-      </a>
-      <a class="launcher-card base-card" href="./base.html">
-        <span class="card-kicker">Base</span>
-        <h2>Base Management</h2>
-        <p>Review the persistent stronghold, building progression, profession buildings, resource flow, and upgrade hooks.</p>
-        <span class="card-action">Open base →</span>
-      </a>
+<body class="launcher-page">
+  <header class="wow-game-shell" data-wow-nav-active="menu">
+    <a class="wow-game-shell__brand is-active" aria-current="page" href="./index.html">
+      <span class="wow-game-shell__mark">W</span>
+      <span class="wow-game-shell__brand-copy"><strong>Warcraft</strong><small>Mockup Console</small></span>
+    </a>
+    <nav class="wow-game-nav" aria-label="Warcraft mockup screens">
+      <a class="wow-game-nav__link" data-wow-nav-key="heroes" href="./race-selector.html">Heroes</a>
+      <a class="wow-game-nav__link" data-wow-nav-key="talents" href="./talent-calculator.html">Talents</a>
+      <a class="wow-game-nav__link" data-wow-nav-key="gear" href="./gear.html">Gear</a>
+      <a class="wow-game-nav__link" data-wow-nav-key="battle" href="./battle.html">Battle</a>
+      <a class="wow-game-nav__link" data-wow-nav-key="base" href="./base.html">Base</a>
+      <a class="wow-game-nav__link" data-wow-nav-key="simulation" href="./simulation/">Simulation</a>
+    </nav>
+    <div class="wow-game-shell__action"></div>
+  </header>
+  <main class="wow-launcher-shell">
+    <section class="wow-launcher-frame wow-frame">
+      <header class="wow-launcher-head">
+        <div>
+          <span class="wow-kicker">SYSTEM REVIEW</span>
+          <h1 class="wow-title">Warcraft Prototype</h1>
+        </div>
+        <span class="wow-launcher-head__meta">Select a system</span>
+      </header>
+      <nav class="wow-launcher-menu" aria-label="Warcraft prototype systems">
+        <a class="wow-launcher-entry" data-wow-nav-key="heroes" href="./race-selector.html">
+          <span class="wow-launcher-entry__icon wow-icon-frame wow-icon-frame--md"></span>
+          <span class="wow-launcher-entry__copy"><small>Heroes</small><strong>Race Selector</strong></span>
+          <span class="wow-launcher-entry__chevron" aria-hidden="true">›</span>
+        </a>
+        <a class="wow-launcher-entry" data-wow-nav-key="talents" href="./talent-calculator.html">
+          <span class="wow-launcher-entry__icon wow-icon-frame wow-icon-frame--md"></span>
+          <span class="wow-launcher-entry__copy"><small>Classes</small><strong>Talent Calculator</strong></span>
+          <span class="wow-launcher-entry__chevron" aria-hidden="true">›</span>
+        </a>
+        <a class="wow-launcher-entry" data-wow-nav-key="gear" href="./gear.html">
+          <span class="wow-launcher-entry__icon wow-icon-frame wow-icon-frame--md"></span>
+          <span class="wow-launcher-entry__copy"><small>Heroes</small><strong>Gear &amp; Equipment</strong></span>
+          <span class="wow-launcher-entry__chevron" aria-hidden="true">›</span>
+        </a>
+        <a class="wow-launcher-entry" data-wow-nav-key="battle" href="./battle.html">
+          <span class="wow-launcher-entry__icon wow-icon-frame wow-icon-frame--md"></span>
+          <span class="wow-launcher-entry__copy"><small>Combat</small><strong>Battle Mockup</strong></span>
+          <span class="wow-launcher-entry__chevron" aria-hidden="true">›</span>
+        </a>
+        <a class="wow-launcher-entry" data-wow-nav-key="base" href="./base.html">
+          <span class="wow-launcher-entry__icon wow-icon-frame wow-icon-frame--md"></span>
+          <span class="wow-launcher-entry__copy"><small>Stronghold</small><strong>Base Management</strong></span>
+          <span class="wow-launcher-entry__chevron" aria-hidden="true">›</span>
+        </a>
+        <a class="wow-launcher-entry" data-wow-nav-key="simulation" href="./simulation/">
+          <span class="wow-launcher-entry__icon wow-icon-frame wow-icon-frame--md"></span>
+          <span class="wow-launcher-entry__copy"><small>Technical</small><strong>Combat Simulation Lab</strong></span>
+          <span class="wow-launcher-entry__chevron" aria-hidden="true">›</span>
+        </a>
+      </nav>
+      <footer class="wow-launcher-foot">
+        <span>Static mockups</span>
+        <span>Shared WoW UI layer active</span>
+      </footer>
     </section>
   </main>
+  <script src="./ui/wow-icons.js"></script>
+  <script src="./ui/wow-tooltips.js"></script>
+  <script src="./ui/wow-nav.js"></script>
 </body>
 </html>

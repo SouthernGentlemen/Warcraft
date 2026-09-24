@@ -8,19 +8,22 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body class="base-page">
+  <header class="wow-game-shell" data-wow-nav-active="base">
+    <a class="wow-game-shell__brand" href="./index.html">
+      <span class="wow-game-shell__mark">W</span>
+      <span class="wow-game-shell__brand-copy"><strong>Warcraft</strong><small>Mockup Console</small></span>
+    </a>
+    <nav class="wow-game-nav" aria-label="Warcraft mockup screens">
+      <a class="wow-game-nav__link" data-wow-nav-key="heroes" href="./race-selector.html">Heroes</a>
+      <a class="wow-game-nav__link" data-wow-nav-key="talents" href="./talent-calculator.html">Talents</a>
+      <a class="wow-game-nav__link" data-wow-nav-key="gear" href="./gear.html">Gear</a>
+      <a class="wow-game-nav__link" data-wow-nav-key="battle" href="./battle.html">Battle</a>
+      <a class="wow-game-nav__link is-active" aria-current="page" data-wow-nav-key="base" href="./base.html">Base</a>
+      <a class="wow-game-nav__link" data-wow-nav-key="simulation" href="./simulation/">Simulation</a>
+    </nav>
+    <div class="wow-game-shell__action"><button class="wow-game-shell__control" type="button" data-wow-tooltip="Settings" data-wow-tooltip-type="Control" data-wow-tooltip-description="Prototype settings hook." data-wow-tooltip-variant="control">Settings</button></div>
+  </header>
   <main class="base-shell">
-    <header class="base-suite-bar">
-      <a class="base-suite-brand" href="./index.html"><span class="base-suite-mark">W</span><strong>Warcraft Prototype</strong></a>
-      <nav class="base-suite-nav" aria-label="Mockups">
-        <a href="./index.html">Overview</a>
-        <a href="./race-selector.html">Races</a>
-        <a href="./talent-calculator.html">Talents</a>
-        <a href="./gear.html">Gear</a>
-        <a href="./battle.html">Battle</a>
-        <a class="active" href="./base.html">Base</a>
-      </nav>
-      <div class="base-suite-actions"><button data-wow-tooltip="Settings" data-wow-tooltip-type="Control" data-wow-tooltip-description="Prototype settings hook." data-wow-tooltip-variant="control">⚙</button></div>
-    </header>
 
     <section class="base-game-frame">
       <aside class="base-left-rail">
@@ -131,6 +134,7 @@
   </main>
   <script src="./ui/wow-icons.js"></script>
   <script src="./ui/wow-tooltips.js"></script>
+  <script src="./ui/wow-nav.js"></script>
   <script src="./base.js"></script>
 </body>
 </html>
