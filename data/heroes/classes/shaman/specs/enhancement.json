@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/classes/shaman/specs/enhancement.md",
+  "kind": "specialization",
+  "title": "Shaman — Enhancement",
+  "source_markdown": "# Shaman — Enhancement\n\n## Identity\n\n- Role: Elemental melee damage\n- Resource: Mana\n- Primary stat: Agility\n- Auto-attack: Storm Strike — melee weapon damage with Nature component\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Enhancement** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Windfury** | Storm Strike has a 15% chance to trigger an extra strike for 50% damage. |\n| **Flametongue** | Storm Strike applies a Burn for 10% of the hit's damage over 4 seconds. |\n| **Mental Quickness** | Mana costs of equipped cooldown abilities are reduced by 10%. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Maelstrom Weapon** | Every third auto-attack reduces both equipped cooldowns' remaining time by 1 second. |\n| **Stormbringer** | Auto-attacks have a 10% chance to reset one equipped cooldown. |\n| **Elemental Weapons** | Equipped cooldown abilities deal 15% more damage while the target is affected by Flametongue. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Doom Winds** | Using the selected ultimate grants 30% auto-attack speed for 8 seconds and guarantees Windfury on every second auto-attack. |\n| **Elemental Fury** | Storm Strike cycles Fire, Frost, and Nature empowerment: Fire adds a Burn, Frost slows the target's next auto bar by 15%, and Nature deals 20% bonus damage. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "class": "Shaman",
+  "specialization": "Enhancement",
+  "identity": {
+    "role": "",
+    "resource": "",
+    "primary_stat": "",
+    "auto_attack": ""
+  },
+  "talents": {
+    "tier_1": [
+      {
+        "name": "Windfury",
+        "effect": "Storm Strike has a 15% chance to trigger an extra strike for 50% damage."
+      },
+      {
+        "name": "Flametongue",
+        "effect": "Storm Strike applies a Burn for 10% of the hit's damage over 4 seconds."
+      },
+      {
+        "name": "Mental Quickness",
+        "effect": "Mana costs of equipped cooldown abilities are reduced by 10%."
+      }
+    ],
+    "tier_2": [
+      {
+        "name": "Maelstrom Weapon",
+        "effect": "Every third auto-attack reduces both equipped cooldowns' remaining time by 1 second."
+      },
+      {
+        "name": "Stormbringer",
+        "effect": "Auto-attacks have a 10% chance to reset one equipped cooldown."
+      },
+      {
+        "name": "Elemental Weapons",
+        "effect": "Equipped cooldown abilities deal 15% more damage while the target is affected by Flametongue."
+      }
+    ],
+    "capstones": [
+      {
+        "name": "Doom Winds",
+        "effect": "Using the selected ultimate grants 30% auto-attack speed for 8 seconds and guarantees Windfury on every second auto-attack."
+      },
+      {
+        "name": "Elemental Fury",
+        "effect": "Storm Strike cycles Fire, Frost, and Nature empowerment: Fire adds a Burn, Frost slows the target's next auto bar by 15%, and Nature deals 20% bonus damage."
+      }
+    ]
+  }
+}

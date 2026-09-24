@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/classes/warlock/specs/affliction.md",
+  "kind": "specialization",
+  "title": "Warlock — Affliction",
+  "source_markdown": "# Warlock — Affliction\n\n## Identity\n\n- Role: Damage-over-time spell damage / sustain\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Shadow Bolt — ranged Shadow damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Affliction** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Agony** | Shadow Bolt applies Agony for 10% of the hit's damage over 6 seconds; refreshes duration. |\n| **Soul Siphon** | Heal for 10% of damage dealt by damage-over-time effects. |\n| **Suppression** | Gain 10% more Hit Rating from equipped gear. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Pandemic** | Damage-over-time effects last 30% longer. |\n| **Shadow Embrace** | Damaging equipped cooldowns increase the target's damage-over-time damage taken from this hero by 15% for 5 seconds. |\n| **Dark Pact** | While below 30% Mana, auto-attacks restore 2% maximum Mana. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Unstable Affliction** | Agony can critically strike, and each Agony tick generates 1% ultimate-bar charge. |\n| **Soul Rot** | Using the selected ultimate refreshes this hero's damage-over-time effects and copies them to all enemies at 50% remaining duration. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "class": "Warlock",
+  "specialization": "Affliction",
+  "identity": {
+    "role": "",
+    "resource": "",
+    "primary_stat": "",
+    "auto_attack": ""
+  },
+  "talents": {
+    "tier_1": [
+      {
+        "name": "Agony",
+        "effect": "Shadow Bolt applies Agony for 10% of the hit's damage over 6 seconds; refreshes duration."
+      },
+      {
+        "name": "Soul Siphon",
+        "effect": "Heal for 10% of damage dealt by damage-over-time effects."
+      },
+      {
+        "name": "Suppression",
+        "effect": "Gain 10% more Hit Rating from equipped gear."
+      }
+    ],
+    "tier_2": [
+      {
+        "name": "Pandemic",
+        "effect": "Damage-over-time effects last 30% longer."
+      },
+      {
+        "name": "Shadow Embrace",
+        "effect": "Damaging equipped cooldowns increase the target's damage-over-time damage taken from this hero by 15% for 5 seconds."
+      },
+      {
+        "name": "Dark Pact",
+        "effect": "While below 30% Mana, auto-attacks restore 2% maximum Mana."
+      }
+    ],
+    "capstones": [
+      {
+        "name": "Unstable Affliction",
+        "effect": "Agony can critically strike, and each Agony tick generates 1% ultimate-bar charge."
+      },
+      {
+        "name": "Soul Rot",
+        "effect": "Using the selected ultimate refreshes this hero's damage-over-time effects and copies them to all enemies at 50% remaining duration."
+      }
+    ]
+  }
+}

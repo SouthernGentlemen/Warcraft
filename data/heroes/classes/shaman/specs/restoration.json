@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/classes/shaman/specs/restoration.md",
+  "kind": "specialization",
+  "title": "Shaman — Restoration",
+  "source_markdown": "# Shaman — Restoration\n\n## Identity\n\n- Role: Healing / support\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Water Bolt — heals the lowest-health ally\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Restoration** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Earthliving** | Water Bolt also heals its target for 10% of the initial heal over 4 seconds. |\n| **Resurgence** | Critical heals restore 5% of the Mana spent on that heal. |\n| **Tidal Focus** | Water Bolt healing is increased by 10%. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Chain Heal** | Every fourth Water Bolt also heals two additional injured allies for 40% of the original heal. |\n| **Riptide** | Healing cooldown abilities leave a healing-over-time effect equal to 15% of the original heal over 4 seconds. |\n| **Ancestral Vigor** | Healing an ally grants that ally 10% increased maximum health for 4 seconds. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Ascendance** | Using the selected ultimate causes 50% of all healing done for 8 seconds to be copied to the lowest-health other ally. |\n| **Spirit Link** | Using the selected ultimate partially equalizes party health percentages and grants the party 10% damage reduction for 8 seconds. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "class": "Shaman",
+  "specialization": "Restoration",
+  "identity": {
+    "role": "",
+    "resource": "",
+    "primary_stat": "",
+    "auto_attack": ""
+  },
+  "talents": {
+    "tier_1": [
+      {
+        "name": "Earthliving",
+        "effect": "Water Bolt also heals its target for 10% of the initial heal over 4 seconds."
+      },
+      {
+        "name": "Resurgence",
+        "effect": "Critical heals restore 5% of the Mana spent on that heal."
+      },
+      {
+        "name": "Tidal Focus",
+        "effect": "Water Bolt healing is increased by 10%."
+      }
+    ],
+    "tier_2": [
+      {
+        "name": "Chain Heal",
+        "effect": "Every fourth Water Bolt also heals two additional injured allies for 40% of the original heal."
+      },
+      {
+        "name": "Riptide",
+        "effect": "Healing cooldown abilities leave a healing-over-time effect equal to 15% of the original heal over 4 seconds."
+      },
+      {
+        "name": "Ancestral Vigor",
+        "effect": "Healing an ally grants that ally 10% increased maximum health for 4 seconds."
+      }
+    ],
+    "capstones": [
+      {
+        "name": "Ascendance",
+        "effect": "Using the selected ultimate causes 50% of all healing done for 8 seconds to be copied to the lowest-health other ally."
+      },
+      {
+        "name": "Spirit Link",
+        "effect": "Using the selected ultimate partially equalizes party health percentages and grants the party 10% damage reduction for 8 seconds."
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/classes/warlock/specs/destruction.md",
+  "kind": "specialization",
+  "title": "Warlock — Destruction",
+  "source_markdown": "# Warlock — Destruction\n\n## Identity\n\n- Role: Direct burst spell damage\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Chaos Bolt — ranged Fire/Shadow damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Destruction** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Ember Bolt** | Chaos Bolt deals 15% more damage. |\n| **Backdraft** | Critical auto-attacks reduce both equipped cooldowns' remaining time by 10%. |\n| **Ruin** | Equipped cooldown abilities gain 10% Critical Strike chance. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Conflagration** | Damaging equipped cooldowns apply a Burn for 20% of their damage over 4 seconds. |\n| **Fire and Brimstone** | Every fourth Chaos Bolt also hits all other enemies for 50% damage. |\n| **Soul Fire** | Mana costs of damaging equipped cooldowns are reduced by 15%. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Chaos Incarnate** | Using the selected ultimate makes the next two equipped cooldown abilities cost no Mana and deal 25% more damage. |\n| **Burning Soul** | Burn can stack twice, and Burning targets take 20% more damage from Chaos Bolt. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "class": "Warlock",
+  "specialization": "Destruction",
+  "identity": {
+    "role": "",
+    "resource": "",
+    "primary_stat": "",
+    "auto_attack": ""
+  },
+  "talents": {
+    "tier_1": [
+      {
+        "name": "Ember Bolt",
+        "effect": "Chaos Bolt deals 15% more damage."
+      },
+      {
+        "name": "Backdraft",
+        "effect": "Critical auto-attacks reduce both equipped cooldowns' remaining time by 10%."
+      },
+      {
+        "name": "Ruin",
+        "effect": "Equipped cooldown abilities gain 10% Critical Strike chance."
+      }
+    ],
+    "tier_2": [
+      {
+        "name": "Conflagration",
+        "effect": "Damaging equipped cooldowns apply a Burn for 20% of their damage over 4 seconds."
+      },
+      {
+        "name": "Fire and Brimstone",
+        "effect": "Every fourth Chaos Bolt also hits all other enemies for 50% damage."
+      },
+      {
+        "name": "Soul Fire",
+        "effect": "Mana costs of damaging equipped cooldowns are reduced by 15%."
+      }
+    ],
+    "capstones": [
+      {
+        "name": "Chaos Incarnate",
+        "effect": "Using the selected ultimate makes the next two equipped cooldown abilities cost no Mana and deal 25% more damage."
+      },
+      {
+        "name": "Burning Soul",
+        "effect": "Burn can stack twice, and Burning targets take 20% more damage from Chaos Bolt."
+      }
+    ]
+  }
+}
