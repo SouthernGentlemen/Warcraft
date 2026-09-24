@@ -32,7 +32,7 @@ The target is not a collection of separately themed mockups. The target is one r
 | WOWUI-001 | Shared WoW UI foundation **(Complete)** | — |
 | WOWUI-002 | Shared icon and visual-token system **(Complete)** | WOWUI-001 |
 | WOWUI-003 | Shared tooltip system **(Complete)** | WOWUI-001, WOWUI-002 |
-| WOWUI-004 | Launcher and persistent navigation | WOWUI-001, WOWUI-002, WOWUI-003 |
+| WOWUI-004 | Launcher and persistent navigation **(Complete)** | WOWUI-001, WOWUI-002, WOWUI-003 |
 | WOWUI-005 | Gear and equipment redesign | WOWUI-001, WOWUI-002, WOWUI-003 |
 | WOWUI-006 | Race selector redesign | WOWUI-001, WOWUI-002, WOWUI-003 |
 | WOWUI-007 | Talent calculator refinement | WOWUI-001, WOWUI-002, WOWUI-003 |
@@ -192,6 +192,8 @@ Create one WoW-style tooltip engine used by all interactive game concepts.
 ---
 
 ## WOWUI-004 — Launcher and Persistent Navigation
+
+**Status:** Complete — 2026-09-24
 
 ### Objective
 
