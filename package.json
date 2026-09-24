@@ -1,0 +1,12 @@
+{
+  "name": "warcraft-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Static systems mockups for the Warcraft-inspired incremental game.",
+  "scripts": {
+    "dev": "node dev-server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
