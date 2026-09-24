@@ -239,6 +239,13 @@
   box-shadow: inset 3px 0 0 var(--wow-gold-bright);
 }
 
+.race-faction-button:focus,
+.race-body-button:focus,
+.race-option:focus,
+.race-class-button:focus,
+.race-racial-control:focus,
+.race-faction-button:focus-visible,
+.race-body-button:focus-visible,
 .race-option:focus-visible,
 .race-class-button:focus-visible,
 .race-racial-control:focus-visible {
