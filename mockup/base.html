@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Base — Warcraft Mockup</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="base-page">
+  <main class="base-shell">
+    <header class="base-suite-bar">
+      <a class="base-suite-brand" href="./index.html"><span class="base-suite-mark">W</span><strong>Warcraft Prototype</strong></a>
+      <nav class="base-suite-nav" aria-label="Mockups">
+        <a href="./index.html">Overview</a>
+        <a href="./race-selector.html">Races</a>
+        <a href="./talent-calculator.html">Talents</a>
+        <a href="./battle.html">Battle</a>
+        <a class="active" href="./base.html">Base</a>
+      </nav>
+      <div class="base-suite-actions"><button title="Settings">⚙</button></div>
+    </header>
+
+    <section class="base-game-frame">
+      <aside class="base-left-rail">
+        <div class="base-faction-banner"><span>⚜</span><small>ALLIANCE</small></div>
+        <nav class="base-game-nav">
+          <button class="active" data-panel="base"><span>⌂</span>Base</button>
+          <button data-panel="heroes"><span>♞</span>Heroes</button>
+          <button data-panel="combat"><span>⚔</span>Combat</button>
+          <button data-panel="crafting"><span>⚒</span>Crafting</button>
+          <button data-panel="research"><span>⌘</span>Research</button>
+          <button data-panel="events"><span>⚑</span>Events<i></i></button>
+          <button data-panel="challenges"><span>♛</span>Challenges</button>
+        </nav>
+      </aside>
+
+      <section class="base-main-column">
+        <div class="base-resource-bar" aria-label="Resources">
+          <div><span class="resource-icon gold">●</span><strong id="goldValue">25,430</strong><small>+220/s</small></div>
+          <div><span class="resource-icon lumber">▰</span><strong id="lumberValue">12,680</strong><small>+98/s</small></div>
+          <div><span class="resource-icon stone">◆</span><strong id="stoneValue">8,440</strong><small>+76/s</small></div>
+          <div><span class="resource-icon mana">♦</span><strong id="manaValue">2,350</strong><small>+24/s</small></div>
+          <div><span class="resource-icon population">♟</span><strong>78 / 120</strong><small>+4/h</small></div>
+        </div>
+
+        <section class="base-map" id="baseMap" aria-label="Alliance base map">
+          <div class="base-map-backdrop"></div>
+          <div class="base-river river-a"></div>
+          <div class="base-river river-b"></div>
+          <div class="base-road road-a"></div>
+          <div class="base-road road-b"></div>
+          <div class="base-road road-c"></div>
+          <div class="base-tree-cluster trees-a">▲ ▲ ▲</div>
+          <div class="base-tree-cluster trees-b">▲ ▲</div>
+          <div class="base-tree-cluster trees-c">▲ ▲ ▲</div>
+
+          <button class="base-plot keep selected" data-building="keep" style="--x:50%;--y:23%">
+            <span class="plot-art">🏰</span><span class="plot-label"><strong>Keep</strong><small>Lv. <b>10</b></small></span>
+          </button>
+          <button class="base-plot command" data-building="command" style="--x:24%;--y:28%">
+            <span class="plot-art">🎖️</span><span class="plot-label"><strong>Command Hall</strong><small>Lv. <b>4</b></small></span>
+          </button>
+          <button class="base-plot recruitment" data-building="recruitment" style="--x:76%;--y:28%">
+            <span class="plot-art">👥</span><span class="plot-label"><strong>Recruitment Hall</strong><small>Lv. <b>4</b></small></span>
+          </button>
+          <button class="base-plot barracks" data-building="barracks" style="--x:20%;--y:48%">
+            <span class="plot-art">⚔️</span><span class="plot-label"><strong>Barracks</strong><small>Lv. <b>6</b></small></span>
+          </button>
+          <button class="base-plot training" data-building="training" style="--x:48%;--y:51%">
+            <span class="plot-art">🎯</span><span class="plot-label"><strong>Training Grounds</strong><small>Lv. <b>5</b></small></span>
+          </button>
+          <button class="base-plot storehouse" data-building="storehouse" style="--x:78%;--y:48%">
+            <span class="plot-art">📦</span><span class="plot-label"><strong>Storehouse</strong><small>Lv. <b>5</b></small></span>
+          </button>
+          <button class="base-plot blacksmith" data-building="blacksmith" style="--x:18%;--y:69%">
+            <span class="plot-art">⚒️</span><span class="plot-label"><strong>Blacksmith</strong><small>Lv. <b>4</b></small></span>
+          </button>
+          <button class="base-plot alchemy" data-building="alchemy" style="--x:38%;--y:72%">
+            <span class="plot-art">⚗️</span><span class="plot-label"><strong>Alchemy Lab</strong><small>Lv. <b>3</b></small></span>
+          </button>
+          <button class="base-plot enchanter" data-building="enchanter" style="--x:56%;--y:72%">
+            <span class="plot-art">✨</span><span class="plot-label"><strong>Enchanter's Study</strong><small>Lv. <b>3</b></small></span>
+          </button>
+          <button class="base-plot tailor" data-building="tailor" style="--x:72%;--y:66%">
+            <span class="plot-art">🧵</span><span class="plot-label"><strong>Tailor</strong><small>Lv. <b>3</b></small></span>
+          </button>
+          <button class="base-plot leather" data-building="leather" style="--x:69%;--y:82%">
+            <span class="plot-art">🛡️</span><span class="plot-label"><strong>Leatherworker</strong><small>Lv. <b>3</b></small></span>
+          </button>
+          <button class="base-plot engineer" data-building="engineer" style="--x:86%;--y:68%">
+            <span class="plot-art">⚙️</span><span class="plot-label"><strong>Engineer Workshop</strong><small>Lv. <b>4</b></small></span>
+          </button>
+
+          <div class="base-map-caption">
+            <span>Stormvale Stronghold</span>
+            <small>Persistent base · Tier II</small>
+          </div>
+        </section>
+
+        <div class="base-action-bar">
+          <button data-action="keep"><span>🏰</span><strong>Upgrade Keep</strong><small>Increase base tier</small></button>
+          <button data-action="train"><span>🪖</span><strong>Train Heroes</strong><small>Advance roster levels</small></button>
+          <button data-action="recruit"><span>👥</span><strong>Recruit Units</strong><small>Expand your roster</small></button>
+          <button class="mission" data-action="mission"><span>⚔</span><strong>Start Mission</strong><small>Send a party to content</small></button>
+        </div>
+
+        <footer class="base-status-strip">
+          <div class="base-avatar">25</div>
+          <div class="base-profile"><strong>Lord Arthorn</strong><small>12,450 / 25,000 XP</small><span><i style="width:50%"></i></span></div>
+          <div class="base-meta-stat"><span>✹</span><small>Renown</small><strong>2,450</strong></div>
+          <div class="base-meta-stat"><span>◈</span><small>Valor</small><strong>890</strong></div>
+          <div class="base-meta-stat"><span>⚜</span><small>Badges</small><strong>24</strong></div>
+          <div class="base-meta-stat"><span>▧</span><small>Deeds</small><strong>12 / 36</strong></div>
+        </footer>
+      </section>
+
+      <aside class="base-building-panel">
+        <div class="building-panel-head">
+          <div><span class="panel-kicker">BASE MANAGEMENT</span><h1>Buildings</h1></div>
+          <select id="buildingFilter" aria-label="Building filter"><option value="all">All</option><option value="core">Core</option><option value="profession">Profession</option></select>
+        </div>
+        <div class="building-tabs"><button class="active" data-building-tab="buildings">Buildings</button><button data-building-tab="upgrades">Upgrades</button></div>
+        <div class="building-list" id="buildingList"></div>
+        <div class="base-selection-detail" id="selectionDetail"></div>
+      </aside>
+    </section>
+
+    <div class="base-toast" id="baseToast" hidden></div>
+  </main>
+  <script src="./base.js"></script>
+</body>
+</html>
