@@ -2,69 +2,50 @@
 
 ## Identity
 
-- Role direction: Ranged spell damage / control
+- Role: Ranged spell damage / control
 - Resource: Mana
-- Primary stat direction: Intellect
-- Auto-attack: Frostbolt
-
-## Spec Theme
-
-Slows, control, reliable damage, frozen-target synergy.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Frostbolt** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Intellect
+- Auto-attack: Frostbolt — ranged Frost damage
 
 ## Talent Tree
 
-The Frost tree contains:
+The first talent point spent in this tree selects **Frost** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Frost becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Mage trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Permafrost** | Frostbolt slows the target's next auto-attack bar by 8%. |
+| **Ice Shards** | Frostbolt deals 15% more damage. |
+| **Cold Efficiency** | Mana costs of equipped cooldown abilities are reduced by 10%. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Slows
-- Control
-- Reliable damage
-- Frozen-target synergy
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Shatter** | Gain 20% Critical Strike chance against targets currently slowed or stunned. |
+| **Frozen Armor** | After taking direct damage, gain a shield equal to 8% maximum health; 12-second internal cooldown. |
+| **Icy Precision** | Frostbolt cannot miss while the target is slowed. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Frost specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Deep Freeze** | Every fourth Frostbolt stuns its target for 1 second. |
+| **Icy Veins** | Using the selected ultimate grants 25% Haste for 8 seconds and causes Frostbolt to always hit. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Frost specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
