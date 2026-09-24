@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/classes/warrior/abilities/README.md",
+  "kind": "abilities",
+  "title": "Warrior Abilities",
+  "source_markdown": "# Warrior Abilities\n\n## Purpose\n\nThis document defines the initial class-wide active ability pool used by hero loadouts and the deterministic combat simulator.\n\nA Warrior equips exactly **2 cooldown abilities** and exactly **1 ultimate**. Specialization talents can modify these actions without adding extra active slots.\n\nAll timing is authored in **60 Hz simulation ticks**. These are prototype combat values and can be tuned without changing the action schema.\n\n## Cooldowns\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| mortal-strike | Mortal Strike | damage | physical | enemy | 125 | 10000 | 360 | rage | 25 | none |\n| bloodthirst | Bloodthirst | damage | physical | enemy | 105 | 8500 | 300 | rage | 25 | none |\n| shield-slam | Shield Slam | damage | physical | enemy | 100 | 8000 | 360 | rage | 20 | none |\n| thunder-clap | Thunder Clap | damage | physical | all-enemies | 80 | 6000 | 480 | rage | 20 | none |\n\n## Ultimates\n\nUltimates consume a full 10,000-point ultimate bar.\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| bladestorm | Bladestorm | damage | physical | all-enemies | 300 | 12000 | 0 | ultimate | 10000 | none |\n| avatar | Avatar | buff | none | self | 0 | 0 | 0 | ultimate | 10000 | physical_power_bp:+3000@480 |\n\n## Action Fields\n\n- **Kind** — damage, heal, shield, or buff.\n- **School** — physical, spell, healing, or none.\n- **Target** — enemy, all-enemies, lowest-ally, self, or all-allies.\n- **Power** — flat integer action power.\n- **Coefficient BP** — basis-point scaling against the mapped hero power stat. 10,000 BP = 100%.\n- **Cooldown Ticks** — fixed base cooldown before Haste progression.\n- **Resource / Cost** — deterministic resource spend required to execute the action.\n- **Effect** — optional deterministic buff hook in `key:+basisPoints@ticks` form.\n\n## Selection\n\nThe simulator currently selects the first two resource-compatible cooldowns and the first ultimate by default.\n\nThe battle system can later provide explicit loadout IDs without changing the simulation engine.\n",
+  "class": "Warrior",
+  "cooldowns": [
+    {
+      "id": "mortal-strike",
+      "name": "Mortal Strike",
+      "kind": "damage",
+      "school": "physical",
+      "target": "enemy",
+      "power": 125,
+      "coefficient_bp": 10000,
+      "cooldown_ticks": 360,
+      "resource": "rage",
+      "cost": 25,
+      "effect": "none"
+    },
+    {
+      "id": "bloodthirst",
+      "name": "Bloodthirst",
+      "kind": "damage",
+      "school": "physical",
+      "target": "enemy",
+      "power": 105,
+      "coefficient_bp": 8500,
+      "cooldown_ticks": 300,
+      "resource": "rage",
+      "cost": 25,
+      "effect": "none"
+    },
+    {
+      "id": "shield-slam",
+      "name": "Shield Slam",
+      "kind": "damage",
+      "school": "physical",
+      "target": "enemy",
+      "power": 100,
+      "coefficient_bp": 8000,
+      "cooldown_ticks": 360,
+      "resource": "rage",
+      "cost": 20,
+      "effect": "none"
+    },
+    {
+      "id": "thunder-clap",
+      "name": "Thunder Clap",
+      "kind": "damage",
+      "school": "physical",
+      "target": "all-enemies",
+      "power": 80,
+      "coefficient_bp": 6000,
+      "cooldown_ticks": 480,
+      "resource": "rage",
+      "cost": 20,
+      "effect": "none"
+    }
+  ],
+  "ultimates": [
+    {
+      "id": "bladestorm",
+      "name": "Bladestorm",
+      "kind": "damage",
+      "school": "physical",
+      "target": "all-enemies",
+      "power": 300,
+      "coefficient_bp": 12000,
+      "cooldown_ticks": 0,
+      "resource": "ultimate",
+      "cost": 10000,
+      "effect": "none"
+    },
+    {
+      "id": "avatar",
+      "name": "Avatar",
+      "kind": "buff",
+      "school": "none",
+      "target": "self",
+      "power": 0,
+      "coefficient_bp": 0,
+      "cooldown_ticks": 0,
+      "resource": "ultimate",
+      "cost": 10000,
+      "effect": "physical_power_bp:+3000@480"
+    }
+  ]
+}

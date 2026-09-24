@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/classes/druid/abilities/README.md",
+  "kind": "abilities",
+  "title": "Druid Abilities",
+  "source_markdown": "# Druid Abilities\n\n## Purpose\n\nThis document defines the initial class-wide active ability pool used by hero loadouts and the deterministic combat simulator.\n\nA Druid equips exactly **2 cooldown abilities** and exactly **1 ultimate**. Specialization talents can modify these actions without adding extra active slots.\n\nAll timing is authored in **60 Hz simulation ticks**. These are prototype combat values and can be tuned without changing the action schema.\n\n## Cooldowns\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| starfire | Starfire | damage | spell | enemy | 125 | 9000 | 420 | mana | 110 | none |\n| shred | Shred | damage | physical | enemy | 115 | 9000 | 300 | energy | 35 | none |\n| regrowth | Regrowth | heal | healing | lowest-ally | 135 | 9000 | 420 | mana | 115 | none |\n| mangle | Mangle | damage | physical | enemy | 110 | 8500 | 360 | energy | 25 | none |\n\n## Ultimates\n\nUltimates consume a full 10,000-point ultimate bar.\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| tranquility | Tranquility | heal | healing | all-allies | 300 | 11000 | 0 | ultimate | 10000 | none |\n| incarnation | Incarnation | buff | none | self | 0 | 0 | 0 | ultimate | 10000 | all_power_bp:+2500@480 |\n\n## Action Fields\n\n- **Kind** — damage, heal, shield, or buff.\n- **School** — physical, spell, healing, or none.\n- **Target** — enemy, all-enemies, lowest-ally, self, or all-allies.\n- **Power** — flat integer action power.\n- **Coefficient BP** — basis-point scaling against the mapped hero power stat. 10,000 BP = 100%.\n- **Cooldown Ticks** — fixed base cooldown before Haste progression.\n- **Resource / Cost** — deterministic resource spend required to execute the action.\n- **Effect** — optional deterministic buff hook in `key:+basisPoints@ticks` form.\n\n## Selection\n\nThe simulator currently selects the first two resource-compatible cooldowns and the first ultimate by default.\n\nThe battle system can later provide explicit loadout IDs without changing the simulation engine.\n",
+  "class": "Druid",
+  "cooldowns": [
+    {
+      "id": "starfire",
+      "name": "Starfire",
+      "kind": "damage",
+      "school": "spell",
+      "target": "enemy",
+      "power": 125,
+      "coefficient_bp": 9000,
+      "cooldown_ticks": 420,
+      "resource": "mana",
+      "cost": 110,
+      "effect": "none"
+    },
+    {
+      "id": "shred",
+      "name": "Shred",
+      "kind": "damage",
+      "school": "physical",
+      "target": "enemy",
+      "power": 115,
+      "coefficient_bp": 9000,
+      "cooldown_ticks": 300,
+      "resource": "energy",
+      "cost": 35,
+      "effect": "none"
+    },
+    {
+      "id": "regrowth",
+      "name": "Regrowth",
+      "kind": "heal",
+      "school": "healing",
+      "target": "lowest-ally",
+      "power": 135,
+      "coefficient_bp": 9000,
+      "cooldown_ticks": 420,
+      "resource": "mana",
+      "cost": 115,
+      "effect": "none"
+    },
+    {
+      "id": "mangle",
+      "name": "Mangle",
+      "kind": "damage",
+      "school": "physical",
+      "target": "enemy",
+      "power": 110,
+      "coefficient_bp": 8500,
+      "cooldown_ticks": 360,
+      "resource": "energy",
+      "cost": 25,
+      "effect": "none"
+    }
+  ],
+  "ultimates": [
+    {
+      "id": "tranquility",
+      "name": "Tranquility",
+      "kind": "heal",
+      "school": "healing",
+      "target": "all-allies",
+      "power": 300,
+      "coefficient_bp": 11000,
+      "cooldown_ticks": 0,
+      "resource": "ultimate",
+      "cost": 10000,
+      "effect": "none"
+    },
+    {
+      "id": "incarnation",
+      "name": "Incarnation",
+      "kind": "buff",
+      "school": "none",
+      "target": "self",
+      "power": 0,
+      "coefficient_bp": 0,
+      "cooldown_ticks": 0,
+      "resource": "ultimate",
+      "cost": 10000,
+      "effect": "all_power_bp:+2500@480"
+    }
+  ]
+}

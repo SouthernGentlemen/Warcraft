@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/classes/hunter/abilities/README.md",
+  "kind": "abilities",
+  "title": "Hunter Abilities",
+  "source_markdown": "# Hunter Abilities\n\n## Purpose\n\nThis document defines the initial class-wide active ability pool used by hero loadouts and the deterministic combat simulator.\n\nA Hunter equips exactly **2 cooldown abilities** and exactly **1 ultimate**. Specialization talents can modify these actions without adding extra active slots.\n\nAll timing is authored in **60 Hz simulation ticks**. These are prototype combat values and can be tuned without changing the action schema.\n\n## Cooldowns\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| kill-command | Kill Command | damage | physical | enemy | 110 | 9000 | 300 | mana | 90 | none |\n| aimed-shot | Aimed Shot | damage | physical | enemy | 135 | 10000 | 420 | mana | 110 | none |\n| explosive-trap | Explosive Trap | damage | physical | all-enemies | 90 | 6500 | 480 | mana | 105 | none |\n| survival-instinct | Survival Instinct | buff | none | self | 0 | 0 | 600 | mana | 80 | damage_reduction_bp:+2500@300 |\n\n## Ultimates\n\nUltimates consume a full 10,000-point ultimate bar.\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| bestial-wrath | Bestial Wrath | buff | none | self | 0 | 0 | 0 | ultimate | 10000 | physical_power_bp:+3000@480 |\n| volley | Volley | damage | physical | all-enemies | 275 | 11000 | 0 | ultimate | 10000 | none |\n\n## Action Fields\n\n- **Kind** — damage, heal, shield, or buff.\n- **School** — physical, spell, healing, or none.\n- **Target** — enemy, all-enemies, lowest-ally, self, or all-allies.\n- **Power** — flat integer action power.\n- **Coefficient BP** — basis-point scaling against the mapped hero power stat. 10,000 BP = 100%.\n- **Cooldown Ticks** — fixed base cooldown before Haste progression.\n- **Resource / Cost** — deterministic resource spend required to execute the action.\n- **Effect** — optional deterministic buff hook in `key:+basisPoints@ticks` form.\n\n## Selection\n\nThe simulator currently selects the first two resource-compatible cooldowns and the first ultimate by default.\n\nThe battle system can later provide explicit loadout IDs without changing the simulation engine.\n",
+  "class": "Hunter",
+  "cooldowns": [
+    {
+      "id": "kill-command",
+      "name": "Kill Command",
+      "kind": "damage",
+      "school": "physical",
+      "target": "enemy",
+      "power": 110,
+      "coefficient_bp": 9000,
+      "cooldown_ticks": 300,
+      "resource": "mana",
+      "cost": 90,
+      "effect": "none"
+    },
+    {
+      "id": "aimed-shot",
+      "name": "Aimed Shot",
+      "kind": "damage",
+      "school": "physical",
+      "target": "enemy",
+      "power": 135,
+      "coefficient_bp": 10000,
+      "cooldown_ticks": 420,
+      "resource": "mana",
+      "cost": 110,
+      "effect": "none"
+    },
+    {
+      "id": "explosive-trap",
+      "name": "Explosive Trap",
+      "kind": "damage",
+      "school": "physical",
+      "target": "all-enemies",
+      "power": 90,
+      "coefficient_bp": 6500,
+      "cooldown_ticks": 480,
+      "resource": "mana",
+      "cost": 105,
+      "effect": "none"
+    },
+    {
+      "id": "survival-instinct",
+      "name": "Survival Instinct",
+      "kind": "buff",
+      "school": "none",
+      "target": "self",
+      "power": 0,
+      "coefficient_bp": 0,
+      "cooldown_ticks": 600,
+      "resource": "mana",
+      "cost": 80,
+      "effect": "damage_reduction_bp:+2500@300"
+    }
+  ],
+  "ultimates": [
+    {
+      "id": "bestial-wrath",
+      "name": "Bestial Wrath",
+      "kind": "buff",
+      "school": "none",
+      "target": "self",
+      "power": 0,
+      "coefficient_bp": 0,
+      "cooldown_ticks": 0,
+      "resource": "ultimate",
+      "cost": 10000,
+      "effect": "physical_power_bp:+3000@480"
+    },
+    {
+      "id": "volley",
+      "name": "Volley",
+      "kind": "damage",
+      "school": "physical",
+      "target": "all-enemies",
+      "power": 275,
+      "coefficient_bp": 11000,
+      "cooldown_ticks": 0,
+      "resource": "ultimate",
+      "cost": 10000,
+      "effect": "none"
+    }
+  ]
+}
