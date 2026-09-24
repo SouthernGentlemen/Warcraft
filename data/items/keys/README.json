@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/items/keys/README.md",
+  "kind": "document",
+  "title": "Keys & Access Items",
+  "source_markdown": "# Keys & Access Items\n\n## Purpose\n\nKeys and access items control entry into specific activities or encounters.\n\nThey are progression and content-access items rather than equipment, crafting reagents, or base-economy resources.\n\n## Initial Uses\n\nThe category includes:\n\n- dungeon keys\n- encounter access keys\n- access tokens\n- attunement-style items\n- other future items whose primary purpose is unlocking content\n\n## Key Rules\n\nEvery key or access item must define:\n\n- the content it unlocks\n- the tier at which it becomes relevant\n- how it is acquired\n- whether ownership is permanent or temporary\n- whether it is consumed on use\n- whether one key unlocks access for a hero, party, faction, or the full roster\n\n## Dungeon Keys\n\nDungeon keys are the first committed use of this category.\n\nSpecific dungeon-key names, sources, and consumption rules will be defined alongside dungeon content.\n\n## Design Goal\n\nKeys should create understandable progression gates and goals without becoming arbitrary inventory clutter.\n\nIf a key is required, the game should clearly communicate where it comes from and what it unlocks.\n"
+}

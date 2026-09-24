@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/races/troll/README.md",
+  "kind": "race",
+  "title": "Troll",
+  "source_markdown": "# Troll\n\n## Racial Bonus — Berserking\n\nAuto-attacks have a **10% chance** to grant **20% increased auto-attack speed for 6 seconds**.\n\nThe effect uses a **20-second internal cooldown**.\n\nThe bonus accelerates the auto-attack bar. It does not reduce class ability cooldowns.\n\n## Balance Role\n\nTroll is an attack-frequency racial.\n\nThe starting target is roughly **4–5% sustained auto-attack throughput** when the proc is triggering normally.\n",
+  "race": "Troll",
+  "racial": {
+    "name": "Berserking",
+    "mechanic": "Auto-attacks have a **10% chance** to grant **20% increased auto-attack speed for 6 seconds**.\n\nThe effect uses a **20-second internal cooldown**.\n\nThe bonus accelerates the auto-attack bar. It does not reduce class ability cooldowns."
+  },
+  "balance_role": ""
+}
