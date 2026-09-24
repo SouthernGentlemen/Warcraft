@@ -6,8 +6,9 @@
   <title>Base — Warcraft Mockup</title>
   <link rel="stylesheet" href="./ui/wow-ui.css">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./base.css">
 </head>
-<body class="base-page">
+<body class="base-page wow-ui">
   <header class="wow-game-shell" data-wow-nav-active="base">
     <a class="wow-game-shell__brand" href="./index.html">
       <span class="wow-game-shell__mark">W</span>
@@ -21,117 +22,225 @@
       <a class="wow-game-nav__link is-active" aria-current="page" data-wow-nav-key="base" href="./base.html">Base</a>
       <a class="wow-game-nav__link" data-wow-nav-key="simulation" href="./simulation/">Simulation</a>
     </nav>
-    <div class="wow-game-shell__action"><button class="wow-game-shell__control" type="button" data-wow-tooltip="Settings" data-wow-tooltip-type="Control" data-wow-tooltip-description="Prototype settings hook." data-wow-tooltip-variant="control">Settings</button></div>
+    <div class="wow-game-shell__action">
+      <button class="wow-game-shell__control" type="button"
+        data-wow-tooltip="Settings" data-wow-tooltip-type="Control"
+        data-wow-tooltip-description="Prototype settings hook." data-wow-tooltip-variant="control">Settings</button>
+    </div>
   </header>
-  <main class="base-shell">
 
+  <main class="base-shell">
     <section class="base-game-frame">
-      <aside class="base-left-rail">
-        <div class="base-faction-banner"><span>⚜</span><small>ALLIANCE</small></div>
+      <aside class="base-left-rail wow-frame" aria-label="Base sections">
+        <div class="base-faction-banner">
+          <span class="base-faction-crest wow-faction-crest wow-faction-crest--alliance">
+            <img data-wow-icon="faction" data-wow-key="alliance" alt="">
+          </span>
+          <small>ALLIANCE</small>
+        </div>
+
         <nav class="base-game-nav">
-          <button class="active" data-panel="base"><span>⌂</span>Base</button>
-          <button data-panel="heroes"><span>♞</span>Heroes</button>
-          <button data-panel="combat"><span>⚔</span>Combat</button>
-          <button data-panel="crafting"><span>⚒</span>Crafting</button>
-          <button data-panel="research"><span>⌘</span>Research</button>
-          <button data-panel="events"><span>⚑</span>Events<i></i></button>
-          <button data-panel="challenges"><span>♛</span>Challenges</button>
+          <button class="base-rail-button wow-icon-button is-selected" type="button" data-panel="base" aria-pressed="true"
+            data-wow-tooltip="Base" data-wow-tooltip-type="Base section" data-wow-tooltip-description="View and manage the stronghold." data-wow-tooltip-variant="control">
+            <span class="wow-icon-frame wow-icon-frame--md"><img data-wow-icon="building" data-wow-key="keep" alt=""></span>
+            <span class="base-rail-label">Base</span>
+          </button>
+          <button class="base-rail-button wow-icon-button" type="button" data-panel="heroes" aria-pressed="false"
+            data-wow-tooltip="Heroes" data-wow-tooltip-type="Base section" data-wow-tooltip-description="Hero management navigation hook." data-wow-tooltip-variant="control">
+            <span class="wow-icon-frame wow-icon-frame--md"><img data-wow-icon="race" data-wow-key="human" alt=""></span>
+            <span class="base-rail-label">Heroes</span>
+          </button>
+          <button class="base-rail-button wow-icon-button" type="button" data-panel="combat" aria-pressed="false"
+            data-wow-tooltip="Combat" data-wow-tooltip-type="Base section" data-wow-tooltip-description="Combat navigation hook." data-wow-tooltip-variant="control">
+            <span class="wow-icon-frame wow-icon-frame--md"><img data-wow-icon="battle" data-wow-key="combat" alt=""></span>
+            <span class="base-rail-label">Combat</span>
+          </button>
+          <button class="base-rail-button wow-icon-button" type="button" data-panel="crafting" aria-pressed="false"
+            data-wow-tooltip="Crafting" data-wow-tooltip-type="Base section" data-wow-tooltip-description="Profession and crafting navigation hook." data-wow-tooltip-variant="control">
+            <span class="wow-icon-frame wow-icon-frame--md"><img data-wow-icon="profession" data-wow-key="blacksmith" alt=""></span>
+            <span class="base-rail-label">Crafting</span>
+          </button>
+          <button class="base-rail-button wow-icon-button" type="button" data-panel="research" aria-pressed="false"
+            data-wow-tooltip="Research" data-wow-tooltip-type="Base section" data-wow-tooltip-description="Research navigation hook." data-wow-tooltip-variant="control">
+            <span class="wow-icon-frame wow-icon-frame--md"><img data-wow-icon="talent" data-wow-key="passive" alt=""></span>
+            <span class="base-rail-label">Research</span>
+          </button>
+          <button class="base-rail-button wow-icon-button" type="button" data-panel="events" aria-pressed="false"
+            data-wow-tooltip="Events" data-wow-tooltip-type="Base section" data-wow-tooltip-description="Event navigation hook." data-wow-tooltip-variant="control">
+            <span class="wow-icon-frame wow-icon-frame--md"><img data-wow-icon="battle" data-wow-key="critical" alt=""></span>
+            <span class="base-rail-label">Events</span><i class="base-rail-alert" aria-label="New event"></i>
+          </button>
+          <button class="base-rail-button wow-icon-button" type="button" data-panel="challenges" aria-pressed="false"
+            data-wow-tooltip="Challenges" data-wow-tooltip-type="Base section" data-wow-tooltip-description="Challenge navigation hook." data-wow-tooltip-variant="control">
+            <span class="wow-icon-frame wow-icon-frame--md"><img data-wow-icon="battle" data-wow-key="victory" alt=""></span>
+            <span class="base-rail-label">Challenges</span>
+          </button>
         </nav>
       </aside>
 
       <section class="base-main-column">
-        <div class="base-resource-bar" aria-label="Resources">
-          <div data-resource="gold" tabindex="0"><span class="resource-icon gold">●</span><strong id="goldValue">25,430</strong><small>+220/s</small></div>
-          <div data-resource="lumber" tabindex="0"><span class="resource-icon lumber">▰</span><strong id="lumberValue">12,680</strong><small>+98/s</small></div>
-          <div data-resource="stone" tabindex="0"><span class="resource-icon stone">◆</span><strong id="stoneValue">8,440</strong><small>+76/s</small></div>
-          <div data-resource="mana" tabindex="0"><span class="resource-icon mana">♦</span><strong id="manaValue">2,350</strong><small>+24/s</small></div>
-          <div data-resource="population" tabindex="0"><span class="resource-icon population">♟</span><strong>78 / 120</strong><small>+4/h</small></div>
+        <div class="base-resource-bar wow-inset" aria-label="Resources">
+          <div class="base-resource-counter" data-resource="gold" tabindex="0">
+            <span class="base-resource-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="currency" data-wow-key="gold" alt=""></span>
+            <span class="base-resource-copy"><strong id="goldValue">25,430</strong><small>+220/s</small></span>
+          </div>
+          <div class="base-resource-counter" data-resource="lumber" tabindex="0">
+            <span class="base-resource-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="resource" data-wow-key="lumber" alt=""></span>
+            <span class="base-resource-copy"><strong id="lumberValue">12,680</strong><small>+98/s</small></span>
+          </div>
+          <div class="base-resource-counter" data-resource="stone" tabindex="0">
+            <span class="base-resource-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="resource" data-wow-key="stone" alt=""></span>
+            <span class="base-resource-copy"><strong id="stoneValue">8,440</strong><small>+76/s</small></span>
+          </div>
+          <div class="base-resource-counter" data-resource="mana" tabindex="0">
+            <span class="base-resource-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="resource" data-wow-key="mana" alt=""></span>
+            <span class="base-resource-copy"><strong id="manaValue">2,350</strong><small>+24/s</small></span>
+          </div>
+          <div class="base-resource-counter" data-resource="population" tabindex="0">
+            <span class="base-resource-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="resource" data-wow-key="population" alt=""></span>
+            <span class="base-resource-copy"><strong>78 / 120</strong><small>+4/h</small></span>
+          </div>
         </div>
 
-        <section class="base-map" id="baseMap" aria-label="Alliance base map">
-          <div class="base-map-backdrop"></div>
-          <div class="base-river river-a"></div>
-          <div class="base-river river-b"></div>
-          <div class="base-road road-a"></div>
-          <div class="base-road road-b"></div>
-          <div class="base-road road-c"></div>
-          <div class="base-tree-cluster trees-a">▲ ▲ ▲</div>
-          <div class="base-tree-cluster trees-b">▲ ▲</div>
-          <div class="base-tree-cluster trees-c">▲ ▲ ▲</div>
+        <section class="base-map wow-inset" id="baseMap" aria-label="Alliance base map">
+          <div class="base-map-backdrop" aria-hidden="true"></div>
+          <div class="base-river river-a" aria-hidden="true"></div>
+          <div class="base-river river-b" aria-hidden="true"></div>
+          <div class="base-road road-a" aria-hidden="true"></div>
+          <div class="base-road road-b" aria-hidden="true"></div>
+          <div class="base-road road-c" aria-hidden="true"></div>
+          <div class="base-tree-cluster trees-a" aria-hidden="true"></div>
+          <div class="base-tree-cluster trees-b" aria-hidden="true"></div>
+          <div class="base-tree-cluster trees-c" aria-hidden="true"></div>
 
           <button class="base-plot keep selected" data-building="keep" style="--x:50%;--y:23%">
-            <span class="plot-art">🏰</span><span class="plot-label"><strong>Keep</strong><small>Lv. <b>10</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="building" data-wow-key="keep" alt=""></span>
+            <span class="plot-label"><strong>Keep</strong><small>Lv. <b>10</b></small></span>
           </button>
           <button class="base-plot command" data-building="command" style="--x:24%;--y:28%">
-            <span class="plot-art">🎖️</span><span class="plot-label"><strong>Command Hall</strong><small>Lv. <b>4</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="building" data-wow-key="command-hall" alt=""></span>
+            <span class="plot-label"><strong>Command Hall</strong><small>Lv. <b>4</b></small></span>
           </button>
           <button class="base-plot recruitment" data-building="recruitment" style="--x:76%;--y:28%">
-            <span class="plot-art">👥</span><span class="plot-label"><strong>Recruitment Hall</strong><small>Lv. <b>4</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="building" data-wow-key="recruitment-hall" alt=""></span>
+            <span class="plot-label"><strong>Recruitment Hall</strong><small>Lv. <b>4</b></small></span>
           </button>
           <button class="base-plot barracks" data-building="barracks" style="--x:20%;--y:48%">
-            <span class="plot-art">⚔️</span><span class="plot-label"><strong>Barracks</strong><small>Lv. <b>6</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="building" data-wow-key="barracks" alt=""></span>
+            <span class="plot-label"><strong>Barracks</strong><small>Lv. <b>6</b></small></span>
           </button>
           <button class="base-plot training" data-building="training" style="--x:48%;--y:51%">
-            <span class="plot-art">🎯</span><span class="plot-label"><strong>Training Grounds</strong><small>Lv. <b>5</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="building" data-wow-key="training-grounds" alt=""></span>
+            <span class="plot-label"><strong>Training Grounds</strong><small>Lv. <b>5</b></small></span>
           </button>
           <button class="base-plot storehouse" data-building="storehouse" style="--x:78%;--y:48%">
-            <span class="plot-art">📦</span><span class="plot-label"><strong>Storehouse</strong><small>Lv. <b>5</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="building" data-wow-key="storehouse" alt=""></span>
+            <span class="plot-label"><strong>Storehouse</strong><small>Lv. <b>5</b></small></span>
           </button>
           <button class="base-plot blacksmith" data-building="blacksmith" style="--x:18%;--y:69%">
-            <span class="plot-art">⚒️</span><span class="plot-label"><strong>Blacksmith</strong><small>Lv. <b>4</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="profession" data-wow-key="blacksmith" alt=""></span>
+            <span class="plot-label"><strong>Blacksmith</strong><small>Lv. <b>4</b></small></span>
           </button>
           <button class="base-plot alchemy" data-building="alchemy" style="--x:38%;--y:72%">
-            <span class="plot-art">⚗️</span><span class="plot-label"><strong>Alchemy Lab</strong><small>Lv. <b>3</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="profession" data-wow-key="alchemist" alt=""></span>
+            <span class="plot-label"><strong>Alchemy Lab</strong><small>Lv. <b>3</b></small></span>
           </button>
           <button class="base-plot enchanter" data-building="enchanter" style="--x:56%;--y:72%">
-            <span class="plot-art">✨</span><span class="plot-label"><strong>Enchanter's Study</strong><small>Lv. <b>3</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="profession" data-wow-key="enchanter" alt=""></span>
+            <span class="plot-label"><strong>Enchanter's Study</strong><small>Lv. <b>3</b></small></span>
           </button>
           <button class="base-plot tailor" data-building="tailor" style="--x:72%;--y:66%">
-            <span class="plot-art">🧵</span><span class="plot-label"><strong>Tailor</strong><small>Lv. <b>3</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="profession" data-wow-key="tailor" alt=""></span>
+            <span class="plot-label"><strong>Tailor</strong><small>Lv. <b>3</b></small></span>
           </button>
           <button class="base-plot leather" data-building="leather" style="--x:69%;--y:82%">
-            <span class="plot-art">🛡️</span><span class="plot-label"><strong>Leatherworker</strong><small>Lv. <b>3</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="profession" data-wow-key="leatherworker" alt=""></span>
+            <span class="plot-label"><strong>Leatherworker</strong><small>Lv. <b>3</b></small></span>
           </button>
           <button class="base-plot engineer" data-building="engineer" style="--x:86%;--y:68%">
-            <span class="plot-art">⚙️</span><span class="plot-label"><strong>Engineer Workshop</strong><small>Lv. <b>4</b></small></span>
+            <span class="plot-art wow-icon-frame"><img data-wow-icon="profession" data-wow-key="engineer" alt=""></span>
+            <span class="plot-label"><strong>Engineer Workshop</strong><small>Lv. <b>4</b></small></span>
           </button>
 
-          <div class="base-map-caption">
+          <div class="base-map-caption wow-frame">
             <span>Stormvale Stronghold</span>
             <small>Persistent base · Tier II</small>
           </div>
         </section>
 
         <div class="base-action-bar">
-          <button data-action="keep"><span>🏰</span><strong>Upgrade Keep</strong><small>Increase base tier</small></button>
-          <button data-action="train"><span>🪖</span><strong>Train Heroes</strong><small>Advance roster levels</small></button>
-          <button data-action="recruit"><span>👥</span><strong>Recruit Units</strong><small>Expand your roster</small></button>
-          <button class="mission" data-action="mission"><span>⚔</span><strong>Start Mission</strong><small>Send a party to content</small></button>
+          <button class="base-action wow-button" type="button" data-action="keep"
+            data-wow-tooltip="Upgrade Keep" data-wow-tooltip-type="Base action" data-wow-tooltip-description="Select the Keep for upgrade review." data-wow-tooltip-variant="control">
+            <span class="base-action-icon wow-icon-frame wow-icon-frame--sm"><img data-wow-icon="building" data-wow-key="keep" alt=""></span>
+            <span class="base-action-copy"><strong>Upgrade Keep</strong><small>Increase base tier</small></span>
+          </button>
+          <button class="base-action wow-button" type="button" data-action="train"
+            data-wow-tooltip="Train Heroes" data-wow-tooltip-type="Base action" data-wow-tooltip-description="Hero-training progression hook." data-wow-tooltip-variant="control">
+            <span class="base-action-icon wow-icon-frame wow-icon-frame--sm"><img data-wow-icon="building" data-wow-key="training-grounds" alt=""></span>
+            <span class="base-action-copy"><strong>Train Heroes</strong><small>Advance roster levels</small></span>
+          </button>
+          <button class="base-action wow-button" type="button" data-action="recruit"
+            data-wow-tooltip="Recruit Units" data-wow-tooltip-type="Base action" data-wow-tooltip-description="Roster recruitment hook." data-wow-tooltip-variant="control">
+            <span class="base-action-icon wow-icon-frame wow-icon-frame--sm"><img data-wow-icon="building" data-wow-key="recruitment-hall" alt=""></span>
+            <span class="base-action-copy"><strong>Recruit Units</strong><small>Expand your roster</small></span>
+          </button>
+          <button class="base-action wow-button wow-button--primary" type="button" data-action="mission"
+            data-wow-tooltip="Start Mission" data-wow-tooltip-type="Base action" data-wow-tooltip-description="Mission launch hook for content selection." data-wow-tooltip-variant="control">
+            <span class="base-action-icon wow-icon-frame wow-icon-frame--sm"><img data-wow-icon="battle" data-wow-key="combat" alt=""></span>
+            <span class="base-action-copy"><strong>Start Mission</strong><small>Send a party to content</small></span>
+          </button>
         </div>
 
-        <footer class="base-status-strip">
+        <footer class="base-status-strip wow-inset">
           <div class="base-avatar">25</div>
-          <div class="base-profile"><strong>Lord Arthorn</strong><small>12,450 / 25,000 XP</small><span><i style="width:50%"></i></span></div>
-          <div class="base-meta-stat" data-currency="renown" tabindex="0"><span>✹</span><small>Renown</small><strong>2,450</strong></div>
-          <div class="base-meta-stat" data-currency="valor" tabindex="0"><span>◈</span><small>Valor</small><strong>890</strong></div>
-          <div class="base-meta-stat" data-currency="badges" tabindex="0"><span>⚜</span><small>Badges</small><strong>24</strong></div>
-          <div class="base-meta-stat" data-currency="deeds" tabindex="0"><span>▧</span><small>Deeds</small><strong>12 / 36</strong></div>
+          <div class="base-profile">
+            <strong>Lord Arthorn</strong>
+            <small>12,450 / 25,000 XP</small>
+            <span class="wow-statusbar"><i class="wow-statusbar__fill" style="--wow-value:50%"></i></span>
+          </div>
+          <div class="base-meta-stat" data-currency="renown" tabindex="0">
+            <span class="base-meta-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="currency" data-wow-key="renown" alt=""></span>
+            <span class="base-meta-copy"><small>Renown</small><strong>2,450</strong></span>
+          </div>
+          <div class="base-meta-stat" data-currency="valor" tabindex="0">
+            <span class="base-meta-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="currency" data-wow-key="valor" alt=""></span>
+            <span class="base-meta-copy"><small>Valor</small><strong>890</strong></span>
+          </div>
+          <div class="base-meta-stat" data-currency="badges" tabindex="0">
+            <span class="base-meta-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="currency" data-wow-key="badges" alt=""></span>
+            <span class="base-meta-copy"><small>Badges</small><strong>24</strong></span>
+          </div>
+          <div class="base-meta-stat" data-currency="deeds" tabindex="0">
+            <span class="base-meta-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="currency" data-wow-key="deeds" alt=""></span>
+            <span class="base-meta-copy"><small>Deeds</small><strong>12 / 36</strong></span>
+          </div>
         </footer>
       </section>
 
-      <aside class="base-building-panel">
-        <div class="building-panel-head">
-          <div><span class="panel-kicker">BASE MANAGEMENT</span><h1>Buildings</h1></div>
-          <select id="buildingFilter" aria-label="Building filter"><option value="all">All</option><option value="core">Core</option><option value="profession">Profession</option></select>
+      <aside class="base-building-panel wow-frame">
+        <div class="building-panel-head wow-titlebar">
+          <div><span class="wow-kicker">BASE MANAGEMENT</span><h1>Buildings</h1></div>
+          <label class="base-filter wow-field">
+            <span class="wow-label">Filter</span>
+            <select id="buildingFilter" class="wow-select" aria-label="Building filter">
+              <option value="all">All</option>
+              <option value="core">Core</option>
+              <option value="profession">Profession</option>
+            </select>
+          </label>
         </div>
-        <div class="building-tabs"><button class="active" data-building-tab="buildings">Buildings</button><button data-building-tab="upgrades">Upgrades</button></div>
-        <div class="building-list" id="buildingList"></div>
-        <div class="base-selection-detail" id="selectionDetail"></div>
+        <div class="building-tabs wow-tabs" role="tablist" aria-label="Building views">
+          <button class="wow-tab is-selected" type="button" data-building-tab="buildings" role="tab" aria-selected="true">Buildings</button>
+          <button class="wow-tab" type="button" data-building-tab="upgrades" role="tab" aria-selected="false">Upgrades</button>
+        </div>
+        <div class="building-list wow-scroll" id="buildingList"></div>
+        <div class="base-selection-detail wow-inset" id="selectionDetail"></div>
       </aside>
     </section>
 
-    <div class="base-toast" id="baseToast" hidden></div>
+    <div class="base-toast" id="baseToast" role="status" aria-live="polite" hidden></div>
   </main>
+
   <script src="./ui/wow-icons.js"></script>
   <script src="./ui/wow-tooltips.js"></script>
   <script src="./ui/wow-nav.js"></script>
