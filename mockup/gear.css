@@ -515,7 +515,7 @@
   border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
   background: var(--wow-surface-inset);
 }
-.gear-filters .wow-field { min-width: 0; gap: 3px; }
+.gear-filters .wow-field { display: grid; min-width: 0; gap: 3px; }
 .gear-filters .wow-label { font-size: 8px; }
 .gear-filters .wow-select,
 .gear-filters .wow-input {
