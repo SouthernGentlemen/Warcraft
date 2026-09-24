@@ -225,3 +225,5 @@ jobs:
 
       - name: Run deterministic simulation smoke test
         run: npm run simulation:test
+
+# rerun-after-base-selector-fix

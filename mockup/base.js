@@ -24,7 +24,7 @@ const state = {
 
 const fmt = value => value.toLocaleString('en-US');
 const $ = selector => document.querySelector(selector);
-const $ = selector => [...document.querySelectorAll(selector)];
+const all = selector => [...document.querySelectorAll(selector)];
 
 const buildingIconKeys = {
   keep:['building','keep'],
@@ -137,7 +137,7 @@ function renderSelection() {
     <p>${b.description}</p>
     <div class="selection-progress"><span style="width:${Math.round((b.level / b.max) * 100)}%"></span></div>`;
 
-  $$('.base-plot').forEach(plot => {
+  all('.base-plot').forEach(plot => {
     plot.classList.toggle('selected', plot.dataset.building === b.id);
     const level = plot.querySelector('.plot-label b');
     const item = buildings.find(entry => entry.id === plot.dataset.building);
@@ -187,7 +187,7 @@ $('.building-tabs').addEventListener('click', event => {
   const button = event.target.closest('[data-building-tab]');
   if (!button) return;
   state.tab = button.dataset.buildingTab;
-  $$('.building-tabs button').forEach(node => node.classList.toggle('active', node === button));
+  all('.building-tabs button').forEach(node => node.classList.toggle('active', node === button));
   toast(state.tab === 'upgrades' ? 'Upgrade queue mockup selected.' : 'Building list selected.');
 });
 
