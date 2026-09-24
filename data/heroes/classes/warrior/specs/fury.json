@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/classes/warrior/specs/fury.md",
+  "kind": "specialization",
+  "title": "Warrior — Fury",
+  "source_markdown": "# Warrior — Fury\n\n## Identity\n\n- Role: Fast sustained melee damage\n- Resource: Rage\n- Primary stat: Strength\n- Auto-attack: Frenzied Swing — fast melee weapon damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Fury** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Flurry** | Critical auto-attacks grant 20% auto-attack speed for 4 seconds. |\n| **Unbridled Rage** | Auto-attacks generate 25% more Rage. |\n| **Frenzied Blow** | Auto-attacks have a 15% chance to strike again for 50% damage. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Bloodthirst** | Heal for 3% of auto-attack damage dealt. |\n| **Enrage** | Spending Rage has a 15% chance to grant 15% Attack Power for 5 seconds. |\n| **Recklessness** | For every 20 Rage spent, reduce one equipped cooldown's remaining time by 1 second. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Rampage** | Every fifth auto-attack becomes three rapid hits, each dealing 45% normal auto-attack damage. |\n| **Berserker** | Using the selected ultimate grants 25% Haste and 25% increased Rage generation for 8 seconds. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "class": "Warrior",
+  "specialization": "Fury",
+  "identity": {
+    "role": "",
+    "resource": "",
+    "primary_stat": "",
+    "auto_attack": ""
+  },
+  "talents": {
+    "tier_1": [
+      {
+        "name": "Flurry",
+        "effect": "Critical auto-attacks grant 20% auto-attack speed for 4 seconds."
+      },
+      {
+        "name": "Unbridled Rage",
+        "effect": "Auto-attacks generate 25% more Rage."
+      },
+      {
+        "name": "Frenzied Blow",
+        "effect": "Auto-attacks have a 15% chance to strike again for 50% damage."
+      }
+    ],
+    "tier_2": [
+      {
+        "name": "Bloodthirst",
+        "effect": "Heal for 3% of auto-attack damage dealt."
+      },
+      {
+        "name": "Enrage",
+        "effect": "Spending Rage has a 15% chance to grant 15% Attack Power for 5 seconds."
+      },
+      {
+        "name": "Recklessness",
+        "effect": "For every 20 Rage spent, reduce one equipped cooldown's remaining time by 1 second."
+      }
+    ],
+    "capstones": [
+      {
+        "name": "Rampage",
+        "effect": "Every fifth auto-attack becomes three rapid hits, each dealing 45% normal auto-attack damage."
+      },
+      {
+        "name": "Berserker",
+        "effect": "Using the selected ultimate grants 25% Haste and 25% increased Rage generation for 8 seconds."
+      }
+    ]
+  }
+}

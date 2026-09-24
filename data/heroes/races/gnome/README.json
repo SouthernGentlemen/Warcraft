@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/races/gnome/README.md",
+  "kind": "race",
+  "title": "Gnome",
+  "source_markdown": "# Gnome\n\n## Racial Bonus — Resourceful\n\nWhenever this hero spends Mana, Rage, or Energy on an ability, there is a **10% chance to refund 50% of that ability's resource cost**.\n\nFor Druids, the refunded resource is whichever resource the current form spent.\n\nThe proc should use a short internal cooldown so rapid low-cost abilities cannot generate excessive refunds.\n\n## Balance Role\n\nGnome is a resource-efficiency racial.\n\nBefore internal-cooldown effects, the target expected value is roughly **5% resource efficiency** over time.\n\nThe proc chance, refund percentage, and internal cooldown are starting tuning targets.\n",
+  "race": "Gnome",
+  "racial": {
+    "name": "Resourceful",
+    "mechanic": "Whenever this hero spends Mana, Rage, or Energy on an ability, there is a **10% chance to refund 50% of that ability's resource cost**.\n\nFor Druids, the refunded resource is whichever resource the current form spent.\n\nThe proc should use a short internal cooldown so rapid low-cost abilities cannot generate excessive refunds."
+  },
+  "balance_role": ""
+}
