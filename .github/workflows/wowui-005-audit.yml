@@ -1,0 +1,322 @@
+name: WOWUI-005 Audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/wowui-005-audit.yml"
+      - "mockup/gear.html"
+      - "mockup/gear.js"
+      - "mockup/gear.css"
+      - "mockup/styles.css"
+      - "mockup/ui/**"
+
+jobs:
+  audit-gear:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Source and syntax checks
+        run: |
+          node --check mockup/gear.js
+          grep -q 'const SLOT_ORDER = ["Head", "Chest", "Pants", "Feet", "Gloves", "Weapon"]' mockup/gear.js
+          grep -q 'Tooltips.attach' mockup/gear.js
+          grep -q 'model.comparison = itemTooltipModel' mockup/gear.js
+          grep -q 'portrait:Icons.resolveSlug("race"' mockup/gear.js
+          grep -q 'classIcon:Icons.resolveSlug("class"' mockup/gear.js
+          grep -q 'wow-select' mockup/gear.html
+          grep -q 'wow-input' mockup/gear.html
+          grep -q 'wow-checkbox' mockup/gear.html
+          grep -q 'gear.css' mockup/gear.html
+          ! grep -q 'Roster gear / equipment mockup' mockup/styles.css
+          ! grep -q 'gear-slot-copy' mockup/styles.css
+          ! grep -q 'armory-item-copy' mockup/styles.css
+          ! grep -q 'wow.zamimg.com' mockup/gear.js
+          ! grep -Eq '#(1eff00|0070dd|a335ee|ff8000)' mockup/gear.css
+
+      - name: Start mockup server
+        run: |
+          NO_OPEN=1 npm run dev > /tmp/warcraft-dev.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:5173/mockup/gear.html >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:5173/mockup/gear.html >/dev/null
+          for route in /mockup/gear.js /mockup/gear.css /mockup/styles.css /mockup/ui/wow-ui.css /mockup/ui/wow-icons.js /mockup/ui/wow-tooltips.js /mockup/ui/wow-nav.js; do
+            curl -fsS "http://127.0.0.1:5173$route" >/dev/null
+          done
+          cat /tmp/warcraft-dev.log
+
+      - name: Install browser harness
+        run: |
+          mkdir -p /tmp/wowui-browser
+          cd /tmp/wowui-browser
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Exercise Gear acceptance contract
+        run: |
+          cat > /tmp/wowui-browser/check.mjs <<'EOF'
+          import { chromium } from "playwright";
+
+          const base = "http://127.0.0.1:5173";
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+          const errors = [];
+          page.on("console", msg => { if (msg.type() === "error") errors.push("console: " + msg.text()); });
+          page.on("pageerror", err => errors.push("pageerror: " + err.message));
+
+          const assert = (ok, message) => { if (!ok) errors.push(message); };
+          const selectHero = async name => {
+            const hero = page.locator(".hero-roster-card").filter({ hasText: name }).first();
+            await hero.click();
+            await page.waitForTimeout(80);
+          };
+          const setFilters = async ({tier="all", slot="all", query="", equippable=true}={}) => {
+            await page.selectOption("#tierFilter", String(tier));
+            await page.selectOption("#slotFilter", String(slot));
+            await page.fill("#gearSearch", query);
+            const checked = await page.locator("#equippableOnly").isChecked();
+            if (checked !== equippable) await page.locator("#equippableOnly").click();
+            await page.waitForTimeout(80);
+          };
+          const tooltipBoundsOK = async () => {
+            return await page.evaluate(() => {
+              const group = document.querySelector(".wow-tooltip-group");
+              if (!group) return false;
+              const r = group.getBoundingClientRect();
+              return r.left >= 0 && r.top >= 0 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1;
+            });
+          };
+
+          const response = await page.goto(base + "/mockup/gear.html", { waitUntil: "domcontentloaded" });
+          assert(Boolean(response?.ok()), "Gear route did not load successfully");
+          await page.waitForSelector(".hero-roster-card");
+          await page.waitForSelector(".armory-item");
+
+          // Multiple classes and hero identity separation.
+          for (const className of ["Mage", "Warrior", "Shaman", "Priest"]) {
+            await selectHero(className);
+            const identity = await page.evaluate(() => ({
+              slots: document.querySelectorAll(".gear-slot").length,
+              portrait: document.querySelector("#heroPortrait")?.src || "",
+              classIcon: document.querySelector("#heroClassIcon img")?.src || "",
+              race: document.querySelector("#heroRace")?.textContent || "",
+              className: document.querySelector("#heroClass")?.textContent || "",
+              spec: document.querySelector("#heroSpec")?.textContent || "",
+              level: document.querySelector("#heroLevel")?.textContent || ""
+            }));
+            assert(identity.slots === 6, className + " did not render six slots");
+            assert(identity.portrait && identity.classIcon && identity.portrait !== identity.classIcon, className + " portrait/class icon are not separated");
+            assert(Boolean(identity.race && identity.className && identity.spec && identity.level), className + " identity metadata is incomplete");
+          }
+
+          await selectHero("Mage");
+          await setFilters();
+
+          // Compact icon-first layout and shared forms.
+          const layout = await page.evaluate(() => {
+            const slots = [...document.querySelectorAll(".gear-slot")].map(el => el.getBoundingClientRect());
+            const armory = [...document.querySelectorAll(".armory-item")].slice(0,8).map(el => el.getBoundingClientRect());
+            const rosterPortrait = document.querySelector(".hero-roster-card.active .roster-avatar > img");
+            const rosterClass = document.querySelector(".hero-roster-card.active .roster-class-badge img");
+            return {
+              slotCount: slots.length,
+              maxSlotWidth: Math.max(...slots.map(r => r.width)),
+              maxSlotHeight: Math.max(...slots.map(r => r.height)),
+              maxArmoryWidth: Math.max(...armory.map(r => r.width)),
+              maxArmoryHeight: Math.max(...armory.map(r => r.height)),
+              armoryGrid: getComputedStyle(document.querySelector(".armory-grid")).display,
+              permanentItemCopy: document.querySelectorAll(".gear-slot-copy,.armory-item-copy,.armory-stats,.armory-equip-action").length,
+              rosterPortrait: rosterPortrait?.src || "",
+              rosterClass: rosterClass?.src || "",
+              filters: [
+                document.querySelector("#tierFilter")?.className || "",
+                document.querySelector("#slotFilter")?.className || "",
+                document.querySelector("#gearSearch")?.className || "",
+                document.querySelector(".gear-check")?.className || ""
+              ]
+            };
+          });
+          assert(layout.slotCount === 6 && layout.maxSlotWidth <= 82 && layout.maxSlotHeight <= 90, "Paper doll is not compact/icon-first");
+          assert(layout.armoryGrid === "grid" && layout.maxArmoryWidth <= 70 && layout.maxArmoryHeight <= 70, "Armory is not compact/icon-first");
+          assert(layout.permanentItemCopy === 0, "Verbose permanent item copy remains");
+          assert(layout.rosterPortrait && layout.rosterClass && layout.rosterPortrait !== layout.rosterClass, "Roster still substitutes class icon for portrait");
+          assert(layout.filters[0].includes("wow-select") && layout.filters[1].includes("wow-select") && layout.filters[2].includes("wow-input") && layout.filters[3].includes("wow-checkbox"), "Gear filters are not shared WoW controls");
+
+          // Shared form and item keyboard focus must be visible.
+          await page.locator("#tierFilter").focus();
+          const formFocus = await page.locator("#tierFilter").evaluate(el => getComputedStyle(el).outlineStyle !== "none" && getComputedStyle(el).outlineWidth !== "0px");
+          assert(formFocus, "Tier filter keyboard focus is not visible");
+
+          // Candidate-vs-equipped comparison from keyboard focus using T5 weapon.
+          await setFilters({ tier: 5, slot: "Weapon", equippable: true });
+          const candidate = page.locator(".armory-item:not(.equipped):not(.locked)").first();
+          assert(await candidate.count() === 1, "No eligible comparison candidate was found");
+          await candidate.focus();
+          await page.waitForSelector(".wow-tooltip-layer:not([hidden]) .wow-tooltip-card");
+          const focusOutline = await candidate.evaluate(el => getComputedStyle(el).outlineStyle !== "none" && getComputedStyle(el).outlineWidth !== "0px");
+          assert(focusOutline, "Armory keyboard focus is not visible");
+          const tooltip = await page.evaluate(() => {
+            const primary = document.querySelector('[data-wow-tooltip-primary="true"]');
+            const comparison = document.querySelector('[data-wow-tooltip-comparison="true"]');
+            const p = primary?.textContent || "";
+            const c = comparison?.textContent || "";
+            return {
+              cards: document.querySelectorAll(".wow-tooltip-card").length,
+              primary: p,
+              comparison: c,
+              primaryClass: primary?.className || ""
+            };
+          });
+          assert(tooltip.cards === 2, "Keyboard focus did not show side-by-side equipped comparison");
+          for (const token of ["Quality", "Tier", "Slot", "Weapon family", "Primary ·", "Secondary ·", "Equipped", "Availability"]) {
+            assert(tooltip.primary.includes(token), "Candidate item tooltip is missing " + token);
+          }
+          assert(tooltip.comparison.includes("Equipped") && tooltip.primaryClass.includes("wow-tooltip--item"), "Comparison is not using the shared item tooltip");
+          assert(await tooltipBoundsOK(), "Keyboard comparison tooltip escaped the viewport");
+
+          // Mouse hover also triggers shared tooltip.
+          await candidate.hover();
+          await page.waitForTimeout(80);
+          assert(await page.locator(".wow-tooltip-layer:not([hidden]) .wow-tooltip-card").count() >= 1, "Mouse hover did not trigger an item tooltip");
+          assert(await tooltipBoundsOK(), "Mouse tooltip escaped the viewport");
+
+          // Replace an equipped item and recalculate stats.
+          await setFilters();
+          const originalHead = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
+          const originalStats = await page.locator("#heroStats").innerText();
+          await setFilters({ tier: 1, slot: "Head", equippable: true });
+          await page.locator(".armory-item:not(.locked)").first().click();
+          await page.waitForTimeout(80);
+          const replacedHead = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
+          const replacedStats = await page.locator("#heroStats").innerText();
+          assert(replacedHead !== originalHead, "Equipping a candidate did not replace Head");
+          assert(replacedStats !== originalStats, "Replacing Head did not recalculate stats");
+
+          // Unequip creates a clear empty slot and changes stats again.
+          await page.locator("#leftSlots .gear-slot").first().click();
+          await page.waitForTimeout(80);
+          const emptyHead = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
+          const emptyStats = await page.locator("#heroStats").innerText();
+          assert(emptyHead?.toLowerCase().includes("empty"), "Unequipping Head did not create an empty state");
+          assert(emptyStats !== replacedStats, "Unequipping Head did not recalculate stats");
+
+          // Tier filter.
+          await setFilters({ tier: 2, slot: "all", equippable: true });
+          const tiers = await page.locator(".armory-item .wow-icon-tier").allTextContents();
+          assert(tiers.length > 0 && tiers.every(t => t.trim() === "T2"), "Tier filtering is broken");
+
+          // Slot filter.
+          await setFilters({ slot: "Feet", equippable: true });
+          const feetLabels = await page.locator(".armory-item").evaluateAll(nodes => nodes.map(n => n.getAttribute("aria-label") || ""));
+          assert(feetLabels.length > 0 && feetLabels.every(label => label.includes(" Feet.")), "Slot filtering is broken");
+
+          // Search.
+          await setFilters({ query: "Spellstaff", equippable: true });
+          const searchLabels = await page.locator(".armory-item").evaluateAll(nodes => nodes.map(n => n.getAttribute("aria-label") || ""));
+          assert(searchLabels.length > 0 && searchLabels.every(label => label.toLowerCase().includes("spellstaff")), "Search filtering is broken");
+
+          // Equippable-only and Mage armor restriction.
+          await setFilters({ tier: 5, slot: "Head", equippable: true });
+          assert(await page.locator(".armory-item").count() === 0, "Equippable-only exposed a Mage Plate head");
+          await setFilters({ tier: 5, slot: "Head", equippable: false });
+          const plate = page.locator(".armory-item").first();
+          const plateState = await plate.evaluate(el => ({
+            locked: el.classList.contains("locked"),
+            ariaDisabled: el.getAttribute("aria-disabled"),
+            label: el.getAttribute("aria-label") || ""
+          }));
+          assert(plateState.locked && plateState.ariaDisabled === "true" && plateState.label.includes("Mage cannot equip Plate"), "Mage armor restriction changed");
+          await plate.focus();
+          const plateLocked = await page.locator(".wow-tooltip__locked").textContent();
+          assert(plateLocked.includes("Mage cannot equip Plate"), "Armor restriction is missing from shared tooltip");
+
+          // Existing weapon gating remains level-based: level-1 Shaman cannot use T5 weapons.
+          await selectHero("Shaman");
+          await setFilters({ tier: 5, slot: "Weapon", equippable: false });
+          const weaponBefore = await page.locator("#rightSlots .gear-slot").last().getAttribute("aria-label");
+          const highWeapon = page.locator(".armory-item").first();
+          const highWeaponState = await highWeapon.evaluate(el => ({
+            locked: el.classList.contains("locked"),
+            label: el.getAttribute("aria-label") || ""
+          }));
+          assert(highWeaponState.locked && highWeaponState.label.includes("Requires hero level 5"), "Existing weapon level restriction changed");
+          await highWeapon.focus();
+          assert((await page.locator(".wow-tooltip__locked").textContent()).includes("Requires hero level 5"), "Weapon restriction is missing from tooltip");
+          await highWeapon.click({ force: true });
+          await page.waitForTimeout(50);
+          const weaponAfter = await page.locator("#rightSlots .gear-slot").last().getAttribute("aria-label");
+          assert(weaponBefore === weaponAfter, "Locked weapon became equippable");
+
+          // Reset restores the original Mage loadout and stats.
+          await selectHero("Mage");
+          await setFilters({ tier: 1, slot: "Head", equippable: true });
+          const mageChangedBeforeReset = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
+          if (mageChangedBeforeReset?.toLowerCase().includes("empty")) {
+            await page.locator(".armory-item:not(.locked)").first().click();
+          }
+          await page.locator("#resetGear").click();
+          await page.waitForTimeout(100);
+          await selectHero("Mage");
+          await setFilters();
+          const resetHead = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
+          const resetStats = await page.locator("#heroStats").innerText();
+          assert(resetHead === originalHead, "Reset did not restore the Mage Head loadout");
+          assert(resetStats === originalStats, "Reset did not restore Mage stats");
+
+          // Responsive layouts remain compact and tooltips clamp at supported narrow widths.
+          for (const viewport of [
+            { width: 930, height: 900 },
+            { width: 700, height: 900 },
+            { width: 480, height: 860 },
+            { width: 390, height: 844 }
+          ]) {
+            await page.setViewportSize(viewport);
+            await page.waitForTimeout(80);
+            const responsive = await page.evaluate(() => {
+              const paper = document.querySelector(".gear-paperdoll")?.getBoundingClientRect();
+              const controls = [...document.querySelectorAll("#tierFilter,#slotFilter,#gearSearch")].map(el => el.getBoundingClientRect().height);
+              const slots = [...document.querySelectorAll(".gear-slot")].map(el => el.getBoundingClientRect());
+              return {
+                paperWidth: paper?.width || 0,
+                maxSlotWidth: Math.max(...slots.map(r => r.width)),
+                minControl: Math.min(...controls),
+                viewport: innerWidth
+              };
+            });
+            assert(responsive.paperWidth <= responsive.viewport + 1, "Paper doll overflows at " + viewport.width + "px");
+            assert(responsive.maxSlotWidth <= 82, "Slots became oversized at " + viewport.width + "px");
+            assert(responsive.minControl >= 30, "Filter controls became unusably small at " + viewport.width + "px");
+          }
+
+          await page.setViewportSize({ width: 390, height: 844 });
+          await selectHero("Mage");
+          await setFilters({ tier: 5, slot: "Weapon", equippable: true });
+          const narrowCandidate = page.locator(".armory-item:not(.equipped):not(.locked)").first();
+          await narrowCandidate.focus();
+          await page.waitForSelector(".wow-tooltip-layer:not([hidden]) .wow-tooltip-card");
+          assert(await page.locator(".wow-tooltip-card").count() === 2, "Narrow viewport lost item comparison");
+          assert(await tooltipBoundsOK(), "Narrow comparison tooltip escaped the viewport");
+
+          await browser.close();
+
+          if (errors.length) {
+            console.error(errors.join("\n"));
+            process.exit(1);
+          }
+          console.log("WOWUI-005 browser acceptance contract: clean");
+          EOF
+          cd /tmp/wowui-browser
+          node check.mjs
+
+      - name: Deterministic simulation smoke test
+        run: npm run simulation:test
