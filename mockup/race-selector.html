@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Race Selector — Warcraft Mockup</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar">
+      <a class="back" href="./index.html">← Mockups</a>
+      <span class="eyebrow">HERO CREATION / REVIEW</span>
+    </div>
+
+    <header class="hero-header">
+      <h1>Race Selector</h1>
+      <p class="lede">Review faction presentation, Body 1 / Body 2, racial identity, and currently available classes.</p>
+    </header>
+
+    <div id="error" class="error-banner"></div>
+
+    <section class="control-row">
+      <div class="control-group">
+        <span class="control-label">Faction</span>
+        <div id="factionToggle" class="segmented">
+          <button class="alliance active" data-faction="alliance">Alliance</button>
+          <button class="horde" data-faction="horde">Horde</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <span class="control-label">Body</span>
+        <div id="bodyToggle" class="segmented">
+          <button class="active" data-body="body-1">Body 1 · Male</button>
+          <button data-body="body-2">Body 2 · Female</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="race-layout">
+      <aside class="panel race-list" id="raceList" aria-label="Races"></aside>
+
+      <section class="panel character-stage">
+        <div id="silhouette" class="silhouette body-1" aria-hidden="true">
+          <div class="head"></div>
+          <div class="torso"></div>
+          <div class="legs"></div>
+        </div>
+        <div class="stage-label">
+          <h2 id="stageRace">Human</h2>
+          <p id="stageBody">Body 1 · Male</p>
+        </div>
+      </section>
+
+      <aside class="panel detail">
+        <p class="eyebrow" id="factionLabel">ALLIANCE</p>
+        <h2 id="raceName">Human</h2>
+
+        <h3>Racial Talent</h3>
+        <div class="racial">
+          <strong id="racialName">Loading…</strong>
+          <div id="racialMechanic"></div>
+        </div>
+
+        <h3>Available Classes</h3>
+        <div class="class-grid" id="classGrid"></div>
+
+        <h3>Prototype Rule</h3>
+        <p class="lede" id="availabilityRule" style="font-size:.9rem"></p>
+      </aside>
+    </section>
+  </main>
+  <script src="./race-selector.js"></script>
+</body>
+</html>

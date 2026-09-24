@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Talent Calculator — Warcraft Mockup</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar">
+      <a class="back" href="./index.html">← Mockups</a>
+      <span class="eyebrow">CLASS SYSTEM / REVIEW</span>
+    </div>
+
+    <header class="hero-header">
+      <h1>Talent Calculator</h1>
+      <p class="lede">Review each class's three archetypes and test the five-point talent progression.</p>
+    </header>
+
+    <div id="error" class="error-banner"></div>
+
+    <section class="calc-toolbar">
+      <div class="field">
+        <label for="classSelect">Class</label>
+        <select id="classSelect"></select>
+      </div>
+      <div class="field level-box">
+        <div class="level-top">
+          <label for="levelRange">Hero Level</label>
+          <span id="levelBadge" class="level-badge">Level 5</span>
+        </div>
+        <input id="levelRange" type="range" min="1" max="5" step="1" value="5">
+      </div>
+    </section>
+
+    <section id="specTabs" class="spec-tabs" aria-label="Specializations"></section>
+
+    <section class="build-bar">
+      <div class="points"><strong id="pointsUsed">0 / 5</strong> talent points spent · <span id="buildStatus">Choose a Tier 1 talent to select a specialization.</span></div>
+      <button class="reset" id="resetBuild">Reset Build</button>
+    </section>
+
+    <section id="identity" class="spec-identity"></section>
+
+    <section id="talentTree" class="talent-tree"></section>
+
+    <p class="rule-note">
+      Level 1 chooses the specialization through Tier 1. Level 2 chooses Tier 2 in that tree. Level 3 chooses one capstone and unlocks the other two trees. Levels 4–5 can then enter off-spec trees while obeying prerequisites.
+    </p>
+  </main>
+  <script src="./talent-calculator.js"></script>
+</body>
+</html>
