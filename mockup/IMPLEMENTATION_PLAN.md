@@ -297,6 +297,8 @@ Make hero creation/readout feel like a Warcraft character selection surface.
 
 ## WOWUI-007 — Talent Calculator Refinement
 
+**Status:** Complete — 2026-09-24
+
 ### Objective
 
 Finish the talent screen so it uses the same shared UI system while retaining the existing tree behavior.
