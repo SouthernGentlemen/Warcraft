@@ -71,6 +71,11 @@
   padding-inline: 14px;
 }
 
+.talent-page #resetBuild:focus {
+  outline: 2px solid var(--wow-focus);
+  outline-offset: 2px;
+}
+
 .talent-page .error-banner {
   margin-bottom: 8px;
 }
