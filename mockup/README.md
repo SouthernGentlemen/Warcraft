@@ -28,6 +28,6 @@ Every run performs a full local prototype reset:
 
 You do not need to find or kill ports manually. Running `npm run dev` again replaces the previous Warcraft dev instance.
 
-The active URL is printed when startup completes, and the root URL redirects to `/mockup/`.
+Once the rebuilt server is listening, the selected `/mockup/` URL is opened automatically in your default browser. The active URL is also printed in the terminal, and the root URL redirects to `/mockup/`.
 
-`HOST` and `PORT` can still be supplied when needed, but occupied ports are handled automatically.
+`HOST` and `PORT` can still be supplied when needed, but occupied ports are handled automatically. Set `NO_OPEN=1` only when you intentionally want to suppress automatic browser launch.
