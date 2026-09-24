@@ -7,10 +7,10 @@
   "class": "Rogue",
   "specialization": "Combat",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Direct sustained melee damage",
+    "resource": "Energy",
+    "primary_stat": "Agility",
+    "auto_attack": "Weapon Strike — melee weapon damage"
   },
   "talents": {
     "tier_1": [

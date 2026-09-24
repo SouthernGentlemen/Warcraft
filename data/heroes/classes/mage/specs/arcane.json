@@ -7,10 +7,10 @@
   "class": "Mage",
   "specialization": "Arcane",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Ranged spell damage / resource control",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Arcane Bolt — ranged Arcane damage"
   },
   "talents": {
     "tier_1": [

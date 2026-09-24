@@ -7,10 +7,10 @@
   "class": "Mage",
   "specialization": "Fire",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Ranged burst spell damage",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Firebolt — ranged Fire damage"
   },
   "talents": {
     "tier_1": [

@@ -7,10 +7,10 @@
   "class": "Warlock",
   "specialization": "Demonology",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Summon-driven spell damage",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Fel Bolt — ranged Fel damage"
   },
   "talents": {
     "tier_1": [

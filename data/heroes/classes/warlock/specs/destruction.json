@@ -7,10 +7,10 @@
   "class": "Warlock",
   "specialization": "Destruction",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Direct burst spell damage",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Chaos Bolt — ranged Fire/Shadow damage"
   },
   "talents": {
     "tier_1": [

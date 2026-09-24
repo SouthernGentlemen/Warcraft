@@ -7,10 +7,10 @@
   "class": "Rogue",
   "specialization": "Subtlety",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Burst melee damage / utility",
+    "resource": "Energy",
+    "primary_stat": "Agility",
+    "auto_attack": "Precision Strike — melee weapon damage"
   },
   "talents": {
     "tier_1": [

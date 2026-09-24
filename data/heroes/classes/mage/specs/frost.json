@@ -7,10 +7,10 @@
   "class": "Mage",
   "specialization": "Frost",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Ranged spell damage / control",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Frostbolt — ranged Frost damage"
   },
   "talents": {
     "tier_1": [
