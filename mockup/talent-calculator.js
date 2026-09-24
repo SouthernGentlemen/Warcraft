@@ -2,12 +2,6 @@ const DATA_ROOT = "../data/heroes/classes/";
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 
-const TREE_THEMES = [
-  {accent:"#62b17a", glow:"rgba(25,111,84,.66)", tint:"rgba(14,84,72,.48)"},
-  {accent:"#8263aa", glow:"rgba(82,49,110,.68)", tint:"rgba(68,43,88,.48)"},
-  {accent:"#b79a4f", glow:"rgba(128,99,37,.68)", tint:"rgba(101,79,29,.48)"}
-];
-
 const state = {
   index: null,
   classMeta: null,
@@ -159,11 +153,13 @@ function talentTooltipModel(specId, tier, item, selected, iconUrl) {
   const spec = state.specs.get(specId);
   const requirement = tooltipRequirement(specId, tier, selected);
   const level = tier === "tier_1" ? 1 : tier === "tier_2" ? 2 : 3;
+  const capstone = tier === "capstones";
 
   return {
     variant:"talent",
     title:item.name,
-    type:"Talent",
+    type:capstone ? "Capstone Choice" : "Choice Talent",
+    badge:selected ? "Learned" : "",
     icon:{url:iconUrl, classId:state.classMeta.id},
     requirements:[
       {label:"Class", value:state.classMeta.label},
@@ -172,7 +168,8 @@ function talentTooltipModel(specId, tier, item, selected, iconUrl) {
     description:item.effect,
     meta:[
       {label:"Specialization", value:spec.specialization},
-      {label:"Tier", value:tierLabel(tier)}
+      {label:"Tier", value:tierLabel(tier)},
+      {label:"State", value:selected ? "Learned" : requirement ? "Locked" : "Available"}
     ],
     locked:requirement ? [requirement] : []
   };
@@ -182,18 +179,30 @@ function connectorSvg(specId) {
   const picks = state.picks[specId];
   const firstActive = Boolean(picks.tier_1);
   const secondActive = Boolean(picks.tier_2);
-  const a = firstActive ? " active" : "";
-  const b = secondActive ? " active" : "";
+  const firstClass = firstActive ? " active" : "";
+  const secondClass = secondActive ? " active" : "";
+  const arrowId = "talent-arrow-" + specId;
+  const edges = [
+    {state:firstClass, d:"M18 24 L18 43"},
+    {state:firstClass, d:"M50 24 L50 43"},
+    {state:firstClass, d:"M82 24 L82 43"},
+    {state:secondClass, d:"M18 54 L18 61 L36 72"},
+    {state:secondClass, d:"M50 54 L50 66 L36 72"},
+    {state:secondClass, d:"M50 54 L50 66 L64 72"},
+    {state:secondClass, d:"M82 54 L82 61 L64 72"}
+  ];
 
   return `
     <svg class="wow-connectors" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      <path class="wow-connector${a}" d="M18 24 L18 43"/>
-      <path class="wow-connector${a}" d="M50 24 L50 43"/>
-      <path class="wow-connector${a}" d="M82 24 L82 43"/>
-      <path class="wow-connector${b}" d="M18 54 L18 61 L36 72"/>
-      <path class="wow-connector${b}" d="M50 54 L50 66 L36 72"/>
-      <path class="wow-connector${b}" d="M50 54 L50 66 L64 72"/>
-      <path class="wow-connector${b}" d="M82 54 L82 61 L64 72"/>
+      <defs>
+        <marker id="${arrowId}" class="wow-connector-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+          <path d="M0,0 L5,2.5 L0,5 Z"/>
+        </marker>
+      </defs>
+      ${edges.map(edge =>
+        '<path class="wow-connector-shadow" d="' + edge.d + '"/>' +
+        '<path class="wow-connector' + edge.state + '" d="' + edge.d + '" marker-end="url(#' + arrowId + ')"/>'
+      ).join("")}
     </svg>
   `;
 }
@@ -204,16 +213,21 @@ function createTalentNode(specId, tier, item, index, capstone=false) {
   const button = document.createElement("button");
 
   button.className =
-    "wow-talent-node" +
+    "wow-talent-node choice" +
     (selected ? " selected" : "") +
     (canUse ? " available" : " locked") +
     (capstone ? " capstone" : "");
 
   button.type = "button";
   button.dataset.talent = item.name;
+  button.dataset.tier = tier;
+  button.setAttribute("aria-pressed", selected ? "true" : "false");
+  button.setAttribute("aria-disabled", canUse || selected ? "false" : "true");
+  const requirement = tooltipRequirement(specId, tier, selected);
+  button.setAttribute("aria-label", item.name + ", " + tierLabel(tier) + (selected ? ", learned" : requirement ? ", locked: " + requirement : ", available"));
   const talentIconUrl = Icons.talentUrl(specId, item.name, index);
   button.innerHTML = `
-    <span class="wow-icon-frame wow-icon-frame--lg${selected ? " is-selected" : ""}${canUse ? "" : " is-locked"}">
+    <span class="wow-icon-frame${selected ? " is-selected" : ""}${canUse ? "" : " is-locked"}">
       <img src="${talentIconUrl}" alt="" loading="lazy">
       <span class="wow-icon-rank">${selected ? "1" : "0"}/1</span>
     </span>
@@ -245,27 +259,23 @@ function createTalentRow(specId, tier, items, rowNumber) {
 
 function renderSpecPanel(meta, panelIndex) {
   const spec = state.specs.get(meta.id);
-  const theme = TREE_THEMES[panelIndex % TREE_THEMES.length];
   const specIcon = Icons.resolve("spec", meta.id, {classId:state.classMeta.id});
   const panel = document.createElement("article");
 
-  panel.className = "wow-spec-panel" +
+  panel.className = "wow-spec-panel wow-frame wow-spec-panel--" + ((panelIndex % 3) + 1) +
     (specLocked(meta.id) ? " spec-locked" : "") +
     (meta.id === state.primarySpec ? " primary-spec" : "");
 
-  panel.style.setProperty("--tree-accent", theme.accent);
-  panel.style.setProperty("--tree-glow", theme.glow);
-  panel.style.setProperty("--tree-tint", theme.tint);
   panel.style.setProperty("--spec-art", `url("${specIcon}")`);
 
   panel.innerHTML = `
     <header class="wow-spec-header">
-      <span class="wow-spec-icon wow-icon-frame wow-icon-frame--class-${state.classMeta.id}"><img src="${specIcon}" alt=""></span>
+      <span class="wow-spec-icon wow-icon-frame wow-icon-frame--md wow-icon-frame--class-${state.classMeta.id}"><img src="${specIcon}" alt=""></span>
       <div class="wow-spec-name">
         <strong>${escapeHtml(meta.label)}</strong>
         <small>${escapeHtml(spec.identity.role)}</small>
       </div>
-      <span class="wow-spec-points">${pointsInSpec(meta.id)} / 3</span>
+      <span class="wow-spec-points wow-tier-label">${pointsInSpec(meta.id)} / 3</span>
     </header>
     <div class="wow-spec-body">
       ${connectorSvg(meta.id)}
@@ -311,6 +321,7 @@ function renderStatus() {
 }
 
 function render() {
+  Tooltips.hide();
   renderTrees();
   renderStatus();
 }
