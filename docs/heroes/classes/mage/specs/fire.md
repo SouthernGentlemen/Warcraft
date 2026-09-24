@@ -2,68 +2,50 @@
 
 ## Identity
 
-- Role direction: Ranged burst spell damage
+- Role: Ranged burst spell damage
 - Resource: Mana
-- Primary stat direction: Intellect
-- Auto-attack: Firebolt
-
-## Spec Theme
-
-Critical strikes, burning effects, explosive burst.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Firebolt** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Intellect
+- Auto-attack: Firebolt — ranged Fire damage
 
 ## Talent Tree
 
-The Fire tree contains:
+The first talent point spent in this tree selects **Fire** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Fire becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Mage trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Ignite** | Critical damage applies a Burn for 20% of the triggering damage over 4 seconds. |
+| **Kindling** | Firebolt's auto-attack bar fills 10% faster. |
+| **Searing Precision** | Firebolt gains 10% Critical Strike chance. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Critical strikes
-- Burning effects
-- Explosive burst
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Fuel the Fire** | Burn ticks have a 10% chance to reduce one equipped cooldown's remaining time by 1 second. |
+| **Pyromaniac** | Equipped cooldown abilities deal 15% more damage to Burning targets. |
+| **Heat Sink** | Mana costs of equipped cooldown abilities are reduced by 15%. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Fire specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Combustion** | Using the selected ultimate grants 30% Critical Strike chance for 8 seconds. |
+| **Living Flame** | Every fifth Firebolt explodes, dealing 60% of its damage to all enemies. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Fire specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
