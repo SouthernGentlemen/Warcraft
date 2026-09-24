@@ -2,68 +2,50 @@
 
 ## Identity
 
-- Role direction: Ranged damage / pet support
+- Role: Ranged damage / pet support
 - Resource: Mana
-- Primary stat direction: Agility
-- Auto-attack: Beast Shot
-
-## Spec Theme
-
-Pet scaling, coordinated attacks, sustained ranged pressure.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Beast Shot** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Agility
+- Auto-attack: Beast Shot — ranged weapon damage; companion follows for 30% of shot damage
 
 ## Talent Tree
 
-The Beast Mastery tree contains:
+The first talent point spent in this tree selects **Beast Mastery** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Beast Mastery becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Hunter trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Ferocious Companion** | Companion follow-up attacks deal 25% more damage. |
+| **Cobra Training** | Beast Shot deals 12% more damage. |
+| **Animal Bond** | Heal for 5% of companion damage dealt. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Pet scaling
-- Coordinated attacks
-- Sustained ranged pressure
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Frenzy** | Companion attacks grant 5% auto-attack speed for 4 seconds; stacks up to 3 times. |
+| **Bestial Discipline** | Using an equipped cooldown immediately triggers a companion attack for 50% normal companion damage. |
+| **Thick Hide** | Every third companion attack grants the Hunter a shield equal to 5% maximum health. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Beast Mastery specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Bestial Wrath** | Using the selected ultimate grants the companion 50% increased damage and the Hunter 20% auto-attack speed for 8 seconds. |
+| **Pack Leader** | Every third Beast Shot triggers two companion attacks, and all companion attacks deal 20% more damage. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Beast Mastery specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
