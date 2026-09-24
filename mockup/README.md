@@ -2,6 +2,10 @@
 
 Static review screens backed by the root-level `/data/` JSON mirror.
 
+## Implementation Plan
+
+- [WoW UI Implementation Plan](./IMPLEMENTATION_PLAN.md) — dependency-ordered task backlog for bringing every mockup screen under one shared WoW-style frame, icon, tooltip, control, and interaction system.
+
 ## Screens
 
 - `index.html` — mockup launcher
@@ -35,7 +39,6 @@ You do not need to find or kill ports manually. Running `npm run dev` again repl
 Once the rebuilt server is listening, the selected `/mockup/` URL is opened automatically in your default browser. The active URL is also printed in the terminal, and the root URL redirects to `/mockup/`.
 
 `HOST` and `PORT` can still be supplied when needed, but occupied ports are handled automatically. Set `NO_OPEN=1` only when you intentionally want to suppress automatic browser launch.
-
 
 ## Simulation Smoke Test
 
