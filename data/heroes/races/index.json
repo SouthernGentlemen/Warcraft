@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "availability_rule": "Until race-specific class restrictions are defined, each race can use every shared class plus its faction-exclusive class.",
+  "body_types": [
+    {
+      "id": "body-1",
+      "label": "Body 1",
+      "presentation": "Male"
+    },
+    {
+      "id": "body-2",
+      "label": "Body 2",
+      "presentation": "Female"
+    }
+  ],
+  "factions": {
+    "alliance": {
+      "label": "Alliance",
+      "exclusive_class": "Paladin",
+      "races": [
+        {
+          "id": "human",
+          "label": "Human",
+          "data_path": "./human/README.json"
+        },
+        {
+          "id": "gnome",
+          "label": "Gnome",
+          "data_path": "./gnome/README.json"
+        },
+        {
+          "id": "dwarf",
+          "label": "Dwarf",
+          "data_path": "./dwarf/README.json"
+        }
+      ],
+      "available_classes": [
+        "Mage",
+        "Rogue",
+        "Warlock",
+        "Warrior",
+        "Priest",
+        "Druid",
+        "Hunter",
+        "Paladin"
+      ]
+    },
+    "horde": {
+      "label": "Horde",
+      "exclusive_class": "Shaman",
+      "races": [
+        {
+          "id": "orc",
+          "label": "Orc",
+          "data_path": "./orc/README.json"
+        },
+        {
+          "id": "undead",
+          "label": "Undead",
+          "data_path": "./undead/README.json"
+        },
+        {
+          "id": "troll",
+          "label": "Troll",
+          "data_path": "./troll/README.json"
+        }
+      ],
+      "available_classes": [
+        "Mage",
+        "Rogue",
+        "Warlock",
+        "Warrior",
+        "Priest",
+        "Druid",
+        "Hunter",
+        "Shaman"
+      ]
+    }
+  }
+}

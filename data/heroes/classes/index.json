@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "classes": [
+    {
+      "id": "mage",
+      "label": "Mage",
+      "resource": "Mana",
+      "specs": [
+        {
+          "id": "arcane",
+          "label": "Arcane",
+          "data_path": "./mage/specs/arcane.json"
+        },
+        {
+          "id": "fire",
+          "label": "Fire",
+          "data_path": "./mage/specs/fire.json"
+        },
+        {
+          "id": "frost",
+          "label": "Frost",
+          "data_path": "./mage/specs/frost.json"
+        }
+      ]
+    },
+    {
+      "id": "rogue",
+      "label": "Rogue",
+      "resource": "Energy",
+      "specs": [
+        {
+          "id": "assassination",
+          "label": "Assassination",
+          "data_path": "./rogue/specs/assassination.json"
+        },
+        {
+          "id": "combat",
+          "label": "Combat",
+          "data_path": "./rogue/specs/combat.json"
+        },
+        {
+          "id": "subtlety",
+          "label": "Subtlety",
+          "data_path": "./rogue/specs/subtlety.json"
+        }
+      ]
+    },
+    {
+      "id": "warlock",
+      "label": "Warlock",
+      "resource": "Mana",
+      "specs": [
+        {
+          "id": "affliction",
+          "label": "Affliction",
+          "data_path": "./warlock/specs/affliction.json"
+        },
+        {
+          "id": "demonology",
+          "label": "Demonology",
+          "data_path": "./warlock/specs/demonology.json"
+        },
+        {
+          "id": "destruction",
+          "label": "Destruction",
+          "data_path": "./warlock/specs/destruction.json"
+        }
+      ]
+    },
+    {
+      "id": "warrior",
+      "label": "Warrior",
+      "resource": "Rage",
+      "specs": [
+        {
+          "id": "arms",
+          "label": "Arms",
+          "data_path": "./warrior/specs/arms.json"
+        },
+        {
+          "id": "fury",
+          "label": "Fury",
+          "data_path": "./warrior/specs/fury.json"
+        },
+        {
+          "id": "protection",
+          "label": "Protection",
+          "data_path": "./warrior/specs/protection.json"
+        }
+      ]
+    },
+    {
+      "id": "priest",
+      "label": "Priest",
+      "resource": "Mana",
+      "specs": [
+        {
+          "id": "discipline",
+          "label": "Discipline",
+          "data_path": "./priest/specs/discipline.json"
+        },
+        {
+          "id": "holy",
+          "label": "Holy",
+          "data_path": "./priest/specs/holy.json"
+        },
+        {
+          "id": "shadow",
+          "label": "Shadow",
+          "data_path": "./priest/specs/shadow.json"
+        }
+      ]
+    },
+    {
+      "id": "druid",
+      "label": "Druid",
+      "resource": "Mana / Energy / Rage",
+      "specs": [
+        {
+          "id": "balance",
+          "label": "Balance",
+          "data_path": "./druid/specs/balance.json"
+        },
+        {
+          "id": "feral",
+          "label": "Feral",
+          "data_path": "./druid/specs/feral.json"
+        },
+        {
+          "id": "restoration",
+          "label": "Restoration",
+          "data_path": "./druid/specs/restoration.json"
+        }
+      ]
+    },
+    {
+      "id": "hunter",
+      "label": "Hunter",
+      "resource": "Mana",
+      "specs": [
+        {
+          "id": "beast-mastery",
+          "label": "Beast Mastery",
+          "data_path": "./hunter/specs/beast-mastery.json"
+        },
+        {
+          "id": "marksmanship",
+          "label": "Marksmanship",
+          "data_path": "./hunter/specs/marksmanship.json"
+        },
+        {
+          "id": "survival",
+          "label": "Survival",
+          "data_path": "./hunter/specs/survival.json"
+        }
+      ]
+    },
+    {
+      "id": "paladin",
+      "label": "Paladin",
+      "resource": "Mana",
+      "faction": "Alliance",
+      "specs": [
+        {
+          "id": "holy",
+          "label": "Holy",
+          "data_path": "./paladin/specs/holy.json"
+        },
+        {
+          "id": "protection",
+          "label": "Protection",
+          "data_path": "./paladin/specs/protection.json"
+        },
+        {
+          "id": "retribution",
+          "label": "Retribution",
+          "data_path": "./paladin/specs/retribution.json"
+        }
+      ]
+    },
+    {
+      "id": "shaman",
+      "label": "Shaman",
+      "resource": "Mana",
+      "faction": "Horde",
+      "specs": [
+        {
+          "id": "elemental",
+          "label": "Elemental",
+          "data_path": "./shaman/specs/elemental.json"
+        },
+        {
+          "id": "enhancement",
+          "label": "Enhancement",
+          "data_path": "./shaman/specs/enhancement.json"
+        },
+        {
+          "id": "restoration",
+          "label": "Restoration",
+          "data_path": "./shaman/specs/restoration.json"
+        }
+      ]
+    }
+  ]
+}
