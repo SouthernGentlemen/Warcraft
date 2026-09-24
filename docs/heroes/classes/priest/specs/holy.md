@@ -2,69 +2,50 @@
 
 ## Identity
 
-- Role direction: Dedicated healing
+- Role: Dedicated healing
 - Resource: Mana
-- Primary stat direction: Intellect
-- Auto-attack: Holy Bolt
-
-## Spec Theme
-
-Direct healing, recovery, group sustain, emergency healing.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Holy Bolt** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Intellect
+- Auto-attack: Holy Bolt — heals the lowest-health ally
 
 ## Talent Tree
 
-The Holy tree contains:
+The first talent point spent in this tree selects **Holy** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Holy becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Priest trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Renew** | Holy Bolt also heals its target for 10% of the initial heal over 4 seconds. |
+| **Serendipity** | Critical Holy Bolts reduce both equipped cooldowns' remaining time by 1 second. |
+| **Spiritual Focus** | Holy Bolt healing is increased by 10%. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Direct healing
-- Recovery
-- Group sustain
-- Emergency healing
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Circle of Healing** | Every fourth Holy Bolt also heals two additional injured allies for 40% of the original heal. |
+| **Divine Favor** | Mana costs of healing cooldown abilities are reduced by 12%. |
+| **Guardian Spirit** | When an ally falls below 20% health, the next Holy Bolt against that ally resolves immediately and heals for 100% more; 15-second internal cooldown. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Holy specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Apotheosis** | Using the selected ultimate grants 30% Healing Power and 20% Haste for 8 seconds. |
+| **Beacon of Hope** | 50% of overhealing done by this hero is redirected to the lowest-health ally. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Holy specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
