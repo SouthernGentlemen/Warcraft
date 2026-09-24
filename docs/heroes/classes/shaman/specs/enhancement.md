@@ -2,69 +2,50 @@
 
 ## Identity
 
-- Role direction: Melee damage
+- Role: Elemental melee damage
 - Resource: Mana
-- Primary stat direction: Agility
-- Auto-attack: Storm Strike
-
-## Spec Theme
-
-Weapon enhancement, elemental melee damage, attack procs, sustained offense.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Storm Strike** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Agility
+- Auto-attack: Storm Strike — melee weapon damage with Nature component
 
 ## Talent Tree
 
-The Enhancement tree contains:
+The first talent point spent in this tree selects **Enhancement** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Enhancement becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Shaman trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Windfury** | Storm Strike has a 15% chance to trigger an extra strike for 50% damage. |
+| **Flametongue** | Storm Strike applies a Burn for 10% of the hit's damage over 4 seconds. |
+| **Mental Quickness** | Mana costs of equipped cooldown abilities are reduced by 10%. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Weapon enhancement
-- Elemental melee damage
-- Attack procs
-- Sustained offense
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Maelstrom Weapon** | Every third auto-attack reduces both equipped cooldowns' remaining time by 1 second. |
+| **Stormbringer** | Auto-attacks have a 10% chance to reset one equipped cooldown. |
+| **Elemental Weapons** | Equipped cooldown abilities deal 15% more damage while the target is affected by Flametongue. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Enhancement specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Doom Winds** | Using the selected ultimate grants 30% auto-attack speed for 8 seconds and guarantees Windfury on every second auto-attack. |
+| **Elemental Fury** | Storm Strike cycles Fire, Frost, and Nature empowerment: Fire adds a Burn, Frost slows the target's next auto bar by 15%, and Nature deals 20% bonus damage. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Enhancement specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
