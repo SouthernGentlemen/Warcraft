@@ -85,7 +85,27 @@
       gnome:"achievement_character_gnome_male",
       orc:"achievement_character_orc_male",
       undead:"achievement_character_undead_male",
-      troll:"achievement_character_troll_male"
+      troll:"achievement_character_troll_male",
+      "human:body-1":"achievement_character_human_male",
+      "human:body-2":"achievement_character_human_female",
+      "dwarf:body-1":"achievement_character_dwarf_male",
+      "dwarf:body-2":"achievement_character_dwarf_female",
+      "gnome:body-1":"achievement_character_gnome_male",
+      "gnome:body-2":"achievement_character_gnome_female",
+      "orc:body-1":"achievement_character_orc_male",
+      "orc:body-2":"achievement_character_orc_female",
+      "undead:body-1":"achievement_character_undead_male",
+      "undead:body-2":"achievement_character_undead_female",
+      "troll:body-1":"achievement_character_troll_male",
+      "troll:body-2":"achievement_character_troll_female"
+    },
+    racial: {
+      human:"spell_holy_powerwordshield",
+      gnome:"inv_enchant_essenceastrallarge",
+      dwarf:"inv_misc_coin_01",
+      orc:"ability_warrior_innerrage",
+      undead:"spell_holy_heal",
+      troll:"ability_rogue_sprint"
     },
     faction: {
       alliance:"inv_bannerpvp_02",
@@ -195,6 +215,8 @@
     classes:"class",
     specs:"spec",
     races:"race",
+    racial:"racial",
+    racials:"racial",
     factions:"faction",
     slot:"equipment-slot",
     slots:"equipment-slot",
@@ -258,6 +280,11 @@
 
     const normalizedKey = keyify(key);
     const meta = context || {};
+
+    if (normalizedCategory === "race" && meta.body) {
+      const contextualRace = normalizedKey + ":" + keyify(meta.body);
+      if (map[contextualRace]) return map[contextualRace];
+    }
 
     if (normalizedCategory === "spec" && meta.classId) {
       const contextual = keyify(meta.classId) + ":" + normalizedKey;
