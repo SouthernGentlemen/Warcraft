@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/base/profession-buildings/blacksmith/README.md",
+  "kind": "document",
+  "title": "Blacksmith",
+  "source_markdown": "# Blacksmith\n\n## Purpose\n\nThe Blacksmith handles metal-based crafting and equipment production.\n\n## Known Progression\n\n1. Copper\n2. Iron\n3. Steel\n4. Mithril\n5. Thorium\n\n## Expected Outputs\n\n- metal weapons\n- heavy armor\n- shields\n- metal components\n\nExact recipes, class restrictions, crafting times, and upgrade requirements remain open.\n"
+}

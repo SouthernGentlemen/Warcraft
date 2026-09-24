@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/base/profession-buildings/alchemist/README.md",
+  "kind": "document",
+  "title": "Alchemist",
+  "source_markdown": "# Alchemist\n\n## Purpose\n\nThe Alchemist produces temporary consumables and processes alchemical reagents.\n\n## Known Reagents\n\n- Air\n- Water\n- Earth\n- Fire\n- Undeath\n\n## Expected Outputs\n\n- potions\n- flasks\n- other temporary combat or utility consumables\n\nExact reagent tiers, recipes, effects, durations, and building upgrades remain open.\n"
+}

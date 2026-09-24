@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/base/profession-buildings/README.md",
+  "kind": "document",
+  "title": "Profession Buildings",
+  "source_markdown": "# Profession Buildings\n\n## Purpose\n\nProfession buildings are the base facilities that unlock and advance the game's crafting professions.\n\nEach profession building is treated as its own base system and is expected to progress through the same five tiers as the rest of the game.\n\n## Profession Buildings\n\n- [Blacksmith](./blacksmith/README.md)\n- [Alchemist](./alchemist/README.md)\n- [Enchanter](./enchanter/README.md)\n- [Tailor](./tailor/README.md)\n- [Leatherworker](./leatherworker/README.md)\n- [Engineer](./engineer/README.md)\n\n## Shared Direction\n\nProfession buildings are expected to control some combination of:\n\n- profession tier\n- available recipes\n- crafting queues\n- crafting speed\n- material processing\n- output quality or capability\n- automation\n\nExact shared rules will be defined after the individual profession roles are reviewed.\n"
+}

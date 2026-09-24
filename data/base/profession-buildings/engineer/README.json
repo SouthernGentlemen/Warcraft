@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/base/profession-buildings/engineer/README.md",
+  "kind": "document",
+  "title": "Engineer",
+  "source_markdown": "# Engineer\n\n## Purpose\n\nThe Engineer produces crafted technology, devices, and utility items.\n\n## Direction\n\nEngineering is a distinct profession building alongside the Blacksmith, Alchemist, Enchanter, Tailor, and Leatherworker.\n\nPotential outputs may include:\n\n- devices\n- tools\n- utility equipment\n- mechanical components\n- specialized consumables\n\nThe five-tier material progression, exact item categories, recipes, and building upgrades remain open.\n"
+}

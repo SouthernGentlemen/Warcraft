@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/base/profession-buildings/leatherworker/README.md",
+  "kind": "document",
+  "title": "Leatherworker",
+  "source_markdown": "# Leatherworker\n\n## Purpose\n\nThe Leatherworker handles leather-based crafting and equipment production.\n\n## Progression\n\nLeatherworking will use five material tiers aligned with the rest of the game.\n\nThe exact five leather material names are not yet defined.\n\n## Expected Outputs\n\n- leather armor\n- leather equipment\n- straps and leather components\n\nExact recipes, class restrictions, crafting times, and upgrade requirements remain open.\n"
+}
