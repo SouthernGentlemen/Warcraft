@@ -7,10 +7,10 @@
   "class": "Druid",
   "specialization": "Feral",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Melee damage or defense through form",
+    "resource": "Energy in Cat Form; Rage in Bear Form",
+    "primary_stat": "Agility",
+    "auto_attack": "Cat Claw in Cat Form; Bear Swipe in Bear Form"
   },
   "talents": {
     "tier_1": [

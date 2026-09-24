@@ -7,10 +7,10 @@
   "class": "Druid",
   "specialization": "Restoration",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Healing / sustain",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Nature Bolt — heals the lowest-health ally"
   },
   "talents": {
     "tier_1": [

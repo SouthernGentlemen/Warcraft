@@ -7,10 +7,10 @@
   "class": "Warrior",
   "specialization": "Arms",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Heavy melee damage",
+    "resource": "Rage",
+    "primary_stat": "Strength",
+    "auto_attack": "Heavy Swing — heavy melee weapon damage"
   },
   "talents": {
     "tier_1": [

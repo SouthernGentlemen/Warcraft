@@ -7,10 +7,10 @@
   "class": "Priest",
   "specialization": "Holy",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Dedicated healing",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Holy Bolt — heals the lowest-health ally"
   },
   "talents": {
     "tier_1": [

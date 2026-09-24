@@ -7,10 +7,10 @@
   "class": "Warrior",
   "specialization": "Protection",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Tank / defense",
+    "resource": "Rage",
+    "primary_stat": "Strength",
+    "auto_attack": "Guarded Strike — defensive melee weapon damage"
   },
   "talents": {
     "tier_1": [

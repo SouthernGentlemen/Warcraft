@@ -7,10 +7,10 @@
   "class": "Priest",
   "specialization": "Discipline",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Hybrid healing / prevention",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Smite — ranged Holy damage"
   },
   "talents": {
     "tier_1": [

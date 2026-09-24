@@ -7,10 +7,10 @@
   "class": "Priest",
   "specialization": "Shadow",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Ranged Shadow damage / sustain",
+    "resource": "Mana",
+    "primary_stat": "Intellect",
+    "auto_attack": "Shadow Bolt — ranged Shadow damage"
   },
   "talents": {
     "tier_1": [

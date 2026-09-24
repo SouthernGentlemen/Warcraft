@@ -7,10 +7,10 @@
   "class": "Warrior",
   "specialization": "Fury",
   "identity": {
-    "role": "",
-    "resource": "",
-    "primary_stat": "",
-    "auto_attack": ""
+    "role": "Fast sustained melee damage",
+    "resource": "Rage",
+    "primary_stat": "Strength",
+    "auto_attack": "Frenzied Swing — fast melee weapon damage"
   },
   "talents": {
     "tier_1": [
