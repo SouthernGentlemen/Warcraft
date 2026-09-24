@@ -88,7 +88,8 @@ jobs:
           if (!response || !response.ok()) errors.push(`status: ${response?.status() ?? "none"}`);
           await page.waitForSelector(".hero-roster-card");
           await page.waitForSelector(".armory-item");
-          await page.waitForTimeout(800);
+          await page.locator(".hero-roster-card").filter({hasText:"Mage"}).first().click();
+          await page.waitForTimeout(250);
 
           const layout = await page.evaluate(() => {
             const slots = [...document.querySelectorAll(".gear-slot")];
@@ -239,3 +240,5 @@ jobs:
 # rerun-after-shared-checkbox-harness-fix
 
 # rerun-after-user-path-checkbox-toggle
+
+# rerun-with-explicit-mage-selection
