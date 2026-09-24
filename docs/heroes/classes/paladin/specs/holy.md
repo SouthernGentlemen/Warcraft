@@ -2,69 +2,50 @@
 
 ## Identity
 
-- Role direction: Healing / support
+- Role: Healing / support
 - Resource: Mana
-- Primary stat direction: Intellect
-- Auto-attack: Holy Strike
-
-## Spec Theme
-
-Direct healing, support, protective effects, emergency recovery.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Holy Strike** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Intellect
+- Auto-attack: Holy Light — heals the lowest-health ally
 
 ## Talent Tree
 
-The Holy tree contains:
+The first talent point spent in this tree selects **Holy** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Holy becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Paladin trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Beacon** | Holy Light also heals the second-lowest-health ally for 30% of the original heal. |
+| **Illumination** | Critical heals restore 5% of the Mana spent on the heal. |
+| **Pure Heart** | Holy Light healing is increased by 10%. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Direct healing
-- Support
-- Protective effects
-- Emergency recovery
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Sacred Shield** | 50% of Holy Light overhealing becomes a shield lasting 5 seconds. |
+| **Divine Favor** | Healing cooldown abilities gain 15% Critical Strike chance. |
+| **Blessed Efficiency** | Mana costs of healing cooldown abilities are reduced by 12%. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Holy specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Beacon of Light** | Using the selected ultimate marks the lowest-health ally for 8 seconds; 50% of all other healing done by this hero is also copied to that ally. |
+| **Avenging Grace** | Using the selected ultimate grants 25% Healing Power and 15% Haste for 8 seconds. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Holy specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
