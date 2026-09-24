@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gear — Warcraft Mockup</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body class="gear-page">
+  <main class="gear-shell">
+    <header class="base-suite-bar gear-suite-bar">
+      <a class="base-suite-brand" href="./index.html"><span class="base-suite-mark">W</span><strong>Warcraft Prototype</strong></a>
+      <nav class="base-suite-nav" aria-label="Mockups">
+        <a href="./index.html">Overview</a>
+        <a href="./race-selector.html">Races</a>
+        <a href="./talent-calculator.html">Talents</a>
+        <a class="active" href="./gear.html">Gear</a>
+        <a href="./battle.html">Battle</a>
+        <a href="./base.html">Base</a>
+      </nav>
+      <div class="base-suite-actions"><button id="resetGear" title="Reset roster gear" type="button">↻</button></div>
+    </header>
+
+    <div id="gearError" class="error-banner gear-error" role="alert"></div>
+
+    <section class="gear-workspace">
+      <aside class="gear-roster-panel">
+        <div class="gear-panel-head">
+          <div>
+            <span class="panel-kicker">HERO MANAGEMENT</span>
+            <h1>Roster</h1>
+          </div>
+          <span id="rosterCount" class="gear-count">0 heroes</span>
+        </div>
+        <div class="gear-roster-summary">
+          <span>One hero per class</span>
+          <small>Select a hero to manage their six equipment slots.</small>
+        </div>
+        <div id="heroRoster" class="hero-roster"></div>
+      </aside>
+
+      <section class="gear-character-panel">
+        <header class="gear-character-head">
+          <div class="gear-hero-title">
+            <span id="heroFactionBadge" class="gear-faction-badge">A</span>
+            <div>
+              <span id="heroRace" class="gear-race">Human</span>
+              <h2 id="heroName">Hero</h2>
+              <p><strong id="heroClass">Class</strong> · <span id="heroSpec">Specialization</span></p>
+            </div>
+          </div>
+          <div class="gear-level-block">
+            <span>LEVEL</span>
+            <strong id="heroLevel">1</strong>
+          </div>
+        </header>
+
+        <div class="gear-character-body">
+          <div class="gear-paperdoll">
+            <div id="leftSlots" class="gear-slot-column"></div>
+
+            <div class="gear-portrait-stage">
+              <div class="gear-portrait-ring">
+                <img id="heroPortrait" alt="" src="">
+                <span id="heroLevelBadge" class="gear-portrait-level">1</span>
+              </div>
+              <div class="gear-proficiency">
+                <span>Armor proficiency</span>
+                <strong id="armorAccess">Cloth</strong>
+              </div>
+              <div class="gear-loadout-meta">
+                <span><b id="equippedCount">0</b> / 6 equipped</span>
+                <span id="loadoutTier">Starter loadout</span>
+              </div>
+            </div>
+
+            <div id="rightSlots" class="gear-slot-column"></div>
+          </div>
+
+          <section class="gear-stats">
+            <div class="gear-stats-head">
+              <div>
+                <span class="panel-kicker">COMBAT PREVIEW</span>
+                <h3>Hero Stats</h3>
+              </div>
+              <small>Prototype values; gear balance is not final.</small>
+            </div>
+            <div id="heroStats" class="gear-stat-grid"></div>
+          </section>
+        </div>
+      </section>
+
+      <aside class="gear-armory-panel">
+        <div class="gear-panel-head armory-head">
+          <div>
+            <span class="panel-kicker">SHARED ARMORY</span>
+            <h1>Equipment</h1>
+          </div>
+          <span id="armoryCount" class="gear-count">0 items</span>
+        </div>
+
+        <div class="gear-filters">
+          <label>
+            <span>Tier</span>
+            <select id="tierFilter">
+              <option value="all">All tiers</option>
+              <option value="1">Tier 1 · White</option>
+              <option value="2">Tier 2 · Green</option>
+              <option value="3">Tier 3 · Blue</option>
+              <option value="4">Tier 4 · Epic</option>
+              <option value="5">Tier 5 · Epic</option>
+            </select>
+          </label>
+          <label>
+            <span>Slot</span>
+            <select id="slotFilter">
+              <option value="all">All slots</option>
+              <option>Head</option>
+              <option>Chest</option>
+              <option>Pants</option>
+              <option>Feet</option>
+              <option>Gloves</option>
+              <option>Weapon</option>
+            </select>
+          </label>
+          <label class="gear-search-label">
+            <span>Search</span>
+            <input id="gearSearch" type="search" placeholder="Item name or family">
+          </label>
+          <label class="gear-check">
+            <input id="equippableOnly" type="checkbox" checked>
+            <span>Equippable only</span>
+          </label>
+        </div>
+
+        <div class="gear-tier-legend" aria-label="Gear tier quality legend">
+          <span class="quality-white">T1 White</span>
+          <span class="quality-green">T2 Green</span>
+          <span class="quality-blue">T3 Blue</span>
+          <span class="quality-epic">T4 Epic</span>
+          <span class="quality-epic">T5 Epic</span>
+        </div>
+
+        <div id="armoryList" class="armory-list"></div>
+      </aside>
+    </section>
+
+    <div id="gearToast" class="base-toast" hidden></div>
+  </main>
+
+  <script src="./gear.js"></script>
+</body>
+</html>
