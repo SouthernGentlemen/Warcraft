@@ -9,5 +9,5 @@
     "name": "Every Man for Himself",
     "mechanic": "Once per combat, the first time this hero is affected by hard crowd control, there is a **35% chance** to immediately break that effect.\n\nHard crowd control includes:\n\n- stun\n- fear\n- sleep\n- incapacitate\n\nSlows, damage-over-time effects, and ordinary debuffs do not trigger the racial."
   },
-  "balance_role": ""
+  "balance_role": "Human is an encounter-utility racial. Its value is high when hard crowd control is present and zero when it is absent.\n\nThe 35% value is a starting tuning target."
 }

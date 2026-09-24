@@ -9,5 +9,5 @@
     "name": "Cannibal Strike",
     "mechanic": "This hero heals for **5% of auto-attack damage dealt**.\n\nHealing occurs after the auto-attack resolves and cannot exceed maximum health."
   },
-  "balance_role": ""
+  "balance_role": "Undead is a sustained self-healing racial.\n\nIts value scales with the hero's auto-attack contribution rather than ability burst.\n\nThe 5% conversion is a starting tuning target."
 }
