@@ -19,7 +19,7 @@
         <a href="./battle.html">Battle</a>
         <a class="active" href="./base.html">Base</a>
       </nav>
-      <div class="base-suite-actions"><button title="Settings">⚙</button></div>
+      <div class="base-suite-actions"><button data-wow-tooltip="Settings" data-wow-tooltip-type="Control" data-wow-tooltip-description="Prototype settings hook." data-wow-tooltip-variant="control">⚙</button></div>
     </header>
 
     <section class="base-game-frame">
@@ -38,11 +38,11 @@
 
       <section class="base-main-column">
         <div class="base-resource-bar" aria-label="Resources">
-          <div><span class="resource-icon gold">●</span><strong id="goldValue">25,430</strong><small>+220/s</small></div>
-          <div><span class="resource-icon lumber">▰</span><strong id="lumberValue">12,680</strong><small>+98/s</small></div>
-          <div><span class="resource-icon stone">◆</span><strong id="stoneValue">8,440</strong><small>+76/s</small></div>
-          <div><span class="resource-icon mana">♦</span><strong id="manaValue">2,350</strong><small>+24/s</small></div>
-          <div><span class="resource-icon population">♟</span><strong>78 / 120</strong><small>+4/h</small></div>
+          <div data-resource="gold" tabindex="0"><span class="resource-icon gold">●</span><strong id="goldValue">25,430</strong><small>+220/s</small></div>
+          <div data-resource="lumber" tabindex="0"><span class="resource-icon lumber">▰</span><strong id="lumberValue">12,680</strong><small>+98/s</small></div>
+          <div data-resource="stone" tabindex="0"><span class="resource-icon stone">◆</span><strong id="stoneValue">8,440</strong><small>+76/s</small></div>
+          <div data-resource="mana" tabindex="0"><span class="resource-icon mana">♦</span><strong id="manaValue">2,350</strong><small>+24/s</small></div>
+          <div data-resource="population" tabindex="0"><span class="resource-icon population">♟</span><strong>78 / 120</strong><small>+4/h</small></div>
         </div>
 
         <section class="base-map" id="baseMap" aria-label="Alliance base map">
@@ -109,10 +109,10 @@
         <footer class="base-status-strip">
           <div class="base-avatar">25</div>
           <div class="base-profile"><strong>Lord Arthorn</strong><small>12,450 / 25,000 XP</small><span><i style="width:50%"></i></span></div>
-          <div class="base-meta-stat"><span>✹</span><small>Renown</small><strong>2,450</strong></div>
-          <div class="base-meta-stat"><span>◈</span><small>Valor</small><strong>890</strong></div>
-          <div class="base-meta-stat"><span>⚜</span><small>Badges</small><strong>24</strong></div>
-          <div class="base-meta-stat"><span>▧</span><small>Deeds</small><strong>12 / 36</strong></div>
+          <div class="base-meta-stat" data-currency="renown" tabindex="0"><span>✹</span><small>Renown</small><strong>2,450</strong></div>
+          <div class="base-meta-stat" data-currency="valor" tabindex="0"><span>◈</span><small>Valor</small><strong>890</strong></div>
+          <div class="base-meta-stat" data-currency="badges" tabindex="0"><span>⚜</span><small>Badges</small><strong>24</strong></div>
+          <div class="base-meta-stat" data-currency="deeds" tabindex="0"><span>▧</span><small>Deeds</small><strong>12 / 36</strong></div>
         </footer>
       </section>
 
@@ -129,6 +129,8 @@
 
     <div class="base-toast" id="baseToast" hidden></div>
   </main>
+  <script src="./ui/wow-icons.js"></script>
+  <script src="./ui/wow-tooltips.js"></script>
   <script src="./base.js"></script>
 </body>
 </html>

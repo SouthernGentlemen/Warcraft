@@ -12,7 +12,7 @@
     <div class="battle-topbar">
       <a class="battle-back" href="./index.html">← Mockups</a>
       <span class="battle-kicker">BATTLEGROUND / COMBAT REVIEW</span>
-      <button id="resetBattle" class="battle-reset" type="button">Reset fight</button>
+      <button id="resetBattle" class="battle-reset" type="button" data-wow-tooltip="Reset fight" data-wow-tooltip-type="Control" data-wow-tooltip-description="Restart the current prototype encounter." data-wow-tooltip-variant="control">Reset fight</button>
     </div>
 
     <section class="battle-frame" aria-label="Alliance versus Horde battle mockup">
@@ -33,8 +33,8 @@
 
         <section class="battle-control-stack" aria-label="Battle controls">
           <div class="battle-control-row">
-            <button id="pauseBattle" class="battle-control primary" type="button" aria-label="Pause battle">Ⅱ</button>
-            <button id="fastForward" class="battle-control" type="button" aria-label="Increase battle speed">»</button>
+            <button id="pauseBattle" class="battle-control primary" type="button" aria-label="Pause battle" data-wow-tooltip="Pause or resume" data-wow-tooltip-type="Battle control" data-wow-tooltip-description="Toggle automatic combat progression." data-wow-tooltip-variant="control">Ⅱ</button>
+            <button id="fastForward" class="battle-control" type="button" aria-label="Increase battle speed" data-wow-tooltip="Battle speed" data-wow-tooltip-type="Battle control" data-wow-tooltip-description="Cycle between the available combat playback speeds." data-wow-tooltip-variant="control">»</button>
           </div>
           <div id="speedButtons" class="speed-buttons" aria-label="Battle speed">
             <button class="active" type="button" data-speed="1">1×</button>
@@ -98,6 +98,7 @@
   </main>
 
   <script src="./ui/wow-icons.js"></script>
+  <script src="./ui/wow-tooltips.js"></script>
   <script src="./battle.js"></script>
 </body>
 </html>

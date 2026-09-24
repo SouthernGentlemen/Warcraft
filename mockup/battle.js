@@ -1,4 +1,5 @@
 const Icons = window.WowUIIcons;
+const Tooltips = window.WowUITooltips;
 
 const BASE_TEAMS = {
   alliance: [
@@ -47,6 +48,48 @@ function resourceLabel(unit) {
   return "Mana";
 }
 
+function unitTooltipModel(unit, faction) {
+  const resource = resourceLabel(unit);
+  return {
+    variant:"unit",
+    title:unit.name,
+    type:unit.race + " " + unit.className,
+    classId:slug(unit.className),
+    icon:{slug:unit.icon, classId:slug(unit.className)},
+    description:unit.role.charAt(0).toUpperCase() + unit.role.slice(1) + " combatant.",
+    stats:[
+      {label:"Health", value:unit.currentHp + " / " + unit.hp},
+      {label:resource, value:unit.currentResource + " / " + unit.resource},
+      {label:"Power", value:String(unit.power)}
+    ],
+    meta:[
+      {label:"Faction", value:faction === "alliance" ? "Alliance" : "Horde"},
+      {label:"Level", value:String(unit.level)}
+    ],
+    locked:unit.currentHp <= 0 ? ["Defeated"] : []
+  };
+}
+
+function resourceTooltipModel(unit) {
+  const resource = resourceLabel(unit);
+  return {
+    variant:"resource",
+    title:resource,
+    type:"Combat resource",
+    icon:{category:"resource", key:resource},
+    description:resource === "Rage"
+      ? "Generated and spent through combat actions."
+      : resource === "Energy"
+        ? "Fast-regenerating combat resource."
+        : "Spellcasting resource used by this unit.",
+    stats:[
+      {label:"Current", value:String(unit.currentResource)},
+      {label:"Maximum", value:String(unit.resource)}
+    ],
+    meta:{label:"Owner", value:unit.name}
+  };
+}
+
 function unitMarkup(unit, faction) {
   const article = document.createElement("article");
   article.className = "combatant " + faction + "-combatant class-" + slug(unit.className);
@@ -66,9 +109,13 @@ function unitMarkup(unit, faction) {
     '<strong class="combatant-name">' + unit.name + '</strong>' +
     '<span class="combatant-meta">' + unit.race + ' · ' + unit.className + '</span>' +
     '<div class="mini-stat hp-stat"><span class="mini-fill"></span><b>' + unit.currentHp + '</b></div>' +
-    '<div class="mini-stat resource-stat" title="' + resourceLabel(unit) + '"><span class="mini-fill"></span><b>' + unit.currentResource + '</b></div>';
+    '<div class="mini-stat resource-stat" tabindex="0"><span class="mini-fill"></span><b>' + unit.currentResource + '</b></div>';
 
   article.querySelectorAll("img").forEach(Icons.bindFallback);
+  const avatar = article.querySelector(".combatant-avatar");
+  avatar.tabIndex = 0;
+  Tooltips.attach(avatar, function() { return unitTooltipModel(unit, faction); });
+  Tooltips.attach(article.querySelector(".resource-stat"), function() { return resourceTooltipModel(unit); });
 
   return article;
 }
@@ -334,6 +381,7 @@ function resetBattle() {
 
 function init() {
   Icons.hydrate(document);
+  Tooltips.hydrate(document);
   $("pauseBattle").addEventListener("click", () => setPaused(!state.paused));
   $("fastForward").addEventListener("click", nextSpeed);
   $("resetBattle").addEventListener("click", resetBattle);

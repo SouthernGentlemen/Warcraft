@@ -1,4 +1,6 @@
 const DATA_ROOT = "../data/heroes/races/";
+const Icons = window.WowUIIcons;
+const Tooltips = window.WowUITooltips;
 const state = { index: null, faction: "alliance", body: "body-1", race: null };
 
 const $ = (id) => document.getElementById(id);
@@ -24,6 +26,33 @@ function currentFaction() { return state.index.factions[state.faction]; }
 function currentRaceMeta() { return currentFaction().races.find(r => r.id === state.race); }
 function bodyMeta() { return state.index.body_types.find(b => b.id === state.body); }
 
+function raceTooltipModel(race, faction) {
+  return {
+    variant:"race",
+    title:race.label,
+    type:faction.label + " race",
+    icon:{category:"race", key:race.id},
+    description:"Select this race to review its racial talent and class availability.",
+    stats:{label:"Available classes", value:String(faction.available_classes.length)},
+    meta:{label:"Faction", value:faction.label}
+  };
+}
+
+function classTooltipModel(name, faction) {
+  const classId = String(name).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const exclusive = name === faction.exclusive_class;
+  return {
+    variant:"class",
+    title:name,
+    type:"Available class",
+    classId:classId,
+    icon:{category:"class", key:classId, classId:classId},
+    description:"Available under the current " + faction.label + " prototype rules.",
+    meta:{label:"Faction", value:faction.label},
+    requirements:exclusive ? [{label:"Faction class", value:faction.label + " only"}] : []
+  };
+}
+
 async function renderRace() {
   const faction = currentFaction();
   const meta = currentRaceMeta();
@@ -46,6 +75,8 @@ async function renderRace() {
     const chip = document.createElement("span");
     chip.className = "class-chip" + (name === faction.exclusive_class ? " exclusive" : "");
     chip.textContent = name + (name === faction.exclusive_class ? " · faction" : "");
+    chip.tabIndex = 0;
+    Tooltips.attach(chip, () => classTooltipModel(name, faction), {anchor:"target"});
     $("classGrid").appendChild(chip);
   });
 
@@ -60,6 +91,7 @@ function renderRaceList() {
     button.className = "race-button " + state.faction;
     button.dataset.race = r.id;
     button.innerHTML = "<strong>" + escapeHtml(r.label) + "</strong><span>View racial & classes</span>";
+    Tooltips.attach(button, () => raceTooltipModel(r, faction));
     button.addEventListener("click", async () => {
       state.race = r.id;
       await renderRace();
@@ -84,6 +116,8 @@ function setBody(bodyId) {
 
 async function init() {
   try {
+    Icons.hydrate(document);
+    Tooltips.hydrate(document);
     state.index = await loadJson(DATA_ROOT + "index.json");
     document.querySelectorAll("#factionToggle button").forEach(b => b.addEventListener("click", () => setFaction(b.dataset.faction)));
     document.querySelectorAll("#bodyToggle button").forEach(b => b.addEventListener("click", () => setBody(b.dataset.body)));

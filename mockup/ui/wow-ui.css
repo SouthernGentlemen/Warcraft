@@ -876,6 +876,233 @@ button:focus-visible .wow-icon-frame {
 .wow-class--warlock { --wow-class-color: var(--wow-class-warlock); color: var(--wow-class-warlock); }
 .wow-class--warrior { --wow-class-color: var(--wow-class-warrior); color: var(--wow-class-warrior); }
 
+/* Shared dense Warcraft tooltip system */
+.wow-tooltip-layer[hidden] { display: none !important; }
+
+.wow-tooltip-layer {
+  position: fixed;
+  z-index: 12000;
+  inset: 0;
+  pointer-events: none;
+  font-family: var(--wow-font-ui);
+}
+
+.wow-tooltip-group {
+  position: fixed;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  max-width: calc(100vw - 16px);
+  pointer-events: none;
+}
+
+.wow-tooltip-card {
+  --wow-tooltip-accent: var(--wow-frame-inner);
+  position: relative;
+  width: min(286px, calc(100vw - 16px));
+  padding: 9px 10px 10px;
+  overflow: hidden;
+  border: 2px solid #08090a;
+  border-radius: var(--wow-radius-tight);
+  background:
+    linear-gradient(180deg, rgba(27, 33, 40, 0.98), rgba(6, 9, 13, 0.985)),
+    var(--wow-surface-inset);
+  color: var(--wow-text);
+  box-shadow:
+    0 0 0 1px var(--wow-tooltip-accent),
+    inset 0 0 0 1px rgba(255,255,255,0.045),
+    0 8px 24px rgba(0, 0, 0, 0.72);
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: left;
+}
+
+.wow-tooltip-card[data-wow-tooltip-comparison="true"] {
+  --wow-tooltip-accent: var(--wow-gold-muted);
+}
+
+.wow-tooltip--quality-poor { --wow-tooltip-accent: var(--wow-rarity-poor); }
+.wow-tooltip--quality-common { --wow-tooltip-accent: var(--wow-rarity-common); }
+.wow-tooltip--quality-uncommon { --wow-tooltip-accent: var(--wow-rarity-uncommon); }
+.wow-tooltip--quality-rare { --wow-tooltip-accent: var(--wow-rarity-rare); }
+.wow-tooltip--quality-epic { --wow-tooltip-accent: var(--wow-rarity-epic); }
+.wow-tooltip--quality-legendary { --wow-tooltip-accent: var(--wow-rarity-legendary); }
+
+.wow-tooltip--class-druid { --wow-tooltip-accent: var(--wow-class-druid); }
+.wow-tooltip--class-hunter { --wow-tooltip-accent: var(--wow-class-hunter); }
+.wow-tooltip--class-mage { --wow-tooltip-accent: var(--wow-class-mage); }
+.wow-tooltip--class-paladin { --wow-tooltip-accent: var(--wow-class-paladin); }
+.wow-tooltip--class-priest { --wow-tooltip-accent: var(--wow-class-priest); }
+.wow-tooltip--class-rogue { --wow-tooltip-accent: var(--wow-class-rogue); }
+.wow-tooltip--class-shaman { --wow-tooltip-accent: var(--wow-class-shaman); }
+.wow-tooltip--class-warlock { --wow-tooltip-accent: var(--wow-class-warlock); }
+.wow-tooltip--class-warrior { --wow-tooltip-accent: var(--wow-class-warrior); }
+
+.wow-tooltip__badge {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  padding: 2px 4px;
+  border: 1px solid var(--wow-gold-muted);
+  background: #10110e;
+  color: var(--wow-gold-pale);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.wow-tooltip__header {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 8px;
+  padding-right: 38px;
+}
+
+.wow-tooltip__heading {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.wow-tooltip__icon {
+  --wow-icon-size: 34px;
+  flex: 0 0 34px;
+}
+
+.wow-tooltip__title {
+  display: block;
+  color: var(--wow-gold-pale);
+  font-family: var(--wow-font-display);
+  font-size: 14px;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.wow-tooltip--item .wow-tooltip__title,
+.wow-tooltip--equipment .wow-tooltip__title {
+  color: var(--wow-tooltip-accent);
+}
+
+.wow-tooltip__type {
+  color: var(--wow-text-muted);
+  font-size: 9px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.wow-tooltip__requirements,
+.wow-tooltip__description,
+.wow-tooltip__stats,
+.wow-tooltip__meta,
+.wow-tooltip__locked {
+  margin-top: 7px;
+}
+
+.wow-tooltip__requirements {
+  padding-top: 6px;
+  border-top: 1px solid #343a40;
+  color: #d6d0c1;
+}
+
+.wow-tooltip__description {
+  color: #f0d474;
+  line-height: 1.35;
+}
+
+.wow-tooltip__stats {
+  display: grid;
+  gap: 2px;
+  padding-top: 6px;
+  border-top: 1px solid #2a3036;
+}
+
+.wow-tooltip__stat,
+.wow-tooltip__requirement,
+.wow-tooltip__meta-row,
+.wow-tooltip__locked-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.wow-tooltip__stat span,
+.wow-tooltip__requirement span,
+.wow-tooltip__meta-row span {
+  color: var(--wow-text-muted);
+}
+
+.wow-tooltip__stat strong,
+.wow-tooltip__requirement strong,
+.wow-tooltip__meta-row strong {
+  color: var(--wow-text);
+  font-weight: 700;
+  text-align: right;
+}
+
+.wow-tooltip__stat.is-positive strong,
+.wow-tooltip__stat.is-positive {
+  color: var(--wow-success);
+}
+
+.wow-tooltip__stat.is-negative strong,
+.wow-tooltip__stat.is-negative {
+  color: var(--wow-error);
+}
+
+.wow-tooltip__meta {
+  color: var(--wow-text-dim);
+  font-size: 9px;
+}
+
+.wow-tooltip__locked {
+  padding-top: 6px;
+  border-top: 1px solid var(--wow-error-deep);
+  color: #ff6969;
+  font-weight: 700;
+}
+
+.wow-tooltip__locked-row {
+  justify-content: flex-start;
+}
+
+.wow-tooltip--generic,
+.wow-tooltip--control {
+  width: min(230px, calc(100vw - 16px));
+}
+
+.wow-tooltip--class,
+.wow-tooltip--race,
+.wow-tooltip--class-race,
+.wow-tooltip--resource,
+.wow-tooltip--currency {
+  width: min(250px, calc(100vw - 16px));
+}
+
+.wow-tooltip--talent,
+.wow-tooltip--ability,
+.wow-tooltip--item,
+.wow-tooltip--equipment,
+.wow-tooltip--unit,
+.wow-tooltip--building,
+.wow-tooltip--profession {
+  width: min(286px, calc(100vw - 16px));
+}
+
+@media (max-width: 620px) {
+  .wow-tooltip-group.has-comparison {
+    flex-direction: column;
+  }
+
+  .wow-tooltip-group.has-comparison .wow-tooltip-card {
+    width: min(300px, calc(100vw - 16px));
+  }
+}
+
 /* Reference page only. This does not affect existing mockup screens. */
 .wow-demo {
   min-height: 100vh;

@@ -1,5 +1,6 @@
 const CLASS_DATA_ROOT = "../data/heroes/classes/";
 const Icons = window.WowUIIcons;
+const Tooltips = window.WowUITooltips;
 
 const SLOT_ORDER = ["Head", "Chest", "Pants", "Feet", "Gloves", "Weapon"];
 const LEFT_SLOTS = ["Head", "Chest", "Gloves"];
@@ -237,6 +238,46 @@ function qualityFrameClass(item) {
   return "wow-icon-frame--quality-" + item.qualityKey;
 }
 
+function itemTooltipModel(item, hero, options) {
+  if (!item) return null;
+  const eligibility = canEquip(hero, item);
+  const config = options || {};
+  return {
+    variant:"item",
+    title:item.name,
+    type:item.quality + " " + item.slot,
+    quality:item.qualityKey,
+    badge:config.badge || "",
+    icon:{slug:item.icon, quality:item.qualityKey},
+    requirements:[
+      {label:"Required level", value:String(item.tier)},
+      {label:"Slot", value:item.slot}
+    ],
+    description:config.description || (eligibility.ok ? "Equipment for " + hero.classLabel + "." : "This item cannot currently be equipped."),
+    stats:item.stats.length
+      ? item.stats.map(function(line) { return {label:line.stat, value:"+" + line.value}; })
+      : [{label:"Bonus stats", value:"None"}],
+    meta:[
+      {label:"Tier", value:"T" + item.tier},
+      {label:"Family", value:item.family}
+    ],
+    locked:eligibility.ok ? [] : [eligibility.reason]
+  };
+}
+
+function itemComparisonTooltip(item, hero) {
+  const model = itemTooltipModel(item, hero, {badge:equippedBySelectedHero(item) ? "Equipped" : "Candidate"});
+  if (!model || equippedBySelectedHero(item)) return model;
+  const equipped = getItem(hero.equipment[item.slot]);
+  if (equipped && equipped.id !== item.id) {
+    model.comparison = itemTooltipModel(equipped, hero, {
+      badge:"Equipped",
+      description:"Currently equipped in this slot."
+    });
+  }
+  return model;
+}
+
 function renderRoster() {
   const root = $("heroRoster");
   root.innerHTML = "";
@@ -307,7 +348,9 @@ function renderSlots() {
       const img = button.querySelector("img");
       if (img) Icons.bindFallback(img);
       if (item) {
-        button.title = "Unequip " + item.name;
+        Tooltips.attach(button, function() {
+          return itemTooltipModel(item, hero, {badge:"Equipped", description:"Click to unequip this item."});
+        });
         button.addEventListener("click", function() {
           hero.equipment[slot] = null;
           toast("Unequipped " + item.name);
@@ -448,7 +491,7 @@ function renderArmory() {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "armory-item " + qualityClass(item) + (eligibility.ok ? "" : " locked") + (equipped ? " equipped" : "");
-    card.disabled = !eligibility.ok;
+    if (!eligibility.ok) card.setAttribute("aria-disabled", "true");
     card.innerHTML =
       '<span class="armory-item-icon wow-icon-frame ' + qualityFrameClass(item) + (eligibility.ok ? "" : " is-locked") + (equipped ? " is-selected" : "") + '">' +
         '<img src="' + Icons.iconUrl(item.icon) + '" alt="">' +
@@ -462,6 +505,7 @@ function renderArmory() {
       '</span>' +
       '<span class="armory-equip-action">' + (equipped ? "Equipped" : eligibility.ok ? "Equip" : "Locked") + '</span>';
     Icons.bindFallback(card.querySelector("img"));
+    Tooltips.attach(card, function() { return itemComparisonTooltip(item, hero); });
 
     if (eligibility.ok) {
       card.addEventListener("click", function() {
@@ -520,6 +564,7 @@ async function loadJson(path) {
 
 async function init() {
   try {
+    Tooltips.hydrate(document);
     state.items = buildArmory();
     state.classIndex = await loadJson(CLASS_DATA_ROOT + "index.json");
     state.heroes = buildHeroes(state.classIndex);

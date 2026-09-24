@@ -1,5 +1,6 @@
 const DATA_ROOT = "../data/heroes/classes/";
 const Icons = window.WowUIIcons;
+const Tooltips = window.WowUITooltips;
 
 const TREE_THEMES = [
   {accent:"#62b17a", glow:"rgba(25,111,84,.66)", tint:"rgba(14,84,72,.48)"},
@@ -154,42 +155,27 @@ function tooltipRequirement(specId, tier, selected) {
   return requirementFor(specId, tier);
 }
 
-function showTooltip(event, specId, tier, item, selected) {
+function talentTooltipModel(specId, tier, item, selected, iconUrl) {
   const spec = state.specs.get(specId);
   const requirement = tooltipRequirement(specId, tier, selected);
   const level = tier === "tier_1" ? 1 : tier === "tier_2" ? 2 : 3;
 
-  $("talentTooltip").innerHTML = `
-    <div class="wow-tooltip-title">${escapeHtml(item.name)}</div>
-    <div class="wow-tooltip-type">Talent</div>
-    <div class="wow-tooltip-requires">Requires ${escapeHtml(state.classMeta.label)}</div>
-    <div class="wow-tooltip-effect">${escapeHtml(item.effect)}</div>
-    <div class="wow-tooltip-meta">${escapeHtml(spec.specialization)} · ${tierLabel(tier)} · Level ${level}</div>
-    ${requirement ? `<div class="wow-tooltip-locked">${escapeHtml(requirement)}</div>` : ""}
-  `;
-
-  $("talentTooltip").hidden = false;
-  positionTooltip(event);
-}
-
-function positionTooltip(event) {
-  const tooltip = $("talentTooltip");
-  if (tooltip.hidden) return;
-
-  const pad = 18;
-  const rect = tooltip.getBoundingClientRect();
-  let left = event.clientX + 18;
-  let top = event.clientY + 18;
-
-  if (left + rect.width + pad > window.innerWidth) left = event.clientX - rect.width - 18;
-  if (top + rect.height + pad > window.innerHeight) top = event.clientY - rect.height - 18;
-
-  tooltip.style.left = Math.max(pad, left) + "px";
-  tooltip.style.top = Math.max(pad, top) + "px";
-}
-
-function hideTooltip() {
-  $("talentTooltip").hidden = true;
+  return {
+    variant:"talent",
+    title:item.name,
+    type:"Talent",
+    icon:{url:iconUrl, classId:state.classMeta.id},
+    requirements:[
+      {label:"Class", value:state.classMeta.label},
+      {label:"Required level", value:String(level)}
+    ],
+    description:item.effect,
+    meta:[
+      {label:"Specialization", value:spec.specialization},
+      {label:"Tier", value:tierLabel(tier)}
+    ],
+    locked:requirement ? [requirement] : []
+  };
 }
 
 function connectorSvg(specId) {
@@ -225,23 +211,22 @@ function createTalentNode(specId, tier, item, index, capstone=false) {
 
   button.type = "button";
   button.dataset.talent = item.name;
+  const talentIconUrl = Icons.talentUrl(specId, item.name, index);
   button.innerHTML = `
     <span class="wow-icon-frame wow-icon-frame--lg${selected ? " is-selected" : ""}${canUse ? "" : " is-locked"}">
-      <img src="${Icons.talentUrl(specId, item.name, index)}" alt="" loading="lazy">
+      <img src="${talentIconUrl}" alt="" loading="lazy">
       <span class="wow-icon-rank">${selected ? "1" : "0"}/1</span>
     </span>
   `;
 
   Icons.bindFallback(button.querySelector("img"));
+  Tooltips.attach(button, () => talentTooltipModel(specId, tier, item, selected, talentIconUrl));
 
   button.addEventListener("click", () => choose(specId, tier, item.name));
   button.addEventListener("contextmenu", event => {
     event.preventDefault();
     unlearn(specId, tier, item.name);
   });
-  button.addEventListener("mouseenter", event => showTooltip(event, specId, tier, item, selected));
-  button.addEventListener("mousemove", positionTooltip);
-  button.addEventListener("mouseleave", hideTooltip);
 
   return button;
 }
@@ -341,14 +326,14 @@ async function changeClass(classId) {
 
   state.primarySpec = null;
   state.picks = blankPicks();
-  hideTooltip();
+  Tooltips.hide();
   render();
 }
 
 function resetBuild() {
   state.primarySpec = null;
   state.picks = blankPicks();
-  hideTooltip();
+  Tooltips.hide();
   render();
 }
 

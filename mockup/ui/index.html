@@ -11,13 +11,13 @@
     <section class="wow-frame">
       <header class="wow-titlebar">
         <div>
-          <div class="wow-kicker">WOWUI-001 + WOWUI-002 / SHARED UI</div>
-          <h1 class="wow-title">Warcraft UI & Icon Reference</h1>
+          <div class="wow-kicker">WOWUI-001–003 / SHARED UI</div>
+          <h1 class="wow-title">Warcraft UI, Icon & Tooltip Reference</h1>
         </div>
         <a class="wow-button" href="../index.html">Mockups</a>
       </header>
       <div class="wow-demo__section">
-        <p class="wow-ui-text">This page is the class contract for later mockup migrations. Shared visuals come from <code class="wow-tech">ui/wow-ui.css</code>; semantic icon URLs and fallback behavior come from <code class="wow-tech">ui/wow-icons.js</code>.</p>
+        <p class="wow-ui-text">This page is the class contract for later mockup migrations. Shared visuals come from <code class="wow-tech">ui/wow-ui.css</code>, semantic icon URLs from <code class="wow-tech">ui/wow-icons.js</code>, and dense hover/focus tooltips from <code class="wow-tech">ui/wow-tooltips.js</code>.</p>
       </div>
     </section>
 
@@ -54,21 +54,21 @@
             <button class="wow-button is-locked" type="button" aria-disabled="true">Locked</button>
           </div>
           <div class="wow-demo__row" aria-label="Shared icon frame states">
-            <span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-mage" title="Class color">
+            <span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-mage" data-wow-tooltip="Mage class color" data-wow-tooltip-type="Class icon" data-wow-tooltip-description="Class frames use the shared class-color token." data-wow-tooltip-variant="class">
               <img data-wow-icon="class" data-wow-key="mage" alt="Mage icon">
               <span class="wow-icon-count">3</span>
             </span>
-            <span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--quality-epic is-selected" title="Selected epic">
+            <span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--quality-epic is-selected" data-wow-tooltip="Selected epic item" data-wow-tooltip-type="Icon state" data-wow-tooltip-description="Quality and selected state compose independently." data-wow-tooltip-variant="item">
               <img data-wow-icon="item-family" data-wow-key="staff" alt="Epic staff icon">
               <span class="wow-icon-rank">2/5</span>
             </span>
-            <span class="wow-icon-frame wow-icon-frame--md is-locked" title="Locked">
+            <span class="wow-icon-frame wow-icon-frame--md is-locked" data-wow-tooltip="Locked state" data-wow-tooltip-type="Icon state" data-wow-tooltip-description="Locked icons remain readable while clearly unavailable." data-wow-tooltip-variant="talent" data-wow-tooltip-locked="Requirement not met">
               <img data-wow-icon="talent" data-wow-key="locked" alt="Locked icon">
             </span>
-            <span class="wow-icon-frame wow-icon-frame--md is-disabled" title="Disabled">
+            <span class="wow-icon-frame wow-icon-frame--md is-disabled" data-wow-tooltip="Disabled state" data-wow-tooltip-type="Icon state" data-wow-tooltip-description="Disabled icons use the shared muted treatment." data-wow-tooltip-variant="control">
               <img data-wow-icon="ability" data-wow-key="defensive" alt="Disabled ability icon">
             </span>
-            <span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-rogue" title="Cooldown hook">
+            <span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-rogue" data-wow-tooltip="Cooldown overlay" data-wow-tooltip-type="Ability state" data-wow-tooltip-description="Cooldown progress can overlay an icon without changing its semantic frame." data-wow-tooltip-variant="ability">
               <img data-wow-icon="ability" data-wow-key="movement" alt="Cooldown ability icon">
               <span class="wow-icon-cooldown" style="--wow-cooldown:38%"></span>
             </span>
@@ -118,6 +118,42 @@
       </section>
 
       <section class="wow-frame">
+        <header class="wow-titlebar"><h2 class="wow-title">Shared Tooltips</h2></header>
+        <div class="wow-demo__section">
+          <p class="wow-ui-text">Every tooltip uses the same structured rows and controller. Hover or keyboard-focus these controls.</p>
+          <div class="wow-demo__row">
+            <button class="wow-button" type="button"
+              data-wow-tooltip="Generic control"
+              data-wow-tooltip-type="Control"
+              data-wow-tooltip-description="Compact control help follows the same collision and focus behavior."
+              data-wow-tooltip-variant="control">Control</button>
+            <button class="wow-button" type="button"
+              data-wow-tooltip="Orc"
+              data-wow-tooltip-type="Horde race"
+              data-wow-tooltip-description="Race and class information use the compact class/race variant."
+              data-wow-tooltip-variant="race"
+              data-wow-tooltip-icon-category="race"
+              data-wow-tooltip-icon-key="orc">Race</button>
+            <button class="wow-button" type="button"
+              data-wow-tooltip="Mana"
+              data-wow-tooltip-type="Resource"
+              data-wow-tooltip-description="Resources and currencies stay dense and numeric."
+              data-wow-tooltip-variant="resource"
+              data-wow-tooltip-icon-category="resource"
+              data-wow-tooltip-icon-key="mana">Resource</button>
+            <button class="wow-button" type="button"
+              data-wow-tooltip="Blacksmith"
+              data-wow-tooltip-type="Profession building"
+              data-wow-tooltip-description="Building and profession concepts use the same structured engine."
+              data-wow-tooltip-variant="profession"
+              data-wow-tooltip-icon-category="profession"
+              data-wow-tooltip-icon-key="blacksmith">Building</button>
+            <button id="tooltipCompareDemo" class="wow-button wow-button--primary" type="button">Item comparison</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="wow-frame">
         <header class="wow-titlebar"><h2 class="wow-title">Status &amp; Scroll</h2></header>
         <div class="wow-demo__section">
           <div class="wow-demo__bar-stack">
@@ -139,6 +175,41 @@
     </div>
   </main>
   <script src="./wow-icons.js"></script>
-  <script>window.WowUIIcons.hydrate(document);</script>
+  <script src="./wow-tooltips.js"></script>
+  <script>
+    window.WowUIIcons.hydrate(document);
+    window.WowUITooltips.hydrate(document);
+    window.WowUITooltips.attach(document.getElementById("tooltipCompareDemo"), function() {
+      return {
+        variant:"item",
+        title:"Ascendant Spellstaff",
+        type:"Epic Weapon",
+        quality:"epic",
+        badge:"Candidate",
+        icon:{category:"item-family",key:"staff",quality:"epic"},
+        requirements:{label:"Required level",value:"5"},
+        description:"Candidate equipment shown beside the currently equipped item.",
+        stats:[
+          {label:"Intellect",value:"+13",tone:"positive"},
+          {label:"Stamina",value:"+12",tone:"positive"}
+        ],
+        meta:[{label:"Tier",value:"T5"},{label:"Slot",value:"Weapon"}],
+        comparison:{
+          variant:"item",
+          title:"Veteran's Spellstaff",
+          type:"Rare Weapon",
+          quality:"rare",
+          badge:"Equipped",
+          icon:{category:"item-family",key:"staff",quality:"rare"},
+          description:"Currently equipped item.",
+          stats:[
+            {label:"Intellect",value:"+6"},
+            {label:"Stamina",value:"+5"}
+          ],
+          meta:[{label:"Tier",value:"T3"},{label:"Slot",value:"Weapon"}]
+        }
+      };
+    });
+  </script>
 </body>
 </html>

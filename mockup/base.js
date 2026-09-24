@@ -1,3 +1,5 @@
+const Icons = window.WowUIIcons;
+const Tooltips = window.WowUITooltips;
 const buildings = [
   { id: 'keep', name: 'Headquarters (Keep)', short: 'Keep', category: 'core', icon: '🏰', level: 10, max: 20, description: 'The heart of your base. Unlocks buildings, tiers, and roster capacity.', costs: [3000, 2000, 500] },
   { id: 'barracks', name: 'Barracks', category: 'core', icon: '⚔️', level: 6, max: 20, description: 'Trains footmen and basic military units.', costs: [1200, 800, 200] },
@@ -22,7 +24,81 @@ const state = {
 
 const fmt = value => value.toLocaleString('en-US');
 const $ = selector => document.querySelector(selector);
-const $$ = selector => [...document.querySelectorAll(selector)];
+const $ = selector => [...document.querySelectorAll(selector)];
+
+const buildingIconKeys = {
+  keep:['building','keep'],
+  barracks:['building','barracks'],
+  training:['building','training-grounds'],
+  recruitment:['building','recruitment-hall'],
+  command:['building','command-hall'],
+  storehouse:['building','storehouse'],
+  blacksmith:['profession','blacksmith'],
+  alchemy:['profession','alchemist'],
+  enchanter:['profession','enchanter'],
+  tailor:['profession','tailor'],
+  leather:['profession','leatherworker'],
+  engineer:['profession','engineer']
+};
+
+function buildingTooltipModel(building) {
+  const icon = buildingIconKeys[building.id] || ['building','keep'];
+  return {
+    variant:building.category === 'profession' ? 'profession' : 'building',
+    title:building.name,
+    type:building.category === 'profession' ? 'Profession building' : 'Base building',
+    icon:{category:icon[0], key:icon[1]},
+    description:building.description,
+    stats:[
+      {label:'Level', value:building.level + ' / ' + building.max},
+      {label:'Gold', value:fmt(building.costs[0])},
+      {label:'Lumber', value:fmt(building.costs[1])},
+      {label:'Stone', value:fmt(building.costs[2])}
+    ],
+    meta:{label:'Category', value:building.category === 'profession' ? 'Profession' : 'Core'},
+    locked:building.level >= building.max ? ['Maximum level reached'] : []
+  };
+}
+
+function resourceTooltipModel(key, element) {
+  const names = {gold:'Gold', lumber:'Lumber', stone:'Stone', mana:'Mana', population:'Population'};
+  const current = key === 'population'
+    ? element.querySelector('strong').textContent
+    : fmt(state.resources[key]);
+  return {
+    variant:'resource',
+    title:names[key] || key,
+    type:'Base resource',
+    icon:{category:'resource', key:key},
+    description:key === 'population'
+      ? 'Current roster and settlement capacity.'
+      : 'Persistent base resource used for upgrades and progression.',
+    stats:[
+      {label:'Current', value:current},
+      {label:'Rate', value:element.querySelector('small') ? element.querySelector('small').textContent : '—'}
+    ]
+  };
+}
+
+function currencyTooltipModel(key, element) {
+  const name = element.querySelector('small') ? element.querySelector('small').textContent : key;
+  return {
+    variant:'currency',
+    title:name,
+    type:'Account currency',
+    icon:{category:'currency', key:key},
+    description:'Persistent progression currency shown in the base status strip.',
+    stats:{label:'Current', value:element.querySelector('strong') ? element.querySelector('strong').textContent : '—'}
+  };
+}
+
+function bindBuildingTooltips(root) {
+  root.querySelectorAll('[data-select-building], [data-upgrade]').forEach(button => {
+    const id = button.dataset.selectBuilding || button.dataset.upgrade;
+    const building = buildings.find(entry => entry.id === id);
+    if (building) Tooltips.attach(button, () => buildingTooltipModel(building));
+  });
+}
 
 function syncResourceBar() {
   $('#goldValue').textContent = fmt(state.resources.gold);
@@ -49,6 +125,7 @@ function renderBuildings() {
       <button class="building-upgrade" data-upgrade="${b.id}" ${b.level >= b.max ? 'disabled' : ''}>${b.level >= b.max ? 'Max' : 'Upgrade'}</button>
     </article>`).join('');
 
+  bindBuildingTooltips(list);
   renderSelection();
 }
 
@@ -147,6 +224,18 @@ $('.base-game-nav').addEventListener('click', event => {
   if (!button) return;
   if (button.dataset.panel === 'base') return;
   toast(`${button.textContent.trim()} is a navigation hook in this base mockup.`);
+});
+
+Tooltips.hydrate(document);
+$('[data-building]').forEach(plot => {
+  const building = buildings.find(entry => entry.id === plot.dataset.building);
+  if (building) Tooltips.attach(plot, () => buildingTooltipModel(building));
+});
+$('[data-resource]').forEach(element => {
+  Tooltips.attach(element, () => resourceTooltipModel(element.dataset.resource, element), {anchor:'target'});
+});
+$('[data-currency]').forEach(element => {
+  Tooltips.attach(element, () => currencyTooltipModel(element.dataset.currency, element), {anchor:'target'});
 });
 
 syncResourceBar();
