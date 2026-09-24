@@ -134,7 +134,7 @@
   display: block;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, var(--wow-health-bright), var(--wow-health), var(--wow-health-deep));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--wow-health) 72%, white), var(--wow-health), var(--wow-health-dark));
   box-shadow: inset 0 1px rgba(255,255,255,.24);
   transition: width .22s ease;
 }
@@ -571,15 +571,15 @@
 }
 
 .resource-stat .mini-fill {
-  background: linear-gradient(180deg, var(--wow-resource-mana-bright), var(--wow-resource-mana), var(--wow-resource-mana-deep));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--wow-mana) 72%, white), var(--wow-mana), color-mix(in srgb, var(--wow-mana) 58%, black));
 }
 
 .wow-class--warrior .resource-stat .mini-fill {
-  background: linear-gradient(180deg, var(--wow-resource-rage-bright), var(--wow-resource-rage), var(--wow-resource-rage-deep));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--wow-rage) 72%, white), var(--wow-rage), color-mix(in srgb, var(--wow-rage) 58%, black));
 }
 
 .wow-class--rogue .resource-stat .mini-fill {
-  background: linear-gradient(180deg, var(--wow-resource-energy-bright), var(--wow-resource-energy), var(--wow-resource-energy-deep));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--wow-energy) 72%, white), var(--wow-energy), color-mix(in srgb, var(--wow-energy) 58%, black));
 }
 
 .unit-status-row {
@@ -805,7 +805,7 @@
 }
 
 .legend-swatch.hp { background: var(--wow-health); }
-.legend-swatch.resource { background: var(--wow-resource-mana); }
+.legend-swatch.resource { background: var(--wow-mana); }
 .legend-swatch.action { background: var(--wow-gold-muted); }
 
 @keyframes combat-hit {
