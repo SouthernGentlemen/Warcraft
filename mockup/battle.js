@@ -91,31 +91,59 @@ function resourceTooltipModel(unit) {
 }
 
 function unitMarkup(unit, faction) {
+  const classId = slug(unit.className);
+  const resource = resourceLabel(unit);
   const article = document.createElement("article");
-  article.className = "combatant " + faction + "-combatant class-" + slug(unit.className);
+  article.className = "combatant unit-frame wow-class--" + classId + " " + faction + "-combatant";
   article.dataset.unit = unit.id;
   article.innerHTML =
-    '<div class="combatant-topline">' +
-      '<span class="combatant-level">LV. ' + unit.level + '</span>' +
-      '<span class="combatant-role">' + unit.role.toUpperCase() + '</span>' +
-    '</div>' +
-    '<div class="combatant-avatar wow-icon-frame wow-icon-frame--class-' + slug(unit.className) + '">' +
-      '<span class="combatant-glow"></span>' +
-      '<img src="' + Icons.iconUrl(unit.icon) + '" alt="" loading="lazy">' +
-      '<span class="race-badge wow-icon-frame wow-icon-frame--xs">' +
-        '<img src="' + Icons.resolve("race", unit.race) + '" alt="" loading="lazy">' +
+    '<div class="unit-portrait wow-icon-frame">' +
+      '<img src="' + Icons.resolve("race", unit.race) + '" alt="" loading="lazy">' +
+      '<span class="unit-class-icon wow-icon-frame wow-icon-frame--xs wow-icon-frame--class-' + classId + '">' +
+        '<img src="' + Icons.resolve("class", classId) + '" alt="" loading="lazy">' +
       '</span>' +
+      '<span class="unit-level">' + unit.level + '</span>' +
     '</div>' +
-    '<strong class="combatant-name">' + unit.name + '</strong>' +
-    '<span class="combatant-meta">' + unit.race + ' · ' + unit.className + '</span>' +
-    '<div class="mini-stat hp-stat"><span class="mini-fill"></span><b>' + unit.currentHp + '</b></div>' +
-    '<div class="mini-stat resource-stat" tabindex="0"><span class="mini-fill"></span><b>' + unit.currentResource + '</b></div>';
+    '<div class="unit-frame-body">' +
+      '<div class="unit-heading">' +
+        '<div class="unit-identity">' +
+          '<strong class="combatant-name">' + unit.name + '</strong>' +
+          '<span class="combatant-meta">' + unit.className + ' · ' + unit.role.toUpperCase() + '</span>' +
+        '</div>' +
+        '<div class="unit-action" data-action-kind="ready">' +
+          '<span class="unit-action-icon wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-' + classId + '">' +
+            '<img src="' + Icons.iconUrl(unit.icon) + '" alt="" loading="lazy">' +
+          '</span>' +
+          '<span class="unit-action-copy"><small>ACTION</small><strong>Ready</strong></span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="unit-bar hp-stat">' +
+        '<span class="unit-bar-label">Health</span>' +
+        '<span class="mini-fill"></span>' +
+        '<b>' + unit.currentHp + ' / ' + unit.hp + '</b>' +
+      '</div>' +
+      '<div class="unit-bar resource-stat" tabindex="0">' +
+        '<span class="unit-bar-label">' + resource + '</span>' +
+        '<span class="mini-fill"></span>' +
+        '<b>' + unit.currentResource + ' / ' + unit.resource + '</b>' +
+      '</div>' +
+      '<div class="unit-status-row" aria-label="Buff and debuff hooks">' +
+        '<div class="unit-status-hooks buff-hooks" aria-label="Buffs">' +
+          '<span class="unit-status-slot" data-status-slot="buff-1"></span>' +
+          '<span class="unit-status-slot" data-status-slot="buff-2"></span>' +
+        '</div>' +
+        '<div class="unit-status-hooks debuff-hooks" aria-label="Debuffs">' +
+          '<span class="unit-status-slot" data-status-slot="debuff-1"></span>' +
+          '<span class="unit-status-slot" data-status-slot="debuff-2"></span>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
 
   article.querySelectorAll("img").forEach(Icons.bindFallback);
-  const avatar = article.querySelector(".combatant-avatar");
-  avatar.tabIndex = 0;
-  Tooltips.attach(avatar, function() { return unitTooltipModel(unit, faction); });
-  Tooltips.attach(article.querySelector(".resource-stat"), function() { return resourceTooltipModel(unit); });
+  const portrait = article.querySelector(".unit-portrait");
+  portrait.tabIndex = 0;
+  Tooltips.attach(portrait, function() { return unitTooltipModel(unit, faction); }, {anchor:"target"});
+  Tooltips.attach(article.querySelector(".resource-stat"), function() { return resourceTooltipModel(unit); }, {anchor:"target"});
 
   return article;
 }
@@ -153,12 +181,20 @@ function updateUnit(unit, faction) {
   const hp = el.querySelector(".hp-stat");
   const resource = el.querySelector(".resource-stat");
   hp.querySelector(".mini-fill").style.width = hpPercent + "%";
-  hp.querySelector("b").textContent = unit.currentHp;
+  hp.querySelector("b").textContent = unit.currentHp + " / " + unit.hp;
   resource.querySelector(".mini-fill").style.width = resourcePercent + "%";
-  resource.querySelector("b").textContent = unit.currentResource;
+  resource.querySelector("b").textContent = unit.currentResource + " / " + unit.resource;
 
   el.classList.toggle("low-health", hpPercent > 0 && hpPercent <= 30);
   el.classList.toggle("defeated", unit.currentHp <= 0);
+  if (unit.currentHp <= 0) {
+    const action = el.querySelector(".unit-action");
+    if (action) {
+      action.dataset.actionKind = "death";
+      action.classList.remove("is-active");
+      action.querySelector("strong").textContent = "Defeated";
+    }
+  }
 }
 
 function randomLiving(faction) {
@@ -179,6 +215,96 @@ function eventText(text) {
   $("battleEvent").textContent = text;
 }
 
+function abilityLabel(unit, mode) {
+  if (mode === "heal") {
+    if (unit.className === "Paladin") return "Holy Light";
+    if (unit.className === "Priest") return "Flash Heal";
+    if (unit.className === "Shaman") return "Healing Wave";
+  }
+
+  const names = {
+    Warrior:"Weapon Strike",
+    Paladin:"Holy Strike",
+    Mage:"Fireball",
+    Priest:"Smite",
+    Rogue:"Ambush",
+    Warlock:"Shadow Bolt",
+    Shaman:"Stormstrike"
+  };
+  return names[unit.className] || unit.className + " Ability";
+}
+
+function actionEventKind() {
+  if (state.turn > 0 && state.turn % 10 === 0) return "ultimate";
+  if (state.turn > 0 && state.turn % 5 === 0) return "cooldown";
+  return "ability";
+}
+
+function showAction(unit, mode) {
+  const el = document.querySelector('[data-unit="' + unit.id + '"]');
+  if (!el) return;
+
+  const kind = actionEventKind();
+  const action = el.querySelector(".unit-action");
+  const label = abilityLabel(unit, mode);
+  action.dataset.actionKind = kind;
+  action.classList.remove("is-active");
+  void action.offsetWidth;
+  action.classList.add("is-active");
+  action.querySelector("strong").textContent =
+    kind === "ultimate" ? "Ultimate · " + label :
+    kind === "cooldown" ? "Cooldown · " + label :
+    label;
+
+  if (kind === "ultimate" || kind === "cooldown") {
+    spawnEventTag(unit.id, kind === "ultimate" ? "ULTIMATE" : "COOLDOWN", kind);
+  }
+
+  clearTimeout(el._actionTimer);
+  el._actionTimer = setTimeout(function() {
+    if (!el.isConnected || el.classList.contains("defeated")) return;
+    action.dataset.actionKind = "ready";
+    action.classList.remove("is-active");
+    action.querySelector("strong").textContent = "Ready";
+  }, Math.max(240, 720 / state.speed));
+}
+
+function pulseStatus(unitId, type) {
+  const el = document.querySelector('[data-unit="' + unitId + '"]');
+  if (!el) return;
+  const slot = el.querySelector(type === "buff" ? '[data-status-slot="buff-1"]' : '[data-status-slot="debuff-1"]');
+  if (!slot) return;
+  slot.classList.remove("is-active");
+  slot.dataset.state = type;
+  void slot.offsetWidth;
+  slot.classList.add("is-active");
+  clearTimeout(slot._statusTimer);
+  slot._statusTimer = setTimeout(function() {
+    slot.classList.remove("is-active");
+    delete slot.dataset.state;
+  }, Math.max(260, 780 / state.speed));
+}
+
+function spawnEventTag(targetId, text, type) {
+  const arena = document.querySelector(".battle-arena");
+  const target = document.querySelector('[data-unit="' + targetId + '"]');
+  if (!arena || !target) return;
+
+  const a = arena.getBoundingClientRect();
+  const t = target.getBoundingClientRect();
+  const fx = document.createElement("span");
+  fx.className = "combat-event-tag " + type;
+  fx.textContent = text;
+  fx.style.left = (t.left - a.left + t.width * .5) + "px";
+  fx.style.top = (t.top - a.top + 10) + "px";
+  $("fxLayer").appendChild(fx);
+  setTimeout(function() { fx.remove(); }, 760);
+}
+
+function spawnMissFeedback(targetId) {
+  spawnEventTag(targetId, "MISS", "miss");
+}
+
 function spawnFloat(targetId, amount, type) {
   const arena = document.querySelector(".battle-arena");
   const target = document.querySelector('[data-unit="' + targetId + '"]');
@@ -188,7 +314,7 @@ function spawnFloat(targetId, amount, type) {
   const t = target.getBoundingClientRect();
   const fx = document.createElement("span");
   fx.className = "floating-number " + type;
-  fx.textContent = (type === "heal" ? "+" : "−") + Math.abs(amount);
+  fx.textContent = type === "miss" ? "MISS" : (type === "heal" ? "+" : "−") + Math.abs(amount);
   fx.style.left = (t.left - a.left + t.width * .5) + "px";
   fx.style.top = (t.top - a.top + 32) + "px";
   $("fxLayer").appendChild(fx);
@@ -266,6 +392,8 @@ function attack(attackingFaction, defendingFaction) {
     spendResource(attacker);
     updateUnit(healTarget, attackingFaction);
     updateUnit(attacker, attackingFaction);
+    showAction(attacker, "heal");
+    pulseStatus(healTarget.id, "buff");
     spawnFloat(healTarget.id, heal, "heal");
     spawnStreak(attacker.id, healTarget.id, "heal-streak");
     flashUnit(healTarget.id, "healed");
@@ -279,15 +407,25 @@ function attack(attackingFaction, defendingFaction) {
   const mitigation = target.role === "tank" ? .78 : 1;
   const crit = Math.random() < .14;
   const amount = Math.max(18, Math.round(attacker.power * (.72 + Math.random() * .55) * mitigation * (crit ? 1.55 : 1)));
+  const wasAlive = target.currentHp > 0;
   target.currentHp = Math.max(0, target.currentHp - amount);
   spendResource(attacker);
 
   updateUnit(target, defendingFaction);
   updateUnit(attacker, attackingFaction);
+  showAction(attacker, "attack");
+  pulseStatus(target.id, "debuff");
   spawnFloat(target.id, amount, crit ? "crit" : "damage");
   spawnStreak(attacker.id, target.id, "damage-streak");
   flashUnit(target.id, "hit");
-  if (crit) flashUnit(attacker.id, "critical");
+  if (crit) {
+    flashUnit(attacker.id, "critical");
+    spawnEventTag(attacker.id, "CRIT", "crit");
+  }
+  if (wasAlive && target.currentHp <= 0) {
+    spawnEventTag(target.id, "DEFEATED", "death");
+    flashUnit(target.id, "death");
+  }
 
   eventText(
     attacker.name + " hits " + target.name + " for " + amount +
@@ -333,6 +471,8 @@ function scheduleNext() {
 function setPaused(paused) {
   state.paused = paused;
   $("pauseBattle").textContent = paused ? "▶" : "Ⅱ";
+  $("pauseBattle").classList.toggle("is-selected", paused);
+  $("pauseBattle").setAttribute("aria-pressed", paused ? "true" : "false");
   $("pauseBattle").setAttribute("aria-label", paused ? "Resume battle" : "Pause battle");
   $("battleStatus").textContent = paused ? "Battle paused" : "Auto battle running";
   document.querySelector(".status-dot").classList.toggle("stopped", paused);
@@ -343,9 +483,11 @@ function setPaused(paused) {
 function setSpeed(speed) {
   state.speed = speed;
   document.querySelectorAll("#speedButtons button").forEach(button => {
-    button.classList.toggle("active", Number(button.dataset.speed) === speed);
+    const active = Number(button.dataset.speed) === speed;
+    button.classList.toggle("is-selected", active);
+    button.setAttribute("aria-pressed", active ? "true" : "false");
   });
-  $("fastForward").classList.toggle("active", speed > 1);
+  $("fastForward").classList.toggle("is-selected", speed > 1);
   if (!state.paused) scheduleNext();
 }
 
@@ -372,6 +514,8 @@ function resetBattle() {
   $("resultBanner").hidden = true;
   $("resultBanner").innerHTML = "";
   $("pauseBattle").textContent = "Ⅱ";
+  $("pauseBattle").classList.remove("is-selected");
+  $("pauseBattle").setAttribute("aria-pressed", "false");
   $("battleStatus").textContent = "Auto battle running";
   $("battleEvent").textContent = "Alliance and Horde are engaging.";
   document.querySelector(".status-dot").classList.remove("stopped");
