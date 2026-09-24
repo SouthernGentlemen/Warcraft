@@ -2,68 +2,50 @@
 
 ## Identity
 
-- Role direction: Direct burst spell damage
+- Role: Direct burst spell damage
 - Resource: Mana
-- Primary stat direction: Intellect
-- Auto-attack: Chaos Bolt
-
-## Spec Theme
-
-Direct fire/shadow damage, critical burst, high-impact casts.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Chaos Bolt** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Intellect
+- Auto-attack: Chaos Bolt — ranged Fire/Shadow damage
 
 ## Talent Tree
 
-The Destruction tree contains:
+The first talent point spent in this tree selects **Destruction** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Destruction becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Warlock trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Ember Bolt** | Chaos Bolt deals 15% more damage. |
+| **Backdraft** | Critical auto-attacks reduce both equipped cooldowns' remaining time by 10%. |
+| **Ruin** | Equipped cooldown abilities gain 10% Critical Strike chance. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Direct fire/shadow damage
-- Critical burst
-- High-impact casts
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Conflagration** | Damaging equipped cooldowns apply a Burn for 20% of their damage over 4 seconds. |
+| **Fire and Brimstone** | Every fourth Chaos Bolt also hits all other enemies for 50% damage. |
+| **Soul Fire** | Mana costs of damaging equipped cooldowns are reduced by 15%. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Destruction specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Chaos Incarnate** | Using the selected ultimate makes the next two equipped cooldown abilities cost no Mana and deal 25% more damage. |
+| **Burning Soul** | Burn can stack twice, and Burning targets take 20% more damage from Chaos Bolt. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Destruction specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
