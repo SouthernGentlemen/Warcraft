@@ -10,14 +10,27 @@ Static review screens backed by the root-level `/data/` JSON mirror.
 
 ## Running Locally
 
-Serve the repository root with any static HTTP server, then open `/mockup/`.
-
-For example:
+From the repository root:
 
 ```bash
-python -m http.server 8000
+npm run dev
 ```
 
-Then browse to `http://localhost:8000/mockup/`.
+No package installation is required. The dev command uses Node's built-in HTTP server.
 
-The screens use `fetch()` to load JSON from `/data/`, so opening the HTML directly with the `file://` protocol may be blocked by the browser.
+The server defaults to:
+
+```text
+http://127.0.0.1:5173/
+```
+
+Opening the root URL redirects to `/mockup/`.
+
+Environment overrides are supported:
+
+```bash
+PORT=8000 npm run dev
+HOST=0.0.0.0 npm run dev
+```
+
+The mockups load their prototype data from the root-level `/data/` directory.
