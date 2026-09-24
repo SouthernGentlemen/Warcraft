@@ -6,49 +6,46 @@
   <title>Talent Calculator — Warcraft Mockup</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
-  <main class="shell">
-    <div class="topbar">
+<body class="talent-page">
+  <main class="talent-shell">
+    <div class="wow-topline">
       <a class="back" href="./index.html">← Mockups</a>
-      <span class="eyebrow">CLASS SYSTEM / REVIEW</span>
+      <div class="wow-title-block">
+        <span class="eyebrow">CLASS TALENTS</span>
+        <h1>Talent Calculator</h1>
+      </div>
+      <div class="wow-controls">
+        <label class="wow-field">
+          <span>Class</span>
+          <select id="classSelect"></select>
+        </label>
+        <label class="wow-field wow-level-field">
+          <span>Hero Level <strong id="levelBadge">5</strong></span>
+          <input id="levelRange" type="range" min="1" max="5" step="1" value="5">
+        </label>
+        <button class="wow-reset" id="resetBuild">Reset</button>
+      </div>
     </div>
-
-    <header class="hero-header">
-      <h1>Talent Calculator</h1>
-      <p class="lede">Review each class's three archetypes and test the five-point talent progression.</p>
-    </header>
 
     <div id="error" class="error-banner"></div>
 
-    <section class="calc-toolbar">
-      <div class="field">
-        <label for="classSelect">Class</label>
-        <select id="classSelect"></select>
+    <div class="wow-build-strip">
+      <div>
+        <strong id="pointsUsed">0 / 5</strong>
+        <span>Talent Points</span>
       </div>
-      <div class="field level-box">
-        <div class="level-top">
-          <label for="levelRange">Hero Level</label>
-          <span id="levelBadge" class="level-badge">Level 5</span>
-        </div>
-        <input id="levelRange" type="range" min="1" max="5" step="1" value="5">
-      </div>
-    </section>
+      <p id="buildStatus">Choose a Tier 1 talent to select a specialization.</p>
+      <p class="wow-click-help">Left click to learn · Right click to unlearn</p>
+    </div>
 
-    <section id="specTabs" class="spec-tabs" aria-label="Specializations"></section>
+    <section id="wowTreeBoard" class="wow-tree-board" aria-label="Talent trees"></section>
 
-    <section class="build-bar">
-      <div class="points"><strong id="pointsUsed">0 / 5</strong> talent points spent · <span id="buildStatus">Choose a Tier 1 talent to select a specialization.</span></div>
-      <button class="reset" id="resetBuild">Reset Build</button>
-    </section>
-
-    <section id="identity" class="spec-identity"></section>
-
-    <section id="talentTree" class="talent-tree"></section>
-
-    <p class="rule-note">
-      Level 1 chooses the specialization through Tier 1. Level 2 chooses Tier 2 in that tree. Level 3 chooses one capstone and unlocks the other two trees. Levels 4–5 can then enter off-spec trees while obeying prerequisites.
+    <p class="wow-attribution">
+      Talent icon art is loaded from Wowhead's WoW icon CDN for prototype review.
     </p>
   </main>
+
+  <div id="talentTooltip" class="wow-tooltip" hidden></div>
   <script src="./talent-calculator.js"></script>
 </body>
 </html>
