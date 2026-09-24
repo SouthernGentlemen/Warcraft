@@ -6,34 +6,30 @@ Race provides one passive bonus to every hero.
 
 Each race has exactly one racial bonus. There are no additional hidden racial passives in the current design.
 
-Exact numeric values will be tuned later so racial choice matters without overwhelming class, spec, gear, or talent choices.
-
 ## Alliance
 
-| Race | Single Bonus |
-| --- | --- |
-| Human | Increased Mastery |
-| Gnome | Increased Intellect |
-| Dwarf | Increased Stamina |
+- Human — one racial bonus, effect TBD
+- Gnome — one racial bonus, effect TBD
+- Dwarf — one racial bonus, effect TBD
 
 ## Horde
 
-| Race | Single Bonus |
-| --- | --- |
-| Orc | Increased Strength |
-| Undead | Increased Spirit |
-| Troll | Increased Haste |
+- Orc — one racial bonus, effect TBD
+- Undead — one racial bonus, effect TBD
+- Troll — one racial bonus, effect TBD
 
 ## Scaling Rule
 
-Racial bonuses should scale through one consistent mechanism across all five hero levels.
+A race keeps the same single racial bonus from Level 1 through Level 5.
 
-The exact magnitude and whether the bonus is a flat amount, percentage, or level-scaled value remain open.
+The exact bonus for each race, its magnitude, and whether it scales as a flat value, percentage, or level-based value remain open.
 
-A race never gains a second racial bonus at a later level.
+Racial bonuses should matter without overpowering class, specialization, gear, or talent choices.
 
 ## Open Areas
 
+- exact bonus for each race
 - exact racial bonus values
 - flat versus percentage scaling
-- whether racial bonuses affect derived stats before or after gear
+- whether racial bonuses scale with hero level
+- where racial bonuses enter stat calculations
