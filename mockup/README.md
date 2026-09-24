@@ -7,6 +7,7 @@ Static review screens backed by the root-level `/data/` JSON mirror.
 - `index.html` — mockup launcher
 - `race-selector.html` — faction, body type, race, class availability, and racial review
 - `talent-calculator.html` — class/spec browser and five-point talent calculator
+- `battle.html` — interactive six-on-six battleground combat mockup with team HP, combat FX, pause, reset, and 1×/2×/4× speed controls
 
 ## Development
 
