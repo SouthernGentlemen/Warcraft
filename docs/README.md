@@ -87,6 +87,7 @@ Known crafting paths include:
 - Leatherworking: five material tiers to be defined
 - Enchanting: tiered essences and corresponding shards
 - Alchemy: potions and flasks using elemental reagents including Air, Water, Earth, Fire, and Undeath
+- Engineering: devices, utility items, and crafted technology to be defined
 
 ## Documentation Sections
 
@@ -101,7 +102,6 @@ Known crafting paths include:
 - [Economy](./economy/README.md)
 - [Progression](./progression/README.md)
 - [Incremental Systems](./incremental/README.md)
-- [Balance](./balance/README.md)
 
 ## Documentation Rule
 
