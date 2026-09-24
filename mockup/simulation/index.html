@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Combat Simulation Lab — Warcraft Mockup</title>
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="./simulation.css">
+</head>
+<body class="sim-page">
+  <main class="sim-shell">
+    <header class="sim-header">
+      <div>
+        <a class="back" href="../index.html">← Mockups</a>
+        <p class="eyebrow">DETERMINISTIC COMBAT / 60 HZ</p>
+        <h1>Combat Simulation Lab</h1>
+        <p class="sim-lede">Headless fixed-tick combat. Same seed + same definitions must produce the same state and log hashes.</p>
+      </div>
+      <div class="sim-contract">
+        <span>1 step = 1 tick</span>
+        <strong>60 ticks / second</strong>
+        <span>integer authoritative state</span>
+      </div>
+    </header>
+
+    <div id="error" class="error-banner"></div>
+
+    <section class="sim-panel sim-controls">
+      <div class="sim-field">
+        <label for="scenario">Scenario</label>
+        <select id="scenario">
+          <option value="1">1-person battle</option>
+          <option value="3">3-person battle</option>
+        </select>
+      </div>
+      <div class="sim-field">
+        <label for="heroLevel">Hero Level</label>
+        <select id="heroLevel">
+          <option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option>
+        </select>
+      </div>
+      <div class="sim-field">
+        <label for="seed">Seed</label>
+        <input id="seed" value="0x5eed">
+      </div>
+      <div class="sim-field">
+        <label for="maxSeconds">Max Seconds</label>
+        <input id="maxSeconds" type="number" min="5" max="180" value="90">
+      </div>
+      <button id="runSimulation" class="sim-primary">Run Simulation</button>
+    </section>
+
+    <section class="sim-panel">
+      <div class="sim-section-head">
+        <div>
+          <p class="eyebrow">PARTY DEFINITION</p>
+          <h2>Heroes</h2>
+        </div>
+        <p>Each hero gets its spec auto-attack, 2 resource-compatible cooldowns, 1 ultimate, and its first Tier 1 / Tier 2 / capstone talent hooks.</p>
+      </div>
+      <div id="heroSlots" class="hero-slots"></div>
+    </section>
+
+    <section id="summarySection" class="sim-panel" hidden>
+      <div class="sim-section-head">
+        <div>
+          <p class="eyebrow">RESULT</p>
+          <h2>Determinism Summary</h2>
+        </div>
+        <button id="downloadLog" class="sim-secondary">Download Full JSON Log</button>
+      </div>
+      <div id="summaryCards" class="summary-cards"></div>
+    </section>
+
+    <section id="actorsSection" class="sim-panel" hidden>
+      <div class="sim-section-head">
+        <div>
+          <p class="eyebrow">AUTHORITATIVE DEFINITIONS</p>
+          <h2>Actor Mapping</h2>
+        </div>
+        <p>Stats map directly into health, resources, action power, hit, crit, Haste timing, and Mastery output.</p>
+      </div>
+      <div id="actorCards" class="actor-cards"></div>
+    </section>
+
+    <section id="logSection" class="sim-panel" hidden>
+      <div class="sim-section-head sim-log-head">
+        <div>
+          <p class="eyebrow">FRAME REPORTS</p>
+          <h2>Combat Log</h2>
+        </div>
+        <div class="log-controls">
+          <label><input id="showEmptyTicks" type="checkbox"> show empty ticks</label>
+          <select id="eventFilter">
+            <option value="all">all events</option>
+            <option value="actions">actions</option>
+            <option value="damage">damage / healing</option>
+            <option value="resources">resources / cooldowns</option>
+            <option value="system">system / deaths</option>
+          </select>
+        </div>
+      </div>
+      <div class="log-meta" id="logMeta"></div>
+      <div class="log-table-wrap">
+        <table class="combat-log">
+          <thead>
+            <tr>
+              <th>Tick</th>
+              <th>Time</th>
+              <th>Actor</th>
+              <th>Event</th>
+              <th>Action / Detail</th>
+              <th>Target</th>
+              <th>Amount</th>
+              <th>State Hash</th>
+            </tr>
+          </thead>
+          <tbody id="combatLogBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./simulation-ui.js"></script>
+</body>
+</html>
