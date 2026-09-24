@@ -2,69 +2,50 @@
 
 ## Identity
 
-- Role direction: Burst melee damage / utility
+- Role: Burst melee damage / utility
 - Resource: Energy
-- Primary stat direction: Agility
-- Auto-attack: Precision Strike
-
-## Spec Theme
-
-Critical burst, avoidance, control, opening-window damage.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Precision Strike** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Agility
+- Auto-attack: Precision Strike — melee weapon damage
 
 ## Talent Tree
 
-The Subtlety tree contains:
+The first talent point spent in this tree selects **Subtlety** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Subtlety becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Rogue trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Ambush** | The first auto-attack of each combat deals 100% additional damage. |
+| **Shadow Focus** | The first equipped cooldown used each combat costs 50% less Energy. |
+| **Precision** | Precision Strike gains 10% Critical Strike chance. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Critical burst
-- Avoidance
-- Control
-- Opening-window damage
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Find Weakness** | After using an equipped cooldown, the next auto-attack ignores 30% of the target's armor. |
+| **Premeditation** | Begin combat with 20% ultimate-bar charge. |
+| **Elusiveness** | After using an equipped cooldown, take 10% less damage for 4 seconds. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Subtlety specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Shadow Dance** | Using the selected ultimate causes the next three auto-attacks to gain Ambush's opening-hit bonus. |
+| **Cheat Death** | Once per combat, lethal damage instead leaves the hero at 1 health and grants 30% damage reduction for 5 seconds. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Subtlety specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
