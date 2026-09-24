@@ -1,0 +1,153 @@
+const buildings = [
+  { id: 'keep', name: 'Headquarters (Keep)', short: 'Keep', category: 'core', icon: '🏰', level: 10, max: 20, description: 'The heart of your base. Unlocks buildings, tiers, and roster capacity.', costs: [3000, 2000, 500] },
+  { id: 'barracks', name: 'Barracks', category: 'core', icon: '⚔️', level: 6, max: 20, description: 'Trains footmen and basic military units.', costs: [1200, 800, 200] },
+  { id: 'training', name: 'Training Grounds', category: 'core', icon: '🎯', level: 5, max: 20, description: 'Improves hero training speed and raises training capacity.', costs: [900, 600, 150] },
+  { id: 'recruitment', name: 'Recruitment Hall', category: 'core', icon: '👥', level: 4, max: 20, description: 'Adds recruitment capacity and improves hero discovery.', costs: [1000, 700, 250] },
+  { id: 'command', name: 'Command Hall', category: 'core', icon: '🎖️', level: 4, max: 20, description: 'Provides global mission and roster bonuses.', costs: [800, 600, 200] },
+  { id: 'storehouse', name: 'Storehouse', category: 'core', icon: '📦', level: 5, max: 20, description: 'Increases persistent resource and crafted-item storage.', costs: [700, 500, 200] },
+  { id: 'blacksmith', name: 'Blacksmith', category: 'profession', icon: '⚒️', level: 4, max: 20, description: 'Crafts and upgrades metal weapons and armor.', costs: [800, 600, 200] },
+  { id: 'alchemy', name: 'Alchemy Lab', category: 'profession', icon: '⚗️', level: 3, max: 20, description: 'Produces potions, reagents, and consumable combat boosts.', costs: [600, 400, 150] },
+  { id: 'enchanter', name: "Enchanter's Study", category: 'profession', icon: '✨', level: 3, max: 20, description: 'Creates magical enhancements for equipment.', costs: [650, 450, 175] },
+  { id: 'tailor', name: 'Tailor', category: 'profession', icon: '🧵', level: 3, max: 20, description: 'Crafts cloth equipment and caster-focused gear.', costs: [520, 350, 130] },
+  { id: 'leather', name: 'Leatherworker', category: 'profession', icon: '🛡️', level: 3, max: 20, description: 'Crafts leather equipment and flexible armor sets.', costs: [520, 350, 130] },
+  { id: 'engineer', name: 'Engineer Workshop', category: 'profession', icon: '⚙️', level: 4, max: 20, description: 'Builds devices, utility equipment, and mechanical upgrades.', costs: [850, 650, 260] }
+];
+
+const state = {
+  selected: 'keep',
+  filter: 'all',
+  tab: 'buildings',
+  resources: { gold: 25430, lumber: 12680, stone: 8440, mana: 2350 }
+};
+
+const fmt = value => value.toLocaleString('en-US');
+const $ = selector => document.querySelector(selector);
+const $$ = selector => [...document.querySelectorAll(selector)];
+
+function syncResourceBar() {
+  $('#goldValue').textContent = fmt(state.resources.gold);
+  $('#lumberValue').textContent = fmt(state.resources.lumber);
+  $('#stoneValue').textContent = fmt(state.resources.stone);
+  $('#manaValue').textContent = fmt(state.resources.mana);
+}
+
+function renderBuildings() {
+  const list = $('#buildingList');
+  const filtered = buildings.filter(b => state.filter === 'all' || b.category === state.filter);
+  list.innerHTML = filtered.map(b => `
+    <article class="building-row ${state.selected === b.id ? 'selected' : ''}" data-building-row="${b.id}">
+      <button class="building-thumb" data-select-building="${b.id}" aria-label="Select ${b.name}">${b.icon}</button>
+      <div class="building-copy">
+        <div class="building-title"><strong>${b.name}</strong><span>Lv. ${b.level} / ${b.max}</span></div>
+        <p>${b.description}</p>
+        <div class="building-costs">
+          <span><i class="cost-gold">●</i>${fmt(b.costs[0])}</span>
+          <span><i class="cost-lumber">▰</i>${fmt(b.costs[1])}</span>
+          <span><i class="cost-stone">◆</i>${fmt(b.costs[2])}</span>
+        </div>
+      </div>
+      <button class="building-upgrade" data-upgrade="${b.id}" ${b.level >= b.max ? 'disabled' : ''}>${b.level >= b.max ? 'Max' : 'Upgrade'}</button>
+    </article>`).join('');
+
+  renderSelection();
+}
+
+function renderSelection() {
+  const b = buildings.find(item => item.id === state.selected) || buildings[0];
+  $('#selectionDetail').innerHTML = `
+    <span class="panel-kicker">SELECTED BUILDING</span>
+    <div class="selection-title"><span>${b.icon}</span><div><strong>${b.name}</strong><small>Level ${b.level} / ${b.max}</small></div></div>
+    <p>${b.description}</p>
+    <div class="selection-progress"><span style="width:${Math.round((b.level / b.max) * 100)}%"></span></div>`;
+
+  $$('.base-plot').forEach(plot => {
+    plot.classList.toggle('selected', plot.dataset.building === b.id);
+    const level = plot.querySelector('.plot-label b');
+    const item = buildings.find(entry => entry.id === plot.dataset.building);
+    if (level && item) level.textContent = item.level;
+  });
+}
+
+function toast(message) {
+  const node = $('#baseToast');
+  node.textContent = message;
+  node.hidden = false;
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => node.hidden = true, 1800);
+}
+
+function selectBuilding(id) {
+  state.selected = id;
+  renderBuildings();
+}
+
+function upgradeBuilding(id) {
+  const b = buildings.find(item => item.id === id);
+  if (!b || b.level >= b.max) return;
+  const [gold, lumber, stone] = b.costs;
+  if (state.resources.gold < gold || state.resources.lumber < lumber || state.resources.stone < stone) {
+    toast(`Not enough resources to upgrade ${b.name}.`);
+    return;
+  }
+
+  state.resources.gold -= gold;
+  state.resources.lumber -= lumber;
+  state.resources.stone -= stone;
+  b.level += 1;
+  b.costs = b.costs.map(value => Math.ceil(value * 1.22 / 10) * 10);
+  state.selected = id;
+  syncResourceBar();
+  renderBuildings();
+  toast(`${b.name} upgraded to level ${b.level}.`);
+}
+
+$('#buildingFilter').addEventListener('change', event => {
+  state.filter = event.target.value;
+  renderBuildings();
+});
+
+$('.building-tabs').addEventListener('click', event => {
+  const button = event.target.closest('[data-building-tab]');
+  if (!button) return;
+  state.tab = button.dataset.buildingTab;
+  $$('.building-tabs button').forEach(node => node.classList.toggle('active', node === button));
+  toast(state.tab === 'upgrades' ? 'Upgrade queue mockup selected.' : 'Building list selected.');
+});
+
+$('#buildingList').addEventListener('click', event => {
+  const upgrade = event.target.closest('[data-upgrade]');
+  if (upgrade) {
+    upgradeBuilding(upgrade.dataset.upgrade);
+    return;
+  }
+  const select = event.target.closest('[data-building-row], [data-select-building]');
+  if (select) selectBuilding(select.dataset.buildingRow || select.dataset.selectBuilding);
+});
+
+$('#baseMap').addEventListener('click', event => {
+  const plot = event.target.closest('[data-building]');
+  if (plot) selectBuilding(plot.dataset.building);
+});
+
+$('.base-action-bar').addEventListener('click', event => {
+  const button = event.target.closest('[data-action]');
+  if (!button) return;
+  const labels = {
+    keep: 'Keep selected for upgrade review.',
+    train: 'Training flow hook ready for hero progression.',
+    recruit: 'Recruitment flow hook ready for roster expansion.',
+    mission: 'Mission launch hook ready for content selection.'
+  };
+  if (button.dataset.action === 'keep') selectBuilding('keep');
+  toast(labels[button.dataset.action]);
+});
+
+$('.base-game-nav').addEventListener('click', event => {
+  const button = event.target.closest('[data-panel]');
+  if (!button) return;
+  if (button.dataset.panel === 'base') return;
+  toast(`${button.textContent.trim()} is a navigation hook in this base mockup.`);
+});
+
+syncResourceBar();
+renderBuildings();
