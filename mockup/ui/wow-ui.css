@@ -550,6 +550,7 @@
   box-shadow: inset 0 0 0 1px var(--wow-gold-pale), 0 2px 4px rgba(0,0,0,.7);
 }
 
+.wow-range:focus,
 .wow-range:focus-visible {
   outline: 2px solid var(--wow-focus);
   outline-offset: 3px;
