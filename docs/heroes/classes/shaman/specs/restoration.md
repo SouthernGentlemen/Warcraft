@@ -2,69 +2,50 @@
 
 ## Identity
 
-- Role direction: Healing / support
+- Role: Healing / support
 - Resource: Mana
-- Primary stat direction: Intellect
-- Auto-attack: Water Bolt
-
-## Spec Theme
-
-Direct healing, recovery, group sustain, elemental support.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Water Bolt** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Intellect
+- Auto-attack: Water Bolt — heals the lowest-health ally
 
 ## Talent Tree
 
-The Restoration tree contains:
+The first talent point spent in this tree selects **Restoration** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Restoration becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Shaman trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Earthliving** | Water Bolt also heals its target for 10% of the initial heal over 4 seconds. |
+| **Resurgence** | Critical heals restore 5% of the Mana spent on that heal. |
+| **Tidal Focus** | Water Bolt healing is increased by 10%. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Direct healing
-- Recovery
-- Group sustain
-- Elemental support
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Chain Heal** | Every fourth Water Bolt also heals two additional injured allies for 40% of the original heal. |
+| **Riptide** | Healing cooldown abilities leave a healing-over-time effect equal to 15% of the original heal over 4 seconds. |
+| **Ancestral Vigor** | Healing an ally grants that ally 10% increased maximum health for 4 seconds. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Restoration specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Ascendance** | Using the selected ultimate causes 50% of all healing done for 8 seconds to be copied to the lowest-health other ally. |
+| **Spirit Link** | Using the selected ultimate partially equalizes party health percentages and grants the party 10% damage reduction for 8 seconds. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Restoration specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
