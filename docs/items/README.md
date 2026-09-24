@@ -2,67 +2,76 @@
 
 ## Purpose
 
-Items provide persistent and temporary ways to improve heroes and prepare parties for harder content.
+Items are the persistent resource layer that connects hero power, professions, base development, and meta progression.
 
-## Item Categories
+The item system is divided into three top-level groups:
 
-The current design expects:
-
-- weapons
-- armor
-- accessories or trinkets
-- consumables
-- crafting materials
-- enchanting materials
-- quest or progression items if needed
+- [Equipment](./equipment/README.md) — items equipped by heroes
+- [Reagents](./reagents/README.md) — profession and crafting materials
+- [Economy](./economy/README.md) — base-building and meta-progression resources
 
 ## Equipment
 
-Heroes equip items that improve their combat performance.
+Equipment directly improves heroes.
 
-Equipment progression should align with the five game tiers.
+The committed hero loadout currently contains six fixed slots:
 
-The exact number of equipment slots is not yet fixed. The system should remain manageable even when the player controls a large roster.
+- Head
+- Chest
+- Pants
+- Feet
+- Gloves
+- Weapon
 
-## Rarity
+Armor is divided into Cloth, Leather, Mail, and Plate.
 
-Items may use a quality or rarity system in addition to tier.
+Weapon items occupy a single weapon slot. Weapon families include categories such as axes, swords, maces, daggers, staves, and wands. Exact class weapon proficiencies will be defined with the class and equipment specifications.
 
-Rarity should represent quality within a progression tier rather than replace tier progression.
+Trinkets are part of the equipment item family, but a trinket slot has not yet been committed to the loadout.
 
-Exact rarity names and stat ranges remain open.
+## Reagents
 
-## Class and Armor Rules
+Reagents are profession-facing items used to craft, enhance, or otherwise produce gameplay items.
 
-Different classes may favor or require different equipment categories.
+Each profession may have its own material families and tier progression. Reagents should align with the game's five progression tiers.
 
-The exact armor and weapon rules will be defined alongside classes and crafting.
+## Economy Items
+
+Economy items are resources used for base construction, base upgrades, unlocks, and other meta-progression systems.
+
+They are separate from hero equipment and profession reagents even when they share sources or progression tiers.
+
+## Tiering
+
+Items should align with the five game tiers wherever tiering is relevant.
+
+Tier defines progression position. Rarity, quality, or item-specific power can exist within a tier without replacing the tier system.
 
 ## Enchantments
 
 Enchanting may add permanent enhancements to equipment.
 
-The system must define how many enchantments an item can hold and whether enchantments can be replaced, upgraded, or recovered.
+The system must eventually define valid enchantment targets, replacement rules, upgrade rules, and whether enchantment materials can be recovered.
 
 ## Consumables
 
-Alchemy supplies temporary preparation items such as potions and flasks.
+Alchemy may produce temporary-use items such as potions and flasks.
 
-Consumables should provide tactical preparation without becoming mandatory busywork for routine content.
+Consumables should provide useful preparation without becoming mandatory busywork for routine content.
 
 ## Open Areas
 
 Later item design must define:
 
-- equipment slots
-- weapon types
-- armor types
-- class restrictions
 - item statistics
-- rarity
+- rarity and quality
 - item generation
 - loot rules
-- enchantments
+- class weapon proficiencies
+- trinket equip rules
+- enchantment rules
 - consumable limits
 - inventory behavior
 - duplicate-item handling
+- economy resource families and sinks
+- profession reagent families and recipes
