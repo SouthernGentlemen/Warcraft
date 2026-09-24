@@ -198,8 +198,9 @@ jobs:
           await page.fill("#gearSearch","");
           await page.selectOption("#tierFilter","5");
           await page.selectOption("#slotFilter","Head");
-          await page.locator("#equippableOnly").setChecked(false, {force:true});
-          await page.waitForTimeout(100);
+          await page.locator(".gear-check").click();
+          if (await page.locator("#equippableOnly").isChecked()) errors.push("shared Equippable only checkbox did not toggle off");
+          await page.waitForTimeout(150);
           const restricted = page.locator(".armory-item").first();
           const restrictedState = await restricted.evaluate(el => ({
             locked:el.classList.contains("locked"),
@@ -207,11 +208,11 @@ jobs:
             label:el.getAttribute("aria-label") || ""
           }));
           if (!restrictedState.locked || restrictedState.ariaDisabled !== "true" || !restrictedState.label.includes("Mage cannot equip Plate")) {
-            errors.push("Mage Plate armor restriction changed");
+            errors.push(`Mage Plate armor restriction changed: ${JSON.stringify(restrictedState)}`);
           }
           await restricted.focus();
           const lockedText = await page.locator(".wow-tooltip__locked").textContent();
-          if (!lockedText.includes("Mage cannot equip Plate")) errors.push("restriction is not exposed in shared tooltip");
+          if (!lockedText.includes("Mage cannot equip Plate")) errors.push(`restriction is not exposed in shared tooltip: ${lockedText}`);
 
           // Locked item click must not replace currently equipped Head.
           const equippedHeadBeforeLockedClick = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
@@ -236,3 +237,5 @@ jobs:
         run: npm run simulation:test
 
 # rerun-after-shared-checkbox-harness-fix
+
+# rerun-after-user-path-checkbox-toggle
