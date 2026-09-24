@@ -6,6 +6,7 @@ const SLOT_ORDER = ["Head", "Chest", "Pants", "Feet", "Gloves", "Weapon"];
 const LEFT_SLOTS = ["Head", "Chest", "Gloves"];
 const RIGHT_SLOTS = ["Pants", "Feet", "Weapon"];
 const ARMOR_FAMILIES = ["Cloth", "Leather", "Mail", "Plate"];
+const PRIMARY_ITEM_STATS = ["Strength", "Agility", "Intellect", "Stamina"];
 
 const ARMOR_ACCESS = {
   mage: ["Cloth"],
@@ -242,6 +243,18 @@ function itemTooltipModel(item, hero, options) {
   if (!item) return null;
   const eligibility = canEquip(hero, item);
   const config = options || {};
+  const primaryStats = item.stats.filter(function(line) { return PRIMARY_ITEM_STATS.includes(line.stat); });
+  const secondaryStats = item.stats.filter(function(line) { return !PRIMARY_ITEM_STATS.includes(line.stat); });
+  const stats = [];
+
+  primaryStats.forEach(function(line) {
+    stats.push({label:"Primary · " + line.stat, value:"+" + line.value});
+  });
+  secondaryStats.forEach(function(line) {
+    stats.push({label:"Secondary · " + line.stat, value:"+" + line.value});
+  });
+  if (!stats.length) stats.push({label:"Bonus stats", value:"None"});
+
   return {
     variant:"item",
     title:item.name,
@@ -251,15 +264,15 @@ function itemTooltipModel(item, hero, options) {
     icon:{slug:item.icon, quality:item.qualityKey},
     requirements:[
       {label:"Required level", value:String(item.tier)},
-      {label:"Slot", value:item.slot}
+      {label:"Slot", value:item.slot},
+      {label:item.slot === "Weapon" ? "Weapon family" : "Armor family", value:item.family}
     ],
-    description:config.description || (eligibility.ok ? "Equipment for " + hero.classLabel + "." : "This item cannot currently be equipped."),
-    stats:item.stats.length
-      ? item.stats.map(function(line) { return {label:line.stat, value:"+" + line.value}; })
-      : [{label:"Bonus stats", value:"None"}],
+    description:config.description || (eligibility.ok ? "Usable by " + hero.classLabel + "." : "This item cannot currently be equipped."),
+    stats:stats,
     meta:[
+      {label:"Quality", value:item.quality},
       {label:"Tier", value:"T" + item.tier},
-      {label:"Family", value:item.family}
+      {label:"Equipped", value:equippedBySelectedHero(item) ? "Yes" : "No"}
     ],
     locked:eligibility.ok ? [] : [eligibility.reason]
   };
@@ -311,26 +324,18 @@ function renderRoster() {
 function slotMarkup(hero, slot) {
   const item = getItem(hero.equipment[slot]);
   if (!item) {
-    return '<span class="gear-slot-icon empty wow-icon-frame is-disabled">' +
+    return '<span class="gear-slot-label">' + escapeHtml(slot) + '</span>' +
+      '<span class="gear-slot-icon empty wow-icon-frame is-disabled">' +
         '<img src="' + Icons.resolve("equipment-slot", slot) + '" alt="">' +
-      '</span>' +
-      '<span class="gear-slot-copy"><small>' + escapeHtml(slot) + '</small><strong>Empty slot</strong><em>Choose an item from the armory</em></span>';
+      '</span>';
   }
 
-  const stats = item.stats.length
-    ? item.stats.map(function(s) { return "+" + s.value + " " + s.stat; }).join(" · ")
-    : "No bonus stats";
-
-  return '<span class="gear-slot-icon wow-icon-frame ' + qualityFrameClass(item) + '">' +
+  return '<span class="gear-slot-label">' + escapeHtml(slot) + '</span>' +
+    '<span class="gear-slot-icon wow-icon-frame ' + qualityFrameClass(item) + '">' +
       '<img src="' + Icons.iconUrl(item.icon) + '" alt="">' +
       '<span class="wow-icon-tier">T' + item.tier + '</span>' +
     '</span>' +
-    '<span class="gear-slot-copy">' +
-      '<small>' + escapeHtml(slot) + ' · ' + escapeHtml(item.family) + '</small>' +
-      '<strong class="' + qualityClass(item) + '">' + escapeHtml(item.name) + '</strong>' +
-      '<em>' + escapeHtml(stats) + '</em>' +
-    '</span>' +
-    '<span class="gear-slot-remove">×</span>';
+    '<span class="gear-slot-remove" aria-hidden="true">×</span>';
 }
 
 function renderSlots() {
@@ -344,6 +349,7 @@ function renderSlots() {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "gear-slot" + (item ? " filled" : " empty");
+      button.setAttribute("aria-label", item ? slot + ": " + item.name + ". Click to unequip." : slot + ": empty");
       button.innerHTML = slotMarkup(hero, slot);
       const img = button.querySelector("img");
       if (img) Icons.bindFallback(img);
@@ -435,9 +441,16 @@ function renderHeroHeader() {
   $("heroLevelBadge").textContent = hero.level;
   $("armorAccess").textContent = (ARMOR_ACCESS[hero.classId] || ["Cloth"]).join(" / ");
 
+  const classIcon = $("heroClassIcon");
+  classIcon.className = "gear-class-icon wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-" + hero.classId;
+  const classImage = classIcon.querySelector("img");
+  classImage.src = Icons.resolve("class", hero.classId);
+  classImage.alt = hero.classLabel + " class icon";
+  Icons.bindFallback(classImage);
+
   const portrait = $("heroPortrait");
-  portrait.src = Icons.iconUrl(hero.portrait);
-  portrait.alt = hero.classLabel + " icon";
+  portrait.src = Icons.resolve("race", hero.race);
+  portrait.alt = hero.race + " character portrait";
   Icons.bindFallback(portrait);
 
   const equippedItems = SLOT_ORDER.map(function(slot) { return getItem(hero.equipment[slot]); }).filter(Boolean);
@@ -449,13 +462,6 @@ function renderHeroHeader() {
 function equippedBySelectedHero(item) {
   const hero = selectedHero();
   return hero.equipment[item.slot] === item.id;
-}
-
-function itemStatsText(item) {
-  if (!item.stats.length) return "No bonus stats";
-  return item.stats.map(function(line) {
-    return "+" + line.value + " " + line.stat;
-  }).join(" · ");
 }
 
 function renderArmory() {
@@ -491,19 +497,14 @@ function renderArmory() {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "armory-item " + qualityClass(item) + (eligibility.ok ? "" : " locked") + (equipped ? " equipped" : "");
+    card.setAttribute("aria-label", item.name + ". " + item.quality + " T" + item.tier + " " + item.slot + ". " + (equipped ? "Equipped." : eligibility.ok ? "Click to equip." : eligibility.reason + "."));
     if (!eligibility.ok) card.setAttribute("aria-disabled", "true");
     card.innerHTML =
       '<span class="armory-item-icon wow-icon-frame ' + qualityFrameClass(item) + (eligibility.ok ? "" : " is-locked") + (equipped ? " is-selected" : "") + '">' +
         '<img src="' + Icons.iconUrl(item.icon) + '" alt="">' +
         '<span class="wow-icon-tier">T' + item.tier + '</span>' +
-      '</span>' +
-      '<span class="armory-item-copy">' +
-        '<span class="armory-item-top"><strong>' + escapeHtml(item.name) + '</strong><em>' + escapeHtml(item.quality) + '</em></span>' +
-        '<small>' + escapeHtml(item.slot) + ' · ' + escapeHtml(item.family) + '</small>' +
-        '<span class="armory-stats">' + escapeHtml(itemStatsText(item)) + '</span>' +
-        (!eligibility.ok ? '<span class="armory-lock-reason">' + escapeHtml(eligibility.reason) + '</span>' : '') +
-      '</span>' +
-      '<span class="armory-equip-action">' + (equipped ? "Equipped" : eligibility.ok ? "Equip" : "Locked") + '</span>';
+        (equipped ? '<span class="armory-equipped-mark" aria-hidden="true">E</span>' : '') +
+      '</span>';
     Icons.bindFallback(card.querySelector("img"));
     Tooltips.attach(card, function() { return itemComparisonTooltip(item, hero); });
 

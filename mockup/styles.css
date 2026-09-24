@@ -150,3 +150,394 @@ button,select,input{font:inherit}.shell{width:min(1180px,calc(100% - 32px));marg
 @media(max-width:520px){.gear-paperdoll{display:block}.gear-slot-column{margin-top:10px}.gear-portrait-stage{min-height:240px}.gear-slot{margin-bottom:8px}.gear-character-head{align-items:flex-start}.gear-faction-badge{width:42px;height:42px;flex-basis:42px;font-size:20px}.gear-hero-title h2{font-size:21px}.gear-level-block{width:54px;height:50px}.gear-level-block strong{font-size:23px}.gear-stat-grid{grid-template-columns:1fr 1fr}.armory-item{grid-template-columns:52px minmax(0,1fr)}.armory-item-icon{width:48px;height:48px}.armory-equip-action{display:none}.gear-filters{grid-template-columns:1fr}.gear-search-label,.gear-check{grid-column:1}}
 
 @media(max-width:620px){.wow-launcher-shell{width:min(100% - 12px,920px);padding-top:18px}.wow-launcher-head{min-height:70px;padding:12px 14px}.wow-launcher-head .wow-title{font-size:23px}.wow-launcher-head__meta{display:none}.wow-launcher-entry{min-height:68px;grid-template-columns:46px minmax(0,1fr) 16px;padding:8px 10px}.wow-launcher-entry__icon{--wow-icon-size:40px}.wow-launcher-foot{display:none}}
+
+
+/* WOWUI-005 — compact WoW paper doll + armory */
+.gear-workspace{
+  grid-template-columns:240px minmax(540px,1fr) 370px;
+  background:#080d12;
+}
+.gear-roster-panel{
+  grid-template-rows:62px minmax(0,1fr);
+  border-right:2px solid #3e464d;
+}
+.gear-roster-summary{display:none}
+.gear-panel-head{
+  height:62px;
+  padding:8px 12px;
+  background:linear-gradient(180deg,#20262b,#11161a);
+  border-bottom:1px solid #4d5358;
+}
+.gear-panel-head h1{font-size:20px}
+.hero-roster{padding:6px}
+.hero-roster-card{
+  min-height:62px;
+  grid-template-columns:44px minmax(0,1fr) 14px;
+  gap:8px;
+  padding:6px;
+  margin-bottom:4px;
+  border-radius:2px;
+  background:linear-gradient(180deg,#171c20,#0e1215);
+}
+.roster-avatar{--wow-icon-size:40px}
+.roster-avatar b{min-width:18px;height:17px;font-size:9px}
+.roster-copy strong{font-size:13px}
+.roster-copy small{font-size:10px}
+.roster-copy em{font-size:8px}
+.roster-arrow{font-size:19px}
+
+.gear-character-panel{
+  grid-template-rows:76px minmax(0,1fr);
+  background:
+    radial-gradient(circle at 50% 31%,rgba(88,98,83,.18),transparent 33%),
+    linear-gradient(180deg,#111516,#090c0e 78%);
+}
+.gear-character-head{
+  min-height:76px;
+  padding:9px 16px;
+  border-bottom:2px solid #3a3426;
+  background:linear-gradient(180deg,#242623,#121512);
+}
+.gear-hero-title{gap:10px}
+.gear-faction-badge{width:44px;height:44px;flex-basis:44px}
+.gear-hero-identity{min-width:0}
+.gear-race{font-size:8px;color:#989d98}
+.gear-hero-title h2{font-size:22px;color:#f2e7c8}
+.gear-hero-title p{font-size:10px}
+.gear-class-identity{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-left:8px;
+  padding-left:10px;
+  border-left:1px solid #3a3e3d;
+}
+.gear-class-identity strong{
+  color:#c9c5b8;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.gear-class-icon{--wow-icon-size:34px}
+.gear-level-block{
+  width:56px;
+  height:48px;
+  border-radius:2px;
+  background:linear-gradient(180deg,#332a17,#15130d);
+}
+.gear-level-block strong{font-size:23px}
+
+.gear-character-body{padding:12px 14px 18px}
+.gear-paperdoll{
+  min-height:410px;
+  grid-template-columns:78px minmax(230px,1fr) 78px;
+  gap:16px;
+  align-items:center;
+  padding:18px 20px;
+  border:2px solid #090a09;
+  border-radius:2px;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(166,138,73,.10),transparent 29%),
+    linear-gradient(180deg,#171b18,#0b0e0d 78%);
+  box-shadow:
+    inset 0 0 0 1px #45483f,
+    inset 0 0 48px rgba(0,0,0,.55),
+    0 10px 30px rgba(0,0,0,.32);
+}
+.gear-slot-column{
+  min-width:0;
+  display:grid;
+  align-content:center;
+  justify-items:center;
+  gap:14px;
+}
+.gear-slot{
+  position:relative;
+  width:70px;
+  min-height:0;
+  height:78px;
+  display:grid;
+  grid-template-columns:1fr;
+  grid-template-rows:13px 60px;
+  justify-items:center;
+  align-items:center;
+  gap:3px;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#a7aba9;
+  text-align:center;
+}
+.gear-slot:hover,
+.gear-slot.filled:hover{
+  border:0;
+  background:transparent;
+}
+.gear-slot-label{
+  width:100%;
+  overflow:hidden;
+  color:#858b88;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.08em;
+  line-height:13px;
+  text-overflow:ellipsis;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.gear-slot-icon{
+  --wow-icon-size:58px;
+  transition:filter .12s ease, transform .12s ease;
+}
+.gear-slot.filled{cursor:pointer}
+.gear-slot.filled:hover .gear-slot-icon,
+.gear-slot.filled:focus-visible .gear-slot-icon{
+  filter:brightness(1.16);
+  transform:translateY(-1px);
+}
+.gear-slot.empty{opacity:.72}
+.gear-slot-remove{
+  position:absolute;
+  top:10px;
+  right:0;
+  z-index:6;
+  width:16px;
+  height:16px;
+  display:grid;
+  place-items:center;
+  border:1px solid #5d2323;
+  border-radius:50%;
+  background:#170a0a;
+  color:#e46b66;
+  font:700 11px Arial,sans-serif;
+  opacity:0;
+}
+.gear-slot.filled:hover .gear-slot-remove,
+.gear-slot.filled:focus-visible .gear-slot-remove{opacity:1}
+
+.gear-portrait-stage{
+  min-height:360px;
+  display:grid;
+  justify-items:center;
+  align-content:center;
+  gap:12px;
+  border-left:1px solid rgba(183,139,59,.12);
+  border-right:1px solid rgba(183,139,59,.12);
+}
+.gear-character-portrait{
+  display:grid;
+  justify-items:center;
+  gap:11px;
+}
+.gear-portrait-ring{
+  width:172px;
+  height:172px;
+  padding:10px;
+  border:4px solid #8d743c;
+  background:
+    radial-gradient(circle at 50% 35%,#3a4a44,#16201d 66%,#0a0d0c);
+  box-shadow:
+    0 0 0 4px #0d100f,
+    0 0 0 5px #4e4630,
+    0 16px 32px rgba(0,0,0,.5);
+}
+.gear-portrait-ring img{
+  image-rendering:auto;
+  filter:saturate(.9) contrast(1.04);
+}
+.gear-character-caption{
+  color:#6e746f;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.gear-portrait-level{
+  min-width:42px;
+  height:27px;
+  font-size:15px;
+}
+.gear-proficiency{margin-top:0}
+.gear-proficiency span{font-size:8px}
+.gear-proficiency strong{font-size:10px}
+.gear-loadout-meta{gap:4px}
+.gear-loadout-meta span{
+  border-radius:2px;
+  background:#0a0e0d;
+  font-size:8px;
+}
+
+.gear-stats{
+  margin-top:10px;
+  border-radius:2px;
+  border-color:#323834;
+  background:#0b0f0e;
+}
+.gear-stats-head{
+  padding:8px 10px;
+  background:#141916;
+}
+.gear-stats-head h3{font-size:15px}
+.gear-stat{padding:8px 10px}
+.gear-stat span{font-size:8px}
+.gear-stat strong{font-size:14px}
+
+.gear-armory-panel{
+  grid-template-rows:62px auto auto minmax(0,1fr);
+  border-left:2px solid #3e464d;
+  background:linear-gradient(180deg,#181d1c,#0c100f);
+}
+.gear-filters{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  padding:8px;
+  border-bottom:1px solid #333937;
+  background:#101513;
+}
+.gear-filters .wow-field{min-width:0;gap:3px}
+.gear-filters .wow-label{
+  margin:0;
+  color:#777f7a;
+  font-size:8px;
+  letter-spacing:.08em;
+}
+.gear-filters .wow-select,
+.gear-filters .wow-input{
+  width:100%;
+  height:32px;
+  min-height:32px;
+  padding:0 8px;
+  border-radius:1px;
+  font-size:10px;
+}
+.gear-search-label{grid-column:1/-1}
+.gear-check{
+  grid-column:1/-1;
+  min-height:26px;
+  padding:0 2px;
+  gap:7px;
+  color:#9da49f;
+  font-size:9px;
+}
+.gear-check>span{margin:0!important}
+.gear-tier-legend{
+  gap:4px;
+  padding:6px 8px;
+  background:#0b0f0e;
+}
+.gear-tier-legend>span{
+  gap:3px;
+  padding:2px 4px;
+  border-radius:1px;
+  background:#090c0b;
+}
+
+.armory-list.armory-grid{
+  min-height:0;
+  overflow-y:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,58px);
+  grid-auto-rows:58px;
+  align-content:start;
+  justify-content:start;
+  gap:7px;
+  padding:10px;
+  background:
+    linear-gradient(rgba(255,255,255,.015),rgba(255,255,255,0)),
+    #090d0c;
+}
+.armory-grid .armory-item{
+  --wow-quality-color:var(--wow-rarity-common);
+  position:relative;
+  width:58px;
+  min-height:0;
+  height:58px;
+  display:grid;
+  place-items:center;
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:inherit;
+  cursor:pointer;
+}
+.armory-grid .armory-item:hover:not(.locked){
+  border:0;
+  background:transparent;
+}
+.armory-grid .armory-item-icon{--wow-icon-size:54px}
+.armory-grid .armory-item:hover .armory-item-icon,
+.armory-grid .armory-item:focus-visible .armory-item-icon{
+  filter:brightness(1.16);
+  transform:translateY(-1px);
+}
+.armory-grid .armory-item.equipped{
+  background:transparent;
+  box-shadow:none;
+}
+.armory-grid .armory-item.locked{
+  opacity:.5;
+  cursor:not-allowed;
+}
+.armory-equipped-mark{
+  position:absolute;
+  left:-5px;
+  top:-5px;
+  z-index:8;
+  width:17px;
+  height:17px;
+  display:grid;
+  place-items:center;
+  border:1px solid #1a3d20;
+  border-radius:50%;
+  background:#0b2110;
+  color:#72d27e;
+  font:900 9px Arial,sans-serif;
+  box-shadow:0 1px 3px #000;
+}
+.armory-empty{
+  grid-column:1/-1;
+  min-height:190px;
+}
+
+@media(max-width:1200px){
+  .gear-workspace{grid-template-columns:210px minmax(480px,1fr) 330px}
+  .gear-paperdoll{grid-template-columns:72px minmax(210px,1fr) 72px;gap:10px;padding-inline:12px}
+  .gear-slot{width:66px}
+  .gear-slot-icon{--wow-icon-size:54px}
+  .armory-list.armory-grid{grid-template-columns:repeat(auto-fill,54px);grid-auto-rows:54px;gap:6px}
+  .armory-grid .armory-item{width:54px;height:54px}
+  .armory-grid .armory-item-icon{--wow-icon-size:50px}
+}
+@media(max-width:930px){
+  .gear-workspace{height:auto;grid-template-columns:190px minmax(0,1fr)}
+  .gear-armory-panel{grid-column:1/-1;min-height:430px;border-left:0;border-top:2px solid #3e464d}
+  .gear-paperdoll{grid-template-columns:72px minmax(220px,1fr) 72px}
+}
+@media(max-width:700px){
+  .gear-workspace{grid-template-columns:1fr}
+  .gear-roster-panel{min-height:330px;border-right:0;border-bottom:2px solid #3e464d}
+  .hero-roster{max-height:270px}
+  .gear-character-panel{min-height:0}
+  .gear-paperdoll{grid-template-columns:64px minmax(190px,1fr) 64px;min-height:380px;padding:12px 8px}
+  .gear-slot{width:60px;height:72px}
+  .gear-slot-icon{--wow-icon-size:50px}
+  .gear-portrait-ring{width:145px;height:145px}
+  .gear-class-identity strong{display:none}
+  .gear-character-head{padding-inline:10px}
+}
+@media(max-width:480px){
+  .gear-paperdoll{grid-template-columns:58px minmax(150px,1fr) 58px;gap:5px}
+  .gear-slot{width:54px;height:68px}
+  .gear-slot-icon{--wow-icon-size:46px}
+  .gear-slot-label{font-size:7px}
+  .gear-portrait-ring{width:122px;height:122px}
+  .gear-faction-badge{display:none}
+  .gear-class-identity{padding-left:6px;margin-left:4px}
+  .armory-list.armory-grid{grid-template-columns:repeat(auto-fill,50px);grid-auto-rows:50px}
+  .armory-grid .armory-item{width:50px;height:50px}
+  .armory-grid .armory-item-icon{--wow-icon-size:46px}
+}

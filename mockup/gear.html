@@ -47,10 +47,14 @@
         <header class="gear-character-head">
           <div class="gear-hero-title">
             <span id="heroFactionBadge" class="gear-faction-badge wow-faction-crest wow-faction-crest--alliance"></span>
-            <div>
+            <div class="gear-hero-identity">
               <span id="heroRace" class="gear-race">Human</span>
               <h2 id="heroName">Hero</h2>
-              <p><strong id="heroClass">Class</strong> · <span id="heroSpec">Specialization</span></p>
+              <p><span id="heroSpec">Specialization</span></p>
+            </div>
+            <div class="gear-class-identity">
+              <span id="heroClassIcon" class="gear-class-icon wow-icon-frame wow-icon-frame--sm"><img alt=""></span>
+              <strong id="heroClass">Class</strong>
             </div>
           </div>
           <div class="gear-level-block">
@@ -64,9 +68,12 @@
             <div id="leftSlots" class="gear-slot-column"></div>
 
             <div class="gear-portrait-stage">
-              <div class="gear-portrait-ring">
-                <img id="heroPortrait" alt="" src="">
-                <span id="heroLevelBadge" class="gear-portrait-level">1</span>
+              <div class="gear-character-portrait">
+                <div class="gear-portrait-ring">
+                  <img id="heroPortrait" alt="" src="">
+                  <span id="heroLevelBadge" class="gear-portrait-level">1</span>
+                </div>
+                <span class="gear-character-caption">Character portrait</span>
               </div>
               <div class="gear-proficiency">
                 <span>Armor proficiency</span>
@@ -104,9 +111,9 @@
         </div>
 
         <div class="gear-filters">
-          <label>
-            <span>Tier</span>
-            <select id="tierFilter">
+          <label class="wow-field">
+            <span class="wow-label">Tier</span>
+            <select id="tierFilter" class="wow-select">
               <option value="all">All tiers</option>
               <option value="1">Tier 1 · Common</option>
               <option value="2">Tier 2 · Uncommon</option>
@@ -115,9 +122,9 @@
               <option value="5">Tier 5 · Epic</option>
             </select>
           </label>
-          <label>
-            <span>Slot</span>
-            <select id="slotFilter">
+          <label class="wow-field">
+            <span class="wow-label">Slot</span>
+            <select id="slotFilter" class="wow-select">
               <option value="all">All slots</option>
               <option>Head</option>
               <option>Chest</option>
@@ -127,12 +134,13 @@
               <option>Weapon</option>
             </select>
           </label>
-          <label class="gear-search-label">
-            <span>Search</span>
-            <input id="gearSearch" type="search" placeholder="Item name or family">
+          <label class="gear-search-label wow-field">
+            <span class="wow-label">Search</span>
+            <input id="gearSearch" class="wow-input" type="search" placeholder="Item name or family">
           </label>
-          <label class="gear-check">
+          <label class="gear-check wow-checkbox">
             <input id="equippableOnly" type="checkbox" checked>
+            <span class="wow-checkbox__control" aria-hidden="true"></span>
             <span>Equippable only</span>
           </label>
         </div>
@@ -145,7 +153,7 @@
           <span><b class="wow-tier-label">T5</b><em class="wow-quality--epic">Epic</em></span>
         </div>
 
-        <div id="armoryList" class="armory-list"></div>
+        <div id="armoryList" class="armory-list armory-grid" aria-label="Armory item grid"></div>
       </aside>
     </section>
 
