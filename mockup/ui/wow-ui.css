@@ -503,6 +503,65 @@
   filter: grayscale(0.75);
 }
 
+/* Range control */
+.wow-range {
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.wow-range::-webkit-slider-runnable-track {
+  height: 7px;
+  border: var(--wow-border) solid #07090a;
+  border-radius: var(--wow-radius-tight);
+  background: linear-gradient(180deg, #090c0f, #171c20);
+  box-shadow: inset 0 0 0 1px var(--wow-inset-line), inset 0 1px 3px rgba(0,0,0,.78);
+}
+
+.wow-range::-moz-range-track {
+  height: 7px;
+  border: var(--wow-border) solid #07090a;
+  border-radius: var(--wow-radius-tight);
+  background: linear-gradient(180deg, #090c0f, #171c20);
+  box-shadow: inset 0 0 0 1px var(--wow-inset-line), inset 0 1px 3px rgba(0,0,0,.78);
+}
+
+.wow-range::-webkit-slider-thumb {
+  width: 17px;
+  height: 21px;
+  margin-top: -8px;
+  appearance: none;
+  border: 2px solid #17130d;
+  border-radius: var(--wow-radius-tight);
+  background: linear-gradient(180deg, var(--wow-gold-bright), var(--wow-gold) 55%, #5b431c);
+  box-shadow: inset 0 0 0 1px var(--wow-gold-pale), 0 2px 4px rgba(0,0,0,.7);
+}
+
+.wow-range::-moz-range-thumb {
+  width: 15px;
+  height: 19px;
+  border: 2px solid #17130d;
+  border-radius: var(--wow-radius-tight);
+  background: linear-gradient(180deg, var(--wow-gold-bright), var(--wow-gold) 55%, #5b431c);
+  box-shadow: inset 0 0 0 1px var(--wow-gold-pale), 0 2px 4px rgba(0,0,0,.7);
+}
+
+.wow-range:focus-visible {
+  outline: 2px solid var(--wow-focus);
+  outline-offset: 3px;
+}
+
+.wow-range:disabled,
+.wow-range[aria-disabled="true"] {
+  cursor: not-allowed;
+  filter: saturate(.3);
+  opacity: .55;
+}
+
 /* Checkbox contract:
    <label class="wow-checkbox"><input type="checkbox"><span class="wow-checkbox__control"></span><span>Label</span></label>
 */
