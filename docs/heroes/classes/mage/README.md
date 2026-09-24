@@ -1,55 +1,53 @@
 # Mage
 
-## Purpose
-
-Mage defines three specialization paths that share the class resource model and class-wide ability pools.
-
-
 ## Resource
 
 Mana
 
-## Equipment Direction
+## Equipment
 
 - Armor access: Cloth
-- Primary stat direction: Intellect
+- Primary stat: Intellect
 
 Exact weapon proficiencies remain open.
 
 ## Specializations
 
-| Spec | Role Direction | Spec Auto-Attack |
+| Spec | Role | Auto-Attack |
 | --- | --- | --- |
 | [Arcane](./specs/arcane.md) | Ranged spell damage / resource control | Arcane Bolt |
 | [Fire](./specs/fire.md) | Ranged burst spell damage | Firebolt |
 | [Frost](./specs/frost.md) | Ranged spell damage / control | Frostbolt |
 
-## Talent Progression
+## Talent Trees
 
-The first talent point spent in one of the three specialization trees chooses the hero's specialization.
+Each specialization link above contains the established talent tree for that spec:
 
-Levels 1–3 are committed to that chosen tree:
+- Tier 1 — 3 talents
+- Tier 2 — 3 talents
+- Tier 3 — 2 mutually exclusive capstones
 
-1. Tier 1 talent selects the specialization.
-2. Tier 2 talent advances the specialization.
-3. One of two Tier 3 capstones completes the specialization and unlocks the other two trees.
+The first Level 1 talent point selects the specialization.
 
-Levels 4–5 can then be invested wherever tree prerequisites allow.
+Level 2 advances to Tier 2 in that same tree.
 
-## Ability Loadout
+Level 3 selects one capstone and unlocks the other two class trees.
 
-Every Mage equips:
+Levels 4 and 5 can then be spent wherever tree prerequisites allow.
 
-- the auto-attack defined by the chosen specialization
-- exactly 2 cooldown abilities selected from the available class/spec pool
-- exactly 1 ultimate selected from the available class/spec pool
+## Combat Loadout
+
+Every Mage uses:
+
+- the specialization's auto-attack
+- exactly 2 selected cooldown abilities
+- exactly 1 selected ultimate
 
 ## Open Areas
 
-- exact talents
-- cooldown pool
-- ultimate pool
+- cooldown ability pool
+- ultimate ability pool
 - exact resource tuning
-- exact auto-attack timing
+- exact auto-attack timing and coefficients
 - spec Mastery effects
 - weapon proficiencies
