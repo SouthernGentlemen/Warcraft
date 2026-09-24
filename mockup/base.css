@@ -107,7 +107,9 @@
 .base-resource-counter:focus,
 .base-meta-stat:focus,
 .base-plot:focus,
-.building-thumb:focus {
+.building-thumb:focus,
+.building-tabs .wow-tab:focus,
+.base-action:focus {
   outline: 2px solid var(--wow-focus);
   outline-offset: 2px;
 }
