@@ -156,6 +156,22 @@ function talentTier(md, startMarker, endMarker) {
     .map(([name, effect]) => ({ name, effect }));
 }
 
+function actionTable(block) {
+  return markdownTable(block).map(row => ({
+    id: row[0] || "",
+    name: row[1] || "",
+    kind: row[2] || "",
+    school: row[3] || "",
+    target: row[4] || "",
+    power: Number(row[5] || 0),
+    coefficient_bp: Number(row[6] || 0),
+    cooldown_ticks: Number(row[7] || 0),
+    resource: row[8] || "none",
+    cost: Number(row[9] || 0),
+    effect: row[10] || "none"
+  }));
+}
+
 function toPosix(path) {
   return path.split(sep).join("/");
 }
@@ -185,6 +201,16 @@ function mirrorObject(sourcePath, md) {
           : ""
       },
       balance_role: section(md, "Balance Role")
+    };
+  }
+
+  if (/^docs\/heroes\/classes\/[^/]+\/abilities\/README\.md$/.test(posixPath)) {
+    return {
+      ...base,
+      kind: "abilities",
+      class: heading(md).replace(/ Abilities$/, ""),
+      cooldowns: actionTable(section(md, "Cooldowns")),
+      ultimates: actionTable(section(md, "Ultimates"))
     };
   }
 
@@ -280,6 +306,7 @@ async function rebuildData() {
         id,
         label: record.class,
         resource: record.resource,
+        abilities_path: `./${id}/abilities/README.json`,
         specs: record.specializations.map(spec => {
           const specId = slugify(spec.name);
           return {
