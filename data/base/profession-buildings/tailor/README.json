@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/base/profession-buildings/tailor/README.md",
+  "kind": "document",
+  "title": "Tailor",
+  "source_markdown": "# Tailor\n\n## Purpose\n\nThe Tailor handles cloth-based crafting and equipment production.\n\n## Known Progression\n\n1. Linen\n2. Wool\n3. Silk\n4. Mageweave\n5. Runecloth\n\n## Expected Outputs\n\n- cloth armor\n- cloth equipment\n- textile components\n\nExact recipes, class restrictions, crafting times, and upgrade requirements remain open.\n"
+}
