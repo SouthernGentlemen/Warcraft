@@ -11,13 +11,13 @@
     <section class="wow-frame">
       <header class="wow-titlebar">
         <div>
-          <div class="wow-kicker">WOWUI-001 / SHARED FOUNDATION</div>
-          <h1 class="wow-title">Warcraft UI Primitive Reference</h1>
+          <div class="wow-kicker">WOWUI-001 + WOWUI-002 / SHARED UI</div>
+          <h1 class="wow-title">Warcraft UI & Icon Reference</h1>
         </div>
         <a class="wow-button" href="../index.html">Mockups</a>
       </header>
       <div class="wow-demo__section">
-        <p class="wow-ui-text">This page is the class contract for later mockup migrations. It intentionally uses only <code class="wow-tech">ui/wow-ui.css</code>.</p>
+        <p class="wow-ui-text">This page is the class contract for later mockup migrations. Shared visuals come from <code class="wow-tech">ui/wow-ui.css</code>; semantic icon URLs and fallback behavior come from <code class="wow-tech">ui/wow-icons.js</code>.</p>
       </div>
     </section>
 
@@ -43,7 +43,7 @@
       </section>
 
       <section class="wow-frame">
-        <header class="wow-titlebar"><h2 class="wow-title">Buttons &amp; Icon Shells</h2></header>
+        <header class="wow-titlebar"><h2 class="wow-title">Buttons &amp; Icon Frames</h2></header>
         <div class="wow-demo__section">
           <div class="wow-demo__row">
             <button class="wow-button" type="button">Normal</button>
@@ -53,10 +53,31 @@
             <button class="wow-button" type="button" disabled>Disabled</button>
             <button class="wow-button is-locked" type="button" aria-disabled="true">Locked</button>
           </div>
-          <div class="wow-demo__row">
-            <button class="wow-icon-button" type="button" aria-label="Icon button"><span class="wow-icon">✦</span></button>
-            <button class="wow-icon-button is-selected" type="button" aria-label="Selected icon button"><span class="wow-icon">◆</span></button>
-            <button class="wow-icon-button is-locked" type="button" aria-label="Locked icon button" aria-disabled="true"><span class="wow-icon">?</span></button>
+          <div class="wow-demo__row" aria-label="Shared icon frame states">
+            <span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-mage" title="Class color">
+              <img data-wow-icon="class" data-wow-key="mage" alt="Mage icon">
+              <span class="wow-icon-count">3</span>
+            </span>
+            <span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--quality-epic is-selected" title="Selected epic">
+              <img data-wow-icon="item-family" data-wow-key="staff" alt="Epic staff icon">
+              <span class="wow-icon-rank">2/5</span>
+            </span>
+            <span class="wow-icon-frame wow-icon-frame--md is-locked" title="Locked">
+              <img data-wow-icon="talent" data-wow-key="locked" alt="Locked icon">
+            </span>
+            <span class="wow-icon-frame wow-icon-frame--md is-disabled" title="Disabled">
+              <img data-wow-icon="ability" data-wow-key="defensive" alt="Disabled ability icon">
+            </span>
+            <span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-rogue" title="Cooldown hook">
+              <img data-wow-icon="ability" data-wow-key="movement" alt="Cooldown ability icon">
+              <span class="wow-icon-cooldown" style="--wow-cooldown:38%"></span>
+            </span>
+          </div>
+          <div class="wow-demo__row" aria-label="Faction crests">
+            <span class="wow-faction-crest wow-faction-crest--alliance"><img data-wow-icon="faction" data-wow-key="alliance" alt="Alliance icon"></span>
+            <span class="wow-faction-crest wow-faction-crest--horde"><img data-wow-icon="faction" data-wow-key="horde" alt="Horde icon"></span>
+            <span class="wow-tier-label">T3</span>
+            <span class="wow-quality--rare">Rare quality</span>
           </div>
         </div>
       </section>
@@ -117,5 +138,7 @@
       </section>
     </div>
   </main>
+  <script src="./wow-icons.js"></script>
+  <script>window.WowUIIcons.hydrate(document);</script>
 </body>
 </html>

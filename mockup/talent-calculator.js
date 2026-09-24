@@ -1,84 +1,5 @@
 const DATA_ROOT = "../data/heroes/classes/";
-const WOWHEAD_ICON_ROOT = "https://wow.zamimg.com/images/wow/icons/large/";
-const FALLBACK_ICON = WOWHEAD_ICON_ROOT + "inv_misc_questionmark.jpg";
-
-const SPEC_ICONS = {
-  "balance":"spell_nature_starfall",
-  "feral":"ability_druid_catform",
-  "restoration":"spell_nature_rejuvenation",
-  "beast-mastery":"ability_hunter_beastcall",
-  "marksmanship":"ability_marksmanship",
-  "survival":"ability_hunter_survivalinstincts",
-  "arcane":"spell_arcane_blast",
-  "fire":"spell_fire_fireball02",
-  "frost":"spell_frost_frostbolt02",
-  "holy":"spell_holy_holybolt",
-  "protection":"ability_warrior_defensivestance",
-  "retribution":"spell_holy_sealofmight",
-  "discipline":"spell_holy_powerwordshield",
-  "shadow":"spell_shadow_shadowwordpain",
-  "assassination":"ability_rogue_eviscerate",
-  "combat":"ability_backstab",
-  "subtlety":"ability_rogue_ambush",
-  "elemental":"spell_nature_lightning",
-  "enhancement":"ability_shaman_stormstrike",
-  "affliction":"spell_shadow_shadowwordpain",
-  "demonology":"spell_shadow_summonvoidwalker",
-  "destruction":"spell_fire_flamebolt",
-  "arms":"ability_warrior_savageblow",
-  "fury":"ability_warrior_innerrage"
-};
-
-const TALENT_ICON_POOL = [
-  "spell_nature_lightning",
-  "spell_nature_chainlightning",
-  "spell_nature_rejuvenation",
-  "spell_nature_healingwavegreater",
-  "spell_nature_starfall",
-  "spell_nature_naturesblessing",
-  "spell_nature_regeneration",
-  "spell_nature_forceofnature",
-  "spell_arcane_blast",
-  "spell_arcane_arcanetorrent",
-  "spell_fire_flamebolt",
-  "spell_fire_fireball02",
-  "spell_fire_flameshock",
-  "spell_frost_frostbolt02",
-  "spell_frost_frostarmor02",
-  "spell_frost_iceshard",
-  "spell_shadow_shadowbolt",
-  "spell_shadow_shadowwordpain",
-  "spell_shadow_corruption",
-  "spell_shadow_lifedrain02",
-  "spell_holy_holybolt",
-  "spell_holy_powerwordshield",
-  "spell_holy_greaterheal",
-  "spell_holy_renew",
-  "ability_druid_catform",
-  "ability_druid_bearform",
-  "ability_rogue_eviscerate",
-  "ability_rogue_sprint",
-  "ability_rogue_ambush",
-  "ability_backstab",
-  "ability_warrior_charge",
-  "ability_warrior_defensivestance",
-  "ability_warrior_innerrage",
-  "ability_warrior_savageblow",
-  "ability_hunter_beastcall",
-  "ability_marksmanship",
-  "ability_hunter_survivalinstincts",
-  "ability_hunter_aimedshot",
-  "spell_holy_sealofmight",
-  "spell_holy_devotionaura",
-  "spell_holy_divineshield",
-  "spell_holy_righteousfury",
-  "ability_paladin_shieldofthetemplar",
-  "spell_shaman_lavaburst",
-  "spell_shaman_spiritwalkersgrace",
-  "spell_shaman_feralspirit",
-  "spell_shaman_astralshift",
-  "ability_shaman_stormstrike"
-];
+const Icons = window.WowUIIcons;
 
 const TREE_THEMES = [
   {accent:"#62b17a", glow:"rgba(25,111,84,.66)", tint:"rgba(14,84,72,.48)"},
@@ -97,21 +18,6 @@ const state = {
 
 const $ = id => document.getElementById(id);
 const escapeHtml = (s="") => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-
-function iconUrl(slug) {
-  return WOWHEAD_ICON_ROOT + (slug || "inv_misc_questionmark") + ".jpg";
-}
-
-function hashString(value) {
-  let hash = 0;
-  for (let i = 0; i < value.length; i += 1) hash = ((hash << 5) - hash) + value.charCodeAt(i);
-  return Math.abs(hash);
-}
-
-function talentIcon(specId, itemName, index) {
-  const start = hashString(specId + itemName) % TALENT_ICON_POOL.length;
-  return iconUrl(TALENT_ICON_POOL[(start + index * 7) % TALENT_ICON_POOL.length]);
-}
 
 async function loadJson(path) {
   const res = await fetch(path);
@@ -320,16 +226,13 @@ function createTalentNode(specId, tier, item, index, capstone=false) {
   button.type = "button";
   button.dataset.talent = item.name;
   button.innerHTML = `
-    <span class="wow-icon-frame">
-      <img src="${talentIcon(specId, item.name, index)}" alt="" loading="lazy">
+    <span class="wow-icon-frame wow-icon-frame--lg${selected ? " is-selected" : ""}${canUse ? "" : " is-locked"}">
+      <img src="${Icons.talentUrl(specId, item.name, index)}" alt="" loading="lazy">
+      <span class="wow-icon-rank">${selected ? "1" : "0"}/1</span>
     </span>
-    <span class="wow-rank ${selected ? "learned" : ""}">${selected ? "1" : "0"}/1</span>
   `;
 
-  const image = button.querySelector("img");
-  image.addEventListener("error", () => {
-    if (image.src !== FALLBACK_ICON) image.src = FALLBACK_ICON;
-  }, {once:true});
+  Icons.bindFallback(button.querySelector("img"));
 
   button.addEventListener("click", () => choose(specId, tier, item.name));
   button.addEventListener("contextmenu", event => {
@@ -358,7 +261,7 @@ function createTalentRow(specId, tier, items, rowNumber) {
 function renderSpecPanel(meta, panelIndex) {
   const spec = state.specs.get(meta.id);
   const theme = TREE_THEMES[panelIndex % TREE_THEMES.length];
-  const specIcon = iconUrl(SPEC_ICONS[meta.id] || "inv_misc_questionmark");
+  const specIcon = Icons.resolve("spec", meta.id, {classId:state.classMeta.id});
   const panel = document.createElement("article");
 
   panel.className = "wow-spec-panel" +
@@ -372,7 +275,7 @@ function renderSpecPanel(meta, panelIndex) {
 
   panel.innerHTML = `
     <header class="wow-spec-header">
-      <span class="wow-spec-icon"><img src="${specIcon}" alt=""></span>
+      <span class="wow-spec-icon wow-icon-frame wow-icon-frame--class-${state.classMeta.id}"><img src="${specIcon}" alt=""></span>
       <div class="wow-spec-name">
         <strong>${escapeHtml(meta.label)}</strong>
         <small>${escapeHtml(spec.identity.role)}</small>
@@ -387,10 +290,7 @@ function renderSpecPanel(meta, panelIndex) {
     </div>
   `;
 
-  const specImg = panel.querySelector(".wow-spec-icon img");
-  specImg.addEventListener("error", () => {
-    if (specImg.src !== FALLBACK_ICON) specImg.src = FALLBACK_ICON;
-  }, {once:true});
+  Icons.bindFallback(panel.querySelector(".wow-spec-icon img"));
 
   const body = panel.querySelector(".wow-spec-body");
   body.appendChild(createTalentRow(meta.id, "tier_1", spec.talents.tier_1, 1));

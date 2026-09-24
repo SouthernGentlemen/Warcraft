@@ -43,7 +43,7 @@
       <section class="gear-character-panel">
         <header class="gear-character-head">
           <div class="gear-hero-title">
-            <span id="heroFactionBadge" class="gear-faction-badge">A</span>
+            <span id="heroFactionBadge" class="gear-faction-badge wow-faction-crest wow-faction-crest--alliance"></span>
             <div>
               <span id="heroRace" class="gear-race">Human</span>
               <h2 id="heroName">Hero</h2>
@@ -105,9 +105,9 @@
             <span>Tier</span>
             <select id="tierFilter">
               <option value="all">All tiers</option>
-              <option value="1">Tier 1 · White</option>
-              <option value="2">Tier 2 · Green</option>
-              <option value="3">Tier 3 · Blue</option>
+              <option value="1">Tier 1 · Common</option>
+              <option value="2">Tier 2 · Uncommon</option>
+              <option value="3">Tier 3 · Rare</option>
               <option value="4">Tier 4 · Epic</option>
               <option value="5">Tier 5 · Epic</option>
             </select>
@@ -134,12 +134,12 @@
           </label>
         </div>
 
-        <div class="gear-tier-legend" aria-label="Gear tier quality legend">
-          <span class="quality-white">T1 White</span>
-          <span class="quality-green">T2 Green</span>
-          <span class="quality-blue">T3 Blue</span>
-          <span class="quality-epic">T4 Epic</span>
-          <span class="quality-epic">T5 Epic</span>
+        <div class="gear-tier-legend" aria-label="Gear tier and quality legend">
+          <span><b class="wow-tier-label">T1</b><em class="wow-quality--common">Common</em></span>
+          <span><b class="wow-tier-label">T2</b><em class="wow-quality--uncommon">Uncommon</em></span>
+          <span><b class="wow-tier-label">T3</b><em class="wow-quality--rare">Rare</em></span>
+          <span><b class="wow-tier-label">T4</b><em class="wow-quality--epic">Epic</em></span>
+          <span><b class="wow-tier-label">T5</b><em class="wow-quality--epic">Epic</em></span>
         </div>
 
         <div id="armoryList" class="armory-list"></div>
@@ -149,6 +149,7 @@
     <div id="gearToast" class="base-toast" hidden></div>
   </main>
 
+  <script src="./ui/wow-icons.js"></script>
   <script src="./gear.js"></script>
 </body>
 </html>

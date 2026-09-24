@@ -1,5 +1,4 @@
-const WOWHEAD_ICON_ROOT = "https://wow.zamimg.com/images/wow/icons/large/";
-const FALLBACK_ICON = WOWHEAD_ICON_ROOT + "inv_misc_questionmark.jpg";
+const Icons = window.WowUIIcons;
 
 const BASE_TEAMS = {
   alliance: [
@@ -31,10 +30,6 @@ const state = {
 
 const $ = id => document.getElementById(id);
 
-function iconUrl(slug) {
-  return WOWHEAD_ICON_ROOT + slug + ".jpg";
-}
-
 function cloneTeams() {
   return {
     alliance: BASE_TEAMS.alliance.map(unit => ({...unit, currentHp:unit.hp, currentResource:unit.resource})),
@@ -61,20 +56,19 @@ function unitMarkup(unit, faction) {
       '<span class="combatant-level">LV. ' + unit.level + '</span>' +
       '<span class="combatant-role">' + unit.role.toUpperCase() + '</span>' +
     '</div>' +
-    '<div class="combatant-avatar">' +
+    '<div class="combatant-avatar wow-icon-frame wow-icon-frame--class-' + slug(unit.className) + '">' +
       '<span class="combatant-glow"></span>' +
-      '<img src="' + iconUrl(unit.icon) + '" alt="" loading="lazy">' +
-      '<span class="race-badge">' + unit.race.slice(0,2).toUpperCase() + '</span>' +
+      '<img src="' + Icons.iconUrl(unit.icon) + '" alt="" loading="lazy">' +
+      '<span class="race-badge wow-icon-frame wow-icon-frame--xs">' +
+        '<img src="' + Icons.resolve("race", unit.race) + '" alt="" loading="lazy">' +
+      '</span>' +
     '</div>' +
     '<strong class="combatant-name">' + unit.name + '</strong>' +
     '<span class="combatant-meta">' + unit.race + ' · ' + unit.className + '</span>' +
     '<div class="mini-stat hp-stat"><span class="mini-fill"></span><b>' + unit.currentHp + '</b></div>' +
     '<div class="mini-stat resource-stat" title="' + resourceLabel(unit) + '"><span class="mini-fill"></span><b>' + unit.currentResource + '</b></div>';
 
-  const img = article.querySelector("img");
-  img.addEventListener("error", () => {
-    if (img.src !== FALLBACK_ICON) img.src = FALLBACK_ICON;
-  }, {once:true});
+  article.querySelectorAll("img").forEach(Icons.bindFallback);
 
   return article;
 }
@@ -339,6 +333,7 @@ function resetBattle() {
 }
 
 function init() {
+  Icons.hydrate(document);
   $("pauseBattle").addEventListener("click", () => setPaused(!state.paused));
   $("fastForward").addEventListener("click", nextSpeed);
   $("resetBattle").addEventListener("click", resetBattle);

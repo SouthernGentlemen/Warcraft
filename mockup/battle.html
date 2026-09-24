@@ -18,7 +18,7 @@
     <section class="battle-frame" aria-label="Alliance versus Horde battle mockup">
       <header class="battle-hud">
         <section class="team-summary alliance-summary">
-          <div class="faction-crest alliance-crest" aria-hidden="true">A</div>
+          <div class="faction-crest wow-faction-crest wow-faction-crest--alliance" aria-label="Alliance"><img data-wow-icon="faction" data-wow-key="alliance" alt=""></div>
           <div class="team-summary-copy">
             <div class="team-line">
               <div>
@@ -58,7 +58,7 @@
             </div>
             <div class="team-health"><span id="hordeHpFill"></span></div>
           </div>
-          <div class="faction-crest horde-crest" aria-hidden="true">H</div>
+          <div class="faction-crest wow-faction-crest wow-faction-crest--horde" aria-label="Horde"><img data-wow-icon="faction" data-wow-key="horde" alt=""></div>
         </section>
       </header>
 
@@ -97,6 +97,7 @@
     </section>
   </main>
 
+  <script src="./ui/wow-icons.js"></script>
   <script src="./battle.js"></script>
 </body>
 </html>

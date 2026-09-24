@@ -663,6 +663,219 @@
 .wow-rarity--epic { color: var(--wow-rarity-epic); }
 .wow-rarity--legendary { color: var(--wow-rarity-legendary); }
 
+/* Shared semantic icon system */
+.wow-icon-frame {
+  --wow-icon-size: 40px;
+  --wow-icon-accent: #676159;
+  position: relative;
+  display: inline-grid;
+  width: var(--wow-icon-size);
+  height: var(--wow-icon-size);
+  flex: 0 0 var(--wow-icon-size);
+  place-items: center;
+  padding: 3px;
+  overflow: visible;
+  border: 2px solid var(--wow-icon-accent);
+  border-radius: var(--wow-radius-control);
+  background: linear-gradient(180deg, #11161a, #06080a);
+  box-shadow:
+    0 0 0 2px #060708,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 3px 7px rgba(0, 0, 0, 0.66);
+  transition: border-color 90ms ease, box-shadow 90ms ease, filter 90ms ease, transform 60ms ease;
+}
+
+.wow-icon-frame--xs { --wow-icon-size: 28px; }
+.wow-icon-frame--sm { --wow-icon-size: 34px; }
+.wow-icon-frame--md { --wow-icon-size: 44px; }
+.wow-icon-frame--lg { --wow-icon-size: 64px; }
+
+.wow-icon-frame > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  border-radius: 1px;
+  object-fit: cover;
+  background: var(--wow-surface-inset);
+}
+
+.wow-icon-frame:hover:not(.is-disabled):not(.is-locked),
+button:hover:not(:disabled) > .wow-icon-frame:not(.is-disabled):not(.is-locked),
+button:hover:not(:disabled) .wow-icon-frame[data-interactive="true"]:not(.is-disabled):not(.is-locked) {
+  border-color: var(--wow-gold-bright);
+  box-shadow:
+    0 0 0 2px #060708,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 0 10px rgba(214, 182, 95, 0.3);
+}
+
+.wow-icon-frame:active:not(.is-disabled):not(.is-locked),
+.wow-icon-frame.is-pressed {
+  transform: translateY(1px);
+  box-shadow: 0 0 0 2px #060708, inset 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.wow-icon-frame.is-selected {
+  border-color: var(--wow-gold-pale);
+  box-shadow:
+    0 0 0 2px #17130d,
+    inset 0 0 0 1px var(--wow-gold),
+    0 0 12px rgba(214, 182, 95, 0.42);
+}
+
+.wow-icon-frame.is-disabled,
+button:disabled .wow-icon-frame {
+  opacity: 0.48;
+  filter: saturate(0.25);
+}
+
+.wow-icon-frame.is-locked {
+  border-color: var(--wow-locked);
+  background: #0b0d0f;
+}
+
+.wow-icon-frame.is-locked > img {
+  filter: grayscale(1) brightness(0.4);
+}
+
+.wow-icon-frame:focus-visible,
+button:focus-visible .wow-icon-frame {
+  outline: 2px solid var(--wow-focus);
+  outline-offset: 3px;
+}
+
+.wow-icon-frame--class-druid { --wow-icon-accent: var(--wow-class-druid); }
+.wow-icon-frame--class-hunter { --wow-icon-accent: var(--wow-class-hunter); }
+.wow-icon-frame--class-mage { --wow-icon-accent: var(--wow-class-mage); }
+.wow-icon-frame--class-paladin { --wow-icon-accent: var(--wow-class-paladin); }
+.wow-icon-frame--class-priest { --wow-icon-accent: var(--wow-class-priest); }
+.wow-icon-frame--class-rogue { --wow-icon-accent: var(--wow-class-rogue); }
+.wow-icon-frame--class-shaman { --wow-icon-accent: var(--wow-class-shaman); }
+.wow-icon-frame--class-warlock { --wow-icon-accent: var(--wow-class-warlock); }
+.wow-icon-frame--class-warrior { --wow-icon-accent: var(--wow-class-warrior); }
+
+.wow-icon-frame--quality-poor { --wow-icon-accent: var(--wow-rarity-poor); }
+.wow-icon-frame--quality-common { --wow-icon-accent: var(--wow-rarity-common); }
+.wow-icon-frame--quality-uncommon { --wow-icon-accent: var(--wow-rarity-uncommon); }
+.wow-icon-frame--quality-rare { --wow-icon-accent: var(--wow-rarity-rare); }
+.wow-icon-frame--quality-epic { --wow-icon-accent: var(--wow-rarity-epic); }
+.wow-icon-frame--quality-legendary { --wow-icon-accent: var(--wow-rarity-legendary); }
+.wow-icon-frame--quality-artifact { --wow-icon-accent: var(--wow-rarity-artifact); }
+.wow-icon-frame--quality-heirloom { --wow-icon-accent: var(--wow-rarity-heirloom); }
+
+.wow-icon-count,
+.wow-icon-rank,
+.wow-icon-tier {
+  position: absolute;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  min-height: 15px;
+  padding: 1px 3px;
+  border: 1px solid #08090a;
+  border-radius: var(--wow-radius-tight);
+  background: rgba(5, 7, 8, 0.94);
+  color: #f4efe2;
+  font-family: var(--wow-font-ui);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 1px 0 #000;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.wow-icon-count { right: -5px; bottom: -4px; }
+.wow-icon-rank { right: -5px; bottom: -4px; color: var(--wow-gold-pale); }
+.wow-icon-tier { left: -5px; top: -4px; color: var(--wow-gold-pale); }
+
+.wow-icon-cooldown {
+  --wow-cooldown: 0%;
+  position: absolute;
+  z-index: 3;
+  inset: 3px;
+  border-radius: 1px;
+  background: conic-gradient(rgba(0, 0, 0, 0.78) var(--wow-cooldown), transparent 0);
+  pointer-events: none;
+}
+
+.wow-icon-fallback {
+  object-fit: cover;
+  image-rendering: auto;
+}
+
+.wow-quality--poor { --wow-quality-color: var(--wow-rarity-poor); color: var(--wow-rarity-poor); }
+.wow-quality--common { --wow-quality-color: var(--wow-rarity-common); color: var(--wow-rarity-common); }
+.wow-quality--uncommon { --wow-quality-color: var(--wow-rarity-uncommon); color: var(--wow-rarity-uncommon); }
+.wow-quality--rare { --wow-quality-color: var(--wow-rarity-rare); color: var(--wow-rarity-rare); }
+.wow-quality--epic { --wow-quality-color: var(--wow-rarity-epic); color: var(--wow-rarity-epic); }
+.wow-quality--legendary { --wow-quality-color: var(--wow-rarity-legendary); color: var(--wow-rarity-legendary); }
+.wow-quality--artifact { --wow-quality-color: var(--wow-rarity-artifact); color: var(--wow-rarity-artifact); }
+.wow-quality--heirloom { --wow-quality-color: var(--wow-rarity-heirloom); color: var(--wow-rarity-heirloom); }
+
+.wow-tier-label {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  padding: 2px 5px;
+  border: 1px solid var(--wow-gold-muted);
+  border-radius: var(--wow-radius-tight);
+  background: #11120f;
+  color: var(--wow-gold-pale);
+  font-family: var(--wow-font-ui);
+  font-size: var(--wow-type-xs);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.wow-faction-crest {
+  --wow-faction-color: var(--wow-gold);
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 3px solid #0a0b0d;
+  border-radius: var(--wow-radius-control);
+  background: linear-gradient(180deg, #20252a, #0b0e11);
+  box-shadow:
+    0 0 0 2px var(--wow-faction-color),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 5px 12px rgba(0, 0, 0, 0.48);
+}
+
+.wow-faction-crest--alliance {
+  --wow-faction-color: var(--wow-alliance-bright);
+  background: linear-gradient(180deg, var(--wow-alliance-deep), #0b1423);
+}
+
+.wow-faction-crest--horde {
+  --wow-faction-color: var(--wow-horde-bright);
+  background: linear-gradient(180deg, var(--wow-horde-deep), #1d0b0b);
+}
+
+.wow-faction-crest > img {
+  width: 88%;
+  height: 88%;
+  object-fit: cover;
+  border-radius: 1px;
+}
+
+/* Class semantic helpers use the same token source as icon frames. */
+.wow-class--druid { --wow-class-color: var(--wow-class-druid); color: var(--wow-class-druid); }
+.wow-class--hunter { --wow-class-color: var(--wow-class-hunter); color: var(--wow-class-hunter); }
+.wow-class--mage { --wow-class-color: var(--wow-class-mage); color: var(--wow-class-mage); }
+.wow-class--paladin { --wow-class-color: var(--wow-class-paladin); color: var(--wow-class-paladin); }
+.wow-class--priest { --wow-class-color: var(--wow-class-priest); color: var(--wow-class-priest); }
+.wow-class--rogue { --wow-class-color: var(--wow-class-rogue); color: var(--wow-class-rogue); }
+.wow-class--shaman { --wow-class-color: var(--wow-class-shaman); color: var(--wow-class-shaman); }
+.wow-class--warlock { --wow-class-color: var(--wow-class-warlock); color: var(--wow-class-warlock); }
+.wow-class--warrior { --wow-class-color: var(--wow-class-warrior); color: var(--wow-class-warrior); }
+
 /* Reference page only. This does not affect existing mockup screens. */
 .wow-demo {
   min-height: 100vh;

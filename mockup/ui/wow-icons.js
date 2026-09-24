@@ -1,0 +1,335 @@
+/*
+ * Shared semantic WoW icon resolver for the static mockups.
+ * Icon art remains remote on the existing Wowhead CDN; no Blizzard textures are stored here.
+ */
+(function(global) {
+  "use strict";
+
+  const ICON_ROOT = "https://wow.zamimg.com/images/wow/icons/large/";
+  const FALLBACK_SLUG = "inv_misc_questionmark";
+  const FALLBACK_URL = ICON_ROOT + FALLBACK_SLUG + ".jpg";
+  const INLINE_FALLBACK = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+    '<rect width="64" height="64" fill="#0b0e11"/>' +
+    '<rect x="2" y="2" width="60" height="60" fill="none" stroke="#655838" stroke-width="3"/>' +
+    '<path d="M22 23c1-9 19-11 22-1 3 9-10 10-10 18" fill="none" stroke="#d6b65f" stroke-width="6" stroke-linecap="square"/>' +
+    '<rect x="30" y="48" width="6" height="6" fill="#d6b65f"/>' +
+    '</svg>'
+  );
+
+  const ICONS = {
+    class: {
+      druid:"classicon_druid",
+      hunter:"classicon_hunter",
+      mage:"classicon_mage",
+      paladin:"classicon_paladin",
+      priest:"classicon_priest",
+      rogue:"classicon_rogue",
+      shaman:"classicon_shaman",
+      warlock:"classicon_warlock",
+      warrior:"classicon_warrior"
+    },
+    spec: {
+      "druid:balance":"spell_nature_starfall",
+      "druid:feral":"ability_druid_catform",
+      "druid:restoration":"spell_nature_rejuvenation",
+      "hunter:beast-mastery":"ability_hunter_beastcall",
+      "hunter:marksmanship":"ability_marksmanship",
+      "hunter:survival":"ability_hunter_survivalinstincts",
+      "mage:arcane":"spell_arcane_blast",
+      "mage:fire":"spell_fire_fireball02",
+      "mage:frost":"spell_frost_frostbolt02",
+      "paladin:holy":"spell_holy_holybolt",
+      "paladin:protection":"spell_holy_devotionaura",
+      "paladin:retribution":"spell_holy_sealofmight",
+      "priest:discipline":"spell_holy_powerwordshield",
+      "priest:holy":"spell_holy_greaterheal",
+      "priest:shadow":"spell_shadow_shadowwordpain",
+      "rogue:assassination":"ability_rogue_eviscerate",
+      "rogue:combat":"ability_backstab",
+      "rogue:subtlety":"ability_rogue_ambush",
+      "shaman:elemental":"spell_nature_lightning",
+      "shaman:enhancement":"ability_shaman_stormstrike",
+      "shaman:restoration":"spell_nature_healingwavegreater",
+      "warlock:affliction":"spell_shadow_corruption",
+      "warlock:demonology":"spell_shadow_summonvoidwalker",
+      "warlock:destruction":"spell_fire_flamebolt",
+      "warrior:arms":"ability_warrior_savageblow",
+      "warrior:fury":"ability_warrior_innerrage",
+      "warrior:protection":"ability_warrior_defensivestance",
+      balance:"spell_nature_starfall",
+      feral:"ability_druid_catform",
+      "beast-mastery":"ability_hunter_beastcall",
+      marksmanship:"ability_marksmanship",
+      survival:"ability_hunter_survivalinstincts",
+      arcane:"spell_arcane_blast",
+      fire:"spell_fire_fireball02",
+      frost:"spell_frost_frostbolt02",
+      retribution:"spell_holy_sealofmight",
+      discipline:"spell_holy_powerwordshield",
+      shadow:"spell_shadow_shadowwordpain",
+      assassination:"ability_rogue_eviscerate",
+      combat:"ability_backstab",
+      subtlety:"ability_rogue_ambush",
+      elemental:"spell_nature_lightning",
+      enhancement:"ability_shaman_stormstrike",
+      affliction:"spell_shadow_corruption",
+      demonology:"spell_shadow_summonvoidwalker",
+      destruction:"spell_fire_flamebolt",
+      arms:"ability_warrior_savageblow",
+      fury:"ability_warrior_innerrage"
+    },
+    race: {
+      human:"achievement_character_human_male",
+      dwarf:"achievement_character_dwarf_male",
+      gnome:"achievement_character_gnome_male",
+      orc:"achievement_character_orc_male",
+      undead:"achievement_character_undead_male",
+      troll:"achievement_character_troll_male"
+    },
+    faction: {
+      alliance:"inv_bannerpvp_02",
+      horde:"inv_bannerpvp_01"
+    },
+    "equipment-slot": {
+      head:"inv_helmet_08",
+      chest:"inv_chest_cloth_17",
+      pants:"inv_pants_cloth_14",
+      feet:"inv_boots_08",
+      gloves:"inv_gauntlets_05",
+      weapon:"inv_sword_04"
+    },
+    "item-family": {
+      cloth:"inv_fabric_wool_01",
+      leather:"inv_misc_leatherscrap_02",
+      mail:"inv_chest_chain_11",
+      plate:"inv_chest_plate04",
+      staff:"inv_staff_13",
+      dagger:"inv_weapon_shortblade_05",
+      sword:"inv_sword_04",
+      "head:cloth":"inv_helmet_08",
+      "head:leather":"inv_helmet_04",
+      "head:mail":"inv_helmet_05",
+      "head:plate":"inv_helmet_06",
+      "chest:cloth":"inv_chest_cloth_17",
+      "chest:leather":"inv_chest_leather_07",
+      "chest:mail":"inv_chest_chain_11",
+      "chest:plate":"inv_chest_plate04",
+      "pants:cloth":"inv_pants_cloth_14",
+      "pants:leather":"inv_pants_leather_05",
+      "pants:mail":"inv_pants_mail_14",
+      "pants:plate":"inv_pants_plate_04",
+      "feet:cloth":"inv_boots_cloth_03",
+      "feet:leather":"inv_boots_07",
+      "feet:mail":"inv_boots_chain_05",
+      "feet:plate":"inv_boots_plate_03",
+      "gloves:cloth":"inv_gauntlets_05",
+      "gloves:leather":"inv_gauntlets_15",
+      "gloves:mail":"inv_gauntlets_10",
+      "gloves:plate":"inv_gauntlets_04",
+      "weapon:staff":"inv_staff_13",
+      "weapon:dagger":"inv_weapon_shortblade_05",
+      "weapon:sword":"inv_sword_04"
+    },
+    ability: {
+      attack:"ability_meleedamage",
+      damage:"ability_dualwield",
+      heal:"spell_holy_heal",
+      defensive:"spell_holy_powerwordshield",
+      ultimate:"spell_nature_lightningoverload",
+      movement:"ability_rogue_sprint"
+    },
+    talent: {
+      active:"spell_nature_lightning",
+      passive:"spell_nature_naturesblessing",
+      capstone:"spell_holy_divineshield",
+      locked:"inv_misc_lockbox_1"
+    },
+    profession: {
+      blacksmith:"trade_blacksmithing",
+      alchemist:"trade_alchemy",
+      enchanter:"trade_engraving",
+      tailor:"trade_tailoring",
+      leatherworker:"trade_leatherworking",
+      engineer:"trade_engineering"
+    },
+    building: {
+      keep:"inv_misc_tournaments_symbol_human",
+      "command-hall":"inv_bannerpvp_02",
+      "recruitment-hall":"achievement_guildperk_everybodysfriend",
+      barracks:"ability_warrior_battleshout",
+      "training-grounds":"ability_dualwield",
+      storehouse:"inv_crate_03"
+    },
+    currency: {
+      gold:"inv_misc_coin_01",
+      renown:"achievement_reputation_01",
+      valor:"pvecurrency-valor",
+      badges:"inv_misc_rune_01",
+      deeds:"inv_misc_note_01"
+    },
+    resource: {
+      health:"spell_holy_wordfortitude",
+      mana:"inv_enchant_essenceastrallarge",
+      rage:"ability_warrior_innerrage",
+      energy:"ability_rogue_sprint",
+      lumber:"inv_misc_wood_01",
+      stone:"inv_stone_16",
+      population:"inv_misc_groupneedmore"
+    },
+    battle: {
+      pause:"spell_nature_timestop",
+      resume:"ability_hunter_readiness",
+      speed:"ability_rogue_sprint",
+      reset:"ability_hunter_readiness",
+      combat:"ability_dualwield",
+      damage:"ability_warrior_savageblow",
+      heal:"spell_holy_heal",
+      critical:"ability_rogue_eviscerate",
+      death:"spell_shadow_soulleech_3",
+      victory:"achievement_bg_winwsg"
+    }
+  };
+
+  const CATEGORY_ALIASES = {
+    classes:"class",
+    specs:"spec",
+    races:"race",
+    factions:"faction",
+    slot:"equipment-slot",
+    slots:"equipment-slot",
+    equipment:"equipment-slot",
+    item:"item-family",
+    items:"item-family",
+    abilities:"ability",
+    talents:"talent",
+    professions:"profession",
+    buildings:"building",
+    currencies:"currency",
+    resources:"resource",
+    controls:"battle",
+    status:"battle"
+  };
+
+  const TALENT_ICON_POOL = [
+    "spell_nature_lightning","spell_nature_chainlightning","spell_nature_rejuvenation",
+    "spell_nature_healingwavegreater","spell_nature_starfall","spell_nature_naturesblessing",
+    "spell_nature_regeneration","spell_nature_forceofnature","spell_arcane_blast",
+    "spell_arcane_arcanetorrent","spell_fire_flamebolt","spell_fire_fireball02",
+    "spell_fire_flameshock","spell_frost_frostbolt02","spell_frost_frostarmor02",
+    "spell_frost_iceshard","spell_shadow_shadowbolt","spell_shadow_shadowwordpain",
+    "spell_shadow_corruption","spell_shadow_lifedrain02","spell_holy_holybolt",
+    "spell_holy_powerwordshield","spell_holy_greaterheal","spell_holy_renew",
+    "ability_druid_catform","ability_druid_bearform","ability_rogue_eviscerate",
+    "ability_rogue_sprint","ability_rogue_ambush","ability_backstab",
+    "ability_warrior_charge","ability_warrior_defensivestance","ability_warrior_innerrage",
+    "ability_warrior_savageblow","ability_hunter_beastcall","ability_marksmanship",
+    "ability_hunter_survivalinstincts","ability_hunter_aimedshot","spell_holy_sealofmight",
+    "spell_holy_devotionaura","spell_holy_divineshield","spell_holy_righteousfury",
+    "ability_paladin_shieldofthetemplar","spell_shaman_lavaburst",
+    "spell_shaman_spiritwalkersgrace","spell_shaman_feralspirit",
+    "spell_shaman_astralshift","ability_shaman_stormstrike"
+  ];
+
+  function keyify(value) {
+    return String(value == null ? "" : value)
+      .trim()
+      .toLowerCase()
+      .replace(/[_\s]+/g, "-")
+      .replace(/[^a-z0-9-]+/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  function categoryKey(category) {
+    const key = keyify(category);
+    return CATEGORY_ALIASES[key] || key;
+  }
+
+  function iconUrl(slug) {
+    const safeSlug = String(slug || FALLBACK_SLUG).trim().toLowerCase();
+    return ICON_ROOT + safeSlug + ".jpg";
+  }
+
+  function resolveSlug(category, key, context) {
+    const normalizedCategory = categoryKey(category);
+    const map = ICONS[normalizedCategory];
+    if (!map) return FALLBACK_SLUG;
+
+    const normalizedKey = keyify(key);
+    const meta = context || {};
+
+    if (normalizedCategory === "spec" && meta.classId) {
+      const contextual = keyify(meta.classId) + ":" + normalizedKey;
+      if (map[contextual]) return map[contextual];
+    }
+
+    if (normalizedCategory === "item-family" && meta.slot) {
+      const contextual = keyify(meta.slot) + ":" + normalizedKey;
+      if (map[contextual]) return map[contextual];
+    }
+
+    return map[normalizedKey] || FALLBACK_SLUG;
+  }
+
+  function resolve(category, key, context) {
+    return iconUrl(resolveSlug(category, key, context));
+  }
+
+  function hashString(value) {
+    let hash = 0;
+    const text = String(value == null ? "" : value);
+    for (let i = 0; i < text.length; i += 1) hash = ((hash << 5) - hash) + text.charCodeAt(i);
+    return Math.abs(hash);
+  }
+
+  function talentUrl(specId, itemName, index) {
+    const start = hashString(String(specId) + String(itemName)) % TALENT_ICON_POOL.length;
+    const offset = Number(index || 0) * 7;
+    return iconUrl(TALENT_ICON_POOL[(start + offset) % TALENT_ICON_POOL.length]);
+  }
+
+  function bindFallback(img) {
+    if (!img || img.dataset.wowIconFallbackBound === "true") return img;
+    img.dataset.wowIconFallbackBound = "true";
+    let stage = 0;
+
+    function onError() {
+      if (stage === 0 && img.src !== FALLBACK_URL) {
+        stage = 1;
+        img.src = FALLBACK_URL;
+        return;
+      }
+
+      stage = 2;
+      img.removeEventListener("error", onError);
+      img.src = INLINE_FALLBACK;
+      img.classList.add("wow-icon-fallback");
+    }
+
+    img.addEventListener("error", onError);
+    return img;
+  }
+
+  function hydrate(root) {
+    const scope = root || document;
+    scope.querySelectorAll("img[data-wow-icon]").forEach(function(img) {
+      const context = {
+        classId:img.dataset.wowClass || "",
+        slot:img.dataset.wowSlot || ""
+      };
+      img.src = resolve(img.dataset.wowIcon, img.dataset.wowKey, context);
+      bindFallback(img);
+    });
+  }
+
+  global.WowUIIcons = Object.freeze({
+    fallbackUrl:FALLBACK_URL,
+    iconUrl:iconUrl,
+    resolve:resolve,
+    resolveSlug:resolveSlug,
+    talentUrl:talentUrl,
+    bindFallback:bindFallback,
+    hydrate:hydrate
+  });
+})(window);

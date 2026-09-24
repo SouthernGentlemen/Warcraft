@@ -1,6 +1,5 @@
 const CLASS_DATA_ROOT = "../data/heroes/classes/";
-const WOWHEAD_ICON_ROOT = "https://wow.zamimg.com/images/wow/icons/large/";
-const FALLBACK_ICON = WOWHEAD_ICON_ROOT + "inv_misc_questionmark.jpg";
+const Icons = window.WowUIIcons;
 
 const SLOT_ORDER = ["Head", "Chest", "Pants", "Feet", "Gloves", "Weapon"];
 const LEFT_SLOTS = ["Head", "Chest", "Gloves"];
@@ -52,9 +51,9 @@ const BASELINE = {
 };
 
 const QUALITY_BY_TIER = {
-  1: {label:"White", key:"white"},
-  2: {label:"Green", key:"green"},
-  3: {label:"Blue", key:"blue"},
+  1: {label:"Common", key:"common"},
+  2: {label:"Uncommon", key:"uncommon"},
+  3: {label:"Rare", key:"rare"},
   4: {label:"Epic", key:"epic"},
   5: {label:"Epic", key:"epic"}
 };
@@ -83,31 +82,11 @@ const SLOT_NOUNS = {
   Gloves: {Cloth:"Gloves", Leather:"Grips", Mail:"Gauntlets", Plate:"Handguards"}
 };
 
-const ITEM_ICONS = {
-  Head: {Cloth:"inv_helmet_08", Leather:"inv_helmet_04", Mail:"inv_helmet_05", Plate:"inv_helmet_06"},
-  Chest: {Cloth:"inv_chest_cloth_17", Leather:"inv_chest_leather_07", Mail:"inv_chest_chain_11", Plate:"inv_chest_plate04"},
-  Pants: {Cloth:"inv_pants_cloth_14", Leather:"inv_pants_leather_05", Mail:"inv_pants_mail_14", Plate:"inv_pants_plate_04"},
-  Feet: {Cloth:"inv_boots_cloth_03", Leather:"inv_boots_07", Mail:"inv_boots_chain_05", Plate:"inv_boots_plate_03"},
-  Gloves: {Cloth:"inv_gauntlets_05", Leather:"inv_gauntlets_15", Mail:"inv_gauntlets_10", Plate:"inv_gauntlets_04"}
-};
-
 const WEAPON_TEMPLATES = [
-  {family:"Staff", noun:"Spellstaff", focus:"Intellect", icon:"inv_staff_13"},
-  {family:"Dagger", noun:"Quickblade", focus:"Agility", icon:"inv_weapon_shortblade_05"},
-  {family:"Sword", noun:"Warblade", focus:"Strength", icon:"inv_sword_04"}
+  {family:"Staff", noun:"Spellstaff", focus:"Intellect"},
+  {family:"Dagger", noun:"Quickblade", focus:"Agility"},
+  {family:"Sword", noun:"Warblade", focus:"Strength"}
 ];
-
-const CLASS_ICONS = {
-  mage:"classicon_mage",
-  rogue:"classicon_rogue",
-  warlock:"classicon_warlock",
-  warrior:"classicon_warrior",
-  priest:"classicon_priest",
-  druid:"classicon_druid",
-  hunter:"classicon_hunter",
-  paladin:"classicon_paladin",
-  shaman:"classicon_shaman"
-};
 
 const state = {
   classIndex: null,
@@ -123,10 +102,6 @@ function escapeHtml(value) {
   return String(value == null ? "" : value).replace(/[&<>"']/g, function(c) {
     return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
   });
-}
-
-function iconUrl(slug) {
-  return WOWHEAD_ICON_ROOT + (slug || "inv_misc_questionmark") + ".jpg";
 }
 
 function armorFocus(family) {
@@ -159,7 +134,7 @@ function buildArmory() {
         qualityKey:quality.key,
         slot:slot,
         family:family,
-        icon:ITEM_ICONS[slot][family],
+        icon:Icons.resolveSlug("item-family", family, {slot:slot}),
         stats:makeStats(tier, armorFocus(family))
       });
     });
@@ -174,7 +149,7 @@ function buildArmory() {
         qualityKey:quality.key,
         slot:"Weapon",
         family:weapon.family,
-        icon:weapon.icon,
+        icon:Icons.resolveSlug("item-family", weapon.family, {slot:"Weapon"}),
         statFocus:weapon.focus,
         stats:makeStats(tier, weapon.focus)
       });
@@ -229,7 +204,7 @@ function buildHeroes(classIndex) {
       level:blueprint.level,
       spec:blueprint.spec,
       primary:blueprint.primary,
-      portrait:CLASS_ICONS[classMeta.id] || "inv_misc_questionmark",
+      portrait:Icons.resolveSlug("class", classMeta.id),
       equipment:{}
     };
 
@@ -255,13 +230,11 @@ function getItem(itemId) {
 }
 
 function qualityClass(item) {
-  return "quality-" + item.qualityKey;
+  return "wow-quality--" + item.qualityKey;
 }
 
-function setImageFallback(img) {
-  img.addEventListener("error", function() {
-    if (img.src !== FALLBACK_ICON) img.src = FALLBACK_ICON;
-  }, {once:true});
+function qualityFrameClass(item) {
+  return "wow-icon-frame--quality-" + item.qualityKey;
 }
 
 function renderRoster() {
@@ -275,8 +248,8 @@ function renderRoster() {
     button.type = "button";
     button.className = "hero-roster-card" + (hero.id === state.selectedHeroId ? " active" : "");
     button.innerHTML =
-      '<span class="roster-avatar ' + (hero.faction === "Horde" ? "horde" : "alliance") + '">' +
-        '<img src="' + iconUrl(hero.portrait) + '" alt="">' +
+      '<span class="roster-avatar ' + (hero.faction === "Horde" ? "horde" : "alliance") + ' wow-icon-frame wow-icon-frame--class-' + hero.classId + '">' +
+        '<img src="' + Icons.iconUrl(hero.portrait) + '" alt="">' +
         '<b>' + hero.level + '</b>' +
       '</span>' +
       '<span class="roster-copy">' +
@@ -285,7 +258,7 @@ function renderRoster() {
         '<em>' + escapeHtml(hero.spec) + ' · ' + equipped + '/6 gear</em>' +
       '</span>' +
       '<span class="roster-arrow">›</span>';
-    setImageFallback(button.querySelector("img"));
+    Icons.bindFallback(button.querySelector("img"));
     button.addEventListener("click", function() {
       state.selectedHeroId = hero.id;
       render();
@@ -297,7 +270,9 @@ function renderRoster() {
 function slotMarkup(hero, slot) {
   const item = getItem(hero.equipment[slot]);
   if (!item) {
-    return '<span class="gear-slot-icon empty">+</span>' +
+    return '<span class="gear-slot-icon empty wow-icon-frame is-disabled">' +
+        '<img src="' + Icons.resolve("equipment-slot", slot) + '" alt="">' +
+      '</span>' +
       '<span class="gear-slot-copy"><small>' + escapeHtml(slot) + '</small><strong>Empty slot</strong><em>Choose an item from the armory</em></span>';
   }
 
@@ -305,9 +280,9 @@ function slotMarkup(hero, slot) {
     ? item.stats.map(function(s) { return "+" + s.value + " " + s.stat; }).join(" · ")
     : "No bonus stats";
 
-  return '<span class="gear-slot-icon ' + qualityClass(item) + '">' +
-      '<img src="' + iconUrl(item.icon) + '" alt="">' +
-      '<b>T' + item.tier + '</b>' +
+  return '<span class="gear-slot-icon wow-icon-frame ' + qualityFrameClass(item) + '">' +
+      '<img src="' + Icons.iconUrl(item.icon) + '" alt="">' +
+      '<span class="wow-icon-tier">T' + item.tier + '</span>' +
     '</span>' +
     '<span class="gear-slot-copy">' +
       '<small>' + escapeHtml(slot) + ' · ' + escapeHtml(item.family) + '</small>' +
@@ -330,7 +305,7 @@ function renderSlots() {
       button.className = "gear-slot" + (item ? " filled" : " empty");
       button.innerHTML = slotMarkup(hero, slot);
       const img = button.querySelector("img");
-      if (img) setImageFallback(img);
+      if (img) Icons.bindFallback(img);
       if (item) {
         button.title = "Unequip " + item.name;
         button.addEventListener("click", function() {
@@ -405,8 +380,10 @@ function renderStats() {
 function renderHeroHeader() {
   const hero = selectedHero();
   const faction = hero.faction === "Horde" ? "Horde" : "Alliance";
-  $("heroFactionBadge").textContent = faction === "Horde" ? "H" : "A";
-  $("heroFactionBadge").className = "gear-faction-badge " + faction.toLowerCase();
+  const factionBadge = $("heroFactionBadge");
+  factionBadge.className = "gear-faction-badge wow-faction-crest wow-faction-crest--" + faction.toLowerCase();
+  factionBadge.innerHTML = '<img src="' + Icons.resolve("faction", faction) + '" alt="" aria-hidden="true">';
+  Icons.bindFallback(factionBadge.querySelector("img"));
   $("heroRace").textContent = hero.race + " · " + faction;
   $("heroName").textContent = hero.name;
   $("heroClass").textContent = hero.classLabel;
@@ -416,9 +393,9 @@ function renderHeroHeader() {
   $("armorAccess").textContent = (ARMOR_ACCESS[hero.classId] || ["Cloth"]).join(" / ");
 
   const portrait = $("heroPortrait");
-  portrait.src = iconUrl(hero.portrait);
+  portrait.src = Icons.iconUrl(hero.portrait);
   portrait.alt = hero.classLabel + " icon";
-  setImageFallback(portrait);
+  Icons.bindFallback(portrait);
 
   const equippedItems = SLOT_ORDER.map(function(slot) { return getItem(hero.equipment[slot]); }).filter(Boolean);
   $("equippedCount").textContent = equippedItems.length;
@@ -473,9 +450,9 @@ function renderArmory() {
     card.className = "armory-item " + qualityClass(item) + (eligibility.ok ? "" : " locked") + (equipped ? " equipped" : "");
     card.disabled = !eligibility.ok;
     card.innerHTML =
-      '<span class="armory-item-icon">' +
-        '<img src="' + iconUrl(item.icon) + '" alt="">' +
-        '<b>T' + item.tier + '</b>' +
+      '<span class="armory-item-icon wow-icon-frame ' + qualityFrameClass(item) + (eligibility.ok ? "" : " is-locked") + (equipped ? " is-selected" : "") + '">' +
+        '<img src="' + Icons.iconUrl(item.icon) + '" alt="">' +
+        '<span class="wow-icon-tier">T' + item.tier + '</span>' +
       '</span>' +
       '<span class="armory-item-copy">' +
         '<span class="armory-item-top"><strong>' + escapeHtml(item.name) + '</strong><em>' + escapeHtml(item.quality) + '</em></span>' +
@@ -484,7 +461,7 @@ function renderArmory() {
         (!eligibility.ok ? '<span class="armory-lock-reason">' + escapeHtml(eligibility.reason) + '</span>' : '') +
       '</span>' +
       '<span class="armory-equip-action">' + (equipped ? "Equipped" : eligibility.ok ? "Equip" : "Locked") + '</span>';
-    setImageFallback(card.querySelector("img"));
+    Icons.bindFallback(card.querySelector("img"));
 
     if (eligibility.ok) {
       card.addEventListener("click", function() {
