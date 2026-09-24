@@ -6,8 +6,9 @@
   <title>Talent Calculator — Warcraft Mockup</title>
   <link rel="stylesheet" href="./ui/wow-ui.css">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./talent-calculator.css">
 </head>
-<body class="talent-page">
+<body class="talent-page wow-ui">
   <header class="wow-game-shell" data-wow-nav-active="talents">
     <a class="wow-game-shell__brand" href="./index.html">
       <span class="wow-game-shell__mark">W</span>
@@ -24,27 +25,27 @@
     <div class="wow-game-shell__action"></div>
   </header>
   <main class="talent-shell">
-    <div class="wow-topline">
+    <div class="wow-topline wow-frame">
       <div class="wow-title-block">
-        <span class="eyebrow">CLASS TALENTS</span>
-        <h1>Talent Calculator</h1>
+        <span class="wow-kicker">CLASS TALENTS</span>
+        <h1 class="wow-title">Talent Calculator</h1>
       </div>
       <div class="wow-controls">
         <label class="wow-field">
-          <span>Class</span>
-          <select id="classSelect"></select>
+          <span class="wow-label">Class</span>
+          <select id="classSelect" class="wow-select"></select>
         </label>
         <label class="wow-field wow-level-field">
-          <span>Hero Level <strong id="levelBadge">5</strong></span>
-          <input id="levelRange" type="range" min="1" max="5" step="1" value="5">
+          <span class="wow-label">Hero Level <strong id="levelBadge">5</strong></span>
+          <input id="levelRange" class="wow-range" type="range" min="1" max="5" step="1" value="5">
         </label>
-        <button class="wow-reset" id="resetBuild">Reset</button>
+        <button class="wow-button" id="resetBuild" type="button">Reset</button>
       </div>
     </div>
 
     <div id="error" class="error-banner"></div>
 
-    <div class="wow-build-strip">
+    <div class="wow-build-strip wow-inset">
       <div>
         <strong id="pointsUsed">0 / 5</strong>
         <span>Talent Points</span>
