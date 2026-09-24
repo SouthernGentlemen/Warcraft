@@ -7,6 +7,7 @@ Static review screens backed by the root-level `/data/` JSON mirror.
 - `index.html` — mockup launcher
 - `race-selector.html` — faction, body type, race, class availability, and racial review
 - `talent-calculator.html` — class/spec browser and five-point talent calculator
+- `gear.html` — interactive roster equipment screen with one hero per class, six fixed slots, class armor eligibility, and sample Tier 1–5 gear
 - `simulation/` — deterministic 60 Hz combat lab for 1-person and 3-person battles with full frame reports
 - `battle.html` — interactive six-on-six battleground combat mockup with team HP, combat FX, pause, reset, and 1×/2×/4× speed controls
 - `base.html` — Realm-Grinder-inspired persistent base management mockup with resource bar, building map, profession buildings, filters, selection detail, and interactive upgrades
