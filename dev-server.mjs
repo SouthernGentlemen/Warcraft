@@ -1,4 +1,5 @@
 import { createServer } from "node:http";
+import { spawn } from "node:child_process";
 import { createServer as createNetServer } from "node:net";
 import {
   readFile,
@@ -387,6 +388,53 @@ async function resolveFile(urlPath) {
   }
 }
 
+function browserUrl(port) {
+  const browserHost = HOST === "0.0.0.0" || HOST === "::" ? "127.0.0.1" : HOST;
+  return `http://${browserHost}:${port}/mockup/`;
+}
+
+function openBrowser(url) {
+  if (process.env.NO_OPEN === "1" || process.env.NO_OPEN === "true") {
+    console.log("[open] skipped because NO_OPEN is enabled");
+    return;
+  }
+
+  let command;
+  let args;
+
+  if (process.env.BROWSER) {
+    command = process.env.BROWSER;
+    args = [url];
+  } else if (process.platform === "darwin") {
+    command = "open";
+    args = [url];
+  } else if (process.platform === "win32") {
+    command = "cmd";
+    args = ["/c", "start", "", url];
+  } else {
+    command = "xdg-open";
+    args = [url];
+  }
+
+  try {
+    const child = spawn(command, args, {
+      detached: true,
+      stdio: "ignore"
+    });
+
+    child.on("error", error => {
+      console.warn(`[open] could not open browser automatically: ${error.message}`);
+      console.warn(`[open] open manually: ${url}`);
+    });
+
+    child.unref();
+    console.log(`[open] browser: ${url}`);
+  } catch (error) {
+    console.warn(`[open] could not open browser automatically: ${error.message}`);
+    console.warn(`[open] open manually: ${url}`);
+  }
+}
+
 function buildHttpServer() {
   return createServer(async (req, res) => {
     const method = req.method || "GET";
@@ -463,9 +511,12 @@ async function main() {
       "utf8"
     );
 
+    const url = browserUrl(port);
+
     console.log("[serve] ready");
-    console.log(`  Mockups: http://${HOST}:${port}/mockup/`);
+    console.log(`  Mockups: ${url}`);
     console.log(`  Data:    http://${HOST}:${port}/data/`);
+    openBrowser(url);
     console.log("");
     console.log("Run npm run dev again at any time; it will tear this instance down and rebuild.");
     console.log("Press Ctrl+C to stop.");
