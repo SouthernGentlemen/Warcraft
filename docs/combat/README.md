@@ -6,9 +6,11 @@ This section defines how deployed heroes and enemies resolve encounters.
 
 ## Combat Direction
 
-Combat is intended to be automatic or predominantly automatic.
+Combat is real time and predominantly automatic.
 
-The player's primary decisions should happen before deployment through:
+The player should not directly control MMO-style movement or manually execute every basic action.
+
+The player's major decisions should come from:
 
 - hero selection
 - party composition
@@ -16,8 +18,51 @@ The player's primary decisions should happen before deployment through:
 - consumables
 - content selection
 - preparation
+- future ability-priority or targeting rules if those systems are added
 
-The game should not require direct MMO-style character control.
+## Auto-Attacks
+
+Each combatant has a repeating auto-attack bar.
+
+The bar fills over real time.
+
+When the bar fills:
+
+1. the combatant performs an auto-attack
+2. the auto-attack resolves
+3. the bar resets
+4. the next auto-attack cycle begins
+
+Attack-bar fill speed is part of the combat timing model and may be affected by stats such as Haste.
+
+## Class Abilities
+
+Every class has a fixed core combat package:
+
+- 2 cooldown abilities
+- 1 ultimate ability
+
+Cooldown abilities are governed by their own cooldown timers.
+
+Exact ability activation behavior, priorities, targeting, and cooldown lengths will be defined in the class specifications.
+
+## Ultimate
+
+Each class has one ultimate ability tied to a fillable ultimate bar.
+
+The ultimate bar builds during combat.
+
+When the bar is full, that class's ultimate becomes available.
+
+The exact sources and rate of ultimate-bar generation remain open.
+
+## Combat Stats
+
+Combat uses the primary and tertiary stat families defined in [Content / Stats](../content/stats/README.md).
+
+The stat model includes primary attributes such as Strength, Agility, Intellect, Stamina, and Spirit as well as tertiary combat modifiers such as Crit, Haste, Spell Power, Healing Power, Hit Rating, and Mastery.
+
+Exact formulas are intentionally deferred until the systems are fully specified.
 
 ## Party Capability
 
@@ -41,7 +86,7 @@ Combat must support:
 - 10-hero groups
 - 20-hero groups
 
-The same underlying combat model should scale across these group sizes.
+The same underlying real-time combat model should scale across these group sizes.
 
 ## Encounter Difficulty
 
@@ -68,13 +113,15 @@ Exact consequences remain open.
 
 Later combat specifications need to define:
 
-- statistics
+- primary-stat formulas
+- tertiary-stat formulas
 - damage formulas
-- healing
+- healing formulas
 - defenses
 - targeting
-- attack timing
-- criticals
+- base attack-bar timing
+- cooldown timing
+- ultimate-bar generation
 - buffs and debuffs
 - threat or tanking
 - class abilities
