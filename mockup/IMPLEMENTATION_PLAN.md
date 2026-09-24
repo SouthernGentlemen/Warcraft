@@ -329,6 +329,8 @@ Finish the talent screen so it uses the same shared UI system while retaining th
 
 ## WOWUI-008 — Battle HUD Redesign
 
+**Status:** Complete — 2026-09-24
+
 ### Objective
 
 Keep the current autobattle behavior but present units and combat feedback through WoW-like unit frames and ability language.
