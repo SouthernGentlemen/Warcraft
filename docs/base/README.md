@@ -40,13 +40,16 @@ Controls how many resources and crafted items can be held.
 
 ## Profession Buildings
 
-Known profession facilities include:
+Profession buildings are documented under [profession-buildings](./profession-buildings/README.md).
 
-- Blacksmith
-- Tailor/Loom
-- Leatherworker
-- Enchanter
-- Alchemist
+Current profession buildings:
+
+- [Blacksmith](./profession-buildings/blacksmith/README.md)
+- [Alchemist](./profession-buildings/alchemist/README.md)
+- [Enchanter](./profession-buildings/enchanter/README.md)
+- [Tailor](./profession-buildings/tailor/README.md)
+- [Leatherworker](./profession-buildings/leatherworker/README.md)
+- [Engineer](./profession-buildings/engineer/README.md)
 
 ## Building Progression
 

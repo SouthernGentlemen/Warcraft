@@ -52,11 +52,11 @@ Faction-exclusive classes:
 
 Heroes progress from Level 1 through Level 5.
 
-Hero level is the primary progression gate for content, roster development, base advancement, crafting tiers, and equipment progression.
+Hero level is the primary progression gate for roster development, base advancement, crafting tiers, equipment progression, and increasingly difficult activities.
 
-## Content Progression
+## Activity Progression
 
-| Content | Party Size | First Available |
+| Activity | Party Size | First Available |
 | --- | ---: | ---: |
 | Quest | 1 | Level 1 |
 | Incursion | 1 | Level 1 |
@@ -65,9 +65,9 @@ Hero level is the primary progression gate for content, roster development, base
 | Raid | 10 | Level 4 |
 | Siege | 20 | Level 5 |
 
-Earlier content types remain relevant at higher tiers.
+Earlier activity types remain relevant at higher tiers.
 
-The intended content range is:
+The intended range is:
 
 - Level 1–5 Quests
 - Level 1–5 Incursions
@@ -87,21 +87,17 @@ Known crafting paths include:
 - Leatherworking: five material tiers to be defined
 - Enchanting: tiered essences and corresponding shards
 - Alchemy: potions and flasks using elemental reagents including Air, Water, Earth, Fire, and Undeath
+- Engineering: devices, utility items, and crafted technology to be defined
 
 ## Documentation Sections
 
-- [Design](./design/README.md)
 - [World](./world/README.md)
 - [Heroes](./heroes/README.md)
 - [Combat](./combat/README.md)
-- [Content](./content/README.md)
 - [Base](./base/README.md)
 - [Crafting](./crafting/README.md)
 - [Items](./items/README.md)
-- [Economy](./economy/README.md)
 - [Progression](./progression/README.md)
-- [Incremental Systems](./incremental/README.md)
-- [Balance](./balance/README.md)
 
 ## Documentation Rule
 
