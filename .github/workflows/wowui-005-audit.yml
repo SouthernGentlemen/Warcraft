@@ -85,7 +85,7 @@ jobs:
             await page.selectOption("#slotFilter", String(slot));
             await page.fill("#gearSearch", query);
             const checked = await page.locator("#equippableOnly").isChecked();
-            if (checked !== equippable) await page.locator("#equippableOnly").click();
+            if (checked !== equippable) await page.locator(".gear-check").click();
             await page.waitForTimeout(80);
           };
           const tooltipBoundsOK = async () => {
