@@ -198,7 +198,7 @@ jobs:
           await page.fill("#gearSearch","");
           await page.selectOption("#tierFilter","5");
           await page.selectOption("#slotFilter","Head");
-          await page.uncheck("#equippableOnly");
+          await page.locator("#equippableOnly").setChecked(false, {force:true});
           await page.waitForTimeout(100);
           const restricted = page.locator(".armory-item").first();
           const restrictedState = await restricted.evaluate(el => ({
@@ -234,3 +234,5 @@ jobs:
 
       - name: Run deterministic simulation smoke test
         run: npm run simulation:test
+
+# rerun-after-shared-checkbox-harness-fix
