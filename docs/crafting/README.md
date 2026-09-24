@@ -10,7 +10,23 @@ Crafting should reinforce adventuring.
 
 Content supplies materials and recipes. Crafting turns those resources into useful progression. Neither system should make the other unnecessary.
 
-Professions are expected to progress through five tiers.
+Professions progress through five tiers.
+
+## Crafted Gear Quality
+
+Crafted gear follows a fixed level-to-quality and stat-line progression.
+
+| Level | Quality | Primary Stats | Tertiary Stats |
+| --- | --- | ---: | ---: |
+| 1 | White | 0 | 0 |
+| 2 | Green | 1 | 0 |
+| 3 | Blue | 2 | 0 |
+| 4 | Epic | 2 | 1 |
+| 5 | Epic | 2 | 2 |
+
+The stat families themselves are defined in [Content / Stats](../content/stats/README.md).
+
+This table defines stat-line count, not the numeric value of those stats.
 
 ## Blacksmith
 
@@ -91,6 +107,7 @@ Later crafting design must define:
 - profession buildings
 - salvage
 - disenchanting
-- quality
+- exact stat values
+- crafted-stat selection rules
 - crafting queues
 - automation
