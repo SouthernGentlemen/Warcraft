@@ -2,69 +2,50 @@
 
 ## Identity
 
-- Role direction: Pet and summon damage
+- Role: Summon-driven spell damage
 - Resource: Mana
-- Primary stat direction: Intellect
-- Auto-attack: Fel Bolt
-
-## Spec Theme
-
-Demon empowerment, summon scaling, pet interaction, durable pressure.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Fel Bolt** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Intellect
+- Auto-attack: Fel Bolt — ranged Fel damage
 
 ## Talent Tree
 
-The Demonology tree contains:
+The first talent point spent in this tree selects **Demonology** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Demonology becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Warlock trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Demonic Familiar** | Every third Fel Bolt triggers a demon strike for 50% of Fel Bolt's damage. |
+| **Fel Intellect** | Increase maximum Mana by 10% and reduce equipped cooldown Mana costs by 5%. |
+| **Demonic Guard** | Every third demon strike grants a shield equal to 5% maximum health. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Demon empowerment
-- Summon scaling
-- Pet interaction
-- Durable pressure
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Demonic Pact** | Demon strikes grant 8% Spell Power for 4 seconds. |
+| **Legion** | Demonic Familiar's demon strike triggers twice at 60% damage each. |
+| **Soul Conduit** | Demon strikes generate 3% ultimate-bar charge. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Demonology specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Metamorphosis** | Using the selected ultimate grants 25% Spell Power and 20% auto-attack speed for 8 seconds. |
+| **Master Summoner** | Every second equipped cooldown used triggers a demon strike, and all demon strikes deal 25% more damage. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Demonology specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
