@@ -373,6 +373,8 @@ Keep the current autobattle behavior but present units and combat feedback throu
 
 ## WOWUI-009 — Base Management Redesign
 
+**Status:** Complete — 2026-09-24
+
 ### Objective
 
 Keep the current base-management mechanics while removing the mobile-strategy/admin-dashboard visual language.
