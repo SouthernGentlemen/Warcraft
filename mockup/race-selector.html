@@ -6,8 +6,9 @@
   <title>Race Selector — Warcraft Mockup</title>
   <link rel="stylesheet" href="./ui/wow-ui.css">
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./race-selector.css">
 </head>
-<body>
+<body class="race-page wow-ui">
   <header class="wow-game-shell" data-wow-nav-active="heroes">
     <a class="wow-game-shell__brand" href="./index.html">
       <span class="wow-game-shell__mark">W</span>
@@ -23,65 +24,100 @@
     </nav>
     <div class="wow-game-shell__action"></div>
   </header>
-  <main class="shell">
 
-    <header class="hero-header">
-      <h1>Race Selector</h1>
-      <p class="lede">Review faction presentation, Body 1 / Body 2, racial identity, and currently available classes.</p>
+  <main class="race-shell">
+    <header class="race-heading">
+      <div>
+        <span class="wow-kicker">HERO CREATION</span>
+        <h1 class="wow-title">Race Selector</h1>
+      </div>
+      <p>Choose a faction, race, and body presentation, then inspect racial and class availability.</p>
     </header>
 
     <div id="error" class="error-banner"></div>
 
-    <section class="control-row">
-      <div class="control-group">
-        <span class="control-label">Faction</span>
-        <div id="factionToggle" class="segmented">
-          <button class="alliance active" data-faction="alliance" data-wow-tooltip="Alliance" data-wow-tooltip-type="Faction" data-wow-tooltip-description="Review Alliance races and class availability." data-wow-tooltip-variant="class-race" data-wow-tooltip-icon-category="faction" data-wow-tooltip-icon-key="alliance">Alliance</button>
-          <button class="horde" data-faction="horde" data-wow-tooltip="Horde" data-wow-tooltip-type="Faction" data-wow-tooltip-description="Review Horde races and class availability." data-wow-tooltip-variant="class-race" data-wow-tooltip-icon-category="faction" data-wow-tooltip-icon-key="horde">Horde</button>
-        </div>
+    <section class="race-controls wow-frame" aria-label="Hero presentation controls">
+      <div class="race-control-group">
+        <span class="wow-label">Faction</span>
+        <div id="factionToggle" class="race-faction-controls" role="group" aria-label="Faction"></div>
       </div>
-      <div class="control-group">
-        <span class="control-label">Body</span>
-        <div id="bodyToggle" class="segmented">
-          <button class="active" data-body="body-1">Body 1 · Male</button>
-          <button data-body="body-2">Body 2 · Female</button>
-        </div>
+
+      <div class="race-control-separator" aria-hidden="true"></div>
+
+      <div class="race-control-group race-body-group">
+        <span class="wow-label">Body</span>
+        <div id="bodyToggle" class="race-body-controls" role="group" aria-label="Body presentation"></div>
       </div>
     </section>
 
     <section class="race-layout">
-      <aside class="panel race-list" id="raceList" aria-label="Races"></aside>
-
-      <section class="panel character-stage">
-        <div id="silhouette" class="silhouette body-1" aria-hidden="true">
-          <div class="head"></div>
-          <div class="torso"></div>
-          <div class="legs"></div>
+      <aside class="race-roster wow-frame" aria-label="Races">
+        <div class="wow-titlebar">
+          <span class="wow-kicker">RACES</span>
+          <span id="raceCount" class="race-count">3</span>
         </div>
-        <div class="stage-label">
+        <div class="race-list wow-scroll" id="raceList"></div>
+      </aside>
+
+      <section id="characterStage" class="race-character-stage wow-frame wow-frame--alliance" aria-label="Selected character preview">
+        <div class="race-stage-atmosphere" aria-hidden="true"></div>
+        <span id="stageFactionCrest" class="race-stage-crest wow-faction-crest wow-faction-crest--alliance" aria-hidden="true">
+          <img id="stageFactionCrestImage" alt="">
+        </span>
+
+        <div class="race-stage-portrait-shell">
+          <span id="stagePortraitFrame" class="race-stage-portrait wow-icon-frame">
+            <img id="stagePortrait" alt="">
+          </span>
+        </div>
+
+        <div class="race-stage-copy">
+          <span id="stageFaction" class="race-stage-faction">Alliance</span>
           <h2 id="stageRace">Human</h2>
-          <p id="stageBody">Body 1 · Male</p>
+          <span id="stageBody">Body 1 · Male</span>
         </div>
       </section>
 
-      <aside class="panel detail">
-        <p class="eyebrow" id="factionLabel">ALLIANCE</p>
-        <h2 id="raceName">Human</h2>
-
-        <h3>Racial Talent</h3>
-        <div class="racial">
-          <strong id="racialName">Loading…</strong>
-          <div id="racialMechanic"></div>
+      <aside class="race-detail wow-frame">
+        <div class="wow-titlebar race-detail-titlebar">
+          <div>
+            <span id="factionLabel" class="wow-kicker">ALLIANCE</span>
+            <h2 id="raceName">Human</h2>
+          </div>
+          <span id="detailRacePortrait" class="race-detail-portrait wow-icon-frame wow-icon-frame--md" aria-hidden="true">
+            <img id="detailRacePortraitImage" alt="">
+          </span>
         </div>
 
-        <h3>Available Classes</h3>
-        <div class="class-grid" id="classGrid"></div>
+        <div class="race-detail-body">
+          <section class="race-racial wow-inset" aria-labelledby="racialHeading">
+            <div class="race-section-heading">
+              <span class="wow-label">Racial Talent</span>
+              <small>Hover or focus for mechanics</small>
+            </div>
+            <button id="racialTalent" class="race-racial-control" type="button">
+              <span id="racialIconFrame" class="race-racial-icon wow-icon-frame wow-icon-frame--lg" aria-hidden="true">
+                <img id="racialIcon" alt="">
+              </span>
+              <span class="race-racial-copy">
+                <strong id="racialName">Loading…</strong>
+                <small id="racialHeading">Racial ability</small>
+              </span>
+            </button>
+          </section>
 
-        <h3>Prototype Rule</h3>
-        <p class="lede" id="availabilityRule" style="font-size:.9rem"></p>
+          <section class="race-classes" aria-labelledby="availableClassesHeading">
+            <div class="race-section-heading">
+              <span id="availableClassesHeading" class="wow-label">Classes</span>
+              <small id="classSummary">0 available</small>
+            </div>
+            <div class="race-class-grid" id="classGrid"></div>
+          </section>
+        </div>
       </aside>
     </section>
   </main>
+
   <script src="./ui/wow-icons.js"></script>
   <script src="./ui/wow-tooltips.js"></script>
   <script src="./ui/wow-nav.js"></script>
