@@ -24,7 +24,7 @@ jobs:
       - name: Source and syntax checks
         run: |
           node --check mockup/gear.js
-          grep -q 'const SLOT_ORDER = ["Head", "Chest", "Pants", "Feet", "Gloves", "Weapon"]' mockup/gear.js
+          grep -Fq 'const SLOT_ORDER = ["Head", "Chest", "Pants", "Feet", "Gloves", "Weapon"]' mockup/gear.js
           grep -q 'Tooltips.attach' mockup/gear.js
           grep -q 'model.comparison = itemTooltipModel' mockup/gear.js
           grep -q 'portrait:Icons.resolveSlug("race"' mockup/gear.js
