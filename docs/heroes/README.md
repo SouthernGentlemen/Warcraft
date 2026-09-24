@@ -48,6 +48,7 @@ Shared:
 - Warrior
 - Priest
 - Druid
+- Hunter
 
 Faction-exclusive:
 
@@ -64,7 +65,7 @@ Classes will provide different contributions to a party such as:
 - support
 - utility
 
-Exact class abilities and role rules will be defined after the high-level hero and combat systems are approved.
+Every class will ultimately define its combat package around auto-attacks, two cooldown abilities, and one ultimate ability.
 
 ## Roster Pressure
 
@@ -97,11 +98,10 @@ Expected hero development systems include:
 The following require later specification:
 
 - exact XP curves
-- hero statistics
-- class abilities
+- class ability kits
 - race bonuses
 - recruitment generation
 - roster capacity
-- equipment restrictions
+- class weapon restrictions
 - recovery rules
 - respec or specialization rules
