@@ -29,7 +29,7 @@ The target is not a collection of separately themed mockups. The target is one r
 
 | ID | Task | Depends On |
 | --- | --- | --- |
-| WOWUI-001 | Shared WoW UI foundation | — |
+| WOWUI-001 | Shared WoW UI foundation **(Complete)** | — |
 | WOWUI-002 | Shared icon and visual-token system | WOWUI-001 |
 | WOWUI-003 | Shared tooltip system | WOWUI-001, WOWUI-002 |
 | WOWUI-004 | Launcher and persistent navigation | WOWUI-001, WOWUI-002, WOWUI-003 |
@@ -44,6 +44,8 @@ The target is not a collection of separately themed mockups. The target is one r
 ---
 
 ## WOWUI-001 — Shared WoW UI Foundation
+
+**Status:** Complete — 2026-09-24
 
 ### Objective
 
