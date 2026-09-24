@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/classes/hunter/specs/survival.md",
+  "kind": "specialization",
+  "title": "Hunter — Survival",
+  "source_markdown": "# Hunter — Survival\n\n## Identity\n\n- Role: Ranged damage / control / utility\n- Resource: Mana\n- Primary stat: Agility\n- Auto-attack: Tactical Shot — ranged weapon damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Survival** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Serpent Sting** | Tactical Shot applies poison for 10% of the hit's damage over 5 seconds. |\n| **Resourcefulness** | Mana costs of equipped cooldown abilities are reduced by 10%. |\n| **Tactical Readiness** | The first equipped cooldown used each combat has 30% reduced cooldown time. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Trap Mastery** | Crowd-control effects caused by this hero last 20% longer. |\n| **Expose Weakness** | Damaging equipped cooldowns cause the target to take 10% more damage from all sources for 4 seconds. |\n| **Survival Instinct** | When falling below 30% health, gain 20% damage reduction for 6 seconds; once per combat. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Lockdown** | Using the selected ultimate stuns the primary target for 2 seconds and slows its next two auto-attack bars by 20%. |\n| **Adaptation** | Each equipped cooldown used alternates between granting 15% Attack Power and 15% auto-attack speed for 6 seconds. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "class": "Hunter",
+  "specialization": "Survival",
+  "identity": {
+    "role": "",
+    "resource": "",
+    "primary_stat": "",
+    "auto_attack": ""
+  },
+  "talents": {
+    "tier_1": [
+      {
+        "name": "Serpent Sting",
+        "effect": "Tactical Shot applies poison for 10% of the hit's damage over 5 seconds."
+      },
+      {
+        "name": "Resourcefulness",
+        "effect": "Mana costs of equipped cooldown abilities are reduced by 10%."
+      },
+      {
+        "name": "Tactical Readiness",
+        "effect": "The first equipped cooldown used each combat has 30% reduced cooldown time."
+      }
+    ],
+    "tier_2": [
+      {
+        "name": "Trap Mastery",
+        "effect": "Crowd-control effects caused by this hero last 20% longer."
+      },
+      {
+        "name": "Expose Weakness",
+        "effect": "Damaging equipped cooldowns cause the target to take 10% more damage from all sources for 4 seconds."
+      },
+      {
+        "name": "Survival Instinct",
+        "effect": "When falling below 30% health, gain 20% damage reduction for 6 seconds; once per combat."
+      }
+    ],
+    "capstones": [
+      {
+        "name": "Lockdown",
+        "effect": "Using the selected ultimate stuns the primary target for 2 seconds and slows its next two auto-attack bars by 20%."
+      },
+      {
+        "name": "Adaptation",
+        "effect": "Each equipped cooldown used alternates between granting 15% Attack Power and 15% auto-attack speed for 6 seconds."
+      }
+    ]
+  }
+}
