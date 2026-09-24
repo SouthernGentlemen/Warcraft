@@ -43,10 +43,12 @@ Every Hunter uses:
 - exactly 2 selected cooldown abilities
 - exactly 1 selected ultimate
 
+## Abilities
+
+See [Abilities](./abilities/README.md) for the class-wide cooldown and ultimate pool used by the current combat prototype.
+
 ## Open Areas
 
-- cooldown ability pool
-- ultimate ability pool
 - exact resource tuning
 - exact auto-attack timing and coefficients
 - spec Mastery effects
