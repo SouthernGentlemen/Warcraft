@@ -497,36 +497,35 @@ This wave starts after the cross-screen UI consistency pass. It intentionally ch
 
 ### Objective
 
-Add Night Elf and Tauren to hero creation and make race/class availability conform to Classic WoW instead of prototype guesses.
+Add Night Elf and Tauren to hero creation and replace the current faction-wide permissive class rule with the canonical WoW Classic race/class matrix for **all eight playable races**.
 
 ### Work
 
-- Add **Night Elf** as an Alliance race.
-- Night Elf available classes must be exactly:
-  - Druid
-  - Hunter
-  - Priest
-  - Rogue
-  - Warrior
-- Add **Tauren** as a Horde race.
-- Tauren available classes must be exactly:
-  - Druid
-  - Hunter
-  - Shaman
-  - Warrior
-- Audit any existing race/class matrix touched by this work so the UI never enables a combination that conflicts with the Classic source-of-truth matrix.
+- Replace the current `availability_rule` that gives every race all shared faction classes with one authoritative **per-race** class-availability model.
+- The complete race/class matrix must be exactly:
+  - **Human:** Mage, Paladin, Priest, Rogue, Warlock, Warrior
+  - **Dwarf:** Hunter, Paladin, Priest, Rogue, Warrior
+  - **Gnome:** Mage, Rogue, Warlock, Warrior
+  - **Night Elf:** Druid, Hunter, Priest, Rogue, Warrior
+  - **Orc:** Hunter, Rogue, Shaman, Warlock, Warrior
+  - **Undead:** Mage, Priest, Rogue, Warlock, Warrior
+  - **Tauren:** Druid, Hunter, Shaman, Warrior
+  - **Troll:** Hunter, Mage, Priest, Rogue, Shaman, Warrior
+- Add **Night Elf** to Alliance race data and **Tauren** to Horde race data.
+- Update every existing race entry — Human, Dwarf, Gnome, Orc, Undead, and Troll — so its available classes come from the same canonical race-level source instead of faction-level inheritance.
 - Keep unavailable classes visible in the race selector only when useful for comparison, but render them locked/desaturated and non-selectable.
-- Add/update race icons, faction treatment, racial tooltip data, hero seed data, and roster presentation for both races using the existing shared icon/tooltip contracts.
+- Add/update race icons, faction treatment, racial tooltip data, hero seed data, and roster presentation for Night Elf and Tauren using the existing shared icon/tooltip contracts.
+- Add Night Elf and Tauren body-specific race icon mappings to the shared icon resolver.
 - Keep race and class data JSON-backed; do not hard-code a second availability matrix in screen JS.
-- Add a small validation contract/test that rejects invalid race/class combinations in source data.
+- Add validation that rejects any source-data or UI-created hero whose class is not allowed for that exact race.
 
 ### Acceptance Criteria
 
-- Night Elf can select only Druid, Hunter, Priest, Rogue, or Warrior.
-- Tauren can select only Druid, Hunter, Shaman, or Warrior.
+- Human, Dwarf, Gnome, Night Elf, Orc, Undead, Tauren, and Troll all expose exactly the class combinations listed above.
+- The old faction-wide permissive availability rule is removed.
 - Invalid Classic race/class combinations cannot be created through the UI or accepted by the validation layer.
-- Race selector, roster, gear, talents, and battle surfaces can render Night Elf and Tauren heroes without fallback text or broken icons.
-- Race/class availability has one authoritative data source.
+- Race selector, roster, gear, talents, and battle surfaces can render all eight races without fallback text or broken icons.
+- Race/class availability has one authoritative race-level data source.
 
 ---
 
@@ -606,7 +605,7 @@ Make equipment management slot-first and compact: clicking a paper-doll slot sho
 
 ### Objective
 
-Give every building one consistent five-level progression contract tied directly to world/meta progression tiers.
+Give every building one consistent five-level progression contract tied directly to world/meta progression tiers, and make that progression **fully operable in the Base mockup** rather than leaving it as a data-only contract.
 
 ### Work
 
@@ -617,20 +616,41 @@ Give every building one consistent five-level progression contract tied directly
   - Level 3 = Tier 3
   - Level 4 = Tier 4
   - Level 5 = Tier 5
+- Replace current impossible mockup values such as building levels **6** and **10**; no Base mockup building may render outside 1–5.
 - Store current level, maximum level, upgrade cost, upgrade requirements, and unlocked capabilities in building data.
 - Make upgrade rows/actions data-driven instead of screen-specific.
+- Implement the progression loop in `mockup/base.html` / `mockup/base.js`:
+  - selecting a building shows its current level, next level, cost, and requirements,
+  - an enabled Upgrade action spends the displayed resources,
+  - a successful upgrade increments exactly one level,
+  - map plaque, building list, selection detail, tooltip, and resource counters update immediately from the same state,
+  - insufficient resources prevent the upgrade and show the unmet requirement,
+  - Level 5 disables further upgrading and presents the building as max level.
 - Ensure no building can skip levels or exceed level 5.
 - Surface the current level prominently enough for upgrade decisions.
 - Do not repeat persistent `T1`–`T5` badges where “Level 1–5” already communicates the same information; expose tier equivalence in the shared building tooltip.
 - Define hooks so building level can unlock Quest Board mission tiers and future profession/base capabilities.
+- Profession buildings must use the **matching profession icon**, not a generic building, crafting, spell, or approximate substitute:
+  - Blacksmith / Blacksmithing → Blacksmithing profession icon
+  - Alchemy Lab / Alchemy → Alchemy profession icon
+  - Enchanter's Study / Enchanting → Enchanting profession icon
+  - Tailor / Tailoring → Tailoring profession icon
+  - Leatherworker / Leatherworking → Leatherworking profession icon
+  - Engineer Workshop / Engineering → Engineering profession icon
+- Use the same semantic profession-icon key on the map plot, Buildings list, selected-building detail, upgrade UI, and tooltips so one profession never shows different icon art across surfaces.
+- Correct any shared icon-resolver mapping that does not resolve to the corresponding profession icon.
 
 ### Acceptance Criteria
 
 - Every building begins within 1–5 and can progress sequentially to level 5.
+- The Base mockup can visibly perform **1 → 2 → 3 → 4 → 5** upgrades, including resource deduction and immediate UI refresh.
+- No Base mockup building renders level 0, level 6+, or any other state outside 1–5.
 - Building level and progression tier always agree.
 - Upgrade cost/requirements come from data.
 - Invalid level jumps and level 6+ states are rejected.
-- Base UI and tooltips clearly communicate current level, next upgrade, and tier equivalence without redundant badge clutter.
+- Level 5 cannot be upgraded again.
+- Every profession building uses its corresponding profession icon consistently on every Base surface.
+- Base UI and tooltips clearly communicate current level, next upgrade, cost/requirements, and tier equivalence without redundant badge clutter.
 
 ---
 
@@ -761,7 +781,7 @@ Prove the new race/class, talent, equipment, building, roster, loadout, and Ques
 ### Work
 
 - Add validation/tests for:
-  - Classic race/class availability for Night Elf and Tauren
+  - exact Classic race/class availability for all eight races: Human, Dwarf, Gnome, Night Elf, Orc, Undead, Tauren, and Troll
   - rejection of invalid race/class combinations
   - two talent tiers + one capstone per represented tree
   - absence of prerequisite connectors/dependency edges
@@ -770,7 +790,9 @@ Prove the new race/class, talent, equipment, building, roster, loadout, and Ques
   - slot picker filtering by legal slot/equipment rules
   - no persistent equipment tier badges required for normal browsing
   - every building constrained to levels 1–5
+  - interactive Base mockup progression from level 1 through level 5 with resource deduction and synchronized UI state
   - building level ↔ tier equivalence
+  - canonical matching profession icons across every profession-building surface
   - exactly five saved party loadouts
   - party sizes restricted to 3/5/10/20
   - Quest Board dispatch sizes of 1/3/5/10/20 for T1–T5
@@ -781,6 +803,7 @@ Prove the new race/class, talent, equipment, building, roster, loadout, and Ques
   - assign simplified talents
   - equip gear through slot picker including a trinket
   - add hero to a saved party loadout
+  - upgrade a building through the Base mockup progression controls and verify resource deduction/state refresh
   - upgrade the Quest Board/building progression
   - dispatch a correctly sized party
   - verify roster availability and persisted state
