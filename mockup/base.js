@@ -227,14 +227,14 @@ $('.base-game-nav').addEventListener('click', event => {
 });
 
 Tooltips.hydrate(document);
-$('[data-building]').forEach(plot => {
+all('[data-building]').forEach(plot => {
   const building = buildings.find(entry => entry.id === plot.dataset.building);
   if (building) Tooltips.attach(plot, () => buildingTooltipModel(building));
 });
-$('[data-resource]').forEach(element => {
+all('[data-resource]').forEach(element => {
   Tooltips.attach(element, () => resourceTooltipModel(element.dataset.resource, element), {anchor:'target'});
 });
-$('[data-currency]').forEach(element => {
+all('[data-currency]').forEach(element => {
   Tooltips.attach(element, () => currencyTooltipModel(element.dataset.currency, element), {anchor:'target'});
 });
 
