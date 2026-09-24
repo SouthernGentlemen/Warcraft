@@ -1,0 +1,29 @@
+name: Simulation Smoke Test
+
+on:
+  push:
+    paths:
+      - "mockup/simulation/**"
+      - "docs/**"
+      - "data/**"
+      - "package.json"
+      - "dev-server.mjs"
+      - ".github/workflows/simulation.yml"
+  pull_request:
+    paths:
+      - "mockup/simulation/**"
+      - "docs/**"
+      - "data/**"
+      - "package.json"
+      - "dev-server.mjs"
+
+jobs:
+  deterministic-combat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run deterministic combat smoke test
+        run: npm run simulation:test
