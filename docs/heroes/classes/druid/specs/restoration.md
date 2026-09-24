@@ -2,68 +2,50 @@
 
 ## Identity
 
-- Role direction: Healing / sustain
+- Role: Healing / sustain
 - Resource: Mana
-- Primary stat direction: Intellect
-- Auto-attack: Nature Bolt
-
-## Spec Theme
-
-Healing-over-time effects, recovery, resource-efficient group sustain.
-
-This document defines the specialization's identity and design direction. Exact numbers and complete ability lists are intentionally deferred.
-
-## Auto-Attack
-
-The specialization uses **Nature Bolt** as its spec-defined repeating auto-attack.
-
-The attack resolves whenever the shared real-time auto-attack bar fills.
-
-Exact attack time, coefficient, damage school, targeting, and weapon interaction remain open.
+- Primary stat: Intellect
+- Auto-attack: Nature Bolt — heals the lowest-health ally
 
 ## Talent Tree
 
-The Restoration tree contains:
+The first talent point spent in this tree selects **Restoration** as the hero's specialization.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
-- Tier 3 — 2 mutually exclusive capstones
+All values below are starting implementation values and may be tuned during balance passes.
 
-If the hero's first talent point is spent in this tree, Restoration becomes the hero's specialization.
+### Tier 1 — Level 1
 
-The hero must progress Tier 1 -> Tier 2 -> one Tier 3 capstone before the other two Druid trees unlock.
+Choose 1 of 3.
 
-## Talent Direction
+| Talent | Effect |
+| --- | --- |
+| **Rejuvenation** | Nature Bolt also heals its target for 12% of the initial heal over 5 seconds. |
+| **Natural Focus** | Mana costs of healing cooldown abilities are reduced by 10%. |
+| **Living Seed** | Critical Nature Bolts plant a seed that heals the target for 20% of the critical heal the next time that target takes damage. |
 
-Talent options in this tree should primarily reinforce:
+### Tier 2 — Level 2
 
-- Healing-over-time effects
-- Recovery
-- Resource-efficient group sustain
+Requires a Tier 1 talent in this tree. Choose 1 of 3.
 
-Individual nodes remain to be designed.
+| Talent | Effect |
+| --- | --- |
+| **Wild Growth** | Every fourth Nature Bolt also heals two additional injured allies for 40% of the original heal. |
+| **Harmony** | Direct healing against a target with one of this hero's healing-over-time effects is increased by 15%. |
+| **Innervate** | Every fifth equipped cooldown used costs no Mana. |
 
-## Cooldown Direction
+### Tier 3 — Level 3 Capstone
 
-The Restoration specialization may use class-wide cooldowns plus spec-specific cooldowns that reinforce its role.
+Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
 
-The hero equips exactly two cooldown abilities at a time.
+| Capstone | Effect |
+| --- | --- |
+| **Tree of Life** | Using the selected ultimate grants 30% Healing Power and 20% Haste for 8 seconds. |
+| **Flourish** | Using the selected ultimate refreshes this hero's healing-over-time effects and doubles their tick rate for 6 seconds. |
 
-## Ultimate Direction
+Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
 
-The Restoration specialization may have one or more compatible ultimate choices.
+## Combat Loadout
 
-The hero equips exactly one ultimate at a time.
+This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
-The chosen ultimate activates through the shared ultimate-bar system.
-
-## Open Areas
-
-- 3 Tier 1 talents
-- 3 Tier 2 talents
-- 2 Tier 3 capstones
-- cooldown abilities
-- ultimate abilities
-- auto-attack timing and coefficient
-- Mastery behavior
-- ability priorities and targeting
+Talents modify that shared combat package; they do not add extra active ability slots.
