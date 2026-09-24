@@ -8,7 +8,7 @@ Static review screens backed by the root-level `/data/` JSON mirror.
 - `race-selector.html` — faction, body type, race, class availability, and racial review
 - `talent-calculator.html` — class/spec browser and five-point talent calculator
 
-## Running Locally
+## Development
 
 From the repository root:
 
@@ -16,21 +16,18 @@ From the repository root:
 npm run dev
 ```
 
-No package installation is required. The dev command uses Node's built-in HTTP server.
+No package installation is required.
 
-The server defaults to:
+Every run performs a full local prototype reset:
 
-```text
-http://127.0.0.1:5173/
-```
+1. tears down the previously recorded Warcraft dev server, if one is still running
+2. deletes and rebuilds `/data/` directly from `/docs/`
+3. regenerates the race and class prototype indexes
+4. starts the static server
+5. uses port 5173 when available, otherwise automatically selects the next available port
 
-Opening the root URL redirects to `/mockup/`.
+You do not need to find or kill ports manually. Running `npm run dev` again replaces the previous Warcraft dev instance.
 
-Environment overrides are supported:
+The active URL is printed when startup completes, and the root URL redirects to `/mockup/`.
 
-```bash
-PORT=8000 npm run dev
-HOST=0.0.0.0 npm run dev
-```
-
-The mockups load their prototype data from the root-level `/data/` directory.
+`HOST` and `PORT` can still be supplied when needed, but occupied ports are handled automatically.
