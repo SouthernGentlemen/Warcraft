@@ -190,10 +190,25 @@ jobs:
           assert(await page.locator(".wow-tooltip-layer:not([hidden]) .wow-tooltip-card").count() >= 1, "Mouse hover did not trigger an item tooltip");
           assert(await tooltipBoundsOK(), "Mouse tooltip escaped the viewport");
 
-          // Replace an equipped item and recalculate stats.
+          // Unequip the original stat-bearing Head, then re-equip and replace it.
           await setFilters();
           const originalHead = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
           const originalStats = await page.locator("#heroStats").innerText();
+          await page.locator("#leftSlots .gear-slot").first().click();
+          await page.waitForTimeout(80);
+          const emptyHead = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
+          const emptyStats = await page.locator("#heroStats").innerText();
+          assert(emptyHead?.toLowerCase().includes("empty"), "Unequipping Head did not create an empty state");
+          assert(emptyStats !== originalStats, "Unequipping the stat-bearing Head did not recalculate stats");
+
+          await setFilters({ tier: 2, slot: "Head", equippable: true });
+          await page.locator(".armory-item:not(.locked)").first().click();
+          await page.waitForTimeout(80);
+          const reequippedHead = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
+          const reequippedStats = await page.locator("#heroStats").innerText();
+          assert(reequippedHead === originalHead, "Re-equipping Head did not restore the original item");
+          assert(reequippedStats === originalStats, "Re-equipping Head did not restore stats");
+
           await setFilters({ tier: 1, slot: "Head", equippable: true });
           await page.locator(".armory-item:not(.locked)").first().click();
           await page.waitForTimeout(80);
@@ -201,14 +216,6 @@ jobs:
           const replacedStats = await page.locator("#heroStats").innerText();
           assert(replacedHead !== originalHead, "Equipping a candidate did not replace Head");
           assert(replacedStats !== originalStats, "Replacing Head did not recalculate stats");
-
-          // Unequip creates a clear empty slot and changes stats again.
-          await page.locator("#leftSlots .gear-slot").first().click();
-          await page.waitForTimeout(80);
-          const emptyHead = await page.locator("#leftSlots .gear-slot").first().getAttribute("aria-label");
-          const emptyStats = await page.locator("#heroStats").innerText();
-          assert(emptyHead?.toLowerCase().includes("empty"), "Unequipping Head did not create an empty state");
-          assert(emptyStats !== replacedStats, "Unequipping Head did not recalculate stats");
 
           // Tier filter.
           await setFilters({ tier: 2, slot: "all", equippable: true });
