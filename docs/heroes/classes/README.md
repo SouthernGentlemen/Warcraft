@@ -6,44 +6,44 @@ Classes define hero resource models, specializations, talent trees, auto-attacks
 
 Each class has its own directory. Each class directory contains a class README and a `specs/` directory with exactly three specialization documents.
 
-## Shared Class Rules
+## Shared Hero Build
 
-Every class follows the shared hero-build framework:
+Every hero has:
 
-- 1 gear loadout
+- gear choices
 - talent choices
-- exactly 2 equipped cooldown abilities
-- exactly 1 equipped ultimate
-- 1 specialization-driven auto-attack
+- exactly 2 selected cooldown abilities
+- exactly 1 selected ultimate
+- one specialization-defined auto-attack
 
-The first talent point chooses the hero's specialization. The other two talent trees remain locked until the chosen tree's Level 3 capstone is selected.
+## Talent Structure
 
-Every specialization tree contains:
+Every class has 3 specialization trees.
 
-- Tier 1 — 3 options
-- Tier 2 — 3 options
+Every specialization tree is now explicitly defined with:
+
+- Tier 1 — 3 talents
+- Tier 2 — 3 talents
 - Tier 3 — 2 mutually exclusive capstones
 
 Every hero level grants one talent point.
 
-## Talent Thresholds
-
 | Hero Level | Talent Rule |
 | --- | --- |
-| 1 | First point selects the specialization by entering one tree at Tier 1. |
-| 2 | Second point advances to Tier 2 in the selected tree. |
-| 3 | Third point selects one of two capstones in the selected tree; the other two trees then unlock. |
+| 1 | First point enters one tree and selects the specialization. |
+| 2 | Second point selects one Tier 2 talent in that tree. |
+| 3 | Third point selects one of two capstones; the other two trees unlock afterward. |
 | 4 | One additional legal talent point; off-spec trees begin at Tier 1. |
-| 5 | One additional legal talent point; tree prerequisites still apply. |
+| 5 | One additional legal talent point; normal tree prerequisites apply. |
 
-## Resource Models
+## Resources
 
 - Mana — Mage, Warlock, Priest, Hunter, Paladin, Shaman
 - Rage — Warrior
 - Energy — Rogue
 - Druid — Mana, Energy, or Rage depending on form
 
-## Class Directories
+## Classes
 
 - [Mage](./mage/README.md)
 - [Rogue](./rogue/README.md)
@@ -55,22 +55,15 @@ Every hero level grants one talent point.
 - [Paladin](./paladin/README.md)
 - [Shaman](./shaman/README.md)
 
-## Shared Combat Rules
-
-Selected cooldown abilities are used automatically when their activation requirements are met.
-
-The selected ultimate is used when the ultimate bar is full and its activation requirements are met.
-
-Auto-attacks use the shared real-time attack bar, but the attack itself is defined by specialization.
-
 ## Open Areas
 
-- exact talent nodes
-- exact cooldown ability pools
-- exact ultimate pools
-- resource pool sizes and regeneration
-- ability costs
-- exact attack-bar timings
+The class framework is established. Remaining class work is primarily:
+
+- cooldown ability pools
+- ultimate ability pools
+- resource pool sizes and regeneration/generation rates
+- exact ability costs
+- auto-attack timing and coefficients
 - class-specific Mastery effects
-- class weapon proficiencies
+- weapon proficiencies
 - respecialization rules
