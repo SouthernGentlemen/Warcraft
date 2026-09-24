@@ -160,6 +160,12 @@
   line-height: 1;
 }
 
+.battle-control:focus,
+.speed-buttons .wow-tab:focus {
+  outline: 2px solid var(--wow-focus);
+  outline-offset: 2px;
+}
+
 .speed-buttons {
   display: flex;
   gap: 3px;
