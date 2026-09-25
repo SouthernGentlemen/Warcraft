@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_path": "docs/heroes/classes/hunter/specs/marksmanship.md",
   "kind": "specialization",
   "title": "Hunter — Marksmanship",
-  "source_markdown": "# Hunter — Marksmanship\n\n## Identity\n\n- Role: Direct ranged weapon damage\n- Resource: Mana\n- Primary stat: Agility\n- Auto-attack: Precision Shot — ranged weapon damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Marksmanship** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Careful Aim** | Precision Shot deals 20% more damage to targets above 70% health. |\n| **Quickdraw** | Precision Shot's auto-attack bar fills 10% faster. |\n| **Efficient Quiver** | Mana costs of equipped cooldown abilities are reduced by 10%. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Piercing Shots** | Critical Precision Shots bleed the target for 20% of the hit's damage over 4 seconds. |\n| **Lock and Load** | Using an equipped cooldown has a 15% chance to reset the other equipped cooldown. |\n| **Sniper Training** | After two consecutive auto-attacks against the same target, gain 10% Critical Strike chance and 10% more Hit Rating until changing targets. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Trueshot** | Using the selected ultimate grants 30% auto-attack speed and 20% more Hit Rating for 8 seconds. |\n| **Kill Shot** | Deal 30% more damage to targets below 30% health. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "source_markdown": "# Hunter — Marksmanship\n\n## Talent Prototype\n\nThis compact prototype uses two normal talent tiers plus one capstone. Talent identity and icon slugs are sourced from the Classic tree named **Marksmanship**. There are no per-node prerequisite chains; unlocks are controlled only by the structured tier thresholds in this JSON.\n",
   "class": "Hunter",
   "specialization": "Marksmanship",
   "identity": {
@@ -15,41 +15,38 @@
   "talents": {
     "tier_1": [
       {
-        "name": "Careful Aim",
-        "effect": "Precision Shot deals 20% more damage to targets above 70% health."
-      },
-      {
-        "name": "Quickdraw",
-        "effect": "Precision Shot's auto-attack bar fills 10% faster."
-      },
-      {
-        "name": "Efficient Quiver",
-        "effect": "Mana costs of equipped cooldown abilities are reduced by 10%."
+        "name": "Improved Concussive Shot",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_frost_stun",
+        "canonical_tree": "Marksmanship",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts"
       }
     ],
     "tier_2": [
       {
-        "name": "Piercing Shots",
-        "effect": "Critical Precision Shots bleed the target for 20% of the hit's damage over 4 seconds."
-      },
-      {
-        "name": "Lock and Load",
-        "effect": "Using an equipped cooldown has a 15% chance to reset the other equipped cooldown."
-      },
-      {
-        "name": "Sniper Training",
-        "effect": "After two consecutive auto-attacks against the same target, gain 10% Critical Strike chance and 10% more Hit Rating until changing targets."
+        "name": "Aimed Shot",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "inv_spear_07",
+        "canonical_tree": "Marksmanship",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts"
       }
     ],
     "capstones": [
       {
-        "name": "Trueshot",
-        "effect": "Using the selected ultimate grants 30% auto-attack speed and 20% more Hit Rating for 8 seconds."
-      },
-      {
-        "name": "Kill Shot",
-        "effect": "Deal 30% more damage to targets below 30% health."
+        "name": "Trueshot Aura",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "ability_trueshot",
+        "canonical_tree": "Marksmanship",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts"
       }
     ]
+  },
+  "talent_model": {
+    "kind": "two-tier-plus-capstone",
+    "tier_semantics": "Talent tiers are prototype talent progression only and are unrelated to item/building T1–T5 progression.",
+    "tier_1_unlock_points": 0,
+    "tier_2_unlock_points": 1,
+    "capstone_unlock_points": 2,
+    "dependency_rule": "tier-only; no per-node prerequisites"
   }
 }
