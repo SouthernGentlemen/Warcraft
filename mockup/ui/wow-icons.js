@@ -207,7 +207,7 @@
       mana:"inv_enchant_essenceastrallarge",
       rage:"ability_warrior_innerrage",
       energy:"ability_rogue_sprint",
-      lumber:"inv_misc_wood_01",
+      lumber:"inv_misc_1h_lumberaxe_a_01",
       stone:"inv_stone_16",
       population:"inv_misc_groupneedmore"
     },
