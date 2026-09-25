@@ -746,7 +746,7 @@ Turn Recruitment Hall into a functional hero recruitment/discovery menu rather t
 
 ### WOWUI-040 — Global Inventory Link from Storehouse
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-033, WOWUI-038
 
