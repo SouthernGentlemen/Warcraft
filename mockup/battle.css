@@ -1097,3 +1097,85 @@
 }
 
 .battle-combat-log{margin-top:6px;padding:6px;max-height:190px}.battle-log-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.battle-log-head small{color:var(--wow-text-dim);font-size:8px}.battle-log-scroll{max-height:145px;overflow:auto}.battle-combat-log table{width:100%;border-collapse:collapse;font-size:8px}.battle-combat-log th,.battle-combat-log td{padding:3px 5px;border-bottom:1px solid var(--wow-frame-edge);text-align:left}.battle-combat-log th{position:sticky;top:0;background:var(--wow-surface);color:var(--wow-gold-pale)}.battle-combat-log .event-damage{color:var(--wow-error)}.battle-combat-log .event-critical{color:var(--wow-warning)}.battle-combat-log .event-heal{color:var(--wow-success)}.battle-combat-log .event-death{color:var(--wow-text-dim)}
+
+/* WOWUI-047 — Shared encounter size primitives */
+
+.npc-combatant {
+  --unit-class: var(--wow-warning);
+}
+
+.npc-combatant .resource-stat {
+  display: none;
+}
+
+.battle-frame[data-party-size="1"] .combat-team {
+  grid-template-columns: minmax(220px, 430px);
+  justify-content: center;
+}
+
+.battle-frame[data-party-size="3"] .combat-team,
+.battle-frame[data-party-size="5"] .combat-team {
+  grid-template-columns: repeat(2, minmax(190px, 1fr));
+}
+
+.battle-frame[data-party-size="10"] .combat-team,
+.battle-frame[data-party-size="20"] .combat-team {
+  grid-template-columns: repeat(2, minmax(138px, 1fr));
+  gap: 7px;
+}
+
+.battle-frame[data-party-size="10"] .unit-frame,
+.battle-frame[data-party-size="20"] .unit-frame {
+  min-height: 92px;
+  grid-template-columns: 52px minmax(0,1fr);
+  gap: 6px;
+  padding: 5px;
+}
+
+.battle-frame[data-party-size="10"] .unit-portrait,
+.battle-frame[data-party-size="20"] .unit-portrait {
+  --wow-icon-size: 46px;
+}
+
+.battle-frame[data-party-size="10"] .unit-class-icon,
+.battle-frame[data-party-size="20"] .unit-class-icon {
+  --wow-icon-size: 18px;
+}
+
+.battle-frame[data-party-size="10"] .unit-heading,
+.battle-frame[data-party-size="20"] .unit-heading {
+  grid-template-columns: minmax(0,1fr);
+}
+
+.battle-frame[data-party-size="10"] .unit-action,
+.battle-frame[data-party-size="20"] .unit-action {
+  height: 25px;
+  grid-template-columns: 21px minmax(0,1fr);
+}
+
+.battle-frame[data-party-size="10"] .unit-action-icon,
+.battle-frame[data-party-size="20"] .unit-action-icon {
+  --wow-icon-size: 19px;
+}
+
+.battle-frame[data-party-size="10"] .unit-status-row,
+.battle-frame[data-party-size="20"] .unit-status-row {
+  display: none;
+}
+
+.battle-frame[data-party-size="20"] .combatant-meta,
+.battle-frame[data-party-size="20"] .unit-action-copy small {
+  display: none;
+}
+
+.battle-frame[data-party-size="20"] .combatant-name {
+  font-size: 11px;
+}
+
+@media (max-width: 900px) {
+  .battle-frame[data-party-size="5"] .combat-team,
+  .battle-frame[data-party-size="10"] .combat-team,
+  .battle-frame[data-party-size="20"] .combat-team {
+    grid-template-columns: 1fr;
+  }
+}
