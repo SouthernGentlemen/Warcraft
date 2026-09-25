@@ -1639,7 +1639,7 @@ Show each hero's actual combat loadout directly in Battle.
 
 ### WOWUI-067 — Auto Attack Swing Timer
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-066
 
