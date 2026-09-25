@@ -1,4 +1,5 @@
-/* WOWUI-009 — Base Management presentation. State and upgrade mechanics remain in base.js. */
+/* Base — map-first stronghold landing surface. */
+
 .base-page {
   margin: 0;
   min-height: 100vh;
@@ -11,182 +12,127 @@
 }
 
 .base-shell {
+  min-width: 0;
+  max-width: 100%;
   min-height: calc(100vh - var(--wow-nav-height));
   background: var(--wow-bg-deep);
 }
 
 .base-game-frame {
-  height: calc(100vh - var(--wow-nav-height));
-  min-height: 720px;
-  display: grid;
-  grid-template-columns: 74px minmax(620px,1fr) 370px;
-  overflow: hidden;
-  border: 0;
-  background: var(--wow-bg-deep);
-}
-
-.base-left-rail {
-  position: relative;
-  z-index: 20;
+  width: 100%;
   min-width: 0;
+  max-width: 100%;
+  height: calc(100dvh - var(--wow-nav-height));
+  min-height: 560px;
   display: grid;
-  grid-template-rows: 94px minmax(0,1fr);
-  border-width: 0 var(--wow-border) 0 0;
-  border-radius: 0;
-  background: linear-gradient(180deg, var(--wow-surface), var(--wow-bg-deep));
-  box-shadow: 5px 0 15px rgba(0,0,0,.35);
-}
-
-.base-faction-banner {
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 5px;
-  border-bottom: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: linear-gradient(180deg, rgba(73,137,211,.12), transparent), var(--wow-surface);
-}
-
-.base-faction-crest {
-  width: 48px;
-  height: 48px;
-  flex-basis: 48px;
-}
-
-.base-faction-banner small {
-  color: var(--wow-alliance-bright);
-  font-size: 7px;
-  font-weight: 900;
-  letter-spacing: .15em;
-}
-
-.base-game-nav {
-  min-height: 0;
-  display: grid;
-  align-content: start;
-  gap: 4px;
-  padding: 6px;
-}
-
-.base-rail-button {
-  position: relative;
-  width: 60px;
-  min-height: 58px;
-  display: grid;
-  place-items: center;
-  padding: 5px;
-  border-radius: var(--wow-radius-tight);
-}
-
-.base-rail-button .wow-icon-frame {
-  --wow-icon-size: 42px;
-}
-
-.base-rail-label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
+  grid-template-columns: minmax(0,1fr);
   overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-.base-rail-alert {
-  position: absolute;
-  z-index: 8;
-  top: 4px;
-  right: 4px;
-  width: 8px;
-  height: 8px;
-  border: 1px solid #1b0707;
-  border-radius: 50%;
-  background: var(--wow-error);
-  box-shadow: 0 0 5px rgba(198,47,47,.6);
-}
-
-.base-rail-button:focus,
-.base-resource-counter:focus,
-.base-meta-stat:focus,
-.base-plot:focus,
-.building-thumb:focus,
-.building-tabs .wow-tab:focus,
-.base-action:focus {
-  outline: 2px solid var(--wow-focus);
-  outline-offset: 2px;
+  background: var(--wow-bg-deep);
 }
 
 .base-main-column {
   min-width: 0;
   min-height: 0;
+  max-width: 100%;
   display: grid;
-  grid-template-rows: 52px minmax(0,1fr) 76px 72px;
+  grid-template-rows: 44px minmax(0,1fr);
   background: var(--wow-bg-deep);
 }
 
+/* Compact persistent resources */
+
 .base-resource-bar {
+  position: relative;
+  z-index: 15;
   min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(5,minmax(108px,1fr));
-  overflow-x: auto;
-  border-width: 0 0 var(--wow-border) 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  padding: 4px 10px;
+  overflow: visible;
+  border-width: 0 0 var(--wow-border-thin);
   border-radius: 0;
-  background: linear-gradient(180deg, var(--wow-surface-raised), var(--wow-surface));
-  box-shadow: 0 3px 9px rgba(0,0,0,.32);
+  background: linear-gradient(180deg, rgba(31,35,38,.98), rgba(14,17,19,.96));
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
 }
 
 .base-resource-counter {
-  min-width: 0;
+  width: min(172px,28vw);
+  min-width: 124px;
   display: grid;
-  grid-template-columns: 30px minmax(0,1fr);
+  grid-template-columns: 26px minmax(0,1fr);
   align-items: center;
-  gap: 7px;
-  padding: 5px 9px;
+  gap: 6px;
+  padding: 3px 12px;
   border-right: var(--wow-border-thin) solid var(--wow-inset-line);
 }
 
-.base-resource-counter:last-child {
-  border-right: 0;
+.base-resource-counter:first-child {
+  border-left: var(--wow-border-thin) solid var(--wow-inset-line);
+}
+
+.base-resource-counter:focus-visible,
+.base-plot:focus-visible {
+  outline: 2px solid var(--wow-focus);
+  outline-offset: 2px;
 }
 
 .base-resource-icon {
-  --wow-icon-size: 28px;
+  --wow-icon-size: 24px;
 }
 
 .base-resource-copy {
   min-width: 0;
-  display: grid;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
   line-height: 1;
+}
+
+.base-resource-copy small {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
 
 .base-resource-copy strong {
   overflow: hidden;
-  color: var(--wow-text);
-  font-size: 11px;
+  color: var(--wow-gold-pale);
+  font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.base-resource-copy small {
-  margin-top: 3px;
-  color: var(--wow-success);
-  font-size: 7px;
-  font-weight: 800;
-}
+/* Stronghold map */
 
 .base-map {
   position: relative;
+  min-width: 0;
+  max-width: 100%;
   min-height: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   isolation: isolate;
-  border-width: 0;
+  border: 0;
   border-radius: 0;
   background:
-    linear-gradient(180deg, rgba(64,93,111,.7) 0 22%, transparent 22%),
-    linear-gradient(180deg, #243d45 0 22%, #263a2b 22% 100%);
+    linear-gradient(180deg, rgba(55,79,92,.62) 0 20%, transparent 20%),
+    linear-gradient(180deg, #20353d 0 20%, #243628 20% 100%);
+  box-shadow:
+    inset 0 16px 30px rgba(0,0,0,.18),
+    inset 0 0 80px rgba(0,0,0,.22);
 }
 
 .base-map-backdrop {
   position: absolute;
   inset: 0;
+  opacity: .72;
   background:
     radial-gradient(circle at 18% 12%, rgba(236,225,175,.08), transparent 17%),
     linear-gradient(145deg, transparent 0 12%, rgba(48,70,48,.34) 12% 15%, transparent 15% 34%, rgba(38,58,40,.38) 34% 38%, transparent 38% 62%, rgba(44,65,42,.32) 62% 65%, transparent 65%),
@@ -205,9 +151,9 @@
 .base-river {
   position: absolute;
   border-radius: 50%;
+  opacity: .62;
   background: linear-gradient(90deg, #25485c, #527789, #284b5f);
   box-shadow: inset 0 0 13px rgba(183,211,222,.12);
-  opacity: .75;
   transform: rotate(-13deg);
 }
 
@@ -217,6 +163,7 @@
 .base-road {
   position: absolute;
   height: 12px;
+  opacity: .72;
   border: 1px solid rgba(68,55,36,.4);
   border-radius: 99px;
   background: #706448;
@@ -232,7 +179,7 @@
   position: absolute;
   width: 92px;
   height: 58px;
-  opacity: .72;
+  opacity: .58;
   filter: drop-shadow(0 4px 3px rgba(0,0,0,.32));
 }
 
@@ -254,6 +201,8 @@
 .trees-b { right:5%; top:18%; transform:scale(.8); }
 .trees-c { left:7%; bottom:8%; transform:scale(1.15); }
 
+/* Clickable buildings */
+
 .base-plot {
   --x:50%;
   --y:50%;
@@ -261,38 +210,43 @@
   z-index: 8;
   left: var(--x);
   top: var(--y);
-  width: 104px;
-  height: 88px;
+  width: 100px;
+  height: 82px;
+  min-width: 44px;
+  min-height: 44px;
   display: grid;
   justify-items: center;
   align-content: start;
-  gap: 5px;
+  gap: 4px;
   padding: 0;
   transform: translate(-50%,-50%);
   border: 0;
   background: transparent;
   color: var(--wow-text);
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .plot-art {
-  --wow-icon-size: 56px;
+  --wow-icon-size: 50px;
   --wow-icon-accent: var(--wow-gold-muted);
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,.42));
   transition: transform .1s ease, filter .1s ease, box-shadow .1s ease;
 }
 
 .base-plot.keep .plot-art {
-  --wow-icon-size: 68px;
+  --wow-icon-size: 62px;
 }
 
 .plot-label {
-  min-width: 108px;
-  max-width: 132px;
-  padding: 4px 7px;
-  border: var(--wow-border-thin) solid var(--wow-gold-muted);
+  min-width: 96px;
+  max-width: 124px;
+  padding: 3px 6px;
+  border: var(--wow-border-thin) solid rgba(183,139,59,.62);
   border-radius: var(--wow-radius-tight);
-  background: linear-gradient(180deg, #171b1e, #090c0e);
-  box-shadow: 0 3px 6px rgba(0,0,0,.48);
+  background: rgba(10,12,13,.88);
+  box-shadow: 0 2px 5px rgba(0,0,0,.45);
   white-space: nowrap;
   text-align: center;
 }
@@ -301,7 +255,7 @@
   display: block;
   overflow: hidden;
   color: var(--wow-text);
-  font: 700 10px var(--wow-font-display);
+  font: 700 9px var(--wow-font-display);
   text-overflow: ellipsis;
 }
 
@@ -311,14 +265,16 @@
 }
 
 .base-plot:hover .plot-art,
-.base-plot:focus .plot-art {
+.base-plot:focus-visible .plot-art,
+.base-plot.selected .plot-art {
   transform: translateY(-1px);
-  filter: brightness(1.12);
+  filter: brightness(1.12) drop-shadow(0 5px 6px rgba(0,0,0,.48));
 }
 
+.base-plot:focus-visible .plot-art,
 .base-plot.selected .plot-art {
-  border-color: var(--wow-gold-bright);
-  box-shadow: 0 0 0 2px #060708, inset 0 0 0 1px rgba(255,255,255,.08), 0 0 10px rgba(214,182,95,.28);
+  outline: 2px solid var(--wow-focus);
+  outline-offset: 3px;
 }
 
 .base-plot.selected .plot-label {
@@ -329,10 +285,11 @@
 .base-map-caption {
   position: absolute;
   z-index: 12;
-  left: 12px;
-  bottom: 10px;
-  padding: 7px 10px;
+  left: 14px;
+  bottom: 12px;
+  padding: 6px 9px;
   border-radius: var(--wow-radius-tight);
+  background: rgba(10,12,13,.84);
 }
 
 .base-map-caption span {
@@ -350,679 +307,53 @@
   text-transform: uppercase;
 }
 
-.base-action-bar {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(4,minmax(0,1fr));
-  gap: 6px;
-  padding: 7px 9px;
-  border-top: var(--wow-border) solid var(--wow-frame-edge);
-  border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
-  background: var(--wow-surface);
+/* Single attention marker per building */
+
+.base-plot-attention {
+  position: absolute;
+  z-index: 14;
+  top: -3px;
+  right: 7px;
+  pointer-events: none;
 }
 
-.base-action {
-  min-width: 0;
-  min-height: 60px;
-  display: grid;
-  grid-template-columns: 38px minmax(0,1fr);
-  align-items: center;
-  gap: 7px;
-  padding: 5px 7px;
-  text-align: left;
+.base-plot-attention .wow-icon-frame {
+  --wow-icon-size: 21px;
+  border-width: 1px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.58);
 }
 
-.base-action-icon {
-  --wow-icon-size: 34px;
+.base-plot-attention.is-upgrade-ready .wow-icon-frame,
+.base-plot-attention.is-quest-ready .wow-icon-frame,
+.base-plot-attention.is-quest-complete .wow-icon-frame,
+.base-plot-attention.is-profession-action .wow-icon-frame {
+  box-shadow: 0 0 0 1px rgba(0,0,0,.72), 0 0 8px rgba(214,182,95,.42);
 }
 
-.base-action-copy {
-  min-width: 0;
-  display: grid;
+.base-plot-attention.is-blocked {
+  opacity: .6;
+  filter: grayscale(.28);
 }
 
-.base-action-copy strong,
-.base-action-copy small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.base-plot[data-attention-state="quest-complete"] .plot-label {
+  border-color: var(--wow-success);
 }
 
-.base-action-copy strong {
-  color: var(--wow-text);
-  font-size: 9px;
-}
-
-.base-action-copy small {
-  margin-top: 2px;
-  color: var(--wow-text-dim);
-  font-size: 7px;
-}
-
-.base-status-strip {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 48px minmax(135px,1.4fr) repeat(4,minmax(80px,1fr));
-  align-items: center;
-  gap: 8px;
-  padding: 7px 9px;
-  border-width: 0;
-  border-radius: 0;
-  background: linear-gradient(180deg, var(--wow-surface), var(--wow-bg-deep));
-}
-
-.base-avatar {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  border: 2px solid var(--wow-gold-muted);
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #365b7d, #172d40 65%, #0b151e);
-  color: var(--wow-gold-pale);
-  box-shadow: 0 0 0 2px #07090a;
-  font: 700 16px var(--wow-font-display);
-}
-
-.base-profile {
-  min-width: 0;
-  display: grid;
-  gap: 3px;
-}
-
-.base-profile strong {
-  overflow: hidden;
-  color: var(--wow-text);
-  font-size: 10px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.base-profile small {
-  color: var(--wow-text-dim);
-  font-size: 7px;
-}
-
-.base-profile .wow-statusbar {
-  min-height: 10px;
-  height: 10px;
-}
-
-.base-meta-stat {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 30px minmax(0,1fr);
-  align-items: center;
-  gap: 5px;
-  padding-left: 7px;
-  border-left: var(--wow-border-thin) solid var(--wow-inset-line);
-}
-
-.base-meta-icon {
-  --wow-icon-size: 28px;
-}
-
-.base-meta-copy {
-  min-width: 0;
-  display: grid;
-}
-
-.base-meta-copy small {
-  color: var(--wow-text-dim);
-  font-size: 7px;
-}
-
-.base-meta-copy strong {
-  color: var(--wow-text);
-  font-size: 9px;
-}
-
-.base-building-panel {
-  position: relative;
-  z-index: 22;
-  min-width: 0;
-  min-height: 0;
-  display: grid;
-  grid-template-rows: 66px 36px minmax(0,1fr) auto;
-  overflow: hidden;
-  border-width: 0 0 0 var(--wow-border);
-  border-radius: 0;
-  background: linear-gradient(180deg, var(--wow-surface), var(--wow-bg-deep));
-  box-shadow: -5px 0 18px rgba(0,0,0,.32);
-}
-
-.building-panel-head {
-  min-width: 0;
-  min-height: 66px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 8px 10px;
-  border-bottom: var(--wow-border-thin) solid var(--wow-frame-edge);
-}
-
-.building-panel-head h1 {
-  margin: 2px 0 0;
-  color: var(--wow-gold-pale);
-  font: 700 20px var(--wow-font-display);
-}
-
-.base-filter {
-  width: 128px;
-  gap: 2px;
-}
-
-.base-filter .wow-label {
-  font-size: 7px;
-}
-
-.base-filter .wow-select {
-  min-height: 30px;
-  height: 30px;
-  font-size: 9px;
-}
-
-.building-tabs {
-  padding: 4px 7px 0;
-  background: var(--wow-surface-inset);
-}
-
-.building-tabs .wow-tab {
-  flex: 1;
-  min-height: 30px;
-  font-size: 8px;
-}
-
-.building-list {
-  min-height: 0;
-  overflow-y: auto;
-  padding: 6px;
-  background: var(--wow-surface-inset);
-}
-
-.building-row {
-  min-height: 88px;
-  display: grid;
-  grid-template-columns: 58px minmax(0,1fr) 68px;
-  gap: 7px;
-  margin-bottom: 5px;
-  padding: 6px;
-  border: var(--wow-border-thin) solid var(--wow-inset-line);
-  border-radius: var(--wow-radius-tight);
-  background: linear-gradient(180deg, var(--wow-surface), var(--wow-surface-inset));
-}
-
-.building-row.selected {
+.base-plot[data-attention-state="quest-ready"] .plot-label,
+.base-plot[data-attention-state="upgrade-ready"] .plot-label {
   border-color: var(--wow-gold);
-  box-shadow: inset 3px 0 0 var(--wow-gold-bright);
 }
 
-.building-thumb {
-  width: 58px;
-  min-height: 58px;
-  align-self: center;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
+.base-plot[data-attention-state="profession-action"] .plot-label {
+  border-color: var(--wow-alliance-bright);
 }
 
-.building-thumb-icon {
-  --wow-icon-size: 54px;
-  --wow-icon-accent: var(--wow-gold-muted);
+.base-plot[data-attention-state="blocked"] .plot-label {
+  border-color: rgba(185,139,52,.38);
 }
 
-.building-copy {
-  min-width: 0;
-  align-self: center;
-}
+/* Reusable building sidecar */
 
-.building-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-}
-
-.building-title strong {
-  overflow: hidden;
-  color: var(--wow-text);
-  font: 700 11px var(--wow-font-display);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.building-title .wow-tier-label {
-  flex: 0 0 auto;
-  font-size: 7px;
-}
-
-.building-copy p {
-  margin: 4px 0 5px;
-  color: var(--wow-text-muted);
-  font-size: 8px;
-  line-height: 1.25;
-}
-
-.building-costs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.building-cost {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  color: var(--wow-text);
-  font-size: 8px;
-}
-
-.building-cost-icon {
-  --wow-icon-size: 20px;
-}
-
-.building-cost b {
-  font-weight: 700;
-}
-
-.building-upgrade {
-  min-width: 0;
-  align-self: center;
-  min-height: 32px;
-  padding: 4px 6px;
-  font-size: 8px;
-}
-
-.base-selection-detail {
-  padding: 9px 10px 10px;
-  border-width: var(--wow-border-thin) 0 0;
-  border-radius: 0;
-}
-
-.selection-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 6px 0;
-}
-
-.selection-building-icon {
-  --wow-icon-size: 42px;
-}
-
-.selection-title strong {
-  display: block;
-  color: var(--wow-text);
-  font: 700 11px var(--wow-font-display);
-}
-
-.selection-title small {
-  display: block;
-  margin-top: 2px;
-  color: var(--wow-text-dim);
-  font-size: 8px;
-}
-
-.base-selection-detail p {
-  margin: 5px 0 7px;
-  color: var(--wow-text-muted);
-  font-size: 8px;
-  line-height: 1.35;
-}
-
-.selection-progress {
-  min-height: 15px;
-  height: 15px;
-}
-
-.base-toast {
-  position: fixed;
-  z-index: 13000;
-  left: 50%;
-  bottom: 24px;
-  transform: translateX(-50%);
-  padding: 8px 12px;
-  border: var(--wow-border) solid #08090a;
-  border-radius: var(--wow-radius-tight);
-  background: var(--wow-surface-raised);
-  color: var(--wow-gold-pale);
-  box-shadow: inset 0 0 0 1px var(--wow-gold-muted), 0 10px 30px rgba(0,0,0,.48);
-  font-size: 9px;
-}
-
-@media (max-width: 1180px) {
-  .base-game-frame {
-    grid-template-columns: 68px minmax(520px,1fr) 330px;
-  }
-
-  .base-left-rail { grid-template-rows: 82px minmax(0,1fr); }
-  .base-faction-crest { width:42px; height:42px; flex-basis:42px; }
-  .base-rail-button { width:54px; min-height:54px; }
-  .base-rail-button .wow-icon-frame { --wow-icon-size:38px; }
-  .building-row { grid-template-columns: 52px minmax(0,1fr) 62px; }
-  .building-thumb { width:52px; }
-  .building-thumb-icon { --wow-icon-size:48px; }
-}
-
-@media (max-width: 930px) {
-  .base-game-frame {
-    height: auto;
-    min-height: calc(100vh - var(--wow-nav-height));
-    grid-template-columns: 62px minmax(0,1fr);
-  }
-
-  .base-building-panel {
-    grid-column: 1 / -1;
-    min-height: 520px;
-    border-width: var(--wow-border) 0 0;
-  }
-
-  .base-main-column {
-    min-height: 720px;
-  }
-
-  .base-status-strip {
-    grid-template-columns: 44px minmax(130px,1.5fr) repeat(2,minmax(80px,1fr));
-  }
-
-  .base-meta-stat:nth-last-child(-n+2) {
-    display: none;
-  }
-}
-
-@media (max-width: 700px) {
-  .base-game-frame {
-    grid-template-columns: 1fr;
-  }
-
-  .base-left-rail {
-    grid-template-rows: auto;
-    grid-template-columns: 58px minmax(0,1fr);
-    border-width: 0 0 var(--wow-border);
-  }
-
-  .base-faction-banner {
-    min-height: 58px;
-    border-right: var(--wow-border-thin) solid var(--wow-frame-edge);
-    border-bottom: 0;
-  }
-
-  .base-faction-banner small {
-    display: none;
-  }
-
-  .base-faction-crest {
-    width: 38px;
-    height: 38px;
-    flex-basis: 38px;
-  }
-
-  .base-game-nav {
-    grid-auto-flow: column;
-    grid-auto-columns: 52px;
-    align-content: center;
-    overflow-x: auto;
-    padding: 3px 5px;
-  }
-
-  .base-rail-button {
-    width: 48px;
-    min-height: 48px;
-  }
-
-  .base-rail-button .wow-icon-frame {
-    --wow-icon-size: 34px;
-  }
-
-  .base-main-column {
-    min-height: 690px;
-    grid-template-rows: 52px minmax(500px,1fr) auto 64px;
-  }
-
-  .base-resource-bar {
-    grid-template-columns: repeat(5,minmax(96px,1fr));
-  }
-
-  .base-action-bar {
-    grid-template-columns: repeat(2,minmax(0,1fr));
-  }
-
-  .base-action {
-    min-height: 54px;
-  }
-
-  .base-status-strip {
-    grid-template-columns: 42px minmax(0,1fr);
-  }
-
-  .base-meta-stat {
-    display: none;
-  }
-
-  .base-plot {
-    transform: translate(-50%,-50%) scale(.82);
-  }
-}
-
-@media (max-width: 440px) {
-  .base-game-nav {
-    grid-auto-columns: 46px;
-  }
-
-  .base-rail-button {
-    width: 42px;
-    min-height: 42px;
-    padding: 3px;
-  }
-
-  .base-rail-button .wow-icon-frame {
-    --wow-icon-size: 30px;
-  }
-
-  .base-map {
-    min-width: 390px;
-    overflow-x: auto;
-  }
-
-  .base-action-copy small {
-    display: none;
-  }
-
-  .building-panel-head h1 {
-    font-size: 17px;
-  }
-
-  .base-filter {
-    width: 108px;
-  }
-}
-
-
-/* WOWUI-017 Quest Board */
-.quest-board{margin:8px;max-height:48vh;overflow:auto}.quest-board-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}.quest-board-head h2{margin:0;color:var(--wow-gold-pale);font-size:14px}.quest-board-head>strong{color:var(--wow-gold);font-size:9px}.quest-tier-card{padding:6px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:var(--wow-surface-inset)}.quest-tier-card+.quest-tier-card{margin-top:5px}.quest-tier-card.is-locked{opacity:.58}.quest-tier-card.is-active{border-color:var(--wow-warning)}.quest-tier-card.is-completed{border-color:var(--wow-success)}.quest-tier-head{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:7px}.quest-tier-head strong{color:var(--wow-gold-pale);font-size:11px}.quest-tier-head span{font-size:8px;color:var(--wow-text-muted)}.quest-tier-head em{text-align:right;color:var(--wow-text-dim);font-size:7px;font-style:normal}.quest-tier-card.is-active .quest-tier-head em{color:var(--wow-warning)}.quest-selection{display:flex;gap:5px;align-items:flex-start;margin-top:5px}.quest-selection>.wow-select{min-width:0;flex:1}.quest-adhoc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;flex:1;max-height:120px;overflow:auto}.quest-hero-choice{display:flex;gap:3px;align-items:center;padding:2px;background:var(--wow-surface);font-size:8px}.quest-hero-choice small{display:block;color:var(--wow-text-dim);font-size:7px}.quest-reward{display:block;margin-top:5px;color:var(--wow-text-dim);font-size:7px}
-
-
-/* WOWUI-022 — Base shell de-clutter.
-   Legacy rail/panel/action styles remain until WOWUI-029 cleanup, but no longer participate in layout. */
-.base-game-frame {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.base-main-column {
-  width: 100%;
-  grid-column: 1;
-  grid-template-rows: 52px minmax(0, 1fr);
-}
-
-
-/* WOWUI-023 — Map-first Base landing composition. */
-.base-game-frame {
-  height: calc(100dvh - var(--wow-nav-height));
-  min-height: 560px;
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.base-main-column {
-  grid-template-rows: 44px minmax(0, 1fr);
-}
-
-.base-resource-bar {
-  position: relative;
-  z-index: 15;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  min-height: 44px;
-  padding: 4px 10px;
-  overflow: visible;
-  border-width: 0 0 var(--wow-border-thin);
-  background: linear-gradient(180deg, rgba(31,35,38,.98), rgba(14,17,19,.96));
-  box-shadow: 0 2px 8px rgba(0,0,0,.28);
-}
-
-.base-resource-counter {
-  width: min(172px, 28vw);
-  min-width: 124px;
-  grid-template-columns: 26px minmax(0, 1fr);
-  gap: 6px;
-  padding: 3px 12px;
-  border-right: var(--wow-border-thin) solid var(--wow-inset-line);
-}
-
-.base-resource-counter:first-child {
-  border-left: var(--wow-border-thin) solid var(--wow-inset-line);
-}
-
-.base-resource-icon {
-  --wow-icon-size: 24px;
-}
-
-.base-resource-copy {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.base-resource-copy small {
-  order: 0;
-  margin: 0;
-  color: var(--wow-text-dim);
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.base-resource-copy strong {
-  order: 1;
-  color: var(--wow-gold-pale);
-  font-size: 10px;
-}
-
-.base-map {
-  min-height: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  background:
-    linear-gradient(180deg, rgba(55,79,92,.62) 0 20%, transparent 20%),
-    linear-gradient(180deg, #20353d 0 20%, #243628 20% 100%);
-  box-shadow:
-    inset 0 16px 30px rgba(0,0,0,.18),
-    inset 0 0 80px rgba(0,0,0,.22);
-}
-
-.base-map-backdrop {
-  opacity: .72;
-}
-
-.base-river {
-  opacity: .62;
-}
-
-.base-road {
-  opacity: .72;
-}
-
-.base-tree-cluster {
-  opacity: .58;
-}
-
-.base-plot {
-  width: 100px;
-  height: 82px;
-  gap: 4px;
-}
-
-.plot-art {
-  --wow-icon-size: 50px;
-  filter: drop-shadow(0 5px 5px rgba(0,0,0,.42));
-}
-
-.base-plot.keep .plot-art {
-  --wow-icon-size: 62px;
-}
-
-.plot-label {
-  min-width: 96px;
-  max-width: 124px;
-  padding: 3px 6px;
-  border-color: rgba(183,139,59,.62);
-  background: rgba(10,12,13,.88);
-  box-shadow: 0 2px 5px rgba(0,0,0,.45);
-}
-
-.plot-label strong {
-  font-size: 9px;
-}
-
-.plot-label small {
-  font-size: 7px;
-}
-
-.base-plot:hover .plot-art,
-.base-plot:focus-visible .plot-art,
-.base-plot.selected .plot-art {
-  filter: brightness(1.12) drop-shadow(0 5px 6px rgba(0,0,0,.48));
-}
-
-.base-map-caption {
-  left: 14px;
-  bottom: 12px;
-  padding: 6px 9px;
-  background: rgba(10,12,13,.84);
-}
-
-@media (max-width: 700px) {
-  .base-game-frame {
-    height: auto;
-    min-height: calc(100dvh - var(--wow-nav-height));
-  }
-
-  .base-main-column {
-    min-height: calc(100dvh - var(--wow-nav-height));
-    grid-template-rows: 44px minmax(560px, 1fr);
-  }
-
-  .base-resource-bar {
-    justify-content: flex-start;
-    overflow-x: auto;
-  }
-
-  .base-resource-counter {
-    width: 136px;
-    min-width: 136px;
-  }
-}
-
-
-/* WOWUI-024 — Hidden building sidecar framework. */
 .base-sidecar[hidden] {
   display: none;
 }
@@ -1033,14 +364,16 @@
   top: var(--wow-nav-height);
   right: 0;
   bottom: 0;
-  width: min(390px, 34vw);
+  width: min(390px,34vw);
   min-width: 320px;
+  display: grid;
+  grid-template-rows: auto minmax(0,1fr);
   margin: 0;
-  overflow: auto;
+  overflow: hidden;
+  overscroll-behavior: contain;
   border-width: 0 0 0 var(--wow-border);
   border-radius: 0;
-  background:
-    linear-gradient(180deg, rgba(29,32,35,.99), rgba(10,12,14,.99));
+  background: linear-gradient(180deg, rgba(29,32,35,.99), rgba(10,12,14,.99));
   box-shadow: -14px 0 34px rgba(0,0,0,.56);
 }
 
@@ -1089,44 +422,20 @@
 
 .base-sidecar__close {
   flex: 0 0 auto;
-  width: 32px;
-  height: 30px;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
   padding: 0;
   font-size: 18px;
   line-height: 1;
 }
 
-@media (max-width: 700px) {
-  .base-sidecar {
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    min-width: 0;
-    max-height: min(54vh, 480px);
-    border-width: var(--wow-border) 0 0;
-    box-shadow: 0 -14px 34px rgba(0,0,0,.56);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .base-sidecar {
-    scroll-behavior: auto;
-  }
-}
-
-
-/* WOWUI-025 — Building management inside the shared sidecar. */
-.base-sidecar {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  overflow: hidden;
-}
-
 .base-sidecar__body {
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 8px;
 }
 
@@ -1145,6 +454,14 @@
   margin-bottom: 7px;
   color: var(--wow-gold-muted);
   font-size: 8px;
+}
+
+.base-sidecar__summary p,
+.base-sidecar__upgrade p {
+  margin: 0;
+  color: var(--wow-text-muted);
+  font-size: 8px;
+  line-height: 1.45;
 }
 
 .base-sidecar__capabilities {
@@ -1216,14 +533,14 @@
 
 .base-sidecar__costs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3,minmax(0,1fr));
   gap: 5px;
 }
 
-.base-sidecar__costs .building-cost {
+.building-cost {
   min-width: 0;
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
+  grid-template-columns: 24px minmax(0,1fr);
   align-items: center;
   gap: 5px;
   padding: 5px;
@@ -1231,13 +548,17 @@
   background: rgba(0,0,0,.18);
 }
 
-.base-sidecar__costs .building-cost > span:last-child {
+.building-cost-icon {
+  --wow-icon-size: 20px;
+}
+
+.building-cost > span:last-child {
   min-width: 0;
   display: grid;
   gap: 1px;
 }
 
-.base-sidecar__costs .building-cost small {
+.building-cost small {
   overflow: hidden;
   color: var(--wow-text-dim);
   font-size: 6px;
@@ -1246,16 +567,16 @@
   white-space: nowrap;
 }
 
-.base-sidecar__costs .building-cost b {
+.building-cost b {
   color: var(--wow-text);
   font-size: 8px;
 }
 
-.base-sidecar__costs .building-cost.is-short {
+.building-cost.is-short {
   border-color: rgba(198,47,47,.55);
 }
 
-.base-sidecar__costs .building-cost.is-short b {
+.building-cost.is-short b {
   color: var(--wow-error);
 }
 
@@ -1278,13 +599,11 @@
 }
 
 .base-sidecar__upgrade p {
-  margin: 0 0 9px;
-  color: var(--wow-text-muted);
-  font-size: 8px;
-  line-height: 1.4;
+  margin-bottom: 9px;
 }
 
-.base-sidecar__upgrade .wow-button {
+.base-sidecar__upgrade .wow-button,
+.base-sidecar__profession-action {
   width: 100%;
 }
 
@@ -1292,31 +611,8 @@
   color: var(--wow-warning) !important;
 }
 
-.base-sidecar__profession-action {
-  width: 100%;
-  margin-top: 2px;
-}
+/* Quest Board content inside the same sidecar */
 
-@media (max-width: 700px) {
-  .base-sidecar__body {
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
-  }
-
-  .base-sidecar__costs {
-    grid-template-columns: repeat(3, minmax(86px, 1fr));
-    overflow-x: auto;
-  }
-}
-
-.base-sidecar__summary p {
-  margin: 0;
-  color: var(--wow-text-muted);
-  font-size: 8px;
-  line-height: 1.45;
-}
-
-
-/* WOWUI-026 — Quest Board inside the shared Base sidecar. */
 .base-sidecar__quests {
   padding-bottom: 12px;
 }
@@ -1350,38 +646,94 @@
   line-height: 1.35;
 }
 
-.base-sidecar__quests .quest-tier-list {
+.quest-tier-list {
   display: grid;
   gap: 6px;
 }
 
-.base-sidecar__quests .quest-tier-card {
+.quest-tier-card {
   margin: 0;
   padding: 7px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface-inset);
 }
 
-.base-sidecar__quests .quest-tier-head {
+.quest-tier-card.is-locked {
+  opacity: .58;
+}
+
+.quest-tier-card.is-active {
+  border-color: var(--wow-warning);
+}
+
+.quest-tier-card.is-completed {
+  border-color: var(--wow-success);
+}
+
+.quest-tier-head {
+  display: grid;
   grid-template-columns: auto auto minmax(0,1fr);
+  align-items: center;
+  gap: 7px;
 }
 
-.base-sidecar__quests .quest-tier-head em {
+.quest-tier-head strong {
+  color: var(--wow-gold-pale);
+  font-size: 11px;
+}
+
+.quest-tier-head span {
+  color: var(--wow-text-muted);
+  font-size: 8px;
+}
+
+.quest-tier-head em {
   overflow: hidden;
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  font-style: normal;
+  text-align: right;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.base-sidecar__quests .quest-selection {
+.quest-tier-card.is-active .quest-tier-head em {
+  color: var(--wow-warning);
+}
+
+.quest-selection {
   display: grid;
   grid-template-columns: minmax(0,1fr) auto;
   align-items: start;
   gap: 5px;
+  margin-top: 5px;
 }
 
-.base-sidecar__quests .quest-selection > .quest-adhoc {
+.quest-adhoc {
   grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 2px;
+  max-height: 120px;
+  overflow: auto;
 }
 
-.base-sidecar__quests .quest-dispatched {
+.quest-hero-choice {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px;
+  background: var(--wow-surface);
+  font-size: 8px;
+}
+
+.quest-hero-choice small {
+  display: block;
+  color: var(--wow-text-dim);
+  font-size: 7px;
+}
+
+.quest-dispatched {
   min-width: 0;
   align-self: center;
   color: var(--wow-text-muted);
@@ -1389,133 +741,35 @@
   line-height: 1.35;
 }
 
-.base-sidecar__quests .quest-reward {
+.quest-reward {
+  display: block;
   margin-top: 6px;
   color: var(--wow-gold-muted);
+  font-size: 7px;
 }
 
-@media (max-width: 700px) {
-  .base-sidecar__quests .quest-selection {
-    grid-template-columns: 1fr;
-  }
+/* Toast */
 
-  .base-sidecar__quests .quest-selection > .wow-button {
-    width: 100%;
-  }
+.base-toast {
+  position: fixed;
+  z-index: 13000;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  border: var(--wow-border) solid #08090a;
+  border-radius: var(--wow-radius-tight);
+  background: var(--wow-surface-raised);
+  color: var(--wow-gold-pale);
+  box-shadow: inset 0 0 0 1px var(--wow-gold-muted), 0 10px 30px rgba(0,0,0,.48);
+  font-size: 9px;
 }
 
-
-/* WOWUI-027 — Single-state building attention markers. */
-.base-plot-attention {
-  position: absolute;
-  z-index: 14;
-  top: -3px;
-  right: 7px;
-  pointer-events: none;
-}
-
-.base-plot-attention .wow-icon-frame {
-  --wow-icon-size: 21px;
-  border-width: 1px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.58);
-}
-
-.base-plot-attention.is-upgrade-ready .wow-icon-frame,
-.base-plot-attention.is-quest-ready .wow-icon-frame,
-.base-plot-attention.is-quest-complete .wow-icon-frame,
-.base-plot-attention.is-profession-action .wow-icon-frame {
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.72),
-    0 0 8px rgba(214,182,95,.42);
-}
-
-.base-plot-attention.is-blocked {
-  opacity: .6;
-  filter: grayscale(.28);
-}
-
-.base-plot[data-attention-state="quest-complete"] .plot-label {
-  border-color: var(--wow-success);
-}
-
-.base-plot[data-attention-state="quest-ready"] .plot-label,
-.base-plot[data-attention-state="upgrade-ready"] .plot-label {
-  border-color: var(--wow-gold);
-}
-
-.base-plot[data-attention-state="profession-action"] .plot-label {
-  border-color: var(--wow-alliance-bright);
-}
-
-.base-plot[data-attention-state="blocked"] .plot-label {
-  border-color: rgba(185,139,52,.38);
-}
-
-@media (max-width: 700px) {
-  .base-plot-attention {
-    top: 0;
-    right: 10px;
-  }
-
-  .base-plot-attention .wow-icon-frame {
-    --wow-icon-size: 19px;
-  }
-}
-
-
-/* WOWUI-028 — Responsive Base map and sidecar polish. */
-.base-shell,
-.base-game-frame,
-.base-main-column,
-.base-map {
-  min-width: 0;
-  max-width: 100%;
-}
-
-.base-game-frame {
-  width: 100%;
-}
-
-.base-map {
-  overflow: hidden;
-}
-
-.base-plot {
-  min-width: 44px;
-  min-height: 44px;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.base-plot:focus-visible .plot-art,
-.base-plot.selected .plot-art {
-  outline: 2px solid var(--wow-focus);
-  outline-offset: 3px;
-}
-
-.base-sidecar {
-  overscroll-behavior: contain;
-}
-
-.base-sidecar__body {
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
-.base-sidecar__close {
-  min-width: 38px;
-  min-height: 38px;
-}
-
-@media (min-width: 1025px) {
-  .base-sidecar {
-    width: min(390px, 34vw);
-  }
-}
+/* Responsive behavior */
 
 @media (min-width: 701px) and (max-width: 1024px) {
   .base-sidecar {
-    width: min(420px, 48vw);
+    width: min(420px,48vw);
     min-width: 340px;
   }
 
@@ -1524,13 +778,8 @@
     height: 78px;
   }
 
-  .plot-art {
-    --wow-icon-size: 46px;
-  }
-
-  .base-plot.keep .plot-art {
-    --wow-icon-size: 58px;
-  }
+  .plot-art { --wow-icon-size: 46px; }
+  .base-plot.keep .plot-art { --wow-icon-size: 58px; }
 
   .plot-label {
     min-width: 88px;
@@ -1544,19 +793,18 @@
   }
 
   .base-game-frame {
-    width: 100%;
+    height: auto;
     min-height: calc(100dvh - var(--wow-nav-height));
-    overflow: hidden;
   }
 
   .base-main-column {
     min-height: calc(100dvh - var(--wow-nav-height));
-    grid-template-rows: 44px minmax(620px, 1fr);
+    grid-template-rows: 44px minmax(620px,1fr);
   }
 
   .base-resource-bar {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3,minmax(0,1fr));
     justify-content: stretch;
     gap: 0;
     width: 100%;
@@ -1567,14 +815,12 @@
   .base-resource-counter {
     width: auto;
     min-width: 0;
-    grid-template-columns: 22px minmax(0, 1fr);
+    grid-template-columns: 22px minmax(0,1fr);
     gap: 4px;
     padding: 3px 5px;
   }
 
-  .base-resource-icon {
-    --wow-icon-size: 21px;
-  }
+  .base-resource-icon { --wow-icon-size: 21px; }
 
   .base-resource-copy {
     min-width: 0;
@@ -1594,25 +840,17 @@
   }
 
   .base-map {
-    width: 100%;
     min-width: 0;
     min-height: 620px;
-    overflow: hidden;
   }
 
   .base-plot {
     width: 78px;
     height: 70px;
-    transform: translate(-50%, -50%);
   }
 
-  .plot-art {
-    --wow-icon-size: 42px;
-  }
-
-  .base-plot.keep .plot-art {
-    --wow-icon-size: 52px;
-  }
+  .plot-art { --wow-icon-size: 42px; }
+  .base-plot.keep .plot-art { --wow-icon-size: 52px; }
 
   .plot-label {
     min-width: 76px;
@@ -1620,27 +858,22 @@
     padding: 3px 4px;
   }
 
-  .plot-label strong {
-    font-size: 8px;
-  }
+  .plot-label strong { font-size: 8px; }
+  .plot-label small { font-size: 6px; }
 
-  .plot-label small {
-    font-size: 6px;
-  }
-
-  .base-plot.keep { --x: 50% !important; --y: 14% !important; }
-  .base-plot.command { --x: 20% !important; --y: 27% !important; }
-  .base-plot.recruitment { --x: 80% !important; --y: 27% !important; }
-  .base-plot.barracks { --x: 15% !important; --y: 42% !important; }
-  .base-plot.questboard { --x: 38% !important; --y: 42% !important; }
-  .base-plot.training { --x: 62% !important; --y: 42% !important; }
-  .base-plot.storehouse { --x: 85% !important; --y: 42% !important; }
-  .base-plot.blacksmith { --x: 16% !important; --y: 60% !important; }
-  .base-plot.alchemy { --x: 39% !important; --y: 60% !important; }
-  .base-plot.enchanter { --x: 62% !important; --y: 60% !important; }
-  .base-plot.tailor { --x: 84% !important; --y: 60% !important; }
-  .base-plot.leather { --x: 32% !important; --y: 77% !important; }
-  .base-plot.engineer { --x: 68% !important; --y: 77% !important; }
+  .base-plot.keep { --x:50% !important; --y:14% !important; }
+  .base-plot.command { --x:20% !important; --y:27% !important; }
+  .base-plot.recruitment { --x:80% !important; --y:27% !important; }
+  .base-plot.barracks { --x:15% !important; --y:42% !important; }
+  .base-plot.questboard { --x:38% !important; --y:42% !important; }
+  .base-plot.training { --x:62% !important; --y:42% !important; }
+  .base-plot.storehouse { --x:85% !important; --y:42% !important; }
+  .base-plot.blacksmith { --x:16% !important; --y:60% !important; }
+  .base-plot.alchemy { --x:39% !important; --y:60% !important; }
+  .base-plot.enchanter { --x:62% !important; --y:60% !important; }
+  .base-plot.tailor { --x:84% !important; --y:60% !important; }
+  .base-plot.leather { --x:32% !important; --y:77% !important; }
+  .base-plot.engineer { --x:68% !important; --y:77% !important; }
 
   .base-map-caption {
     left: 8px;
@@ -1648,12 +881,16 @@
     padding: 5px 7px;
   }
 
-  .base-map-caption span {
-    font-size: 10px;
+  .base-map-caption span { font-size: 10px; }
+  .base-map-caption small { font-size: 6px; }
+
+  .base-plot-attention {
+    top: -1px;
+    right: 5px;
   }
 
-  .base-map-caption small {
-    font-size: 6px;
+  .base-plot-attention .wow-icon-frame {
+    --wow-icon-size: 18px;
   }
 
   .base-sidecar {
@@ -1666,7 +903,6 @@
     max-width: 100%;
     max-height: 62dvh;
     border-width: var(--wow-border) 0 0;
-    border-radius: 0;
     box-shadow: 0 -14px 34px rgba(0,0,0,.58);
   }
 
@@ -1675,13 +911,8 @@
     padding: 7px 8px 7px 10px;
   }
 
-  .base-sidecar__building-icon {
-    --wow-icon-size: 44px;
-  }
-
-  .base-sidecar__identity h2 {
-    font-size: 16px;
-  }
+  .base-sidecar__building-icon { --wow-icon-size: 44px; }
+  .base-sidecar__identity h2 { font-size: 16px; }
 
   .base-sidecar__close {
     width: 44px;
@@ -1691,9 +922,8 @@
   }
 
   .base-sidecar__body {
-    min-height: 0;
     max-height: calc(62dvh - 66px);
-    overflow-y: auto;
+    padding-bottom: max(8px,env(safe-area-inset-bottom));
   }
 
   .base-sidecar__section {
@@ -1701,33 +931,26 @@
   }
 
   .base-sidecar__costs {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    overflow: visible;
+    grid-template-columns: repeat(3,minmax(0,1fr));
   }
 
-  .base-sidecar__quests .quest-adhoc {
+  .quest-selection {
+    grid-template-columns: 1fr;
+  }
+
+  .quest-selection > .wow-button {
+    width: 100%;
+  }
+
+  .quest-adhoc {
     grid-template-columns: 1fr;
     max-height: 180px;
-  }
-
-  .base-plot-attention {
-    top: -1px;
-    right: 5px;
-  }
-
-  .base-plot-attention .wow-icon-frame {
-    --wow-icon-size: 18px;
   }
 }
 
 @media (max-width: 420px) {
-  .base-resource-copy small {
-    font-size: 6px;
-  }
-
-  .base-resource-copy strong {
-    font-size: 8px;
-  }
+  .base-resource-copy small { font-size: 6px; }
+  .base-resource-copy strong { font-size: 8px; }
 
   .base-plot {
     width: 72px;
@@ -1739,27 +962,17 @@
     max-width: 80px;
   }
 
-  .plot-label strong {
-    font-size: 7px;
-  }
+  .plot-label strong { font-size: 7px; }
+  .base-map-caption small { display: none; }
 
-  .base-map-caption small {
-    display: none;
-  }
-
-  .base-sidecar {
-    max-height: 66dvh;
-  }
-
-  .base-sidecar__body {
-    max-height: calc(66dvh - 66px);
-  }
+  .base-sidecar { max-height: 66dvh; }
+  .base-sidecar__body { max-height: calc(66dvh - 66px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .base-plot .plot-art,
-  .wow-ui .base-sidecar,
-  .wow-ui .base-sidecar * {
+  .base-sidecar,
+  .base-sidecar * {
     transition: none !important;
     animation: none !important;
   }
