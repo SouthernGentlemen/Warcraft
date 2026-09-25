@@ -2,11 +2,11 @@
 
 ## Purpose
 
-This document defines the initial class-wide active ability pool used by hero loadouts and the deterministic combat simulator.
+This document defines the class-wide active ability pool used by hero loadouts and deterministic combat.
 
-A Druid equips exactly **2 cooldown abilities** and exactly **1 ultimate**. Specialization talents can modify these actions without adding extra active slots.
+Every hero equips exactly **2 learned cooldown abilities**. The Ultimate is not independently selected: the hero's active specialization capstone resolves to exactly one authored Ultimate action.
 
-All timing is authored in **60 Hz simulation ticks**. These are prototype combat values and can be tuned without changing the action schema.
+All timing is authored in **60 Hz simulation ticks**.
 
 ## Cooldowns
 
@@ -17,28 +17,16 @@ All timing is authored in **60 Hz simulation ticks**. These are prototype combat
 | regrowth | Regrowth | heal | healing | lowest-ally | 135 | 9000 | 420 | mana | 115 | none |
 | mangle | Mangle | damage | physical | enemy | 110 | 8500 | 360 | energy | 25 | none |
 
-## Ultimates
+## Capstone Ultimates
 
-Ultimates consume a full 10,000-point ultimate bar.
+Ultimates consume the full 10,000-point ultimate bar. Each specialization capstone owns exactly one Ultimate action ID.
 
-| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |
-| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |
-| tranquility | Tranquility | heal | healing | all-allies | 300 | 11000 | 0 | ultimate | 10000 | none |
-| incarnation | Incarnation | buff | none | self | 0 | 0 | 0 | ultimate | 10000 | all_power_bp:+2500@480 |
-
-## Action Fields
-
-- **Kind** — damage, heal, shield, or buff.
-- **School** — physical, spell, healing, or none.
-- **Target** — enemy, all-enemies, lowest-ally, self, or all-allies.
-- **Power** — flat integer action power.
-- **Coefficient BP** — basis-point scaling against the mapped hero power stat. 10,000 BP = 100%.
-- **Cooldown Ticks** — fixed base cooldown before Haste progression.
-- **Resource / Cost** — deterministic resource spend required to execute the action.
-- **Effect** — optional deterministic buff hook in `key:+basisPoints@ticks` form.
+| Spec | Capstone | Action ID | Kind | School | Target | Power | Coefficient BP | Effect |
+| --- | --- | --- | --- | --- | --- | ---: | ---: | --- |
+| balance | Moonkin Form | capstone-moonkin-form | buff | none | self | 0 | 0 | all_power_bp:+2500@480 |
+| feral | Leader of the Pack | capstone-leader-of-the-pack | buff | none | all-allies | 0 | 0 | haste_bp:+1800@480 |
+| restoration | Swiftmend | capstone-swiftmend | heal | healing | all-allies | 260 | 9000 | none |
 
 ## Selection
 
-The simulator currently selects the first two resource-compatible cooldowns and the first ultimate by default.
-
-The battle system can later provide explicit loadout IDs without changing the simulation engine.
+Ability 1 and Ability 2 come from the learned compatible cooldown pool. Ultimate resolution comes only from the active specialization's selected capstone `ultimate_id`.

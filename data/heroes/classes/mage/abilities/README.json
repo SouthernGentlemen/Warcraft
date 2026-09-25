@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_path": "docs/heroes/classes/mage/abilities/README.md",
   "kind": "abilities",
   "title": "Mage Abilities",
-  "source_markdown": "# Mage Abilities\n\n## Purpose\n\nThis document defines the initial class-wide active ability pool used by hero loadouts and the deterministic combat simulator.\n\nA Mage equips exactly **2 cooldown abilities** and exactly **1 ultimate**. Specialization talents can modify these actions without adding extra active slots.\n\nAll timing is authored in **60 Hz simulation ticks**. These are prototype combat values and can be tuned without changing the action schema.\n\n## Cooldowns\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| arcane-barrage | Arcane Barrage | damage | spell | enemy | 100 | 9000 | 360 | mana | 100 | none |\n| fire-blast | Fire Blast | damage | spell | enemy | 125 | 8500 | 480 | mana | 120 | none |\n| frost-nova | Frost Nova | damage | spell | all-enemies | 70 | 5000 | 600 | mana | 130 | none |\n| ice-barrier | Ice Barrier | shield | healing | self | 180 | 6000 | 720 | mana | 140 | none |\n\n## Ultimates\n\nUltimates consume a full 10,000-point ultimate bar.\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| time-warp | Time Warp | buff | none | all-allies | 0 | 0 | 0 | ultimate | 10000 | haste_bp:+2500@480 |\n| arcane-overload | Arcane Overload | damage | spell | all-enemies | 280 | 12000 | 0 | ultimate | 10000 | none |\n\n## Action Fields\n\n- **Kind** — damage, heal, shield, or buff.\n- **School** — physical, spell, healing, or none.\n- **Target** — enemy, all-enemies, lowest-ally, self, or all-allies.\n- **Power** — flat integer action power.\n- **Coefficient BP** — basis-point scaling against the mapped hero power stat. 10,000 BP = 100%.\n- **Cooldown Ticks** — fixed base cooldown before Haste progression.\n- **Resource / Cost** — deterministic resource spend required to execute the action.\n- **Effect** — optional deterministic buff hook in `key:+basisPoints@ticks` form.\n\n## Selection\n\nThe simulator currently selects the first two resource-compatible cooldowns and the first ultimate by default.\n\nThe battle system can later provide explicit loadout IDs without changing the simulation engine.\n",
+  "source_markdown": "# Mage Abilities\n\n## Purpose\n\nThis document defines the class-wide active ability pool used by hero loadouts and deterministic combat.\n\nEvery hero equips exactly **2 learned cooldown abilities**. The Ultimate is not independently selected: the hero's active specialization capstone resolves to exactly one authored Ultimate action.\n\nAll timing is authored in **60 Hz simulation ticks**.\n\n## Cooldowns\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| arcane-barrage | Arcane Barrage | damage | spell | enemy | 100 | 9000 | 360 | mana | 100 | none |\n| fire-blast | Fire Blast | damage | spell | enemy | 125 | 8500 | 480 | mana | 120 | none |\n| frost-nova | Frost Nova | damage | spell | all-enemies | 70 | 5000 | 600 | mana | 130 | none |\n| ice-barrier | Ice Barrier | shield | healing | self | 180 | 6000 | 720 | mana | 140 | none |\n\n## Capstone Ultimates\n\nUltimates consume the full 10,000-point ultimate bar. Each specialization capstone owns exactly one Ultimate action ID.\n\n| Spec | Capstone | Action ID | Kind | School | Target | Power | Coefficient BP | Effect |\n| --- | --- | --- | --- | --- | --- | ---: | ---: | --- |\n| arcane | Arcane Power | capstone-arcane-power | buff | none | self | 0 | 0 | spell_power_bp:+3000@480 |\n| fire | Combustion | capstone-combustion | damage | spell | all-enemies | 300 | 12000 | none |\n| frost | Ice Barrier | capstone-ice-barrier | shield | healing | self | 500 | 10000 | none |\n\n## Selection\n\nAbility 1 and Ability 2 come from the learned compatible cooldown pool. Ultimate resolution comes only from the active specialization's selected capstone `ultimate_id`.\n",
   "class": "Mage",
   "cooldowns": [
     {
@@ -61,30 +61,50 @@
   ],
   "ultimates": [
     {
-      "id": "time-warp",
-      "name": "Time Warp",
+      "id": "capstone-arcane-power",
+      "name": "Arcane Power",
+      "spec_id": "arcane",
+      "capstone": "Arcane Power",
       "kind": "buff",
       "school": "none",
-      "target": "all-allies",
+      "target": "self",
       "power": 0,
       "coefficient_bp": 0,
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "haste_bp:+2500@480"
+      "effect": "spell_power_bp:+3000@480"
     },
     {
-      "id": "arcane-overload",
-      "name": "Arcane Overload",
+      "id": "capstone-combustion",
+      "name": "Combustion",
+      "spec_id": "fire",
+      "capstone": "Combustion",
       "kind": "damage",
       "school": "spell",
       "target": "all-enemies",
-      "power": 280,
+      "power": 300,
       "coefficient_bp": 12000,
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none"
+    },
+    {
+      "id": "capstone-ice-barrier",
+      "name": "Ice Barrier",
+      "spec_id": "frost",
+      "capstone": "Ice Barrier",
+      "kind": "shield",
+      "school": "healing",
+      "target": "self",
+      "power": 500,
+      "coefficient_bp": 10000,
+      "cooldown_ticks": 0,
+      "resource": "ultimate",
+      "cost": 10000,
+      "effect": "none"
     }
-  ]
+  ],
+  "ultimate_model": "specialization-capstone"
 }
