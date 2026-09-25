@@ -49,7 +49,6 @@ const all = selector => [...document.querySelectorAll(selector)];
 
 const buildingIconKeys = {
   keep:['building','keep'],
-  barracks:['building','barracks'],
   training:['building','training-grounds'],
   recruitment:['building','recruitment-hall'],
   command:['building','command-hall'],
