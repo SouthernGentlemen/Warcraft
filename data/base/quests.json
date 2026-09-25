@@ -16,5 +16,6 @@
     "Quest Board offers are derived deterministically from the persisted round seed/id.",
     "Accepted, active, and completed quest records live separately in the roster quest log.",
     "Quest Board level limits which offer definitions are eligible when a new round is generated."
-  ]
+  ],
+  "dungeon_catalog": "../dungeons/catalog.json"
 }
