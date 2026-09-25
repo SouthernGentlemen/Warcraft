@@ -37,9 +37,7 @@ function upgradeState(building) {
 
 const state = {
   selected: null,
-  filter: 'all',
-  tab: 'buildings',
-  resources: { gold: 25430, lumber: 12680, stone: 8440, mana: 2350 }
+  resources: { gold: 25430, lumber: 12680, stone: 8440 }
 };
 
 const fmt = value => value.toLocaleString('en-US');
@@ -79,12 +77,40 @@ function buildingIconMarkup(building, size, extraClass) {
   return iconMarkup(icon[0], icon[1], size, extraClass || '');
 }
 
+function labelize(value) {
+  return String(value || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, char => char.toUpperCase());
+}
+
 function costMarkup(key, value) {
   const icon = costIconKeys[key];
-  return '<span class="building-cost" data-cost="' + key + '">' +
+  const affordable = (state.resources[key] || 0) >= value;
+  return '<span class="building-cost ' + (affordable ? 'is-affordable' : 'is-short') + '" data-cost="' + key + '">' +
     iconMarkup(icon[0], icon[1], 'xs', 'building-cost-icon') +
-    '<b>' + fmt(value) + '</b>' +
+    '<span><small>' + labelize(key) + '</small><b>' + fmt(value) + '</b></span>' +
   '</span>';
+}
+
+function capabilityMarkup(capabilities) {
+  const rows = Array.isArray(capabilities) ? capabilities : [];
+  return rows.length
+    ? '<ul class="base-sidecar__capabilities">' + rows.map(value => '<li>' + labelize(value) + '</li>').join('') + '</ul>'
+    : '<p class="base-sidecar__empty">No additional capability.</p>';
+}
+
+function requirementMarkup(requirements) {
+  const rows = Array.isArray(requirements) ? requirements : [];
+  if (!rows.length) return '<p class="base-sidecar__requirement is-met">No building prerequisite.</p>';
+  return rows.map(req => {
+    if (req.type !== 'building_level') return '<p class="base-sidecar__requirement">Requirement: ' + labelize(req.type) + '</p>';
+    const dependency = buildings.find(entry => entry.id === req.building);
+    const met = Boolean(dependency && dependency.level >= req.level);
+    const name = dependency ? dependency.name : labelize(req.building);
+    return '<p class="base-sidecar__requirement ' + (met ? 'is-met' : 'is-blocked') + '">' +
+      '<strong>' + (met ? 'Met' : 'Required') + '</strong><span>' + name + ' Level ' + req.level + '</span>' +
+    '</p>';
+  }).join('');
 }
 
 function bindResolvedIcons(root) {
@@ -105,44 +131,16 @@ function buildingTooltipModel(building) {
   };
 }
 
-function resourceTooltipModel(key, element) {
-  const names = {gold:'Gold', lumber:'Lumber', stone:'Stone', mana:'Mana', population:'Population'};
-  const current = key === 'population'
-    ? element.querySelector('strong').textContent
-    : fmt(state.resources[key]);
+function resourceTooltipModel(key) {
+  const names = {gold:'Gold', lumber:'Lumber', stone:'Stone'};
   return {
     variant:'resource',
     title:names[key] || key,
     type:'Base resource',
     icon:key === 'gold' ? {category:'currency', key:'gold'} : {category:'resource', key:key},
-    description:key === 'population'
-      ? 'Current roster and settlement capacity.'
-      : 'Persistent base resource used for upgrades and progression.',
-    stats:[
-      {label:'Current', value:current},
-      {label:'Rate', value:element.querySelector('small') ? element.querySelector('small').textContent : '—'}
-    ]
+    description:'Persistent base resource used for building upgrades.',
+    stats:{label:'Current', value:fmt(state.resources[key] || 0)}
   };
-}
-
-function currencyTooltipModel(key, element) {
-  const name = element.querySelector('small') ? element.querySelector('small').textContent : key;
-  return {
-    variant:'currency',
-    title:name,
-    type:'Account currency',
-    icon:{category:'currency', key:key},
-    description:'Persistent progression currency shown in the base status strip.',
-    stats:{label:'Current', value:element.querySelector('strong') ? element.querySelector('strong').textContent : '—'}
-  };
-}
-
-function bindBuildingTooltips(root) {
-  root.querySelectorAll('[data-select-building], [data-upgrade]').forEach(button => {
-    const id = button.dataset.selectBuilding || button.dataset.upgrade;
-    const building = buildings.find(entry => entry.id === id);
-    if (building) Tooltips.attach(button, () => buildingTooltipModel(building));
-  });
 }
 
 function syncResourceBar() {
@@ -162,36 +160,6 @@ function syncMapBuildings() {
     const level = plot.querySelector('.plot-label b');
     if (level) level.textContent = building.level;
   });
-}
-
-function renderBuildings() {
-  syncMapBuildings();
-  const list=$('#buildingList');
-  if (!list) return;
-  const filtered=buildings.filter(b=>state.filter==='all'||b.category===state.filter);
-  list.innerHTML=filtered.map(b=>{ const up=upgradeState(b); const next=up.next; return `
-    <article class="building-row ${state.selected===b.id?'selected':''}" data-building-row="${b.id}">
-      <button class="building-thumb" type="button" data-select-building="${b.id}" aria-label="Select ${b.name}">${buildingIconMarkup(b,'lg','building-thumb-icon')}</button>
-      <div class="building-copy"><div class="building-title"><strong>${b.name}</strong><span>Level ${b.level} / 5</span></div><p>${b.description}</p>
-      <div class="building-costs">${next ? Object.entries(next.cost).map(([key,value])=>costMarkup(key,value)).join('') : '<strong class="building-max-copy">Maximum level</strong>'}</div>
-      ${up.reason && next ? '<small class="building-requirement">'+up.reason+'</small>' : ''}</div>
-      <button class="building-upgrade wow-button wow-button--primary" type="button" data-upgrade="${b.id}" ${!up.canUpgrade?'disabled':''} aria-label="${up.canUpgrade?'Upgrade '+b.name+' to level '+next.level:up.reason}">${next?'Upgrade to '+next.level:'MAX LEVEL'}</button>
-    </article>`; }).join('');
-  bindResolvedIcons(list); bindBuildingTooltips(list); renderSelection();
-}
-
-function renderSelection() {
-  syncMapBuildings();
-  const detail = $('#selectionDetail');
-  if (!detail) return;
-  const b=buildings.find(item=>item.id===state.selected)||buildings[0];
-  if (!b) return;
-  const current=currentProgression(b); const up=upgradeState(b);
-  detail.innerHTML=`
-    <span class="wow-kicker">SELECTED BUILDING</span><div class="selection-title">${buildingIconMarkup(b,'md','selection-building-icon')}<div><strong>${b.name}</strong><small>Level ${b.level} / 5 · Tier ${b.level}</small></div></div>
-    <p>${b.description}</p><div class="selection-progress wow-statusbar wow-statusbar--success"><span class="wow-statusbar__fill" style="--wow-value:${b.level*20}%"></span><span class="wow-statusbar__text">Level ${b.level} / 5</span></div>
-    <div class="selection-upgrade"><strong>${up.next?'Next: Level '+up.next.level+' · Tier '+up.next.tier:'Maximum level reached'}</strong><small>Unlocked: ${(current.capabilities||[]).join(', ')}</small>${up.reason&&up.next?'<small class="building-requirement">'+up.reason+'</small>':''}</div>`;
-  bindResolvedIcons(detail);
 }
 
 function questBoardBuilding(){return buildings.find(b=>b.id==="questboard");}
@@ -224,14 +192,66 @@ function toast(message) {
 
 function renderSidecar() {
   const sidecar = $('#baseSidecar');
+  const body = $('#baseSidecarBody');
   const building = buildings.find(item => item.id === state.selected);
-  if (!sidecar || !building) return;
+  if (!sidecar || !body || !building) return;
+
+  const current = currentProgression(building);
+  const upgrade = upgradeState(building);
+  const next = upgrade.next;
 
   $('#baseSidecarIcon').innerHTML = buildingIconMarkup(building, 'lg', 'base-sidecar__building-icon');
   $('#baseSidecarCategory').textContent = building.category === 'profession' ? 'PROFESSION BUILDING' : 'CORE BUILDING';
   $('#baseSidecarTitle').textContent = building.name;
-  $('#baseSidecarLevel').textContent = 'Level ' + building.level + ' / ' + building.max;
+  $('#baseSidecarLevel').textContent = 'Level ' + building.level + ' / ' + building.max + ' · Tier ' + current.tier;
+
+  if (!next) {
+    body.innerHTML =
+      '<section class="base-sidecar__section">' +
+        '<span class="wow-label">Current Capability</span>' +
+        capabilityMarkup(current.capabilities) +
+      '</section>' +
+      '<section class="base-sidecar__section base-sidecar__upgrade">' +
+        '<span class="wow-kicker">MAXIMUM LEVEL</span>' +
+        '<h3>Level ' + building.level + ' / ' + building.max + '</h3>' +
+        '<p>This building has reached its current progression cap.</p>' +
+        '<button class="wow-button wow-button--primary" type="button" disabled>MAX LEVEL</button>' +
+      '</section>' +
+      (building.category === 'profession'
+        ? '<section class="base-sidecar__section"><span class="wow-label">Profession</span><button class="wow-button base-sidecar__profession-action" type="button" disabled>Profession actions coming later</button></section>'
+        : '');
+  } else {
+    body.innerHTML =
+      '<section class="base-sidecar__section">' +
+        '<span class="wow-label">Current Capability</span>' +
+        capabilityMarkup(current.capabilities) +
+      '</section>' +
+      '<section class="base-sidecar__section">' +
+        '<span class="wow-label">Next Level · ' + next.level + ' / ' + building.max + '</span>' +
+        capabilityMarkup(next.capabilities) +
+      '</section>' +
+      '<section class="base-sidecar__section">' +
+        '<span class="wow-label">Requirements</span>' +
+        requirementMarkup(next.requirements) +
+      '</section>' +
+      '<section class="base-sidecar__section">' +
+        '<span class="wow-label">Upgrade Cost</span>' +
+        '<div class="base-sidecar__costs">' + Object.entries(next.cost).map(([key,value]) => costMarkup(key,value)).join('') + '</div>' +
+      '</section>' +
+      '<section class="base-sidecar__section base-sidecar__upgrade ' + (upgrade.canUpgrade ? 'is-ready' : 'is-blocked') + '">' +
+        '<span class="wow-kicker">' + (upgrade.canUpgrade ? 'READY TO UPGRADE' : 'UPGRADE BLOCKED') + '</span>' +
+        '<h3>Level ' + building.level + ' → ' + next.level + '</h3>' +
+        (upgrade.reason ? '<p class="base-sidecar__blocked-copy">' + upgrade.reason + '</p>' : '<p>Requirements met. Spend the resources below to advance this building.</p>') +
+        '<button id="baseSidecarUpgrade" class="wow-button wow-button--primary" type="button" ' + (upgrade.canUpgrade ? '' : 'disabled') + '>Upgrade to Level ' + next.level + '</button>' +
+      '</section>' +
+      (building.category === 'profession'
+        ? '<section class="base-sidecar__section"><span class="wow-label">Profession</span><button class="wow-button base-sidecar__profession-action" type="button" disabled>Profession actions coming later</button></section>'
+        : '');
+  }
+
   bindResolvedIcons(sidecar);
+  const upgradeButton = $('#baseSidecarUpgrade');
+  if (upgradeButton) upgradeButton.addEventListener('click', () => upgradeBuilding(building.id));
 }
 
 function openSidecar(id, origin) {
@@ -241,7 +261,7 @@ function openSidecar(id, origin) {
 
   state.selected = id;
   sidecarOrigin = origin || sidecarOrigin;
-  renderBuildings();
+  syncMapBuildings();
   renderSidecar();
   sidecar.hidden = false;
   $('#baseSidecarClose')?.focus({preventScroll:true});
@@ -254,7 +274,7 @@ function closeSidecar(options = {}) {
   const restoreFocus = options.restoreFocus !== false;
   sidecar.hidden = true;
   state.selected = null;
-  renderBuildings();
+  syncMapBuildings();
 
   if (restoreFocus && sidecarOrigin && typeof sidecarOrigin.focus === 'function') {
     sidecarOrigin.focus({preventScroll:true});
@@ -267,12 +287,22 @@ function selectBuilding(id, origin) {
 }
 
 function upgradeBuilding(id) {
-  const b=buildings.find(item=>item.id===id); if(!b) return; const up=upgradeState(b);
-  if(!up.next){ toast(b.name+' is already level 5.'); return; }
-  if(!up.canUpgrade){ toast(up.reason); return; }
+  const b=buildings.find(item=>item.id===id);
+  if(!b) return;
+  const up=upgradeState(b);
+  if(!up.next){ toast(b.name+' is already level '+b.max+'.'); return; }
+  if(!up.canUpgrade){ renderSidecar(); toast(up.reason); return; }
+
   Object.entries(up.next.cost).forEach(([key,value])=>{ state.resources[key]-=value; });
-  if(up.next.level!==b.level+1||up.next.level>5) throw new Error('Invalid building level transition');
-  b.level=up.next.level; state.selected=id; syncResourceBar(); renderBuildings(); renderQuestBoard(); toast(b.name+' upgraded to level '+b.level+' (Tier '+b.level+').');
+  if(up.next.level!==b.level+1||up.next.level>b.max) throw new Error('Invalid building level transition');
+
+  b.level=up.next.level;
+  state.selected=id;
+  syncResourceBar();
+  syncMapBuildings();
+  renderSidecar();
+  renderQuestBoard();
+  toast(b.name+' upgraded to level '+b.level+' (Tier '+b.level+').');
 }
 
 $('#baseMap').addEventListener('click', event => {
@@ -300,8 +330,7 @@ async function initBase() {
     Icons.hydrate(document); Tooltips.hydrate(document); bindResolvedIcons(document);
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
     all('[data-resource]').forEach(element=>Tooltips.attach(element,()=>resourceTooltipModel(element.dataset.resource,element),{anchor:'target'}));
-    all('[data-currency]').forEach(element=>Tooltips.attach(element,()=>currencyTooltipModel(element.dataset.currency,element),{anchor:'target'}));
-    syncResourceBar(); renderBuildings(); renderQuestBoard(); $('#baseSidecar').hidden = true;
+    syncResourceBar(); syncMapBuildings(); renderQuestBoard(); $('#baseSidecar').hidden = true;
   } catch(error) { toast(error.message); }
 }
 initBase();
