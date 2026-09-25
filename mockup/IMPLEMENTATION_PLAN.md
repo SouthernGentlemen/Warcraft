@@ -1988,7 +1988,7 @@ Bring the successful paper-doll Gear mockup back into the Roster hero workflow.
 
 ### WOWUI-075 — Classic Talent Tree Visual Restoration
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-073
 
