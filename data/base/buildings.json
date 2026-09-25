@@ -121,13 +121,7 @@
             "lumber": 400,
             "stone": 120
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "quest_tier_2"
           ],
@@ -141,13 +135,7 @@
             "lumber": 520,
             "stone": 170
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "quest_tier_3"
           ],
@@ -161,13 +149,7 @@
             "lumber": 680,
             "stone": 230
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "quest_tier_4"
           ],
@@ -181,13 +163,7 @@
             "lumber": 850,
             "stone": 300
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "quest_tier_5"
           ],
@@ -225,13 +201,7 @@
             "lumber": 600,
             "stone": 150
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "training_tier_2"
           ]
@@ -244,13 +214,7 @@
             "lumber": 740,
             "stone": 190
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "training_tier_3"
           ]
@@ -263,13 +227,7 @@
             "lumber": 900,
             "stone": 230
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "training_tier_4"
           ]
@@ -282,13 +240,7 @@
             "lumber": 1090,
             "stone": 280
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "training_tier_5"
           ]
@@ -325,13 +277,7 @@
             "lumber": 700,
             "stone": 250
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "recruitment_tier_2"
           ]
@@ -344,13 +290,7 @@
             "lumber": 860,
             "stone": 310
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "recruitment_tier_3"
           ]
@@ -363,13 +303,7 @@
             "lumber": 1050,
             "stone": 380
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "recruitment_tier_4"
           ]
@@ -382,13 +316,7 @@
             "lumber": 1280,
             "stone": 460
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "recruitment_tier_5"
           ]
@@ -425,13 +353,7 @@
             "lumber": 500,
             "stone": 200
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "storage_tier_2"
           ]
@@ -444,13 +366,7 @@
             "lumber": 610,
             "stone": 250
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "storage_tier_3"
           ]
@@ -463,13 +379,7 @@
             "lumber": 750,
             "stone": 300
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "storage_tier_4"
           ]
@@ -482,13 +392,7 @@
             "lumber": 910,
             "stone": 370
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "storage_tier_5"
           ]
@@ -525,13 +429,7 @@
             "lumber": 600,
             "stone": 200
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "blacksmithing_tier_2"
           ]
@@ -544,13 +442,7 @@
             "lumber": 740,
             "stone": 250
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "blacksmithing_tier_3"
           ]
@@ -563,13 +455,7 @@
             "lumber": 900,
             "stone": 300
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "blacksmithing_tier_4"
           ]
@@ -582,13 +468,7 @@
             "lumber": 1090,
             "stone": 370
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "blacksmithing_tier_5"
           ]
@@ -625,13 +505,7 @@
             "lumber": 400,
             "stone": 150
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "alchemy_tier_2"
           ]
@@ -644,13 +518,7 @@
             "lumber": 490,
             "stone": 190
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "alchemy_tier_3"
           ]
@@ -663,13 +531,7 @@
             "lumber": 600,
             "stone": 230
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "alchemy_tier_4"
           ]
@@ -682,13 +544,7 @@
             "lumber": 730,
             "stone": 280
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "alchemy_tier_5"
           ]
@@ -725,13 +581,7 @@
             "lumber": 450,
             "stone": 180
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "enchanting_tier_2"
           ]
@@ -744,13 +594,7 @@
             "lumber": 550,
             "stone": 220
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "enchanting_tier_3"
           ]
@@ -763,13 +607,7 @@
             "lumber": 670,
             "stone": 270
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "enchanting_tier_4"
           ]
@@ -782,13 +620,7 @@
             "lumber": 820,
             "stone": 320
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "enchanting_tier_5"
           ]
@@ -825,13 +657,7 @@
             "lumber": 350,
             "stone": 130
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "tailoring_tier_2"
           ]
@@ -844,13 +670,7 @@
             "lumber": 430,
             "stone": 160
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "tailoring_tier_3"
           ]
@@ -863,13 +683,7 @@
             "lumber": 530,
             "stone": 200
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "tailoring_tier_4"
           ]
@@ -882,13 +696,7 @@
             "lumber": 640,
             "stone": 240
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "tailoring_tier_5"
           ]
@@ -925,13 +733,7 @@
             "lumber": 350,
             "stone": 130
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "leatherworking_tier_2"
           ]
@@ -944,13 +746,7 @@
             "lumber": 430,
             "stone": 160
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "leatherworking_tier_3"
           ]
@@ -963,13 +759,7 @@
             "lumber": 530,
             "stone": 200
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "leatherworking_tier_4"
           ]
@@ -982,13 +772,7 @@
             "lumber": 640,
             "stone": 240
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "leatherworking_tier_5"
           ]
@@ -1025,13 +809,7 @@
             "lumber": 650,
             "stone": 260
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "engineering_tier_2"
           ]
@@ -1044,13 +822,7 @@
             "lumber": 800,
             "stone": 320
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "engineering_tier_3"
           ]
@@ -1063,13 +835,7 @@
             "lumber": 970,
             "stone": 390
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "engineering_tier_4"
           ]
@@ -1082,13 +848,7 @@
             "lumber": 1190,
             "stone": 480
           },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
+          "requirements": [],
           "capabilities": [
             "engineering_tier_5"
           ]
