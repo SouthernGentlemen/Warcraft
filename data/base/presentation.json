@@ -25,10 +25,6 @@
           "x": 76,
           "y": 28
         },
-        "barracks": {
-          "x": 20,
-          "y": 48
-        },
         "training": {
           "x": 48,
           "y": 51
@@ -78,10 +74,6 @@
         "recruitment": {
           "x": 80,
           "y": 27
-        },
-        "barracks": {
-          "x": 15,
-          "y": 42
         },
         "questboard": {
           "x": 38,
@@ -144,10 +136,6 @@
           "x": 27,
           "y": 31
         },
-        "barracks": {
-          "x": 78,
-          "y": 49
-        },
         "training": {
           "x": 53,
           "y": 48
@@ -197,10 +185,6 @@
         "recruitment": {
           "x": 20,
           "y": 27
-        },
-        "barracks": {
-          "x": 85,
-          "y": 42
         },
         "questboard": {
           "x": 62,
