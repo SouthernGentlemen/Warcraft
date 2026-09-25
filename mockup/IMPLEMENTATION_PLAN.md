@@ -588,7 +588,7 @@ Add a compact persistent left-hand action bar to Base for the three high-frequen
 
 ### WOWUI-035 — Remove Barracks from Base
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-034
 
