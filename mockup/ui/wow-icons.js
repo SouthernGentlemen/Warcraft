@@ -175,11 +175,17 @@
     },
     profession: {
       blacksmith:"trade_blacksmithing",
+      blacksmithing:"trade_blacksmithing",
       alchemist:"trade_alchemy",
+      alchemy:"trade_alchemy",
       enchanter:"trade_engraving",
+      enchanting:"trade_engraving",
       tailor:"trade_tailoring",
+      tailoring:"trade_tailoring",
       leatherworker:"trade_leatherworking",
-      engineer:"trade_engineering"
+      leatherworking:"trade_leatherworking",
+      engineer:"trade_engineering",
+      engineering:"trade_engineering"
     },
     building: {
       keep:"inv_misc_tournaments_symbol_human",
