@@ -672,7 +672,7 @@ Make Keep level the authoritative progression gate for every other upgradable Ba
 
 ### WOWUI-038 — Compact Functional Building Menu Contract
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-037
 
