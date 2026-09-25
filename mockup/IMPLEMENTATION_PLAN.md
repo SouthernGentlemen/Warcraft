@@ -615,7 +615,7 @@ Remove Barracks as a Base building/hotspot and delete its unused progression/UI 
 
 ### WOWUI-036 — Remove Command Hall from Base
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-035
 
