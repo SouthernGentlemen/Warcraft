@@ -2,6 +2,7 @@ const RACE_INDEX = "../data/heroes/races/index.json";
 const CLASS_ROOT = "../data/heroes/classes/";
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
+const Roster = window.WarcraftRoster;
 
 const state = {
   index: null,
@@ -318,6 +319,7 @@ function renderRace() {
 
 async function setFaction(factionId) {
   state.faction = factionId;
+  if (Roster) Roster.setFaction(factionId);
   state.race = state.index.factions[factionId].races[0].id;
   state.raceData = null;
   syncFactionControls();
@@ -348,7 +350,8 @@ async function init() {
     renderBodyControls();
     Tooltips.attach($("racialTalent"), racialTooltipModel, {anchor:"target"});
 
-    await setFaction("alliance");
+    const savedFaction = Roster && ["alliance","horde"].includes(Roster.getFaction()) ? Roster.getFaction() : "alliance";
+    await setFaction(savedFaction);
   } catch (error) {
     showError(error.message + ". Serve the repository over HTTP; see mockup/README.md.");
   }
