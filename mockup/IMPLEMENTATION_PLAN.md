@@ -2099,7 +2099,7 @@ Add a faction Base Class Hall that owns talent training and hero level-up intera
 
 ### WOWUI-078 — Gathering and Survival Profession Tracks
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-070
 
