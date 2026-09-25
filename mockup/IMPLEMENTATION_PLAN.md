@@ -554,7 +554,7 @@ Create a global Inventory destination separate from hero-specific equipped Gear.
 
 ### WOWUI-034 — Base Left Action Bar
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-032, WOWUI-033
 
