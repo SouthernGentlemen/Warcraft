@@ -1,6 +1,7 @@
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
+const Campaign = window.WarcraftCampaign;
 const Equipment = window.WarcraftEquipment;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 const BASE_PRESENTATION_ROOT = "../data/base/presentation.json";
@@ -49,8 +50,8 @@ function keepUpgradeGate(building, next) {
 
 function resourceShortages(next) {
   if (!next) return [];
-  return Object.entries(next.cost).filter(([key,value]) => (state.resources[key] || 0) < value)
-    .map(([key,value]) => ({resource:key, required:value, current:state.resources[key] || 0}));
+  return Object.entries(next.cost).filter(([key,value]) => (campaignResources()[key] || 0) < value)
+    .map(([key,value]) => ({resource:key, required:value, current:campaignResources()[key] || 0}));
 }
 
 function upgradeState(building) {
@@ -79,9 +80,19 @@ const state = {
   artisansOpen: false,
   questBoardMode: "offers",
   selectedDungeonId: null,
-  dungeonMessage: "",
-  resources: { gold: 25430, lumber: 12680, stone: 8440 }
+  dungeonMessage: ""
 };
+
+function campaignResources() { return Campaign.getResources(); }
+function applyCampaignProgression() {
+  if (!buildings.length) return;
+  const levels = Campaign.getBuildingLevels();
+  buildings.forEach(building => {
+    if (Object.prototype.hasOwnProperty.call(levels, building.id)) building.level = Campaign.getBuildingLevel(building.id, building.level);
+  });
+  const artisans = buildings.find(entry => entry.id === "artisans");
+  if (artisans) Professions.setGuildLevel(artisans.level);
+}
 
 const fmt = value => value.toLocaleString('en-US');
 const $ = selector => document.querySelector(selector);
@@ -250,7 +261,7 @@ function bankTooltipModel(item) {
     type:labelize(item.category),
     icon:item.icon,
     description:item.description,
-    stats:[{label:'Balance', value:fmt(Number(item.quantity) || 0)}],
+    stats:[{label:'Balance', value:fmt(Campaign.getBankHoldingQuantity(item.id))}],
     meta:[
       {label:'Category', value:labelize(item.category)},
       {label:'Ownership', value:'Bank'}
@@ -299,11 +310,12 @@ function renderStorageBrowser(building) {
       Tooltips.attach(node, () => reagentTooltipModel(item), {anchor:'target'});
     } else if (kind === 'bank') {
       const icon = item.icon || {category:'currency', key:'gold'};
-      node.setAttribute('aria-label', item.name + ', balance ' + item.quantity + ', ' + labelize(item.category));
+      const balance = Campaign.getBankHoldingQuantity(item.id);
+      node.setAttribute('aria-label', item.name + ', balance ' + balance + ', ' + labelize(item.category));
       node.innerHTML =
         iconMarkup(icon.category, icon.key, 'sm', 'base-sidecar__storage-icon') +
         '<span class="base-sidecar__storage-copy"><strong>' + escapeHtml(item.name) + '</strong><small>' + escapeHtml(labelize(item.category)) + '</small></span>' +
-        '<span class="base-sidecar__storage-count">' + fmt(Number(item.quantity) || 0) + '</span>';
+        '<span class="base-sidecar__storage-count">' + fmt(balance) + '</span>';
       Tooltips.attach(node, () => bankTooltipModel(item), {anchor:'target'});
     } else {
       const holders = equippedBy(item.id);
@@ -572,14 +584,14 @@ function resourceTooltipModel(key) {
     type:'Base resource',
     icon:key === 'gold' ? {category:'currency', key:'gold'} : {category:'resource', key:key},
     description:'Persistent base resource used for building upgrades.',
-    stats:{label:'Current', value:fmt(state.resources[key] || 0)}
+    stats:{label:'Current', value:fmt(campaignResources()[key] || 0)}
   };
 }
 
 function syncResourceBar() {
-  $('#goldValue').textContent = fmt(state.resources.gold);
-  $('#lumberValue').textContent = fmt(state.resources.lumber);
-  $('#stoneValue').textContent = fmt(state.resources.stone);
+  $('#goldValue').textContent = fmt(campaignResources().gold);
+  $('#lumberValue').textContent = fmt(campaignResources().lumber);
+  $('#stoneValue').textContent = fmt(campaignResources().stone);
   if (buildings.length) syncMapBuildings();
 }
 
@@ -1232,10 +1244,9 @@ function upgradeBuilding(id) {
   if(!up.next){ toast(b.name+' is already level '+b.max+'.'); return; }
   if(!up.canUpgrade){ renderSidecar(); toast(up.reason); return; }
 
-  Object.entries(up.next.cost).forEach(([key,value])=>{ state.resources[key]-=value; });
   if(up.next.level!==b.level+1||up.next.level>b.max) throw new Error('Invalid building level transition');
-
-  b.level=up.next.level;
+  Campaign.applyBaseUpgrade(b.id,up.next.level,up.next.cost);
+  b.level=Campaign.getBuildingLevel(b.id,up.next.level);
   if (b.id === 'artisans') Professions.setGuildLevel(b.level);
   syncResourceBar();
   syncMapBuildings();
@@ -1265,6 +1276,8 @@ document.addEventListener('keydown', event => {
 });
 
 window.addEventListener('warcraft:roster-changed', () => {
+  applyCampaignProgression();
+  syncResourceBar();
   applyBasePresentation();
   if (state.selected && !$('#baseSidecar').hidden) renderSidecar();
 });
@@ -1280,6 +1293,8 @@ async function initBase() {
     responses.forEach((response,index)=>{if(!response.ok)throw new Error('Could not load '+roots[index]);});
     const payload=await responses[0].json();
     buildings=payload.buildings.map(normalizeBuilding);
+    Campaign.ensureBase(buildings);
+    applyCampaignProgression();
     basePresentation=validateBasePresentation(await responses[1].json());
     recruitmentData=validateRecruitmentData(await responses[2].json());
     professionData=validateProfessionData(await responses[3].json());
@@ -1288,10 +1303,10 @@ async function initBase() {
     dungeonCatalog=validateDungeonCatalog(await responses[5].json());
     reagentHoldings=validateReagentHoldings(await responses[6].json());
     bankHoldings=validateBankHoldings(await responses[7].json());
+    Campaign.ensureBankHoldings(bankHoldings.holdings);
     armoryItems=armoryOwnedItems();
     if(!armoryItems.length) throw new Error('Armory equipment ownership is empty.');
-    const artisansBuilding=buildings.find(entry=>entry.id==='artisans');
-    if (artisansBuilding) artisansBuilding.level=Math.max(artisansBuilding.level,Professions.getGuildLevel());
+    applyCampaignProgression();
     const questBoard=buildings.find(entry=>entry.id==='questboard');
     if (questBoard) ensureQuestRoundOffers(questBoard);
     Icons.hydrate(document); Tooltips.hydrate(document); bindResolvedIcons(document);
