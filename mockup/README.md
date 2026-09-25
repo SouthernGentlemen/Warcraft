@@ -160,7 +160,9 @@ Persistent item ownership is split across three Base buildings rather than one g
 - **Bank** owns persistent currencies, economy items, and meta-progression holdings. Prototype balances are authored in `data/items/economy/holdings.json` and restricted to `currency`, `meta_progression`, or `economy`.
 - **Armory** owns equipment. It does not duplicate equipment into a new JSON inventory; Base derives Armory ownership from `WarcraftEquipment.owned()`, the same authoritative equipment catalog used by hero management.
 
-Storehouse, Bank, and Armory are all normal five-level core Base buildings and therefore inherit the centralized Keep gate used by every non-Keep upgrade. Alliance and Horde presentation data supplies desktop/mobile hotspots for all three. Their in-sidecar browsing UI is handled by the subsequent storage-browser phase.
+Storehouse, Bank, and Armory are all normal five-level core Base buildings and therefore inherit the centralized Keep gate used by every non-Keep upgrade. Alliance and Horde presentation data supplies desktop/mobile hotspots for all three.
+
+Clicking any of the three buildings opens its holdings directly inside the shared Base sidecar. Storehouse renders only authored reagent stacks, Bank renders only currency/economy/meta-progression balances, and Armory renders only equipment from `WarcraftEquipment.owned()`. These browsers reuse shared icons, item rarity frames, quantities, equipped-state context, and tooltips. They are inspection-only: no storage row writes roster state, changes equipment, or mutates the authored holdings. Equip/unequip remains hero-scoped in Heroes/Roster, and none of the three building routes redirects to a separate storage page.
 
 ### Global Inventory
 
