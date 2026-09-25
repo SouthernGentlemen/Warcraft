@@ -1,6 +1,7 @@
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
+const HealthBars = window.BattleHealthBars;
 
 const state = {
   runtime:null,
@@ -137,40 +138,48 @@ function renderTeams(snapshot) {
 function updateActor(actor) {
   const card=document.querySelector('[data-actor-index="'+actor.index+'"]');
   if(!card)return;
-  const def=actor.definition,live=actor.state;
-  card.classList.toggle("defeated",!live.alive);
+  const def=actor.definition,live=actor.state,health=HealthBars.actorHealth(actor);
+  card.classList.toggle("defeated",!health.alive);
+  card.classList.toggle("low-health",health.alive&&health.percent<=25);
+  const hpBar=card.querySelector(".hp-stat");
   const hpFill=card.querySelector(".hp-stat .mini-fill");
   const hpText=card.querySelector(".hp-stat b");
-  const hpPct=def.derived.maxHealth?Math.max(0,Math.min(100,live.hp/def.derived.maxHealth*100)):0;
-  if(hpFill)hpFill.style.width=hpPct+"%";
-  if(hpText)hpText.textContent=formatNumber(live.hp)+" / "+formatNumber(def.derived.maxHealth);
+  if(hpBar){
+    hpBar.setAttribute("role","progressbar");
+    hpBar.setAttribute("aria-valuemin","0");
+    hpBar.setAttribute("aria-valuemax",String(health.max));
+    hpBar.setAttribute("aria-valuenow",String(health.current));
+    hpBar.setAttribute("aria-valuetext",formatNumber(health.current)+" / "+formatNumber(health.max)+" health");
+  }
+  if(hpFill)hpFill.style.width=HealthBars.widthPercent(health.percent);
+  if(hpText)hpText.textContent=formatNumber(health.current)+" / "+formatNumber(health.max);
   const resourceFill=card.querySelector(".resource-stat .mini-fill");
   const resourceText=card.querySelector(".resource-stat b");
   if(resourceFill&&def.maxResource)resourceFill.style.width=Math.max(0,Math.min(100,live.resource/def.maxResource*100))+"%";
   if(resourceText)resourceText.textContent=formatNumber(live.resource)+" / "+formatNumber(def.maxResource);
 }
 
-function teamTotals(snapshot,team) {
-  return snapshot.actors.filter(actor=>actor.definition.team===team).reduce((sum,actor)=>{
-    sum.current+=actor.state.hp;
-    sum.max+=actor.definition.derived.maxHealth;
-    sum.total+=1;
-    if(actor.state.alive)sum.alive+=1;
-    return sum;
-  },{current:0,max:0,alive:0,total:0});
-}
-
 function updateSideSummary(side,totals) {
   const text=$(side+"HpText"),fill=$(side+"HpFill"),alive=$(side+"AliveText");
   if(text)text.textContent=formatNumber(totals.current)+" / "+formatNumber(totals.max);
   if(alive)alive.textContent=totals.alive+" / "+totals.total+" alive";
-  if(fill)fill.style.width=(totals.max?Math.max(0,Math.min(100,totals.current/totals.max*100)):0)+"%";
+  if(fill){
+    fill.style.width=HealthBars.teamWidth(totals);
+    const bar=fill.parentElement;
+    if(bar){
+      bar.setAttribute("role","progressbar");
+      bar.setAttribute("aria-valuemin","0");
+      bar.setAttribute("aria-valuemax",String(totals.max));
+      bar.setAttribute("aria-valuenow",String(totals.current));
+      bar.setAttribute("aria-valuetext",formatNumber(totals.current)+" / "+formatNumber(totals.max)+" team health");
+    }
+  }
 }
 
 function updateSnapshot(snapshot) {
   snapshot.actors.forEach(updateActor);
-  updateSideSummary(state.playerSide,teamTotals(snapshot,0));
-  updateSideSummary(state.enemySide,teamTotals(snapshot,1));
+  updateSideSummary(state.playerSide,HealthBars.teamTotals(snapshot,0));
+  updateSideSummary(state.enemySide,HealthBars.teamTotals(snapshot,1));
 }
 
 function applyEncounterLabels() {
