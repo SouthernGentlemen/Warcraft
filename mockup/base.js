@@ -314,7 +314,7 @@ function renderRecruitmentWorkflow(building) {
       if (button.getAttribute('aria-disabled') === 'true') return;
       try {
         const factionLabel = faction === 'horde' ? 'Horde' : 'Alliance';
-        Roster.recruitHero(Object.assign({}, candidate, {faction:factionLabel, level:1}));
+        Roster.recruitHero(Object.assign({}, candidate, {faction:factionLabel, level:1}), {rosterCapacity:config.roster_capacity});
         state.recruitmentMessage = candidate.name + ' joined the roster.';
         state.recruitmentOpen = true;
         renderSidecar();
