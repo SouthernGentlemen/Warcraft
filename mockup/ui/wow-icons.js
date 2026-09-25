@@ -241,26 +241,6 @@
     status:"battle"
   };
 
-  const TALENT_ICON_POOL = [
-    "spell_nature_lightning","spell_nature_chainlightning","spell_nature_rejuvenation",
-    "spell_nature_healingwavegreater","spell_nature_starfall","spell_nature_naturesblessing",
-    "spell_nature_regeneration","spell_nature_forceofnature","spell_arcane_blast",
-    "spell_arcane_arcanetorrent","spell_fire_flamebolt","spell_fire_fireball02",
-    "spell_fire_flameshock","spell_frost_frostbolt02","spell_frost_frostarmor02",
-    "spell_frost_iceshard","spell_shadow_shadowbolt","spell_shadow_shadowwordpain",
-    "spell_shadow_corruption","spell_shadow_lifedrain02","spell_holy_holybolt",
-    "spell_holy_powerwordshield","spell_holy_greaterheal","spell_holy_renew",
-    "ability_druid_catform","ability_druid_bearform","ability_rogue_eviscerate",
-    "ability_rogue_sprint","ability_rogue_ambush","ability_backstab",
-    "ability_warrior_charge","ability_warrior_defensivestance","ability_warrior_innerrage",
-    "ability_warrior_savageblow","ability_hunter_beastcall","ability_marksmanship",
-    "ability_hunter_survivalinstincts","ability_hunter_aimedshot","spell_holy_sealofmight",
-    "spell_holy_devotionaura","spell_holy_divineshield","spell_holy_righteousfury",
-    "ability_paladin_shieldofthetemplar","spell_shaman_lavaburst",
-    "spell_shaman_spiritwalkersgrace","spell_shaman_feralspirit",
-    "spell_shaman_astralshift","ability_shaman_stormstrike"
-  ];
-
   function keyify(value) {
     return String(value == null ? "" : value)
       .trim()
@@ -311,19 +291,6 @@
     return iconUrl(resolveSlug(category, key, context));
   }
 
-  function hashString(value) {
-    let hash = 0;
-    const text = String(value == null ? "" : value);
-    for (let i = 0; i < text.length; i += 1) hash = ((hash << 5) - hash) + text.charCodeAt(i);
-    return Math.abs(hash);
-  }
-
-  function talentUrl(specId, itemName, index) {
-    const start = hashString(String(specId) + String(itemName)) % TALENT_ICON_POOL.length;
-    const offset = Number(index || 0) * 7;
-    return iconUrl(TALENT_ICON_POOL[(start + offset) % TALENT_ICON_POOL.length]);
-  }
-
   function bindFallback(img) {
     if (!img || img.dataset.wowIconFallbackBound === "true") return img;
     img.dataset.wowIconFallbackBound = "true";
@@ -363,7 +330,6 @@
     iconUrl:iconUrl,
     resolve:resolve,
     resolveSlug:resolveSlug,
-    talentUrl:talentUrl,
     bindFallback:bindFallback,
     hydrate:hydrate
   });
