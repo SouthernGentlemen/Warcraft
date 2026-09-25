@@ -2,19 +2,16 @@ import { createServer } from "node:http";
 import { spawn } from "node:child_process";
 import { createServer as createNetServer } from "node:net";
 import {
-  readFile
+  readFile,
   rm,
   writeFile,
   stat
 } from "node:fs/promises";
 import {
-  dirname,
   extname,
   join,
   normalize,
-  relative,
   resolve,
-  sep
 } from "node:path";
 
 const ROOT = process.cwd();
