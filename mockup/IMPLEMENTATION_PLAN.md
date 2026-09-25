@@ -1064,7 +1064,7 @@ Deliver a functional 3-hero versus NPC battle mode using the shared encounter fr
 
 ### WOWUI-050 — Five-Hero Battle Mode
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-049
 
