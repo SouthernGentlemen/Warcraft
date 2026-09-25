@@ -51,7 +51,6 @@ const buildingIconKeys = {
   keep:['building','keep'],
   training:['building','training-grounds'],
   recruitment:['building','recruitment-hall'],
-  command:['building','command-hall'],
   storehouse:['building','storehouse'],
   blacksmith:['profession','blacksmithing'],
   alchemy:['profession','alchemy'],
@@ -59,7 +58,7 @@ const buildingIconKeys = {
   tailor:['profession','tailoring'],
   leather:['profession','leatherworking'],
   engineer:['profession','engineering'],
-  questboard:['building','command-hall']
+  questboard:['building','quest-board']
 };
 
 const costIconKeys = {
