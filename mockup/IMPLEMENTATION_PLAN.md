@@ -1393,7 +1393,7 @@ Keep talent management inside hero management and make the selected capstone the
 
 ### WOWUI-060 — Gear and Talent Navigation Cleanup
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-059
 
