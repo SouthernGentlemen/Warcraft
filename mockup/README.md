@@ -32,13 +32,13 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 ### Shared Navigation
 
 - `ui/wow-nav.js` enhances the common `.wow-game-shell` / `.wow-game-nav` markup with semantic game icons, shared destination tooltips, and active-screen state while leaving every destination as a normal static HTML `href`.
-- Player-facing navigation no longer exposes the retired Simulation lab. The shared Warcraft brand/home action returns to `base.html`, while hero-specific Gear and Talents remain managed from the roster flow.
+- Player-facing navigation no longer exposes the retired standalone combat lab. The shared Warcraft brand/home action returns to `base.html`, while hero-specific Gear and Talents remain managed from the roster flow.
 - Use `data-wow-nav-active` on the shell and `data-wow-nav-key` on destination links. Keep the active link's `is-active` class and `aria-current="page"` in static markup so the selected screen is visible before enhancement.
 - The shared game bar is sticky and horizontally scrollable at narrow widths. Page-specific actions such as Gear/Battle reset controls live in `.wow-game-shell__action` rather than creating a second website-style navbar.
 
 ### Gear Paper Doll
 
-- `gear.html` keeps the six-slot rule but presents equipment as compact icon slots around a character portrait; item names and stat prose live in the shared tooltip rather than permanent slot chrome.
+- `gear.html` uses the seven-slot equipment rule but presents equipment as compact icon slots around a character portrait; item names and stat prose live in the shared tooltip rather than permanent slot chrome.
 - The central character portrait resolves from race identity, while the class icon is rendered separately with the shared class-color frame.
 - The Armory is an icon-grid/bag surface. Each item exposes its name, quality, tier, slot, armor/weapon family, primary and secondary stats, restrictions, equipped state, and equipped-item comparison through `WowUITooltips`.
 - Tier, slot, search, and equippable-only filters use the shared WoW form controls. Equip/unequip, stat recalculation, search/filter behavior, and class armor restrictions remain unchanged.
@@ -50,7 +50,7 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 - `dev.html` — developer-only mockup launcher
 - `race-selector.html` — faction, body type, race, class availability, and racial review
 - `talent-calculator.html` — class/spec browser and five-point talent calculator
-- `gear.html` — interactive roster equipment screen with one hero per class, six fixed slots, class armor eligibility, and sample Tier 1–5 gear
+- `gear.html` — interactive roster equipment screen with one hero per class, seven fixed slots, class armor eligibility, and sample Tier 1–5 gear
 - `battle.html` — player-facing deterministic encounter surface for 1-, 3-, 5-, 10-, and 20-hero parties with NPC opponents, combat log, pause/reset, and speed controls
 - `base.html` — player-facing map-first stronghold landing screen with compact resources, clickable core/profession buildings, shared building sidecar, Quest Board dispatch, upgrades, and attention states
 - `quest-journal.html` — read-only player Quest Journal mirroring available, active, and completed Quest Board assignments from authoritative roster state
@@ -102,6 +102,14 @@ Screen CSS files remain responsible only for screen-specific layout and presenta
 Responsive layouts are maintained in each screen stylesheet for desktop, tablet, and mobile widths. When adding controls, prefer `.wow-button`, `.wow-tab`, `.wow-input`, `.wow-select`, `.wow-checkbox`, `.wow-range`, and `.wow-icon-button` instead of browser-default controls. Run `npm run combat:test` after changes that touch the shared combat runtime, and use `npm run dev` for the normal restart-and-open development flow.
 
 
+### Player gameplay loop
+
+The player-facing loop is Base → Quest Journal/Roster/Inventory or Quest Board → randomized offer or dungeon map → exact party selection → Battle → deterministic result/reward state → Return to Quest Board or Return to Base. Battle completion persists quest or dungeon results through `WarcraftRoster`; returning to `base.html?building=questboard&mode=offers|dungeons` reopens the Quest Board sidecar in the relevant mode so the completed/retryable quest or latest dungeon run is immediately visible.
+
+Alliance and Horde use the same loop. Faction state chooses the Base presentation and the starter dungeon used by quest encounters: The Stockade for Alliance and Ragefire Chasm for Horde. The shared Battle runtime supports 1-, 3-, 5-, 10-, and 20-hero encounters without size-specific engines.
+
+Runtime gameplay inputs remain authored JSON under `/data/`. Documentation under `/docs/` does not generate or rewrite runtime data.
+
 ### Shared roster state
 
 `ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved party loadouts. Hero-management surfaces should store only hero IDs in party templates and read current identity, availability, equipment, and talent-build data from this shared layer. Party templates support only 3, 5, 10, or 20 heroes; ready-state validation requires the exact selected size with no duplicate hero IDs. A saved template may contain a hero who later becomes unavailable, but launch-time validation must re-check current availability.
@@ -110,9 +118,9 @@ Responsive layouts are maintained in each screen stylesheet for desktop, tablet,
 
 Base is the player-facing landing screen. The default view intentionally contains only the shared Warcraft navigation, a compact Gold/Lumber/Stone HUD, and the full stronghold map. There is no internal navigation rail, permanent building list, Quest Board dashboard, action bar, profile footer, or reserved detail column.
 
-Buildings are the Base interaction model. Every authored building, including Quest Board and the six profession buildings, is represented as a clickable map target whose displayed level comes from `data/base/buildings.json`. Clicking one opens the single shared `#baseSidecar`; selecting another replaces its contents in place, while close, Escape, or empty-map dismissal clears selection. The sidecar overlays the map rather than consuming permanent layout width.
+Buildings are the Base interaction model. Every authored building, including Quest Board and the consolidated Artisans Guild, is represented as a clickable map target whose displayed level comes from `data/base/buildings.json`. Clicking one opens the single shared `#baseSidecar`; selecting another replaces its contents in place, while close, Escape, or empty-map dismissal clears selection. The sidecar overlays the map rather than consuming permanent layout width.
 
-Core and profession sidecars show current/next capabilities, prerequisites, Gold/Lumber/Stone costs, upgrade readiness, blocked reasons, and maximum-level state. Successful upgrades update resources, map labels, attention state, and the open sidecar without navigating away. Quest Board uses the same sidecar for Tier 1–5 dispatch, saved/ad-hoc party selection, active assignments, completion, and reward presentation through authoritative `WarcraftRoster` state.
+Building sidecars use compact functional actions plus one tooltip-driven Upgrade control; costs, Keep gates, shortages, and max-level state stay out of permanent prose. Successful upgrades update resources, map labels, attention state, and the open sidecar without navigating away. Quest Board uses the same sidecar for randomized round offers, saved/ad-hoc party selection, dungeon selection, encounter launch, result state, and rewards through authoritative `WarcraftRoster` state.
 
 The closed-sidecar map communicates at most one primary attention state per building. Priority is Quest complete, Quest ready, profession action, upgrade ready, then blocked. Markers are compact, accessible through the building label/tooltips, and recalculate after resource, upgrade, roster, dispatch, and completion changes.
 
@@ -172,19 +180,19 @@ Quest Board no longer owns one permanent quest per tier. `data/base/quest-offers
 
 ### Canonical dungeon catalog
 
-`data/dungeons/catalog.json` is the authored Quest Board dungeon catalog. Each dungeon has a stable ID, canonical display/location metadata, normalized Azeroth/continent map coordinates, faction starter/presentation rules, canonical party-size metadata, and an `npc_pool_id` resolving into `data/npcs/dungeon-pools.json`. The initial catalog contains Ragefire Chasm, The Stockade, Scarlet Monastery, and Zul'Farrak. Ragefire Chasm is marked as the Horde starter and The Stockade as the Alliance starter. NPC pools currently contain identity-only boss seeds; combat stats and encounter composition remain future work.
+`data/dungeons/catalog.json` is the authored Quest Board dungeon catalog. Each dungeon has a stable ID, canonical display/location metadata, normalized Azeroth/continent map coordinates, faction starter/presentation rules, canonical party-size metadata, and an `npc_pool_id` resolving into `data/npcs/dungeon-pools.json`. The initial catalog contains Ragefire Chasm, The Stockade, Scarlet Monastery, and Zul'Farrak. Ragefire Chasm is marked as the Horde starter and The Stockade as the Alliance starter. NPC pools resolve authored combat-ready NPC records used directly by the shared Battle runtime.
 
 ### Quest Board Azeroth dungeon map
 
-Quest Board now switches between randomized quest offers and a data-driven Azeroth dungeon map. Dungeon hotspots are created from `data/dungeons/catalog.json` coordinates, not hardcoded map markup. The active faction's starter dungeon is selected/emphasized first (Ragefire Chasm for Horde, The Stockade for Alliance), while Scarlet Monastery and Zul'Farrak remain visible at their authored world positions. Selecting a dungeon opens an exact five-hero party picker using saved or ad-hoc roster selection; Launch Battle persists a `pendingEncounter` with dungeon ID, NPC-pool ID, party size, hero IDs, faction, and source before routing to `battle.html`. The current Battle prototype only surfaces that handoff context; NPC encounter execution is owned by WOWUI-046–052.
+Quest Board now switches between randomized quest offers and a data-driven Azeroth dungeon map. Dungeon hotspots are created from `data/dungeons/catalog.json` coordinates, not hardcoded map markup. The active faction's starter dungeon is selected/emphasized first (Ragefire Chasm for Horde, The Stockade for Alliance), while Scarlet Monastery and Zul'Farrak remain visible at their authored world positions. Selecting a dungeon opens an exact five-hero party picker using saved or ad-hoc roster selection; Launch Battle persists a `pendingEncounter` with dungeon ID, NPC-pool ID, party size, hero IDs, faction, and source before routing to `battle.html`. Battle consumes that handoff directly, resolves NPC opponents from the authored pool, persists the result, and provides explicit return actions back to the same Quest Board mode or to Base.
 
 ### Enemy NPC encounter contract
 
-Dungeon enemies now come from `data/npcs/catalog.json`, governed by `data/npcs/schema.json`. NPC records own stable identity, family/type, level/tier, integer combat stats, auto attack, optional abilities, dungeon membership, and pool membership. `data/npcs/dungeon-pools.json` contains only ordered NPC IDs and resolves through the authoritative catalog. `mockup/simulation/engine/npc-factory.js` converts those records into the fixed-tick combat definition shape, and repeated combat with the same actor set/seed is regression-tested for identical final-state and combat-log hashes. For dungeon handoffs, Battle fetches the same catalog/pool data and replaces the opposing prototype team with resolved NPC identities so combat cards and log entries name the actual dungeon NPCs. Full Battle-engine unification remains WOWUI-047.
+Dungeon enemies now come from `data/npcs/catalog.json`, governed by `data/npcs/schema.json`. NPC records own stable identity, family/type, level/tier, integer combat stats, auto attack, optional abilities, dungeon membership, and pool membership. `data/npcs/dungeon-pools.json` contains only ordered NPC IDs and resolves through the authoritative catalog. `mockup/combat/engine/npc-factory.js` converts those records into the fixed-tick combat definition shape, and repeated combat with the same actor set/seed is regression-tested for identical final-state and combat-log hashes. Battle uses that same catalog/pool contract so combat cards and log entries name authored dungeon NPCs.
 
 ### Shared Battle encounter framework
 
-Battle now runs through `mockup/battle/encounter-runtime.js`, which accepts explicit party sizes `1, 3, 5, 10, 20`, resolves player participants from `WarcraftRoster` / saved loadout hero IDs, resolves enemies through the NPC catalog + pool contract, and drives one fixed-tick `CombatSimulation` event stream. Pause, reset, completion, deterministic seed replay, and the reward-completion hook are owned by this runtime rather than by separate size-specific loops. The canonical combat engine now lives under `mockup/combat/engine/`; legacy files under `mockup/simulation/engine/` are compatibility re-exports only, and `npm test` runs `mockup/combat/smoke-test.js` instead of a Simulation-screen test. Battle presentation consumes runtime snapshots/events and uses `data-party-size` layout primitives for 1/3/5/10/20 without changing combat rules.
+Battle now runs through `mockup/battle/encounter-runtime.js`, which accepts explicit party sizes `1, 3, 5, 10, 20`, resolves player participants from `WarcraftRoster` / saved loadout hero IDs, resolves enemies through the NPC catalog + pool contract, and drives one fixed-tick `CombatSimulation` event stream. Pause, reset, completion, deterministic seed replay, and the reward-completion hook are owned by this runtime rather than by separate size-specific loops. The canonical combat engine lives exclusively under `mockup/combat/engine/`, and `npm test` runs `mockup/combat/smoke-test.js` alongside integration acceptance. Battle presentation consumes runtime snapshots/events and uses `data-party-size` layout primitives for 1/3/5/10/20 without changing combat rules.
 
 ### One-hero Battle mode
 
