@@ -200,6 +200,134 @@ function labelize(value) {
     .replace(/\b\w/g, char => char.toUpperCase());
 }
 
+function escapeHtml(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
+}
+
+function equippedBy(itemId) {
+  return Roster.getState().heroes.filter(hero => Object.values(hero.equipment || {}).includes(itemId));
+}
+
+function armoryItemTooltipModel(item) {
+  const holders = equippedBy(item.id);
+  const statLines = (item.stats || []).map(line => ({label:line.stat, value:"+" + line.value}));
+  return {
+    variant:'item',
+    title:item.name,
+    type:item.slot,
+    quality:item.qualityKey,
+    icon:{slug:item.icon, quality:item.qualityKey},
+    description:holders.length ? 'Owned equipment currently equipped by ' + holders.map(hero => hero.name).join(', ') + '.' : 'Owned equipment stored in the Armory.',
+    requirements:[
+      {label:'Tier', value:'T' + item.tier},
+      {label:item.slot === 'Weapon' ? 'Weapon family' : item.slot === 'Trinket' ? 'Item family' : 'Armor family', value:item.family}
+    ],
+    stats:statLines.length ? statLines : [{label:'Bonus stats', value:'None'}],
+    meta:[
+      {label:'Quality', value:item.quality},
+      {label:'Ownership', value:'Armory'},
+      {label:'Equipped', value:holders.length ? holders.map(hero => hero.name).join(', ') : 'No'}
+    ]
+  };
+}
+
+function reagentTooltipModel(item) {
+  return {
+    variant:'item',
+    title:item.name,
+    type:'Reagent · ' + labelize(item.family),
+    icon:{slug:item.icon_slug},
+    description:'Profession reagent stored in the Storehouse.',
+    requirements:[{label:'Tier', value:'T' + item.tier}],
+    stats:[{label:'Quantity', value:fmt(Number(item.quantity) || 0)}],
+    meta:[
+      {label:'Category', value:'Reagent'},
+      {label:'Professions', value:(item.professions || []).map(labelize).join(', ') || 'None'}
+    ]
+  };
+}
+
+function bankTooltipModel(item) {
+  return {
+    variant:'resource',
+    title:item.name,
+    type:labelize(item.category),
+    icon:item.icon,
+    description:item.description,
+    stats:[{label:'Balance', value:fmt(Number(item.quantity) || 0)}],
+    meta:[
+      {label:'Category', value:labelize(item.category)},
+      {label:'Ownership', value:'Bank'}
+    ]
+  };
+}
+
+function storageBrowserRows(building) {
+  if (building.id === 'storehouse') return reagentHoldings ? reagentHoldings.items.map(item => ({kind:'reagent', item})) : [];
+  if (building.id === 'bank') return bankHoldings ? bankHoldings.holdings.map(item => ({kind:'bank', item})) : [];
+  if (building.id === 'armory') return armoryItems.map(item => ({kind:'equipment', item}));
+  return [];
+}
+
+function storageBrowserHeading(building, rows) {
+  const labels = {
+    storehouse:['REAGENTS','Crafting materials'],
+    bank:['BANK','Meta progression & currencies'],
+    armory:['ARMORY','Owned equipment']
+  };
+  const pair = labels[building.id] || ['STORAGE','Holdings'];
+  return '<div class="base-sidecar__storage-head"><div><span class="wow-kicker">' + pair[0] + '</span><h3>' + pair[1] + '</h3></div><small>' + rows.length + ' entries</small></div>';
+}
+
+function renderStorageBrowser(building) {
+  const root = $('#storageBrowser');
+  if (!root || !building) return;
+  const rows = storageBrowserRows(building);
+  root.dataset.storageBuilding = building.id;
+  root.innerHTML = storageBrowserHeading(building, rows) + '<div class="base-sidecar__storage-grid" role="list"></div>';
+  const grid = root.querySelector('.base-sidecar__storage-grid');
+
+  rows.forEach(({kind,item}) => {
+    const node = document.createElement('button');
+    node.type = 'button';
+    node.className = 'base-sidecar__storage-item is-' + kind + (kind === 'equipment' ? ' wow-quality--' + item.qualityKey : '');
+    node.dataset.storageCategory = kind;
+    node.dataset.itemId = item.id;
+
+    if (kind === 'reagent') {
+      node.setAttribute('aria-label', item.name + ', quantity ' + item.quantity + ', Tier ' + item.tier + ' reagent');
+      node.innerHTML =
+        '<span class="base-sidecar__storage-icon wow-icon-frame wow-icon-frame--sm"><img src="' + Icons.iconUrl(item.icon_slug) + '" alt=""></span>' +
+        '<span class="base-sidecar__storage-copy"><strong>' + escapeHtml(item.name) + '</strong><small>T' + item.tier + ' · ' + escapeHtml(labelize(item.family)) + '</small></span>' +
+        '<span class="base-sidecar__storage-count">×' + fmt(Number(item.quantity) || 0) + '</span>';
+      Tooltips.attach(node, () => reagentTooltipModel(item), {anchor:'target'});
+    } else if (kind === 'bank') {
+      const icon = item.icon || {category:'currency', key:'gold'};
+      node.setAttribute('aria-label', item.name + ', balance ' + item.quantity + ', ' + labelize(item.category));
+      node.innerHTML =
+        iconMarkup(icon.category, icon.key, 'sm', 'base-sidecar__storage-icon') +
+        '<span class="base-sidecar__storage-copy"><strong>' + escapeHtml(item.name) + '</strong><small>' + escapeHtml(labelize(item.category)) + '</small></span>' +
+        '<span class="base-sidecar__storage-count">' + fmt(Number(item.quantity) || 0) + '</span>';
+      Tooltips.attach(node, () => bankTooltipModel(item), {anchor:'target'});
+    } else {
+      const holders = equippedBy(item.id);
+      node.classList.add('wow-icon-frame--quality-' + item.qualityKey);
+      node.setAttribute('aria-label', item.name + ', Tier ' + item.tier + ', ' + item.quality + (holders.length ? ', equipped by ' + holders.map(hero => hero.name).join(', ') : ', stored'));
+      node.innerHTML =
+        '<span class="base-sidecar__storage-icon wow-icon-frame wow-icon-frame--sm wow-icon-frame--quality-' + item.qualityKey + '"><img src="' + Icons.iconUrl(item.icon) + '" alt=""></span>' +
+        '<span class="base-sidecar__storage-copy"><strong>' + escapeHtml(item.name) + '</strong><small>T' + item.tier + ' · ' + escapeHtml(item.slot) + ' · ' + escapeHtml(item.family) + '</small></span>' +
+        '<span class="base-sidecar__storage-state">' + (holders.length ? 'Equipped' : 'Stored') + '</span>';
+      Tooltips.attach(node, () => armoryItemTooltipModel(item), {anchor:'target'});
+    }
+    node.addEventListener('click', event => event.currentTarget.focus());
+    grid.appendChild(node);
+  });
+
+  bindResolvedIcons(root);
+}
+
 
 const BUILDING_ACTIONS = Object.freeze({
   keep:Object.freeze([
@@ -1003,6 +1131,11 @@ function renderSidecar() {
       upgradeControlMarkup(building, upgrade) +
     '</div>';
 
+  if (['storehouse','bank','armory'].includes(building.id)) {
+    body.insertAdjacentHTML('beforeend',
+      '<section id="storageBrowser" class="base-sidecar__section base-sidecar__storage" aria-label="' + building.name + ' holdings"></section>');
+  }
+
   if (building.id === 'recruitment') {
     body.insertAdjacentHTML('beforeend',
       '<section id="recruitmentWorkflow" class="base-sidecar__section base-sidecar__recruitment" hidden></section>');
@@ -1035,6 +1168,7 @@ function renderSidecar() {
 
   bindResolvedIcons(sidecar);
   Tooltips.hydrate(sidecar);
+  if (['storehouse','bank','armory'].includes(building.id)) renderStorageBrowser(building);
   if (building.id === 'questboard') {
     renderQuestBoard();
     const offersTab=$('#questBoardOffersTab');
