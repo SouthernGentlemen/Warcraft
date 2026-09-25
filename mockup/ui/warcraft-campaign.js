@@ -6,14 +6,81 @@ const LEGACY_ROSTER_KEY="warcraft.mockup.roster.v1";
 const LEGACY_PROFESSIONS_KEY="warcraft.mockup.professions.v1";
 const FACTIONS=Object.freeze(["alliance","horde"]);
 const DEFAULT_RESOURCES=Object.freeze({gold:25430,lumber:12680,stone:8440});
+const ROSTER_CAPACITY_BY_BASE_LEVEL=Object.freeze({1:10,2:20,3:30,4:40,5:50});
 
 function clone(value){return value==null?value:JSON.parse(JSON.stringify(value));}
 function factionId(value){const next=String(value||"").toLowerCase();return FACTIONS.includes(next)?next:"alliance";}
 function clampLevel(value){return Math.max(1,Math.min(5,Number(value)||1));}
+function heroFaction(hero){return String(hero&&hero.faction||"").trim().toLowerCase();}
+function rosterCapacityForLevel(level){return ROSTER_CAPACITY_BY_BASE_LEVEL[clampLevel(level)];}
+function uniqueFactionHeroes(heroes,faction){
+  const seen=new Set();
+  return (Array.isArray(heroes)?heroes:[]).filter(hero=>{
+    if(!hero||!hero.id||heroFaction(hero)!==faction||seen.has(String(hero.id)))return false;
+    seen.add(String(hero.id));
+    return true;
+  });
+}
+function sanitizeHeroIdArray(values,ownedIds){return (Array.isArray(values)?values:[]).map(String).filter(id=>ownedIds.has(id));}
+function sanitizeReferenceValue(value,ownedIds,key){
+  if(Array.isArray(value)){
+    if(key==="heroIds")return sanitizeHeroIdArray(value,ownedIds);
+    if(key==="slots")return value.map(entry=>{
+      if(entry==null)return entry;
+      if(typeof entry==="string")return ownedIds.has(entry)?entry:null;
+      return sanitizeReferenceValue(entry,ownedIds,"slot");
+    });
+    return value.map(entry=>sanitizeReferenceValue(entry,ownedIds,""));
+  }
+  if(!value||typeof value!=="object")return value;
+  const next={};
+  Object.entries(value).forEach(([childKey,childValue])=>{
+    if(childKey==="heroId"){
+      const id=childValue==null?null:String(childValue);
+      next[childKey]=id&&ownedIds.has(id)?id:null;
+      return;
+    }
+    next[childKey]=sanitizeReferenceValue(childValue,ownedIds,childKey);
+  });
+  return next;
+}
+function sanitizeFactionReferencesRecord(campaign){
+  const ownedIds=new Set((campaign.heroes||[]).map(hero=>String(hero.id)));
+  campaign.formations.party=(campaign.formations.party||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"formation"));
+  campaign.formations.raid=(campaign.formations.raid||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"formation"));
+  campaign.formations.siege=(campaign.formations.siege||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"formation"));
+  campaign.quests=(campaign.quests||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"quest"));
+  if(campaign.pendingEncounter){
+    const pending=sanitizeReferenceValue(campaign.pendingEncounter,ownedIds,"encounter");
+    const expected=Math.max(0,Number(pending.partySize)||0);
+    campaign.pendingEncounter=pending.heroIds&&pending.heroIds.length===expected?pending:null;
+  }
+  campaign.dungeonRuns=(campaign.dungeonRuns||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"run"));
+  campaign.embark=sanitizeReferenceValue(campaign.embark,ownedIds,"embark");
+  campaign.buildingAssignments=sanitizeReferenceValue(campaign.buildingAssignments,ownedIds,"buildingAssignments");
+  const selections=campaign.professionSelections&&typeof campaign.professionSelections==="object"?campaign.professionSelections:{};
+  campaign.professionSelections=Object.fromEntries(Object.entries(selections).filter(([heroId])=>ownedIds.has(String(heroId))));
+  return campaign;
+}
+function collectReferencedHeroIds(value,key,output){
+  const out=output||[];
+  if(Array.isArray(value)){
+    if(key==="heroIds"){value.forEach(id=>out.push(String(id)));return out;}
+    if(key==="slots"){value.forEach(entry=>{if(typeof entry==="string")out.push(entry);else collectReferencedHeroIds(entry,"slot",out);});return out;}
+    value.forEach(entry=>collectReferencedHeroIds(entry,"",out));
+    return out;
+  }
+  if(!value||typeof value!=="object")return out;
+  Object.entries(value).forEach(([childKey,childValue])=>{
+    if(childKey==="heroId"&&childValue!=null)out.push(String(childValue));
+    else collectReferencedHeroIds(childValue,childKey,out);
+  });
+  return out;
+}
 function defaultQuestBoard(){return {round:1,seed:"questboard-v1",offerIds:[]};}
 function defaultClock(){return {day:1,phase:"day",phaseAdvances:0};}
 function emptyCampaign(faction){
-  return {
+  const campaign={
     faction,
     base:{
       level:1,
@@ -76,7 +143,7 @@ function normalizeCampaign(raw,faction){
       resources:normalizeResources(baseSource.resources||source.resources),
       bankHoldings
     },
-    heroes:Array.isArray(source.heroes)?clone(source.heroes):[],
+    heroes:uniqueFactionHeroes(clone(source.heroes),faction),
     formations:{
       party:Array.isArray(formationSource.party)?clone(formationSource.party):Array.isArray(source.loadouts)?clone(source.loadouts):[],
       raid:Array.isArray(formationSource.raid)?clone(formationSource.raid):[],
@@ -106,6 +173,7 @@ function normalizeCampaign(raw,faction){
       phaseAdvances:Math.max(0,Number(clockSource.phaseAdvances)||0)
     }
   };
+  return sanitizeFactionReferencesRecord(campaign);
 }
 function normalizeState(raw){
   const base=defaults();
@@ -199,6 +267,27 @@ function ensureBase(buildings){
   return getActiveCampaign().base;
 }
 function getBaseLevel(faction){return getCampaign(faction||state.activeFaction).base.level;}
+function getRosterCapacity(faction){return rosterCapacityForLevel(getBaseLevel(faction||state.activeFaction));}
+function getRosterCount(faction){return getCampaign(faction||state.activeFaction).heroes.length;}
+function validateHeroIds(heroIds,faction){
+  const target=factionId(faction||state.activeFaction);
+  const campaign=getCampaign(target);
+  const owned=new Set(campaign.heroes.map(hero=>String(hero.id)));
+  const ids=(Array.isArray(heroIds)?heroIds:[]).map(String);
+  ids.forEach(id=>{
+    if(owned.has(id))return;
+    const other=FACTIONS.find(name=>name!==target&&getCampaign(name).heroes.some(hero=>String(hero.id)===id));
+    if(other)throw new Error("Hero "+id+" belongs to the "+(other==="horde"?"Horde":"Alliance")+" campaign.");
+    throw new Error("Unknown hero "+id+" for the active faction.");
+  });
+  return ids;
+}
+function sanitizeFactionReferences(faction){
+  const target=factionId(faction||state.activeFaction);
+  sanitizeFactionReferencesRecord(getCampaign(target));
+  persist();
+  return getCampaign(target);
+}
 function getBuildingLevels(faction){return getCampaign(faction||state.activeFaction).base.buildingLevels;}
 function getBuildingLevel(id,fallback,faction){
   const levels=getBuildingLevels(faction);
@@ -254,7 +343,10 @@ function getFormations(kind,faction){
   return getCampaign(faction||state.activeFaction).formations[key];
 }
 function getProfessionSelections(faction){return getCampaign(faction||state.activeFaction).professionSelections;}
+function setProfessionSelection(heroId,selection){validateHeroIds([heroId]);getActiveCampaign().professionSelections[String(heroId)]=clone(selection);commit("profession-selection");return getActiveCampaign().professionSelections[String(heroId)];}
 function getBuildingAssignments(faction){return getCampaign(faction||state.activeFaction).buildingAssignments;}
+function setBuildingAssignment(buildingId,assignment){const next=clone(assignment);validateHeroIds(collectReferencedHeroIds(next));getActiveCampaign().buildingAssignments[String(buildingId)]=next;commit("building-assignment");return next;}
+function setFormation(kind,index,formation){const key=["party","raid","siege"].includes(kind)?kind:null;if(!key)throw new Error("Formation kind must be party, raid, or siege.");const next=clone(formation);validateHeroIds(collectReferencedHeroIds(next));const list=getActiveCampaign().formations[key];const slot=Math.max(0,Number(index)||0);list[slot]=next;commit("formation");return next;}
 function getClock(faction){return getCampaign(faction||state.activeFaction).clock;}
 function advanceClock(){
   const clock=getActiveCampaign().clock;
@@ -274,10 +366,10 @@ function reset(){
 persist();
 
 global.WarcraftCampaign=Object.freeze({
-  STORAGE_KEY,FACTIONS,DEFAULT_RESOURCES,
+  STORAGE_KEY,FACTIONS,DEFAULT_RESOURCES,ROSTER_CAPACITY_BY_BASE_LEVEL,
   getState,getMigration,getActiveFaction,setActiveFaction,getCampaign,getActiveCampaign,commit,
-  ensureBase,getBaseLevel,getBuildingLevels,getBuildingLevel,getResources,applyBaseUpgrade,
+  ensureBase,getBaseLevel,getRosterCapacity,getRosterCount,getBuildingLevels,getBuildingLevel,getResources,applyBaseUpgrade,
   ensureBankHoldings,getBankHoldings,getBankHoldingQuantity,setBankHoldingQuantity,
-  getProfessionState,setProfessionState,getFormations,getProfessionSelections,getBuildingAssignments,getClock,advanceClock,reset
+  getProfessionState,setProfessionState,getFormations,setFormation,getProfessionSelections,setProfessionSelection,getBuildingAssignments,setBuildingAssignment,validateHeroIds,sanitizeFactionReferences,getClock,advanceClock,reset
 });
 })(window);
