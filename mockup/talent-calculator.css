@@ -273,51 +273,6 @@
   text-transform: uppercase;
 }
 
-.wow-connectors {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.wow-connector-shadow,
-.wow-connector {
-  fill: none;
-  vector-effect: non-scaling-stroke;
-}
-
-.wow-connector-shadow {
-  stroke: #020304;
-  stroke-width: 4;
-  opacity: .9;
-}
-
-.wow-connector {
-  stroke: var(--wow-locked);
-  stroke-width: 1.5;
-  opacity: .62;
-  filter: drop-shadow(0 1px 0 rgba(255,255,255,.08));
-  transition: stroke .12s ease, opacity .12s ease, filter .12s ease;
-}
-
-.wow-connector.active {
-  stroke: var(--tree-accent);
-  stroke-width: 2.2;
-  opacity: 1;
-  filter: drop-shadow(0 0 3px var(--tree-glow));
-}
-
-.wow-connector-arrow path {
-  fill: var(--wow-locked);
-}
-
-.wow-connectors:has(.wow-connector.active) .wow-connector-arrow path {
-  fill: var(--tree-accent);
-}
-
 .wow-talent-row {
   position: absolute;
   z-index: 3;
@@ -484,3 +439,5 @@
     width: 100%;
   }
 }
+
+.wow-tier-model-note { position:absolute; right:10px; bottom:8px; z-index:4; color:var(--wow-text-dim); font-size:7px; letter-spacing:.08em; text-transform:uppercase; }
