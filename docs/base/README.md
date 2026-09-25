@@ -12,6 +12,18 @@ Base systems are expected to use the same five-tier progression model as heroes 
 
 Upgrading the base should gradually unlock stronger heroes, better crafting, more resources, and larger-scale activities.
 
+### Faction Base Level and Roster Capacity
+
+Each faction campaign owns its own Headquarters (Keep) level. The Keep level is the canonical **Base Level** and directly sets that faction's maximum roster size:
+
+- Base Level 1 → 10 heroes
+- Base Level 2 → 20 heroes
+- Base Level 3 → 30 heroes
+- Base Level 4 → 40 heroes
+- Base Level 5 → 50 heroes
+
+Alliance and Horde roster membership is isolated. A hero belongs to exactly one faction campaign, and saved formations, assignments, Quest/Embark state, and Battle handoffs may only reference heroes from that same faction.
+
 ## Expected Core Buildings
 
 ### Headquarters
@@ -28,7 +40,7 @@ Supports hero leveling and may control the current hero level cap.
 
 ### Recruitment
 
-Provides new heroes and supports roster expansion.
+Provides faction-valid hero discovery and recruitment. Recruitment Hall level controls how many candidates are discovered; roster capacity comes only from the active faction's Base Level.
 
 ### Command or Mission Building
 
@@ -75,7 +87,6 @@ Later base design must define:
 - upgrade time
 - resource buildings
 - building prerequisites
-- roster capacity
 - concurrent queues
 - automation
 - faction-specific presentation
