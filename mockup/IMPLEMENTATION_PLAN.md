@@ -869,7 +869,7 @@ Replace the static Tier 1–5 Quest Board list with a randomized quest offer lis
 
 ### WOWUI-044 — Canonical WoW Dungeon Catalog
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-043
 
