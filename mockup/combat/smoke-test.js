@@ -27,7 +27,12 @@ async function hero(classId,specId,id){
     readJson(join(CLASS_ROOT,classId,"specs",specId+".json")),
     readJson(join(CLASS_ROOT,classId,"abilities","README.json"))
   ]);
-  return createHeroDefinition({id,name:classMeta.label+" "+specMeta.label,classMeta,specData,abilityData,level:5,team:0});
+  const resource=String(specData.identity?.resource||"").toLowerCase();
+  const resourceType=resource.includes("energy")?"energy":resource.includes("rage")?"rage":"mana";
+  const compatible=(abilityData.cooldowns||[]).filter(action=>action.resource==="none"||action.resource===resourceType);
+  const selectedCooldownIds=[compatible[0]?.id,compatible[1]?.id];
+  const selectedUltimateId=(abilityData.ultimates||[])[0]?.id;
+  return createHeroDefinition({id,name:classMeta.label+" "+specMeta.label,classMeta,specData,abilityData,level:5,selectedCooldownIds,selectedUltimateId,team:0});
 }
 
 function runTwice(actors,seed,maxFrames){
