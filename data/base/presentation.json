@@ -44,6 +44,10 @@
         "armory": {
           "x": 20,
           "y": 66
+        },
+        "classhall": {
+          "x": 17,
+          "y": 30
         }
       },
       "mobile_positions": {
@@ -78,6 +82,10 @@
         "armory": {
           "x": 23,
           "y": 58
+        },
+        "classhall": {
+          "x": 50,
+          "y": 54
         }
       }
     },
@@ -123,6 +131,10 @@
         "armory": {
           "x": 79,
           "y": 57
+        },
+        "classhall": {
+          "x": 83,
+          "y": 30
         }
       },
       "mobile_positions": {
@@ -157,6 +169,10 @@
         "armory": {
           "x": 77,
           "y": 58
+        },
+        "classhall": {
+          "x": 50,
+          "y": 54
         }
       }
     }

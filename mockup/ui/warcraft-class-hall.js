@@ -76,7 +76,7 @@ function processCompletions(){
     const hero=Roster.hero(assignment.heroId);
     if(!hero){state.slots[index]=null;changed=true;return;}
     try{
-      const before=hero.level,progress=Roster.completeHeroLevelTraining(hero.id);
+      const before=hero.level,progress=Roster.completeHeroLevelTraining(hero.id,{source:"classhall"});
       Roster.updateHero(hero.id,{availability:"available"});
       state.slots[index]=null;changed=true;
       events.push({type:"class_hall_level_complete",heroId:hero.id,heroName:hero.name,fromLevel:before,toLevel:progress.level,slotIndex:index});

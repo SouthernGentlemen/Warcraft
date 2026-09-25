@@ -198,7 +198,8 @@
       storehouse:"inv_crate_03",
       bank:"inv_misc_coin_02",
       armory:"inv_chest_plate04",
-      "artisans-guild":"trade_engineering"
+      "artisans-guild":"trade_engineering",
+      "class-hall":"inv_misc_book_09"
     },
     quest: {
       journal:"inv_misc_note_01",
