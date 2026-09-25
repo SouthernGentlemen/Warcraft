@@ -238,22 +238,10 @@ function syncMapBuildings() {
     const level = plot.querySelector('.plot-label b');
     if (level) level.textContent = building.level;
   });
-  syncQuestBoardMapState();
 }
 
 function questBoardBuilding(){return buildings.find(b=>b.id==="questboard");}
 function compatibleLoadouts(size){return Roster.getState().loadouts.filter(l=>l.size===size&&Roster.validateLoadout(l,true).valid);}
-
-function syncQuestBoardMapState() {
-  const plot = document.querySelector('[data-building="questboard"]');
-  const board = questBoardBuilding();
-  if (!plot || !board) return;
-  const quests = Roster.getState().quests;
-  const active = quests.some(q => q.status === 'active');
-  const completed = quests.some(q => q.status === 'completed');
-  const status = completed ? 'completed' : active ? 'active' : 'available';
-  plot.dataset.questStatus = status;
-}
 
 function renderQuestBoard() {
   const board=questBoardBuilding(), root=$('#questTierList');
@@ -455,9 +443,6 @@ function closeSidecar(options = {}) {
   sidecarOrigin = null;
 }
 
-function selectBuilding(id, origin) {
-  openSidecar(id, origin);
-}
 
 function upgradeBuilding(id) {
   const b=buildings.find(item=>item.id===id);
@@ -470,7 +455,6 @@ function upgradeBuilding(id) {
   if(up.next.level!==b.level+1||up.next.level>b.max) throw new Error('Invalid building level transition');
 
   b.level=up.next.level;
-  state.selected=id;
   syncResourceBar();
   syncMapBuildings();
   if (b.id === 'questboard') {
@@ -483,7 +467,7 @@ function upgradeBuilding(id) {
 $('#baseMap').addEventListener('click', event => {
   const plot = event.target.closest('[data-building]');
   if (plot) {
-    selectBuilding(plot.dataset.building, plot);
+    openSidecar(plot.dataset.building, plot);
     return;
   }
   closeSidecar({restoreFocus:false});
