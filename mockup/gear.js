@@ -4,7 +4,7 @@ const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 
 const SLOT_ORDER = ["Head", "Chest", "Pants", "Feet", "Gloves", "Weapon", "Trinket"];
-const STORAGE_KEY = "warcraft.mockup.gear.v2";
+const Roster = window.WarcraftRoster;
 const LEFT_SLOTS = ["Head", "Chest", "Gloves"];
 const RIGHT_SLOTS = ["Pants", "Feet", "Weapon", "Trinket"];
 const ARMOR_FAMILIES = ["Cloth", "Leather", "Mail", "Plate"];
@@ -224,34 +224,17 @@ function validateHeroRaceClass(hero) {
 }
 
 function buildHeroes(classIndex) {
-  return classIndex.classes.map(function(classMeta, index) {
-    const blueprint = HERO_BLUEPRINTS[classMeta.id] || defaultBlueprint(classMeta, index);
-    const hero = {
-      id:"hero-" + classMeta.id,
-      classId:classMeta.id,
-      classLabel:classMeta.label,
-      name:blueprint.name,
-      race:blueprint.race,
-      faction:classMeta.faction || blueprint.faction,
-      level:blueprint.level,
-      spec:blueprint.spec,
-      primary:blueprint.primary,
-      portrait:Icons.resolveSlug("race", blueprint.race),
-      classIcon:Icons.resolveSlug("class", classMeta.id),
-      equipment:{}
-    };
-
+  const rosterHeroes = Roster.getState().heroes;
+  return rosterHeroes.map(function(source) {
+    const classMeta = classIndex.classes.find(function(entry) { return entry.id === source.classId; });
+    const hero = Object.assign({}, source, {classLabel:source.classLabel || classMeta.label, portrait:Icons.resolveSlug("race",source.race), classIcon:Icons.resolveSlug("class",source.classId), equipment:Object.assign({},source.equipment)});
     validateHeroRaceClass(hero);
-
     SLOT_ORDER.forEach(function(slot) {
-      const candidates = state.items
-        .filter(function(item) { return item.slot === slot; })
-        .map(function(item) { return {item:item, score:itemScoreForHero(hero, item)}; })
-        .filter(function(entry) { return entry.score >= 0; })
-        .sort(function(a, b) { return b.score - a.score || a.item.name.localeCompare(b.item.name); });
-      if (candidates[0]) hero.equipment[slot] = candidates[0].item.id;
+      if (hero.equipment[slot] && getItem(hero.equipment[slot])) return;
+      const candidates=state.items.filter(item=>item.slot===slot).map(item=>({item,score:itemScoreForHero(hero,item)})).filter(entry=>entry.score>=0).sort((a,b)=>b.score-a.score||a.item.name.localeCompare(b.item.name));
+      if(candidates[0]) hero.equipment[slot]=candidates[0].item.id;
     });
-
+    Roster.setEquipment(hero.id,hero.equipment);
     return hero;
   });
 }
@@ -325,39 +308,18 @@ function itemComparisonTooltip(item, hero) {
   return model;
 }
 
+function loadoutMembership(heroId) { return Roster.getState().loadouts.map((l,i)=>l.heroIds.includes(heroId)?i+1:null).filter(Boolean); }
+function filteredRoster() {
+  let heroes=state.heroes.slice(); const cf=$("rosterClassFilter").value,af=$("rosterAvailabilityFilter").value,sort=$("rosterSort").value;
+  if(cf!=="all")heroes=heroes.filter(h=>h.classId===cf); if(af!=="all")heroes=heroes.filter(h=>h.availability===af);
+  heroes.sort((a,b)=>sort==="level"?b.level-a.level:sort==="class"?a.classLabel.localeCompare(b.classLabel):a.name.localeCompare(b.name)); return heroes;
+}
 function renderRoster() {
-  const root = $("heroRoster");
-  root.innerHTML = "";
-  $("rosterCount").textContent = state.heroes.length + " heroes";
-
-  state.heroes.forEach(function(hero) {
-    const equipped = Object.keys(hero.equipment).filter(function(slot) { return hero.equipment[slot]; }).length;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "hero-roster-card" + (hero.id === state.selectedHeroId ? " active" : "");
-    button.innerHTML =
-      '<span class="roster-avatar wow-icon-frame">' +
-        '<img src="' + Icons.iconUrl(hero.portrait) + '" alt="">' +
-        '<span class="roster-class-badge wow-icon-frame wow-icon-frame--class-' + hero.classId + '" aria-hidden="true">' +
-          '<img src="' + Icons.iconUrl(hero.classIcon) + '" alt="">' +
-        '</span>' +
-        '<b>' + hero.level + '</b>' +
-      '</span>' +
-      '<span class="roster-copy">' +
-        '<strong>' + escapeHtml(hero.name) + '</strong>' +
-        '<small>' + escapeHtml(hero.race) + ' · ' + escapeHtml(hero.faction) + '</small>' +
-        '<em class="wow-class--' + hero.classId + '">' + escapeHtml(hero.classLabel) + ' · ' + escapeHtml(hero.spec) + ' · ' + equipped + '/7</em>' +
-      '</span>' +
-      '<span class="roster-arrow" aria-hidden="true"></span>';
-    button.querySelectorAll("img").forEach(Icons.bindFallback);
-    button.addEventListener("click", function() {
-      state.selectedHeroId = hero.id;
-      persistGear();
-      closeSlotPicker();
-      render();
-    });
-    root.appendChild(button);
-  });
+  const root=$("heroRoster");root.innerHTML="";const heroes=filteredRoster();$("rosterCount").textContent=heroes.length+" / "+state.heroes.length+" heroes";
+  heroes.forEach(function(hero){const equipped=Object.values(hero.equipment).filter(Boolean).length,members=loadoutMembership(hero.id);const button=document.createElement("button");button.type="button";button.className="hero-roster-card"+(hero.id===state.selectedHeroId?" active":"")+(hero.availability!=="available"?" is-unavailable":"");button.innerHTML='<span class="roster-avatar wow-icon-frame"><img src="'+Icons.iconUrl(hero.portrait)+'" alt=""><span class="roster-class-badge wow-icon-frame wow-icon-frame--class-'+hero.classId+'" aria-hidden="true"><img src="'+Icons.iconUrl(hero.classIcon)+'" alt=""></span><b>'+hero.level+'</b></span><span class="roster-copy"><strong>'+escapeHtml(hero.name)+'</strong><small>'+escapeHtml(hero.race)+' · '+escapeHtml(hero.faction)+'</small><em class="wow-class--'+hero.classId+'">'+escapeHtml(hero.classLabel)+' · '+escapeHtml(hero.spec)+' · '+equipped+'/7</em><small class="roster-state">'+(hero.availability==="available"?"Available":"On quest")+(members.length?" · Parties "+members.join(", "):" · No saved party")+'</small></span><span class="roster-arrow" aria-hidden="true"></span>';button.querySelectorAll("img").forEach(Icons.bindFallback);button.addEventListener("click",function(){state.selectedHeroId=hero.id;closeSlotPicker();render();});root.appendChild(button);});
+}
+function renderPartyLoadouts() {
+  const root=$("partyLoadouts");root.innerHTML="";Roster.getState().loadouts.forEach(function(loadout,index){const validation=Roster.validateLoadout(loadout,false),live=Roster.validateLoadout(loadout,true),card=document.createElement("article");card.className="party-loadout"+(loadout.ready?" is-ready":"");card.innerHTML='<div class="party-loadout-head"><input class="wow-input party-name" value="'+escapeHtml(loadout.name)+'" aria-label="Party '+(index+1)+' name"><select class="wow-select party-size" aria-label="Party size">'+Roster.PARTY_SIZES.map(size=>'<option value="'+size+'"'+(size===loadout.size?' selected':'')+'>'+size+' heroes</option>').join("")+'</select><strong>Slot '+(index+1)+'</strong></div><div class="party-members"></div><div class="party-status">'+(loadout.ready?(live.valid?'READY':'SAVED · '+live.reason):(validation.reason))+'</div><button class="wow-button party-ready" type="button">'+(loadout.ready?'Mark Editing':'Mark Ready')+'</button>';const members=card.querySelector(".party-members");state.heroes.forEach(function(hero){const selected=loadout.heroIds.includes(hero.id),btn=document.createElement("button");btn.type="button";btn.className="party-member"+(selected?" is-selected":"")+(hero.availability!=="available"?" is-unavailable":"");btn.disabled=!selected&&loadout.heroIds.length>=loadout.size;btn.setAttribute("aria-pressed",selected?"true":"false");btn.innerHTML='<span class="wow-icon-frame wow-icon-frame--xs wow-icon-frame--class-'+hero.classId+'"><img src="'+Icons.resolve("class",hero.classId)+'" alt=""></span><span>'+escapeHtml(hero.name)+'<small>'+escapeHtml(hero.classLabel)+' · '+(hero.availability==="available"?"Available":"On quest")+'</small></span>';Icons.bindFallback(btn.querySelector("img"));btn.addEventListener("click",function(){let ids=loadout.heroIds.slice();ids=selected?ids.filter(id=>id!==hero.id):ids.concat(hero.id);Roster.updateLoadout(index,{heroIds:ids,ready:false});render();});members.appendChild(btn);});card.querySelector(".party-name").addEventListener("change",e=>{Roster.updateLoadout(index,{name:e.target.value});render();});card.querySelector(".party-size").addEventListener("change",e=>{Roster.updateLoadout(index,{size:Number(e.target.value),ready:false});render();});card.querySelector(".party-ready").addEventListener("click",()=>{if(loadout.ready){Roster.updateLoadout(index,{ready:false});render();return;}const check=Roster.validateLoadout(loadout,false);if(!check.valid){toast(check.reason);return;}Roster.updateLoadout(index,{ready:true});render();});root.appendChild(card);});
 }
 
 function slotMarkup(hero, slot) {
@@ -376,25 +338,7 @@ function slotMarkup(hero, slot) {
 }
 
 function persistGear() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({selectedHeroId:state.selectedHeroId, equipment:Object.fromEntries(state.heroes.map(function(hero) { return [hero.id, hero.equipment]; }))}));
-  } catch (_) {}
-}
-
-function restoreGear() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    if (!saved || !saved.equipment) return;
-    state.heroes.forEach(function(hero) {
-      const equipment = saved.equipment[hero.id];
-      if (!equipment) return;
-      SLOT_ORDER.forEach(function(slot) {
-        const item = getItem(equipment[slot]);
-        hero.equipment[slot] = item && item.slot === slot && canEquip(hero, item).ok ? item.id : null;
-      });
-    });
-    if (state.heroes.some(function(hero) { return hero.id === saved.selectedHeroId; })) state.selectedHeroId = saved.selectedHeroId;
-  } catch (_) {}
+  state.heroes.forEach(function(hero) { Roster.setEquipment(hero.id,hero.equipment); });
 }
 
 function closeSlotPicker() {
@@ -620,6 +564,7 @@ function renderArmory() {
 function render() {
   Tooltips.hide();
   renderRoster();
+  renderPartyLoadouts();
   renderHeroHeader();
   renderSlots();
   renderStats();
@@ -648,9 +593,9 @@ function syncFilters() {
 }
 
 function resetRoster() {
+  Roster.reset();
   state.heroes = buildHeroes(state.classIndex);
   state.selectedHeroId = state.heroes[0] ? state.heroes[0].id : null;
-  try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
   closeSlotPicker();
   render();
   toast("Roster loadouts reset");
@@ -674,7 +619,8 @@ async function init() {
     state.raceIndex = loaded[1];
     state.heroes = buildHeroes(state.classIndex);
     state.selectedHeroId = state.heroes[0] ? state.heroes[0].id : null;
-    restoreGear();
+    state.classIndex.classes.forEach(function(meta){const option=document.createElement("option");option.value=meta.id;option.textContent=meta.label;$("rosterClassFilter").appendChild(option);});
+    ["rosterClassFilter","rosterAvailabilityFilter","rosterSort"].forEach(function(id){$(id).addEventListener("change",render);});
 
     ["tierFilter", "slotFilter", "gearSearch", "equippableOnly"].forEach(function(id) {
       $(id).addEventListener(id === "gearSearch" ? "input" : "change", syncFilters);
