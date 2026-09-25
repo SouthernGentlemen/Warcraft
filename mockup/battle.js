@@ -26,7 +26,8 @@ const state = {
   speed: 1,
   timer: null,
   turn: 0,
-  finished: false
+  finished: false,
+  log: []
 };
 
 const $ = id => document.getElementById(id);
@@ -214,6 +215,13 @@ function healCapable(unit) {
 function eventText(text) {
   $("battleEvent").textContent = text;
 }
+function logEvent(type, actor, target, detail, amount) {
+  state.log.push({turn:state.turn,type,actor:actor?.name||"—",target:target?.name||"—",detail:detail||"",amount:amount==null?"":amount});
+  if(state.log.length>160) state.log.shift();
+  const body=$("combatLogBody"); if(!body)return;
+  body.innerHTML=state.log.slice().reverse().map(e=>"<tr><td>"+e.turn+"</td><td>"+e.actor+"</td><td class=\"event-"+e.type+"\">"+e.type+"</td><td>"+e.detail+"</td><td>"+e.target+"</td><td>"+e.amount+"</td></tr>").join("");
+  $("combatLogMeta").textContent=state.log.length+" events";
+}
 
 function abilityLabel(unit, mode) {
   if (mode === "heal") {
@@ -397,6 +405,7 @@ function attack(attackingFaction, defendingFaction) {
     spawnFloat(healTarget.id, heal, "heal");
     spawnStreak(attacker.id, healTarget.id, "heal-streak");
     flashUnit(healTarget.id, "healed");
+    logEvent("heal",attacker,healTarget,abilityLabel(attacker,"heal"),"+"+heal);
     eventText(attacker.name + " restores " + heal + " health to " + healTarget.name + ".");
     return;
   }
@@ -427,6 +436,8 @@ function attack(attackingFaction, defendingFaction) {
     flashUnit(target.id, "death");
   }
 
+  logEvent(crit ? "critical" : "damage",attacker,target,abilityLabel(attacker,"attack"),"-"+amount);
+  if(wasAlive && target.currentHp <= 0) logEvent("death",target,target,"killed by "+attacker.name+" · "+abilityLabel(attacker,"attack"),"");
   eventText(
     attacker.name + " hits " + target.name + " for " + amount +
     (crit ? " critical damage." : " damage.")
@@ -504,6 +515,9 @@ function resetBattle() {
   state.finished = false;
   state.paused = false;
   state.speed = 1;
+  state.log = [];
+  if($("combatLogBody")) $("combatLogBody").innerHTML="";
+  if($("combatLogMeta")) $("combatLogMeta").textContent="0 events";
 
   renderTeam("alliance");
   renderTeam("horde");
