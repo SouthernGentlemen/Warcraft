@@ -731,6 +731,80 @@
   min-width: 72px;
 }
 
+/* Artisans Guild profession launcher */
+
+.base-sidecar__artisans {
+  margin-top: 7px;
+}
+
+.base-sidecar__artisan-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.base-sidecar__artisan-head small {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  text-transform: uppercase;
+}
+
+.base-sidecar__profession-list {
+  display: grid;
+  gap: 5px;
+}
+
+.base-sidecar__profession-entry {
+  min-width: 0;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: 34px minmax(0,1fr);
+  align-items: center;
+  gap: 7px;
+  padding: 6px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  border-radius: var(--wow-radius-tight);
+  background: var(--wow-surface-inset);
+  color: var(--wow-text);
+  text-decoration: none;
+}
+
+.base-sidecar__profession-entry:hover,
+.base-sidecar__profession-entry:focus-visible {
+  border-color: var(--wow-gold-muted);
+  outline: none;
+  background: rgba(183,139,59,.07);
+}
+
+.base-sidecar__profession-icon {
+  --wow-icon-size: 30px;
+}
+
+.base-sidecar__profession-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.base-sidecar__profession-copy strong,
+.base-sidecar__profession-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.base-sidecar__profession-copy strong {
+  color: var(--wow-gold-pale);
+  font: 700 10px var(--wow-font-display);
+}
+
+.base-sidecar__profession-copy small {
+  color: var(--wow-text-muted);
+  font-size: 7px;
+}
+
 /* Quest Board content inside the same sidecar */
 
 .base-sidecar__quests {
