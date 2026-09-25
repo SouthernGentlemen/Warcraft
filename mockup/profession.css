@@ -327,3 +327,17 @@
     font-size: 7px;
   }
 }
+
+/* WOWUI-078 — independent hero profession tracks */
+.profession-hero-training{display:grid;gap:8px;padding:10px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:rgba(0,0,0,.14)}
+.profession-hero-training h3{margin:2px 0 3px;color:var(--wow-text);font:700 14px var(--wow-font-display)}
+.profession-hero-training header p{margin:0;color:var(--wow-text-dim);font-size:7px;line-height:1.4}
+.profession-hero-training__controls{display:grid;grid-template-columns:auto minmax(160px,1fr) auto;align-items:center;gap:6px}
+.profession-hero-training__status{min-height:14px;color:var(--wow-gold-muted);font-size:7px}
+.profession-hero-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.profession-hero-choice{display:grid;gap:3px;padding:7px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:var(--wow-surface-inset)}
+.profession-hero-choice.is-active-track{border-color:var(--wow-gold-muted);background:rgba(183,139,59,.08)}
+.profession-hero-choice span{color:var(--wow-text-dim);font-size:6px;font-weight:800;text-transform:uppercase}
+.profession-hero-choice strong{overflow:hidden;color:var(--wow-gold-pale);font-size:9px;text-overflow:ellipsis;white-space:nowrap}
+.profession-hero-choices__empty{grid-column:1/-1;color:var(--wow-text-dim);font-size:8px}
+@media(max-width:760px){.profession-hero-training__controls{grid-template-columns:1fr}.profession-hero-choices{grid-template-columns:1fr}}

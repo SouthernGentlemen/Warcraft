@@ -31,19 +31,19 @@
             <img id="professionHeaderIcon" data-wow-icon="building" data-wow-key="artisans-guild" alt="">
           </span>
           <div>
-            <span class="wow-kicker">ARTISANS GUILD</span>
+            <span id="professionBuildingKicker" class="wow-kicker">PROFESSION BUILDING</span>
             <h1 id="professionTitle">Professions</h1>
-            <p>All professions share the Artisans Guild level.</p>
+            <p id="professionHeaderSummary">Each hero may learn one profession from each independent track.</p>
           </div>
         </div>
         <div class="profession-header__level">
           <strong id="professionGuildLevel">1</strong>
-          <small>Guild Level</small>
+          <small id="professionBuildingLevelLabel">Building Level</small>
         </div>
       </header>
 
       <div class="profession-layout">
-        <nav id="professionList" class="profession-list" aria-label="Artisans Guild professions"></nav>
+        <nav id="professionList" class="profession-list" aria-label="Profession track"></nav>
 
         <section class="profession-detail">
           <header class="profession-detail__head">
@@ -68,15 +68,30 @@
 
           <section class="profession-progression" aria-labelledby="professionProgressionTitle">
             <header>
-              <span class="wow-kicker">SHARED GUILD PROGRESSION</span>
+              <span id="professionProgressionKicker" class="wow-kicker">SHARED BUILDING PROGRESSION</span>
               <h3 id="professionProgressionTitle">Level Progression</h3>
             </header>
             <div id="professionProgressionList" class="profession-progression__list"></div>
           </section>
 
+          <section class="profession-hero-training" aria-labelledby="professionHeroTrainingTitle">
+            <header>
+              <span class="wow-kicker">HERO PROFESSION</span>
+              <h3 id="professionHeroTrainingTitle">Learn or Change Profession</h3>
+              <p>A hero owns one Artisan, one Gathering, and one Survival choice. Changing this profession replaces only its track.</p>
+            </header>
+            <div class="profession-hero-training__controls">
+              <label class="wow-label" for="professionHeroSelect">Hero</label>
+              <select id="professionHeroSelect" class="wow-select"></select>
+              <button id="professionLearnButton" class="wow-button wow-button--primary" type="button">Learn Profession</button>
+            </div>
+            <div id="professionTrainingStatus" class="profession-hero-training__status" role="status" aria-live="polite"></div>
+            <div id="professionHeroChoices" class="profession-hero-choices" aria-label="Selected hero profession tracks"></div>
+          </section>
+
           <div class="profession-actions">
             <a class="wow-button wow-button--primary" href="./inventory.html">Open Inventory</a>
-            <a class="wow-button" href="./base.html">Back to Artisans Guild</a>
+            <a id="professionBackToBuilding" class="wow-button" href="./base.html">Back to Profession Building</a>
           </div>
         </section>
       </div>
@@ -86,6 +101,7 @@
   <script src="./ui/wow-icons.js"></script>
   <script src="./ui/wow-tooltips.js"></script>
   <script src="./ui/warcraft-campaign.js"></script>\n  <script src="./ui/wow-nav.js"></script>
+  <script src="./ui/warcraft-roster.js"></script>
   <script src="./ui/warcraft-professions.js"></script>
   <script src="./profession.js"></script>
 </body>
