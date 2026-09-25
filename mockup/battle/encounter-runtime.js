@@ -59,6 +59,8 @@ async function heroDefinition(hero,classIndex,team=0){
     specData,
     abilityData,
     level:Math.max(1,integer(hero.level,1)),
+    selectedCooldownIds:[hero.combatLoadout.ability1Id,hero.combatLoadout.ability2Id],
+    selectedUltimateId:hero.combatLoadout.ultimateId,
     selectedTalentNames:Array.isArray(hero.talentBuild&&hero.talentBuild.picks)?hero.talentBuild.picks:null,
     team
   }),{
