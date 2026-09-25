@@ -153,3 +153,7 @@ Base building sidecars now contain only building identity in the header, one or 
 ### Recruitment Hall
 
 Recruitment Hall now opens a real in-sidecar discovery workflow. Level progression carries authored `roster_capacity` and `discovery_limit` values, so higher Hall levels reveal more faction-valid candidates and support a larger faction roster. Candidates come from `data/base/recruitment.json`; recruiting writes through `WarcraftRoster.recruitHero()`, which rejects duplicates, wrong-faction candidates, and over-capacity writes. Recruited heroes persist in shared roster storage, survive normalization/reload, and appear automatically in the existing Roster workspace.
+
+### Storehouse Inventory link
+
+Storehouse is a direct Base entry point into global Inventory. Its compact sidecar contains exactly one primary building action, `Open Inventory`, plus the shared Upgrade control. It has no Storehouse-only informational workflow or selection-detail panel. Inventory remains read-only on navigation/load, so opening Storehouse → Inventory does not mutate roster or ownership state.
