@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/heroes/races/tauren/README.md",
+  "kind": "race",
+  "title": "Tauren",
+  "race": "Tauren",
+  "racial": {
+    "name": "War Stomp",
+    "mechanic": "Once per combat, disrupt nearby enemies with a short control effect."
+  },
+  "balance_role": "Tauren is a durable control-oriented racial with situational encounter utility."
+}
