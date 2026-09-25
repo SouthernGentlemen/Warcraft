@@ -7,45 +7,40 @@
 - Primary stat: Intellect
 - Auto-attack: Fel Bolt — ranged Fel damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Demonology** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Demonology** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Demonic Familiar** | Every third Fel Bolt triggers a demon strike for 50% of Fel Bolt's damage. |
-| **Fel Intellect** | Increase maximum Mana by 10% and reduce equipped cooldown Mana costs by 5%. |
-| **Demonic Guard** | Every third demon strike grants a shield equal to 5% maximum health. |
+| **Improved Healthstone** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Improved Imp** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Demonic Pact** | Demon strikes grant 8% Spell Power for 4 seconds. |
-| **Legion** | Demonic Familiar's demon strike triggers twice at 60% damage each. |
-| **Soul Conduit** | Demon strikes generate 3% ultimate-bar charge. |
+| **Improved Succubus** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Fel Domination** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Metamorphosis** | Using the selected ultimate grants 25% Spell Power and 20% auto-attack speed for 8 seconds. |
-| **Master Summoner** | Every second equipped cooldown used triggers a demon strike, and all demon strikes deal 25% more damage. |
+| **Improved Spellstone** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warlock/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.

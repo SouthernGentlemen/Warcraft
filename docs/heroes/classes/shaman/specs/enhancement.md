@@ -7,45 +7,40 @@
 - Primary stat: Agility
 - Auto-attack: Storm Strike — melee weapon damage with Nature component
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Enhancement** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Enhancement** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Windfury** | Storm Strike has a 15% chance to trigger an extra strike for 50% damage. |
-| **Flametongue** | Storm Strike applies a Burn for 10% of the hit's damage over 4 seconds. |
-| **Mental Quickness** | Mana costs of equipped cooldown abilities are reduced by 10%. |
+| **Ancestral Knowledge** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Sheild Specialization** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Maelstrom Weapon** | Every third auto-attack reduces both equipped cooldowns' remaining time by 1 second. |
-| **Stormbringer** | Auto-attacks have a 10% chance to reset one equipped cooldown. |
-| **Elemental Weapons** | Equipped cooldown abilities deal 15% more damage while the target is affected by Flametongue. |
+| **Enhancing Totems** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Two-Handed Axes and Maces** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Doom Winds** | Using the selected ultimate grants 30% auto-attack speed for 8 seconds and guarantees Windfury on every second auto-attack. |
-| **Elemental Fury** | Storm Strike cycles Fire, Frost, and Nature empowerment: Fire adds a Burn, Frost slows the target's next auto bar by 15%, and Nature deals 20% bonus damage. |
+| **Stormstrike** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Shaman/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.

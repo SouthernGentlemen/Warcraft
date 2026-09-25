@@ -7,45 +7,40 @@
 - Primary stat: Intellect
 - Auto-attack: Shadow Bolt — ranged Shadow damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Affliction** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Affliction** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Agony** | Shadow Bolt applies Agony for 10% of the hit's damage over 6 seconds; refreshes duration. |
-| **Soul Siphon** | Heal for 10% of damage dealt by damage-over-time effects. |
-| **Suppression** | Gain 10% more Hit Rating from equipped gear. |
+| **Suppression** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Improved Corruption** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Pandemic** | Damage-over-time effects last 30% longer. |
-| **Shadow Embrace** | Damaging equipped cooldowns increase the target's damage-over-time damage taken from this hero by 15% for 5 seconds. |
-| **Dark Pact** | While below 30% Mana, auto-attacks restore 2% maximum Mana. |
+| **Improved Curse of Agony** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Fel Concentration** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Unstable Affliction** | Agony can critically strike, and each Agony tick generates 1% ultimate-bar charge. |
-| **Soul Rot** | Using the selected ultimate refreshes this hero's damage-over-time effects and copies them to all enemies at 50% remaining duration. |
+| **Dark Pact** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warlock/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.

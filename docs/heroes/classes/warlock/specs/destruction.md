@@ -7,45 +7,40 @@
 - Primary stat: Intellect
 - Auto-attack: Chaos Bolt — ranged Fire/Shadow damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Destruction** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Destruction** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Ember Bolt** | Chaos Bolt deals 15% more damage. |
-| **Backdraft** | Critical auto-attacks reduce both equipped cooldowns' remaining time by 10%. |
-| **Ruin** | Equipped cooldown abilities gain 10% Critical Strike chance. |
+| **Improved Shadow Bolt** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Cataclysm** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Conflagration** | Damaging equipped cooldowns apply a Burn for 20% of their damage over 4 seconds. |
-| **Fire and Brimstone** | Every fourth Chaos Bolt also hits all other enemies for 50% damage. |
-| **Soul Fire** | Mana costs of damaging equipped cooldowns are reduced by 15%. |
+| **Improved Firebolt** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Improved Lash of Pain** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Chaos Incarnate** | Using the selected ultimate makes the next two equipped cooldown abilities cost no Mana and deal 25% more damage. |
-| **Burning Soul** | Burn can stack twice, and Burning targets take 20% more damage from Chaos Bolt. |
+| **Conflagrate** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warlock/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.

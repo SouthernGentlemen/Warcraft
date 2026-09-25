@@ -7,45 +7,40 @@
 - Primary stat: Intellect
 - Auto-attack: Lightning Bolt — ranged Nature damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Elemental** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Elemental** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Elemental Overload** | Lightning Bolt has a 15% chance to strike again for 50% damage. |
-| **Convection** | Mana costs of equipped cooldown abilities are reduced by 10%. |
-| **Elemental Focus** | Critical Lightning Bolts cause the next equipped cooldown to deal 15% more damage. |
+| **Convection** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Concussion** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Chain Lightning** | Every fourth Lightning Bolt chains to two additional enemies for 50% damage. |
-| **Lava Surge** | Critical damage from an equipped cooldown reduces the other equipped cooldown's remaining time by 2 seconds. |
-| **Elemental Equilibrium** | Alternating between an auto-attack and an equipped cooldown grants 10% Spell Power for 5 seconds. |
+| **Elemental Focus** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Reverberation** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Ascendance** | Using the selected ultimate grants 25% Spell Power and 20% Haste for 8 seconds. |
-| **Stormkeeper** | Using the selected ultimate causes the next three Lightning Bolts to strike twice and always hit. |
+| **Elemental Mastery** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Shaman/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.

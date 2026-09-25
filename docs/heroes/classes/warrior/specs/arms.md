@@ -7,45 +7,40 @@
 - Primary stat: Strength
 - Auto-attack: Heavy Swing — heavy melee weapon damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Arms** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Arms** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Deep Wounds** | Critical auto-attacks bleed the target for 15% of the hit's damage over 4 seconds. |
-| **Tactical Rage** | Auto-attacks generate 20% more Rage. |
-| **Heavy Hands** | Heavy Swing deals 15% more damage. |
+| **Improved Heroic Strike** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Deflection** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Mortal Pressure** | Damaging equipped cooldowns reduce healing received by the target by 25% for 5 seconds. |
-| **Sweeping Strikes** | Every fourth auto-attack also hits a second enemy for 60% damage. |
-| **Sudden Death** | Damaging equipped cooldowns have a 10% chance to immediately fill the auto-attack bar. |
+| **Improved Overpower** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Anger Management** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Bladestorm** | Using the selected ultimate grants 30% auto-attack speed and causes auto-attacks to cleave a second enemy for 50% damage for 8 seconds. |
-| **Execute** | Deal 30% more damage to targets below 30% health, and auto-attacks against them generate 25% more Rage. |
+| **Mortal Strike** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.

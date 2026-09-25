@@ -3,7 +3,7 @@
   "source_path": "docs/heroes/classes/warrior/specs/arms.md",
   "kind": "specialization",
   "title": "Warrior — Arms",
-  "source_markdown": "# Warrior — Arms\n\n## Talent Prototype\n\nTwo normal talent tiers plus one capstone. Canonical Classic identities/icons come from the Arms tree. Unlocks use only structured tier thresholds; there are no per-node prerequisite chains.\n",
+  "source_markdown": "# Warrior — Arms\n\n## Identity\n\n- Role: Heavy melee damage\n- Resource: Rage\n- Primary stat: Strength\n- Auto-attack: Heavy Swing — heavy melee weapon damage\n\n## Talent Prototype\n\nThis compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Arms** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.\n\n### Tier 1\n\nChoose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Improved Heroic Strike** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Deflection** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Tier 2\n\nRequires a Tier 1 choice. Choose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Improved Overpower** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Anger Management** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Capstone\n\nRequires a Tier 2 choice. Choose the single capstone.\n\n| Capstone | Prototype effect |\n| --- | --- |\n| **Mortal Strike** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\nCanonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts\n\n## Combat Loadout\n\nThis specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
   "class": "Warrior",
   "specialization": "Arms",
   "identity": {
@@ -20,6 +20,13 @@
         "icon_slug": "ability_rogue_ambush",
         "canonical_tree": "Arms",
         "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts"
+      },
+      {
+        "name": "Deflection",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "ability_parry",
+        "canonical_tree": "Arms",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts"
       }
     ],
     "tier_2": [
@@ -27,6 +34,13 @@
         "name": "Improved Overpower",
         "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
         "icon_slug": "inv_sword_05",
+        "canonical_tree": "Arms",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts"
+      },
+      {
+        "name": "Anger Management",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_holy_blessingofstamina",
         "canonical_tree": "Arms",
         "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts"
       }
@@ -47,6 +61,11 @@
     "tier_1_unlock_points": 0,
     "tier_2_unlock_points": 1,
     "capstone_unlock_points": 2,
-    "dependency_rule": "tier-only; no per-node prerequisites"
+    "dependency_rule": "tier-only; no per-node prerequisites",
+    "tier_counts": {
+      "tier_1": 2,
+      "tier_2": 2,
+      "capstones": 1
+    }
   }
 }
