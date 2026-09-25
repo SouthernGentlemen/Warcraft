@@ -8,7 +8,7 @@ The equipment system should remain simple enough to manage across a large roster
 
 ## Fixed Equipment Slots
 
-Each hero currently has six fixed equipment slots.
+Each hero has seven fixed equipment slots.
 
 ### Armor Slots
 
@@ -27,6 +27,12 @@ Each armor item occupies exactly one armor slot.
 Each hero equips exactly one weapon item.
 
 The current design does not include a separate off-hand, shield, or second weapon slot. If those concepts are introduced later, they must fit within or explicitly expand the one-weapon-slot rule.
+
+### Trinket Slot
+
+- Trinket
+
+Each hero equips exactly one trinket item.
 
 ## Armor Families
 
@@ -91,9 +97,7 @@ This structure defines how many stat lines crafted gear receives. Exact stat val
 
 ## Trinkets
 
-Trinkets are an equipment family and may provide specialized bonuses or effects.
-
-A dedicated trinket slot is not yet part of the committed six-slot hero loadout. The exact trinket equip model remains open.
+Trinkets are an equipment family with one dedicated Trinket slot per hero. They may provide specialized bonuses or effects; exact effect rules and class/item restrictions remain open for later tuning.
 
 ## Equipment Eligibility
 
@@ -123,6 +127,6 @@ Later equipment design must define:
 - stat roll and selection rules
 - item power within a tier
 - set bonuses, if any
-- trinket slots and restrictions
+- trinket effect and restriction rules
 - enchantable slots
 - equipment acquisition and replacement flow
