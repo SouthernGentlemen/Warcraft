@@ -115,3 +115,7 @@ Core and profession sidecars show current/next capabilities, prerequisites, Gold
 The closed-sidecar map communicates at most one primary attention state per building. Priority is Quest complete, Quest ready, profession action, upgrade ready, then blocked. Markers are compact, accessible through the building label/tooltips, and recalculate after resource, upgrade, roster, dispatch, and completion changes.
 
 Responsive behavior remains map-first: desktop and tablet use an overlay sidecar, while mobile uses a full-width bottom sheet that leaves part of the map visible. Mobile building positions are reflowed to reduce collisions, controls retain usable tap targets, sidecar content scrolls independently, tooltips clamp to the viewport, and reduced-motion preferences suppress unnecessary transitions.
+
+### Faction-aware Base presentation
+
+Base presentation is driven by the persisted player faction in `WarcraftRoster`. Race Selector writes that faction state, while `data/base/presentation.json` defines Alliance/Horde stronghold identity, crest, Keep art, terrain theme, and desktop/mobile hotspot coordinates. Building IDs, levels, upgrade rules, resources, quests, and sidecar logic remain shared between factions.
