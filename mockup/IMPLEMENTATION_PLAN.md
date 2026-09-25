@@ -393,7 +393,7 @@ Make the map-first/sidecar model work cleanly across desktop, tablet, and mobile
 
 ### WOWUI-029 — Base Cleanup, Dead-Code Removal, and Regression Coverage
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-028
 
