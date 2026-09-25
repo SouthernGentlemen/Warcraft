@@ -613,6 +613,8 @@ Make equipment management slot-first and compact: clicking a paper-doll slot sho
 
 ## WOWUI-015 — Building Levels 1–5 And Tier Mapping
 
+**Status:** Complete — 2026-09-24
+
 ### Objective
 
 Give every building one consistent five-level progression contract tied directly to world/meta progression tiers, and make that progression **fully operable in the Base mockup** rather than leaving it as a data-only contract.
