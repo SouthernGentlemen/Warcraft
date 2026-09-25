@@ -642,7 +642,7 @@ Remove Command Hall as a Base building/hotspot and eliminate its redundant progr
 
 ### WOWUI-037 — Keep as Base Upgrade Authority
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-036
 
