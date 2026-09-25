@@ -48,6 +48,26 @@
         </div>
 
         <section class="base-map wow-inset" id="baseMap" aria-label="Base map">
+          <nav id="baseActionBar" class="base-action-dock wow-frame" aria-label="Base player actions">
+            <a class="base-action-dock__item" href="./quest-journal.html" aria-label="Open Quest Journal"
+              data-wow-tooltip="Quest Journal" data-wow-tooltip-type="Player Action"
+              data-wow-tooltip-description="Review available, active, and completed quests." data-wow-tooltip-variant="control">
+              <span class="base-action-dock__icon wow-icon-frame wow-icon-frame--sm"><img data-wow-icon="quest" data-wow-key="journal" alt=""></span>
+              <span class="base-action-dock__label">Quest Journal</span>
+            </a>
+            <a class="base-action-dock__item" href="./heroes.html" aria-label="Open Roster"
+              data-wow-tooltip="Roster" data-wow-tooltip-type="Player Action"
+              data-wow-tooltip-description="Manage heroes, equipment, talents, and saved parties." data-wow-tooltip-variant="control">
+              <span class="base-action-dock__icon wow-icon-frame wow-icon-frame--sm"><img data-wow-icon="race" data-wow-key="human" alt=""></span>
+              <span class="base-action-dock__label">Roster</span>
+            </a>
+            <a class="base-action-dock__item" href="./inventory.html" aria-label="Open Inventory"
+              data-wow-tooltip="Inventory" data-wow-tooltip-type="Player Action"
+              data-wow-tooltip-description="Browse owned equipment across the roster." data-wow-tooltip-variant="control">
+              <span class="base-action-dock__icon wow-icon-frame wow-icon-frame--sm"><img data-wow-icon="equipment-slot" data-wow-key="chest" alt=""></span>
+              <span class="base-action-dock__label">Inventory</span>
+            </a>
+          </nav>
           <div class="base-map-backdrop" aria-hidden="true"></div>
           <div class="base-river river-a" aria-hidden="true"></div>
           <div class="base-river river-b" aria-hidden="true"></div>
