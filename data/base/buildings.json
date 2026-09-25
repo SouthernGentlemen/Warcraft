@@ -28,7 +28,8 @@
           },
           "requirements": [],
           "capabilities": [
-            "quest_board_tier_1"
+            "quest_board_tier_1",
+            "missions_tier_1"
           ]
         },
         {
@@ -41,7 +42,8 @@
           },
           "requirements": [],
           "capabilities": [
-            "quest_board_tier_2"
+            "quest_board_tier_2",
+            "missions_tier_2"
           ]
         },
         {
@@ -54,7 +56,8 @@
           },
           "requirements": [],
           "capabilities": [
-            "quest_board_tier_3"
+            "quest_board_tier_3",
+            "missions_tier_3"
           ]
         },
         {
@@ -67,7 +70,8 @@
           },
           "requirements": [],
           "capabilities": [
-            "quest_board_tier_4"
+            "quest_board_tier_4",
+            "missions_tier_4"
           ]
         },
         {
@@ -80,7 +84,8 @@
           },
           "requirements": [],
           "capabilities": [
-            "quest_board_tier_5"
+            "quest_board_tier_5",
+            "missions_tier_5"
           ]
         }
       ]
@@ -386,106 +391,6 @@
           ],
           "capabilities": [
             "recruitment_tier_5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "command",
-      "name": "Command Hall",
-      "short": "Command Hall",
-      "category": "core",
-      "level": 1,
-      "max_level": 5,
-      "description": "Provides global mission and roster bonuses.",
-      "progression": [
-        {
-          "level": 1,
-          "tier": 1,
-          "cost": {
-            "gold": 0,
-            "lumber": 0,
-            "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "missions_tier_1"
-          ]
-        },
-        {
-          "level": 2,
-          "tier": 2,
-          "cost": {
-            "gold": 800,
-            "lumber": 600,
-            "stone": 200
-          },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 2
-            }
-          ],
-          "capabilities": [
-            "missions_tier_2"
-          ]
-        },
-        {
-          "level": 3,
-          "tier": 3,
-          "cost": {
-            "gold": 980,
-            "lumber": 740,
-            "stone": 250
-          },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 3
-            }
-          ],
-          "capabilities": [
-            "missions_tier_3"
-          ]
-        },
-        {
-          "level": 4,
-          "tier": 4,
-          "cost": {
-            "gold": 1200,
-            "lumber": 900,
-            "stone": 300
-          },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 4
-            }
-          ],
-          "capabilities": [
-            "missions_tier_4"
-          ]
-        },
-        {
-          "level": 5,
-          "tier": 5,
-          "cost": {
-            "gold": 1460,
-            "lumber": 1090,
-            "stone": 370
-          },
-          "requirements": [
-            {
-              "type": "building_level",
-              "building": "keep",
-              "level": 5
-            }
-          ],
-          "capabilities": [
-            "missions_tier_5"
           ]
         }
       ]
