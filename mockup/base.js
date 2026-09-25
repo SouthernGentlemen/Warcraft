@@ -565,6 +565,15 @@ function generateQuestOfferIds(round, boardLevel) {
   return shuffled.slice(0, Math.min(questOfferPool.offer_count, shuffled.length)).map(offer => offer.id);
 }
 
+function ensureDifferentQuestOfferSet(nextIds, previousIds, boardLevel) {
+  if (!previousIds.length || nextIds.length !== previousIds.length) return nextIds;
+  const sameSet = nextIds.every(id => previousIds.includes(id)) && previousIds.every(id => nextIds.includes(id));
+  if (!sameSet) return nextIds;
+  const replacement = questOfferPool.offers.find(offer => offer.min_board_level <= boardLevel && !previousIds.includes(offer.id));
+  if (!replacement || !nextIds.length) return nextIds;
+  return nextIds.slice(0, -1).concat(replacement.id);
+}
+
 function ensureQuestRoundOffers(board) {
   const boardState = Roster.getQuestBoardState();
   if (boardState.offerIds.length) return boardState.offerIds;
@@ -588,7 +597,7 @@ function renderQuestBoard() {
     roundButton.textContent='Advance to Round '+(boardState.round+1);
     roundButton.addEventListener('click',()=>{
       const nextRound=boardState.round+1;
-      const nextIds=generateQuestOfferIds(nextRound,board.level);
+      const nextIds=ensureDifferentQuestOfferSet(generateQuestOfferIds(nextRound,board.level),boardState.offerIds,board.level);
       Roster.advanceQuestRound(nextIds);
       state.questMessage='Quest Board advanced to Round '+nextRound+'.';
       renderSidecar();
