@@ -22,6 +22,8 @@ Heroes progress through five levels:
 
 Levels correspond to the game's five progression tiers.
 
+Every class has an authored Level 1–5 baseline for Strength, Agility, Intellect, Stamina, and Spirit in `data/heroes/classes/index.json`. These base values are immutable identity/progression data; equipment, talents, and temporary effects are applied separately when final combat values are calculated.
+
 A hero should remain capable of progressing from Level 1 to Level 5 rather than becoming permanently obsolete because of recruitment quality.
 
 ## Races
@@ -38,7 +40,7 @@ Horde:
 - Undead
 - Troll
 
-Each race provides exactly one passive racial bonus.
+Each race provides exactly one passive racial bonus. The Roster reads the authored racial name and mechanic directly from `data/heroes/races/index.json` and presents it with the hero's identity.
 
 See [Races](./races/README.md).
 

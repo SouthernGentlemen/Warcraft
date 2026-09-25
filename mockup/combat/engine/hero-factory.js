@@ -1,13 +1,14 @@
 import { BP, DEFAULT_AUTO_TICKS, mulBp } from "./constants.js";
 import { compileTalentHooks, defaultTalentNames } from "./talent-hooks.js";
 
-const LEVEL_BASELINES = {
-  1: { major:12, minor:4, stamina:14, spirit:10, crit:0, haste:0, hit:0, mastery:0 },
-  2: { major:20, minor:6, stamina:22, spirit:16, crit:1, haste:1, hit:1, mastery:0 },
-  3: { major:30, minor:8, stamina:32, spirit:23, crit:2, haste:2, hit:2, mastery:1 },
-  4: { major:42, minor:10, stamina:44, spirit:31, crit:4, haste:4, hit:3, mastery:2 },
-  5: { major:56, minor:12, stamina:58, spirit:40, crit:6, haste:6, hit:4, mastery:4 }
-};
+const COMBAT_RATING_BASELINES = Object.freeze({
+  1: Object.freeze({crit:0,haste:0,hit:0,mastery:0}),
+  2: Object.freeze({crit:1,haste:1,hit:1,mastery:0}),
+  3: Object.freeze({crit:2,haste:2,hit:2,mastery:1}),
+  4: Object.freeze({crit:4,haste:4,hit:3,mastery:2}),
+  5: Object.freeze({crit:6,haste:6,hit:4,mastery:4})
+});
+const PRIMARY_STAT_KEYS=Object.freeze(["strength","agility","intellect","stamina","spirit"]);
 
 function normalizeResource(identityResource) {
   const value = String(identityResource || "").toLowerCase();
@@ -42,24 +43,31 @@ function primaryKey(specData) {
   return "intellect";
 }
 
-function buildStats(level, specData) {
-  const row = LEVEL_BASELINES[level] || LEVEL_BASELINES[5];
-  const primary = primaryKey(specData);
+function buildBaseStats(level,classMeta){
+  const resolvedLevel=Math.max(1,Math.min(5,Number(level)||1));
+  const row=classMeta&&classMeta.base_stats&&classMeta.base_stats[String(resolvedLevel)];
+  if(!row)throw new Error("Missing authored base stats for "+String(classMeta&&classMeta.id||"unknown")+" level "+resolvedLevel+".");
+  const base={};
+  for(const key of PRIMARY_STAT_KEYS){
+    const value=Number(row[key]);
+    if(!Number.isFinite(value))throw new Error("Invalid authored "+key+" for "+String(classMeta&&classMeta.id||"unknown")+" level "+resolvedLevel+".");
+    base[key]=value;
+  }
+  return base;
+}
+
+function buildStats(level,classMeta,specData) {
+  const baseStats=buildBaseStats(level,classMeta);
+  const ratings=COMBAT_RATING_BASELINES[level] || COMBAT_RATING_BASELINES[5];
   const stats = {
-    spirit: row.spirit,
-    stamina: row.stamina,
-    strength: row.minor,
-    agility: row.minor,
-    intellect: row.minor,
-    crit: row.crit,
-    haste: row.haste,
+    ...baseStats,
+    crit: ratings.crit,
+    haste: ratings.haste,
     spellPower: 0,
     healingPower: 0,
-    hitRating: row.hit,
-    mastery: row.mastery
+    hitRating: ratings.hit,
+    mastery: ratings.mastery
   };
-
-  stats[primary] = row.major;
 
   const role = String(specData.identity?.role || "").toLowerCase();
   if (role.includes("spell") || role.includes("shadow") || role.includes("elemental")) {
@@ -69,7 +77,7 @@ function buildStats(level, specData) {
     stats.healingPower = level * 3;
   }
 
-  return stats;
+  return {baseStats,stats};
 }
 
 function buildDerived(stats, hooks) {
@@ -137,7 +145,7 @@ export function createHeroDefinition({
 }) {
   const talents = selectedTalentNames || defaultTalentNames(specData, level);
   const talentHooks = compileTalentHooks(specData, talents);
-  const stats = buildStats(level, specData);
+  const {baseStats,stats} = buildStats(level, classMeta, specData);
   const derived = buildDerived(stats, talentHooks);
   const resourceType = normalizeResource(specData.identity?.resource);
 
@@ -174,6 +182,7 @@ export function createHeroDefinition({
     className: classMeta.label,
     specId: classMeta.specs.find(s => s.label === specData.specialization)?.id || specData.specialization.toLowerCase(),
     specName: specData.specialization,
+    baseStats,
     stats,
     derived,
     resourceType,

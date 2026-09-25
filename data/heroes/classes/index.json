@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "classes": [
     {
       "id": "druid",
@@ -22,7 +22,44 @@
           "label": "Restoration",
           "data_path": "./druid/specs/restoration.json"
         }
-      ]
+      ],
+      "base_stats": {
+        "1": {
+          "strength": 6,
+          "agility": 10,
+          "intellect": 10,
+          "stamina": 14,
+          "spirit": 11
+        },
+        "2": {
+          "strength": 9,
+          "agility": 16,
+          "intellect": 16,
+          "stamina": 22,
+          "spirit": 18
+        },
+        "3": {
+          "strength": 13,
+          "agility": 24,
+          "intellect": 24,
+          "stamina": 32,
+          "spirit": 26
+        },
+        "4": {
+          "strength": 18,
+          "agility": 34,
+          "intellect": 34,
+          "stamina": 44,
+          "spirit": 35
+        },
+        "5": {
+          "strength": 24,
+          "agility": 46,
+          "intellect": 46,
+          "stamina": 58,
+          "spirit": 45
+        }
+      }
     },
     {
       "id": "hunter",
@@ -45,7 +82,44 @@
           "label": "Survival",
           "data_path": "./hunter/specs/survival.json"
         }
-      ]
+      ],
+      "base_stats": {
+        "1": {
+          "strength": 7,
+          "agility": 12,
+          "intellect": 6,
+          "stamina": 14,
+          "spirit": 8
+        },
+        "2": {
+          "strength": 11,
+          "agility": 20,
+          "intellect": 9,
+          "stamina": 22,
+          "spirit": 13
+        },
+        "3": {
+          "strength": 16,
+          "agility": 30,
+          "intellect": 13,
+          "stamina": 32,
+          "spirit": 19
+        },
+        "4": {
+          "strength": 22,
+          "agility": 42,
+          "intellect": 18,
+          "stamina": 44,
+          "spirit": 26
+        },
+        "5": {
+          "strength": 29,
+          "agility": 56,
+          "intellect": 24,
+          "stamina": 58,
+          "spirit": 34
+        }
+      }
     },
     {
       "id": "mage",
@@ -68,7 +142,44 @@
           "label": "Frost",
           "data_path": "./mage/specs/frost.json"
         }
-      ]
+      ],
+      "base_stats": {
+        "1": {
+          "strength": 4,
+          "agility": 4,
+          "intellect": 12,
+          "stamina": 11,
+          "spirit": 12
+        },
+        "2": {
+          "strength": 6,
+          "agility": 6,
+          "intellect": 20,
+          "stamina": 18,
+          "spirit": 19
+        },
+        "3": {
+          "strength": 8,
+          "agility": 8,
+          "intellect": 30,
+          "stamina": 26,
+          "spirit": 27
+        },
+        "4": {
+          "strength": 10,
+          "agility": 10,
+          "intellect": 42,
+          "stamina": 36,
+          "spirit": 36
+        },
+        "5": {
+          "strength": 12,
+          "agility": 12,
+          "intellect": 56,
+          "stamina": 48,
+          "spirit": 46
+        }
+      }
     },
     {
       "id": "paladin",
@@ -92,7 +203,44 @@
           "label": "Retribution",
           "data_path": "./paladin/specs/retribution.json"
         }
-      ]
+      ],
+      "base_stats": {
+        "1": {
+          "strength": 12,
+          "agility": 4,
+          "intellect": 9,
+          "stamina": 16,
+          "spirit": 9
+        },
+        "2": {
+          "strength": 20,
+          "agility": 6,
+          "intellect": 14,
+          "stamina": 25,
+          "spirit": 14
+        },
+        "3": {
+          "strength": 30,
+          "agility": 8,
+          "intellect": 21,
+          "stamina": 36,
+          "spirit": 21
+        },
+        "4": {
+          "strength": 42,
+          "agility": 10,
+          "intellect": 29,
+          "stamina": 49,
+          "spirit": 29
+        },
+        "5": {
+          "strength": 56,
+          "agility": 12,
+          "intellect": 39,
+          "stamina": 64,
+          "spirit": 38
+        }
+      }
     },
     {
       "id": "priest",
@@ -115,7 +263,44 @@
           "label": "Shadow",
           "data_path": "./priest/specs/shadow.json"
         }
-      ]
+      ],
+      "base_stats": {
+        "1": {
+          "strength": 4,
+          "agility": 4,
+          "intellect": 12,
+          "stamina": 12,
+          "spirit": 13
+        },
+        "2": {
+          "strength": 6,
+          "agility": 6,
+          "intellect": 20,
+          "stamina": 19,
+          "spirit": 21
+        },
+        "3": {
+          "strength": 8,
+          "agility": 8,
+          "intellect": 30,
+          "stamina": 28,
+          "spirit": 30
+        },
+        "4": {
+          "strength": 10,
+          "agility": 10,
+          "intellect": 42,
+          "stamina": 38,
+          "spirit": 40
+        },
+        "5": {
+          "strength": 12,
+          "agility": 12,
+          "intellect": 56,
+          "stamina": 50,
+          "spirit": 51
+        }
+      }
     },
     {
       "id": "rogue",
@@ -138,7 +323,44 @@
           "label": "Subtlety",
           "data_path": "./rogue/specs/subtlety.json"
         }
-      ]
+      ],
+      "base_stats": {
+        "1": {
+          "strength": 8,
+          "agility": 12,
+          "intellect": 4,
+          "stamina": 13,
+          "spirit": 6
+        },
+        "2": {
+          "strength": 12,
+          "agility": 20,
+          "intellect": 6,
+          "stamina": 21,
+          "spirit": 9
+        },
+        "3": {
+          "strength": 18,
+          "agility": 30,
+          "intellect": 8,
+          "stamina": 30,
+          "spirit": 13
+        },
+        "4": {
+          "strength": 25,
+          "agility": 42,
+          "intellect": 10,
+          "stamina": 41,
+          "spirit": 18
+        },
+        "5": {
+          "strength": 34,
+          "agility": 56,
+          "intellect": 12,
+          "stamina": 54,
+          "spirit": 23
+        }
+      }
     },
     {
       "id": "shaman",
@@ -162,7 +384,44 @@
           "label": "Restoration",
           "data_path": "./shaman/specs/restoration.json"
         }
-      ]
+      ],
+      "base_stats": {
+        "1": {
+          "strength": 8,
+          "agility": 10,
+          "intellect": 10,
+          "stamina": 15,
+          "spirit": 10
+        },
+        "2": {
+          "strength": 12,
+          "agility": 16,
+          "intellect": 16,
+          "stamina": 24,
+          "spirit": 16
+        },
+        "3": {
+          "strength": 18,
+          "agility": 24,
+          "intellect": 24,
+          "stamina": 35,
+          "spirit": 23
+        },
+        "4": {
+          "strength": 25,
+          "agility": 34,
+          "intellect": 34,
+          "stamina": 48,
+          "spirit": 31
+        },
+        "5": {
+          "strength": 34,
+          "agility": 46,
+          "intellect": 46,
+          "stamina": 63,
+          "spirit": 40
+        }
+      }
     },
     {
       "id": "warlock",
@@ -185,7 +444,44 @@
           "label": "Destruction",
           "data_path": "./warlock/specs/destruction.json"
         }
-      ]
+      ],
+      "base_stats": {
+        "1": {
+          "strength": 4,
+          "agility": 4,
+          "intellect": 12,
+          "stamina": 15,
+          "spirit": 10
+        },
+        "2": {
+          "strength": 6,
+          "agility": 6,
+          "intellect": 20,
+          "stamina": 24,
+          "spirit": 15
+        },
+        "3": {
+          "strength": 8,
+          "agility": 8,
+          "intellect": 30,
+          "stamina": 35,
+          "spirit": 21
+        },
+        "4": {
+          "strength": 10,
+          "agility": 10,
+          "intellect": 42,
+          "stamina": 48,
+          "spirit": 28
+        },
+        "5": {
+          "strength": 12,
+          "agility": 12,
+          "intellect": 56,
+          "stamina": 63,
+          "spirit": 36
+        }
+      }
     },
     {
       "id": "warrior",
@@ -208,7 +504,61 @@
           "label": "Protection",
           "data_path": "./warrior/specs/protection.json"
         }
-      ]
+      ],
+      "base_stats": {
+        "1": {
+          "strength": 12,
+          "agility": 7,
+          "intellect": 4,
+          "stamina": 16,
+          "spirit": 5
+        },
+        "2": {
+          "strength": 20,
+          "agility": 11,
+          "intellect": 6,
+          "stamina": 25,
+          "spirit": 8
+        },
+        "3": {
+          "strength": 30,
+          "agility": 16,
+          "intellect": 8,
+          "stamina": 36,
+          "spirit": 12
+        },
+        "4": {
+          "strength": 42,
+          "agility": 22,
+          "intellect": 10,
+          "stamina": 49,
+          "spirit": 16
+        },
+        "5": {
+          "strength": 56,
+          "agility": 29,
+          "intellect": 12,
+          "stamina": 64,
+          "spirit": 21
+        }
+      }
     }
-  ]
+  ],
+  "base_stat_model": {
+    "levels": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "stats": [
+      "strength",
+      "agility",
+      "intellect",
+      "stamina",
+      "spirit"
+    ],
+    "rule": "Each class owns one authored base-stat row per hero level. Specializations, equipment, talents, and temporary effects do not rewrite these base rows."
+  }
 }
