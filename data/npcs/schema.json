@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "npc_enemy_schema",
+  "required": [
+    "id",
+    "name",
+    "family",
+    "type",
+    "level",
+    "tier",
+    "combat",
+    "auto_attack",
+    "abilities",
+    "dungeon_ids",
+    "pool_ids"
+  ],
+  "combat_required": [
+    "max_health",
+    "physical_power",
+    "spell_power",
+    "healing_power",
+    "crit_bp",
+    "hit_bp",
+    "haste_bp",
+    "mastery_bp"
+  ],
+  "action_required": [
+    "id",
+    "name",
+    "kind",
+    "school",
+    "target",
+    "power",
+    "coefficient_bp",
+    "cooldown_ticks",
+    "resource",
+    "cost",
+    "effect",
+    "can_crit",
+    "can_miss"
+  ],
+  "notes": [
+    "NPC combat values are prototype authored integers for deterministic mockup encounters.",
+    "Percentages are represented in 10,000 basis points.",
+    "Action cooldowns and auto intervals are fixed simulation ticks at 60 ticks per second."
+  ]
+}
