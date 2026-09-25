@@ -137,3 +137,7 @@ Base now overlays a compact three-action player dock on the map with exactly Que
 ### Barracks removal
 
 Barracks has been removed from authored Base building data, Alliance/Horde presentation data, map markup, runtime bindings, and shared icon mappings. Its `military_tier_*` progression had no downstream consumers or prerequisites, so no mechanic required migration.
+
+### Command Hall removal
+
+Command Hall has been removed from authored Base building data, Alliance/Horde hotspot layouts, map markup, runtime bindings, and shared icon mappings. Its former `missions_tier_1–5` progression now lives on the matching Keep levels, so Keep owns the surviving headquarters/mission progression responsibility. Quest Board now uses its own dedicated building icon rather than Command Hall art.
