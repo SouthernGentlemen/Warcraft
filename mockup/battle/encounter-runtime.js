@@ -32,7 +32,10 @@ export function validateEncounterHandoff(encounter,roster){
   if(heroIds.length!==partySize)throw new Error("Encounter requires exactly "+partySize+" unique heroes.");
   const heroes=heroIds.map(id=>roster.hero(id));
   if(heroes.some(hero=>!hero))throw new Error("Encounter references an unknown roster hero.");
-  if(heroes.some(hero=>hero.availability!=="available"))throw new Error("Every battle hero must be available.");
+  const assignment=encounter.questAssignmentId&&roster.getState().quests.find(quest=>quest.id===encounter.questAssignmentId&&quest.status==="active");
+  const committed=new Set(assignment&&assignment.heroIds||[]);
+  const unavailable=heroes.filter(hero=>hero.availability!=="available"&&!(assignment&&committed.has(hero.id)));
+  if(unavailable.length)throw new Error("Every battle hero must be available.");
   if(!encounter.npcPoolId)throw new Error("Encounter requires an NPC pool.");
   return Object.assign({},encounter,{partySize,heroIds,seed:integer(encounter.seed,0x5eed)});
 }
@@ -73,7 +76,9 @@ export async function resolveEncounter({encounter,roster}){
     fetchJson(NPC_POOLS_ROOT)
   ]);
   const heroes=await Promise.all(config.heroIds.map(id=>heroDefinition(roster.hero(id),classIndex,0)));
-  const enemies=resolveNpcPoolDefinitions({catalog:npcCatalog,pools:npcPools,poolId:config.npcPoolId,team:1});
+  const poolEnemies=resolveNpcPoolDefinitions({catalog:npcCatalog,pools:npcPools,poolId:config.npcPoolId,team:1});
+  const enemyCount=Math.max(1,integer(config.enemyCount,poolEnemies.length));
+  const enemies=poolEnemies.slice(0,Math.min(enemyCount,poolEnemies.length));
   if(!enemies.length)throw new Error("NPC pool is empty: "+config.npcPoolId);
   return {
     config,
