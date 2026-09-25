@@ -1949,7 +1949,7 @@ Turn the selected Roster hero into a compact WoW character workspace instead of 
 
 ### WOWUI-074 — WoW Character Gear Tab
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-073
 
