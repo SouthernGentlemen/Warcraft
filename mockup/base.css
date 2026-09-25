@@ -574,129 +574,67 @@
   margin-top: 7px;
 }
 
-.base-sidecar__section > .wow-label {
-  display: block;
-  margin-bottom: 7px;
-  color: var(--wow-gold-muted);
-  font-size: 8px;
-}
-
-.base-sidecar__summary p,
-.base-sidecar__upgrade p {
-  margin: 0;
-  color: var(--wow-text-muted);
-  font-size: 8px;
-  line-height: 1.45;
-}
-
-.base-sidecar__capabilities {
+.base-sidecar__menu {
   display: grid;
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  gap: 6px;
 }
 
-.base-sidecar__capabilities li {
-  position: relative;
-  padding: 5px 7px 5px 18px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0,0,0,.16);
-  color: var(--wow-text);
-  font-size: 8px;
-}
-
-.base-sidecar__capabilities li::before {
-  content: "◆";
-  position: absolute;
-  left: 6px;
-  color: var(--wow-gold-muted);
-  font-size: 7px;
-}
-
-.base-sidecar__empty {
-  margin: 0;
-  color: var(--wow-text-dim);
-  font-size: 8px;
-}
-
-
-.base-sidecar__costs {
+.base-sidecar__menu-item {
+  width: 100%;
+  min-height: 52px;
   display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
-  gap: 5px;
-}
-
-.building-cost {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 24px minmax(0,1fr);
+  grid-template-columns: 38px minmax(0,1fr);
   align-items: center;
-  gap: 5px;
-  padding: 5px;
+  gap: 8px;
+  padding: 6px 8px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0,0,0,.18);
+  border-radius: var(--wow-radius-tight);
+  background: linear-gradient(180deg, rgba(38,43,46,.96), rgba(18,21,23,.96));
+  color: var(--wow-text);
+  text-align: left;
+  text-decoration: none;
 }
 
-.building-cost-icon {
-  --wow-icon-size: 20px;
+.base-sidecar__menu-item:hover,
+.base-sidecar__menu-item:focus-visible {
+  border-color: var(--wow-gold-muted);
+  outline: none;
+  background: linear-gradient(180deg, rgba(57,53,38,.98), rgba(28,27,22,.98));
 }
 
-.building-cost > span:last-child {
+.base-sidecar__menu-icon {
+  --wow-icon-size: 34px;
+}
+
+.base-sidecar__menu-copy {
   min-width: 0;
   display: grid;
-  gap: 1px;
+  gap: 2px;
 }
 
-.building-cost small {
+.base-sidecar__menu-copy strong {
   overflow: hidden;
-  color: var(--wow-text-dim);
-  font-size: 6px;
+  color: var(--wow-gold-pale);
+  font: 700 11px var(--wow-font-display);
   text-overflow: ellipsis;
-  text-transform: uppercase;
   white-space: nowrap;
 }
 
-.building-cost b {
-  color: var(--wow-text);
-  font-size: 8px;
+.base-sidecar__menu-copy small {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
-.building-cost.is-short {
-  border-color: rgba(198,47,47,.55);
+.base-sidecar__upgrade-control {
+  cursor: pointer;
 }
 
-.building-cost.is-short b {
-  color: var(--wow-error);
+.base-sidecar__upgrade-control[aria-disabled="true"] {
+  cursor: not-allowed;
 }
-
-.base-sidecar__upgrade {
-  border-color: var(--wow-frame-edge);
-}
-
-.base-sidecar__upgrade.is-ready {
-  border-color: rgba(83,142,72,.72);
-}
-
-.base-sidecar__upgrade.is-blocked {
-  border-color: rgba(185,139,52,.62);
-}
-
-.base-sidecar__upgrade h3 {
-  margin: 3px 0 5px;
-  color: var(--wow-gold-pale);
-  font: 700 15px var(--wow-font-display);
-}
-
-.base-sidecar__upgrade p {
-  margin-bottom: 9px;
-}
-
-.base-sidecar__upgrade .wow-button,
-.base-sidecar__profession-action {
-  width: 100%;
-}
-
 
 /* Quest Board content inside the same sidecar */
 
