@@ -3,6 +3,7 @@ const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
 const Campaign = window.WarcraftCampaign;
 const Equipment = window.WarcraftEquipment;
+const ClassHall = window.WarcraftClassHall;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 const BASE_PRESENTATION_ROOT = "../data/base/presentation.json";
 const RECRUITMENT_DATA_ROOT = "../data/base/recruitment.json";
@@ -11,6 +12,7 @@ const QUEST_OFFER_POOL_ROOT = "../data/base/quest-offers.json";
 const DUNGEON_CATALOG_ROOT = "../data/dungeons/catalog.json";
 const REAGENT_HOLDINGS_ROOT = "../data/items/reagents/holdings.json";
 const BANK_HOLDINGS_ROOT = "../data/items/economy/holdings.json";
+const CLASS_HALL_DATA_ROOT = "../data/base/class-hall.json";
 const Professions = window.WarcraftProfessions;
 let buildings = [];
 let basePresentation = null;
@@ -20,6 +22,7 @@ let questOfferPool = null;
 let dungeonCatalog = null;
 let reagentHoldings = null;
 let bankHoldings = null;
+let classHallData = null;
 let armoryItems = [];
 let sidecarOrigin = null;
 
@@ -80,7 +83,8 @@ const state = {
   artisansOpen: false,
   questBoardMode: "offers",
   selectedDungeonId: null,
-  dungeonMessage: ""
+  dungeonMessage: "",
+  classHallMessage: ""
 };
 
 function campaignResources() { return Campaign.getResources(); }
@@ -106,6 +110,7 @@ const buildingIconKeys = {
   bank:['building','bank'],
   armory:['building','armory'],
   artisans:['building','artisans-guild'],
+  classhall:['building','class-hall'],
   questboard:['building','quest-board']
 };
 
@@ -352,7 +357,8 @@ const BUILDING_ACTIONS = Object.freeze({
   ]),
   artisans:Object.freeze([
     Object.freeze({label:'Open Professions', action:'artisans', icon:['building','artisans-guild'], description:'Open the Artisans Guild profession roster.'})
-  ])
+  ]),
+  classhall:Object.freeze([])
 });
 
 function buildingActions(building) {
@@ -1093,6 +1099,140 @@ function renderQuestBoard() {
   else renderQuestOffers();
 }
 
+
+function classHallTrainerTooltip(trainer) {
+  return {
+    variant:'control',
+    title:trainer.label,
+    type:'Class Trainer',
+    classId:trainer.class_id,
+    icon:{category:'class', key:trainer.class_id},
+    description:'Faction-valid trainer for ' + labelize(trainer.class_id) + ' heroes.',
+    meta:[
+      {label:'Class', value:labelize(trainer.class_id)},
+      {label:'Faction', value:labelize(currentFactionId())}
+    ]
+  };
+}
+
+function classHallHeroStatus(hero) {
+  const progress = Roster.getHeroProgress(hero.id);
+  if (progress.levelCapped) return {label:'LEVEL CAP', detail:'Level 5 · no further level training', canTrain:false};
+  if (progress.canTrain) return {label:'READY TO TRAIN', detail:'20 / 20 XP · level ' + progress.level + ' → ' + progress.nextLevel, canTrain:true};
+  if (progress.baseBlocked) return {label:'BASE LEVEL ' + progress.nextLevel + ' REQUIRED', detail:'20 / 20 XP · raise the Keep before training', canTrain:false};
+  return {label:progress.xp + ' / ' + progress.maxXp + ' XP', detail:'Needs 20 / 20 XP for the next level', canTrain:false};
+}
+
+function classHallSelectableHeroes(slotIndex) {
+  const hall = ClassHall.getState();
+  const used = new Set(hall.slots.filter(Boolean).filter(slot => slot.slotIndex !== slotIndex).map(slot => slot.heroId));
+  return currentFactionRoster().filter(hero => ClassHall.trainerForClass(hero.classId) && hero.availability === 'available' && !used.has(hero.id));
+}
+
+function renderClassHallWorkflow(building) {
+  const root = $('#classHallWorkflow');
+  if (!root || !building || !ClassHall || !classHallData) return;
+  const completions = ClassHall.processCompletions();
+  if (completions.length) state.classHallMessage = completions.map(event => event.heroName + ' reached level ' + event.toLevel + '.').join(' ');
+  const trainers = ClassHall.trainers(currentFactionId());
+  const hall = ClassHall.getState();
+  root.hidden = false;
+  root.innerHTML =
+    '<div class="class-hall__head"><div><span class="wow-kicker">CLASS TRAINERS</span><h3>Class Hall</h3></div><small>3 slots · 1 day training</small></div>' +
+    '<div id="classHallMessage" class="class-hall__message" role="status">' + escapeHtml(state.classHallMessage || 'Assign a faction-valid hero for talent access or level training.') + '</div>' +
+    '<div class="class-hall__trainers" aria-label="Available class trainers"></div>' +
+    '<div class="class-hall__assignment-head"><span class="wow-kicker">HERO ASSIGNMENTS</span><small>Level training lasts 2 campaign phases</small></div>' +
+    '<div class="class-hall__slots" aria-label="Class Hall hero assignment slots"></div>';
+
+  const trainerGrid = root.querySelector('.class-hall__trainers');
+  trainers.forEach(trainer => {
+    const node = document.createElement('button');
+    node.type = 'button';
+    node.className = 'class-hall__trainer';
+    node.dataset.trainerClass = trainer.class_id;
+    node.innerHTML =
+      iconMarkup('class', trainer.class_id, 'sm', 'class-hall__trainer-icon wow-icon-frame--class-' + trainer.class_id) +
+      '<span><strong>' + escapeHtml(trainer.label) + '</strong><small>' + escapeHtml(labelize(trainer.class_id)) + '</small></span>';
+    Tooltips.attach(node, () => classHallTrainerTooltip(trainer), {anchor:'target'});
+    trainerGrid.appendChild(node);
+  });
+
+  const slotsRoot = root.querySelector('.class-hall__slots');
+  hall.slots.forEach((assignment, index) => {
+    const slot = document.createElement('article');
+    slot.className = 'class-hall__slot' + (assignment ? ' is-filled' : ' is-empty') + (assignment && assignment.status === 'training' ? ' is-training' : '');
+    slot.dataset.assignmentSlot = String(index);
+    if (!assignment) {
+      const choices = classHallSelectableHeroes(index);
+      slot.innerHTML =
+        '<div class="class-hall__slot-label"><span>SLOT ' + (index + 1) + '</span><small>Empty</small></div>' +
+        '<select class="wow-select class-hall__hero-select" aria-label="Choose hero for Class Hall slot ' + (index + 1) + '">' +
+          '<option value="">Choose hero</option>' +
+          choices.map(hero => '<option value="' + escapeHtml(hero.id) + '">' + escapeHtml(hero.name) + ' · ' + escapeHtml(hero.classLabel) + '</option>').join('') +
+        '</select>' +
+        '<button class="wow-button class-hall__assign" type="button" disabled>Assign</button>';
+      const select = slot.querySelector('select'), assign = slot.querySelector('.class-hall__assign');
+      select.addEventListener('change', () => { assign.disabled = !select.value; });
+      assign.addEventListener('click', () => {
+        try {
+          ClassHall.assignHero(index, select.value);
+          state.classHallMessage = 'Hero assigned to Class Hall slot ' + (index + 1) + '.';
+          renderSidecar();
+        } catch (error) {
+          state.classHallMessage = error.message;
+          renderSidecar();
+        }
+      });
+    } else {
+      const hero = Roster.hero(assignment.heroId), trainer = hero ? ClassHall.trainerForClass(hero.classId) : null;
+      if (!hero || !trainer) {
+        slot.innerHTML = '<div class="class-hall__slot-label"><span>SLOT ' + (index + 1) + '</span><small>Invalid assignment</small></div>';
+      } else {
+        const status = classHallHeroStatus(hero), training = assignment.status === 'training', remaining = training ? ClassHall.remainingPhases(assignment) : null;
+        const statusLabel = training ? 'TRAINING' : status.label;
+        const statusDetail = training ? (remaining + ' campaign phase' + (remaining === 1 ? '' : 's') + ' remaining') : status.detail;
+        slot.innerHTML =
+          '<div class="class-hall__slot-label"><span>SLOT ' + (index + 1) + '</span><small>' + escapeHtml(statusLabel) + '</small></div>' +
+          '<a class="class-hall__assignee" href="' + ClassHall.openTalentsHref(hero.id) + '">' +
+            iconMarkup('class', hero.classId, 'md', 'class-hall__hero-icon wow-icon-frame--class-' + hero.classId) +
+            '<span><strong>' + escapeHtml(hero.name) + '</strong><small>' + escapeHtml(hero.classLabel + ' · Lv ' + hero.level) + '</small><em>Open Talents</em></span>' +
+          '</a>' +
+          '<div class="class-hall__slot-status"><strong>' + escapeHtml(statusLabel) + '</strong><small>' + escapeHtml(statusDetail) + '</small></div>' +
+          '<div class="class-hall__slot-actions">' +
+            (training
+              ? '<span class="class-hall__duration">1 day training in progress</span>'
+              : '<button class="wow-button wow-button--primary class-hall__train" type="button"' + (status.canTrain && hero.availability === 'available' ? '' : ' disabled') + '>Start Level Training</button><button class="wow-button class-hall__remove" type="button">Remove</button>') +
+          '</div>';
+        if (!training) {
+          slot.querySelector('.class-hall__train').addEventListener('click', () => {
+            try {
+              ClassHall.startLevelTraining(index);
+              state.classHallMessage = hero.name + ' began one-day level training.';
+              renderSidecar();
+            } catch (error) {
+              state.classHallMessage = error.message;
+              renderSidecar();
+            }
+          });
+          slot.querySelector('.class-hall__remove').addEventListener('click', () => {
+            try {
+              ClassHall.removeHero(index);
+              state.classHallMessage = hero.name + ' removed from Class Hall.';
+              renderSidecar();
+            } catch (error) {
+              state.classHallMessage = error.message;
+              renderSidecar();
+            }
+          });
+        }
+      }
+    }
+    slotsRoot.appendChild(slot);
+  });
+  bindResolvedIcons(root);
+  Tooltips.hydrate(root);
+}
+
 function toast(message) {
   const node = $('#baseToast');
   node.textContent = message;
@@ -1143,6 +1283,11 @@ function renderSidecar() {
       '<section id="artisansWorkflow" class="base-sidecar__section base-sidecar__artisans" hidden></section>');
   }
 
+  if (building.id === 'classhall') {
+    body.insertAdjacentHTML('beforeend',
+      '<section id="classHallWorkflow" class="base-sidecar__section class-hall" aria-label="Class Hall trainers and assignments"></section>');
+  }
+
   if (building.id === 'questboard') {
     body.insertAdjacentHTML('beforeend',
       '<section class="base-sidecar__section base-sidecar__quests">'+
@@ -1165,6 +1310,7 @@ function renderSidecar() {
   bindResolvedIcons(sidecar);
   Tooltips.hydrate(sidecar);
   if (['storehouse','bank','armory'].includes(building.id)) renderStorageBrowser(building);
+  if (building.id === 'classhall') renderClassHallWorkflow(building);
   if (building.id === 'questboard') {
     renderQuestBoard();
     const offersTab=$('#questBoardOffersTab');
@@ -1284,14 +1430,19 @@ window.addEventListener('warcraft:roster-changed', () => {
   if (state.selected && !$('#baseSidecar').hidden) renderSidecar();
 });
 
+window.addEventListener('warcraft:campaign-changed', event => {
+  const reason = event && event.detail && event.detail.reason;
+  if (state.selected === 'classhall' && !$('#baseSidecar').hidden && ['clock','building-assignment'].includes(reason)) renderSidecar();
+});
+
 window.addEventListener('resize', () => {
   if (basePresentation) applyBasePresentation();
 });
 
 async function initBase() {
   try {
-    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT),fetch(PROFESSION_DATA_ROOT),fetch(QUEST_OFFER_POOL_ROOT),fetch(DUNGEON_CATALOG_ROOT),fetch(REAGENT_HOLDINGS_ROOT),fetch(BANK_HOLDINGS_ROOT)]);
-    const roots=[BUILDING_DATA_ROOT,BASE_PRESENTATION_ROOT,RECRUITMENT_DATA_ROOT,PROFESSION_DATA_ROOT,QUEST_OFFER_POOL_ROOT,DUNGEON_CATALOG_ROOT,REAGENT_HOLDINGS_ROOT,BANK_HOLDINGS_ROOT];
+    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT),fetch(PROFESSION_DATA_ROOT),fetch(QUEST_OFFER_POOL_ROOT),fetch(DUNGEON_CATALOG_ROOT),fetch(REAGENT_HOLDINGS_ROOT),fetch(BANK_HOLDINGS_ROOT),fetch(CLASS_HALL_DATA_ROOT)]);
+    const roots=[BUILDING_DATA_ROOT,BASE_PRESENTATION_ROOT,RECRUITMENT_DATA_ROOT,PROFESSION_DATA_ROOT,QUEST_OFFER_POOL_ROOT,DUNGEON_CATALOG_ROOT,REAGENT_HOLDINGS_ROOT,BANK_HOLDINGS_ROOT,CLASS_HALL_DATA_ROOT];
     responses.forEach((response,index)=>{if(!response.ok)throw new Error('Could not load '+roots[index]);});
     const payload=await responses[0].json();
     buildings=payload.buildings.map(normalizeBuilding);
@@ -1305,6 +1456,9 @@ async function initBase() {
     dungeonCatalog=validateDungeonCatalog(await responses[5].json());
     reagentHoldings=validateReagentHoldings(await responses[6].json());
     bankHoldings=validateBankHoldings(await responses[7].json());
+    classHallData=await responses[8].json();
+    if(!ClassHall) throw new Error('Class Hall runtime is unavailable.');
+    ClassHall.configure(classHallData);
     Campaign.ensureBankHoldings(bankHoldings.holdings);
     armoryItems=armoryOwnedItems();
     if(!armoryItems.length) throw new Error('Armory equipment ownership is empty.');
