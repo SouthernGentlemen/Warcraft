@@ -120,6 +120,8 @@ Roster hero detail uses one four-tab character workspace: **Abilities / Gear / S
 
 The Roster **Gear** tab is the player-facing equipment surface: a seven-slot WoW-style paper doll (Head, Chest, Pants, Feet, Gloves, Weapon, Trinket) plus an owned Armory browser. Equip/replace/unequip writes through `WarcraftRoster`; shared `warcraft-equipment-rules.js` owns catalog eligibility and stat modifiers for both the Roster Stats tab and Battle actor construction. The standalone `gear.html` remains developer inspection only.
 
+The Roster **Talents** tab is the primary player talent surface and uses the classic WoW tree visual language: a framed specialization panel, large authored icons, visible tier connectors, selected/available/locked node states, and a capstone-to-Ultimate callout. It still writes only through the authoritative hero `talentBuild` contract. `WarcraftHeroWorkspace.openTalents(heroId)` is the single entry point reserved for Class Hall; `talent-calculator.html` remains developer inspection only.
+
 `WarcraftRoster` and `WarcraftProfessions` are compatibility-facing adapters over the active campaign rather than separate global save files. Switching faction changes the records returned by those APIs without copying or mutating the inactive campaign. Fresh state seeds the existing sample heroes into their authored faction only. A legacy `warcraft.mockup.roster.v1` / `warcraft.mockup.professions.v1` save migrates once into its previously active faction; the opposite campaign is left independent and legacy hero IDs are never cloned into both campaigns.
 
 ### Shared roster state
