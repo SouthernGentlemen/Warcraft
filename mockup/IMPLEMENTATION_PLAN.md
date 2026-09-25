@@ -802,7 +802,7 @@ Replace all individual profession hotspots with one Artisans Guild hotspot.
 
 ### WOWUI-042 — Functional Artisans Guild Profession Menu
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-041
 
