@@ -1020,3 +1020,98 @@
     min-width: 136px;
   }
 }
+
+
+/* WOWUI-024 — Hidden building sidecar framework. */
+.base-sidecar[hidden] {
+  display: none;
+}
+
+.base-sidecar {
+  position: fixed;
+  z-index: 1200;
+  top: var(--wow-nav-height);
+  right: 0;
+  bottom: 0;
+  width: min(390px, 34vw);
+  min-width: 320px;
+  margin: 0;
+  overflow: auto;
+  border-width: 0 0 0 var(--wow-border);
+  border-radius: 0;
+  background:
+    linear-gradient(180deg, rgba(29,32,35,.99), rgba(10,12,14,.99));
+  box-shadow: -14px 0 34px rgba(0,0,0,.56);
+}
+
+.base-sidecar__header {
+  min-height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 10px 10px 12px;
+}
+
+.base-sidecar__identity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.base-sidecar__icon {
+  flex: 0 0 auto;
+}
+
+.base-sidecar__building-icon {
+  --wow-icon-size: 54px;
+  --wow-icon-accent: var(--wow-gold-muted);
+}
+
+.base-sidecar__identity > div:last-child {
+  min-width: 0;
+}
+
+.base-sidecar__identity h2 {
+  margin: 2px 0 3px;
+  overflow: hidden;
+  color: var(--wow-gold-pale);
+  font: 700 18px var(--wow-font-display);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.base-sidecar__identity small {
+  color: var(--wow-text-muted);
+  font-size: 8px;
+}
+
+.base-sidecar__close {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 30px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+}
+
+@media (max-width: 700px) {
+  .base-sidecar {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    min-width: 0;
+    max-height: min(54vh, 480px);
+    border-width: var(--wow-border) 0 0;
+    box-shadow: 0 -14px 34px rgba(0,0,0,.56);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .base-sidecar {
+    scroll-behavior: auto;
+  }
+}
