@@ -186,7 +186,7 @@ Keep level is now the single structural upgrade ceiling for every other Base bui
 
 ### Compact building menus
 
-Base building sidecars now contain only building identity in the header, one or more functional menu actions, a compact level indicator, and one shared Upgrade control. Upgrade cost, Keep gate, resource shortages, next level, and max-level state live in the Upgrade tooltip instead of permanent prose blocks. Quest Board keeps its dispatch workflow beneath the compact menu. Recruitment/Keep route to Roster, Training routes to Talents, Storehouse routes to Inventory, Quest Board links to Quest Journal, and the single Artisans Guild is now the only Base profession entry point.
+Base building sidecars now contain only building identity in the header, one or more functional menu actions, a compact level indicator, and one shared Upgrade control. Upgrade cost, Keep gate, resource shortages, next level, and max-level state live in the Upgrade tooltip instead of permanent prose blocks. Quest Board keeps its dispatch workflow beneath the compact menu. Keep routes to Roster, Recruitment opens its in-sidecar discovery flow, Quest Board links to Quest Journal and its dungeon map, Storehouse/Bank/Armory browse their owned categories in place, and the single Artisans Guild owns profession entry. Training has no direct standalone Talent route; hero talents remain in the Heroes/Roster popout.
 
 ### Recruitment Hall
 
@@ -202,7 +202,7 @@ Artisans Guild now exposes Blacksmith, Alchemist, Enchanter, Tailor, Leatherwork
 
 ### Randomized Quest Board rounds
 
-Quest Board no longer owns one permanent quest per tier. `data/base/quest-offers.json` is an authored offer pool covering 1, 3, 5, 10, and 20 hero assignments, while `WarcraftRoster.questBoard` persists the current round, seed, and selected offer IDs. Base generates a bounded set of offers deterministically from that stored round state, so reloads do not reroll. Advancing the round selects a new offer set without mutating accepted/active/completed quest-log records. Dispatching an offer creates a stable quest-log assignment in `WarcraftRoster.quests`, and Quest Journal remains a read-only projection of that quest history.
+Quest Board no longer owns one permanent quest per tier. `data/base/quest-offers.json` is an authored offer pool covering 1, 3, 5, 10, and 20 hero assignments, while `WarcraftRoster.questBoard` persists the current round, seed, and selected offer IDs. Base generates a bounded set of offers deterministically from that stored round state, so reloads do not reroll. Completing the current round automatically selects the next deterministic offer set without mutating accepted/active/completed quest-log records. Dispatching an offer creates a stable quest-log assignment in `WarcraftRoster.quests`, and Quest Journal remains a read-only projection of that quest history.
 
 ### Canonical dungeon catalog
 
