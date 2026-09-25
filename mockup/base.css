@@ -1115,3 +1115,195 @@
     scroll-behavior: auto;
   }
 }
+
+
+/* WOWUI-025 — Building management inside the shared sidecar. */
+.base-sidecar {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.base-sidecar__body {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.base-sidecar__section {
+  padding: 10px;
+  border: var(--wow-border-thin) solid var(--wow-inset-line);
+  background: linear-gradient(180deg, var(--wow-surface), var(--wow-surface-inset));
+}
+
+.base-sidecar__section + .base-sidecar__section {
+  margin-top: 7px;
+}
+
+.base-sidecar__section > .wow-label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--wow-gold-muted);
+  font-size: 8px;
+}
+
+.base-sidecar__capabilities {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.base-sidecar__capabilities li {
+  position: relative;
+  padding: 5px 7px 5px 18px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: rgba(0,0,0,.16);
+  color: var(--wow-text);
+  font-size: 8px;
+}
+
+.base-sidecar__capabilities li::before {
+  content: "◆";
+  position: absolute;
+  left: 6px;
+  color: var(--wow-gold-muted);
+  font-size: 7px;
+}
+
+.base-sidecar__empty {
+  margin: 0;
+  color: var(--wow-text-dim);
+  font-size: 8px;
+}
+
+.base-sidecar__requirement {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 7px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: rgba(0,0,0,.16);
+  font-size: 8px;
+}
+
+.base-sidecar__requirement + .base-sidecar__requirement {
+  margin-top: 4px;
+}
+
+.base-sidecar__requirement strong {
+  flex: 0 0 auto;
+  font-size: 7px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.base-sidecar__requirement.is-met strong {
+  color: var(--wow-success);
+}
+
+.base-sidecar__requirement.is-blocked strong {
+  color: var(--wow-warning);
+}
+
+.base-sidecar__requirement span {
+  color: var(--wow-text-muted);
+  text-align: right;
+}
+
+.base-sidecar__costs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.base-sidecar__costs .building-cost {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: rgba(0,0,0,.18);
+}
+
+.base-sidecar__costs .building-cost > span:last-child {
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+
+.base-sidecar__costs .building-cost small {
+  overflow: hidden;
+  color: var(--wow-text-dim);
+  font-size: 6px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.base-sidecar__costs .building-cost b {
+  color: var(--wow-text);
+  font-size: 8px;
+}
+
+.base-sidecar__costs .building-cost.is-short {
+  border-color: rgba(198,47,47,.55);
+}
+
+.base-sidecar__costs .building-cost.is-short b {
+  color: var(--wow-error);
+}
+
+.base-sidecar__upgrade {
+  border-color: var(--wow-frame-edge);
+}
+
+.base-sidecar__upgrade.is-ready {
+  border-color: rgba(83,142,72,.72);
+}
+
+.base-sidecar__upgrade.is-blocked {
+  border-color: rgba(185,139,52,.62);
+}
+
+.base-sidecar__upgrade h3 {
+  margin: 3px 0 5px;
+  color: var(--wow-gold-pale);
+  font: 700 15px var(--wow-font-display);
+}
+
+.base-sidecar__upgrade p {
+  margin: 0 0 9px;
+  color: var(--wow-text-muted);
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.base-sidecar__upgrade .wow-button {
+  width: 100%;
+}
+
+.base-sidecar__blocked-copy {
+  color: var(--wow-warning) !important;
+}
+
+.base-sidecar__profession-action {
+  width: 100%;
+  margin-top: 2px;
+}
+
+@media (max-width: 700px) {
+  .base-sidecar__body {
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
+  .base-sidecar__costs {
+    grid-template-columns: repeat(3, minmax(86px, 1fr));
+    overflow-x: auto;
+  }
+}
