@@ -1,12 +1,15 @@
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
+const Equipment = window.WarcraftEquipment;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 const BASE_PRESENTATION_ROOT = "../data/base/presentation.json";
 const RECRUITMENT_DATA_ROOT = "../data/base/recruitment.json";
 const PROFESSION_DATA_ROOT = "../data/base/profession-buildings/index.json";
 const QUEST_OFFER_POOL_ROOT = "../data/base/quest-offers.json";
 const DUNGEON_CATALOG_ROOT = "../data/dungeons/catalog.json";
+const REAGENT_HOLDINGS_ROOT = "../data/items/reagents/holdings.json";
+const BANK_HOLDINGS_ROOT = "../data/items/economy/holdings.json";
 const Professions = window.WarcraftProfessions;
 let buildings = [];
 let basePresentation = null;
@@ -14,6 +17,9 @@ let recruitmentData = null;
 let professionData = null;
 let questOfferPool = null;
 let dungeonCatalog = null;
+let reagentHoldings = null;
+let bankHoldings = null;
+let armoryItems = [];
 let sidecarOrigin = null;
 
 function normalizeBuilding(raw) {
@@ -92,6 +98,8 @@ const buildingIconKeys = {
   training:['building','training-grounds'],
   recruitment:['building','recruitment-hall'],
   storehouse:['building','storehouse'],
+  bank:['building','bank'],
+  armory:['building','armory'],
   artisans:['building','artisans-guild'],
   questboard:['building','quest-board']
 };
@@ -203,9 +211,9 @@ const BUILDING_ACTIONS = Object.freeze({
   training:Object.freeze([
     Object.freeze({label:'Open Talents', href:'./talent-calculator.html', icon:['talent','active'], description:'Open the talent workspace for hero build planning.'})
   ]),
-  storehouse:Object.freeze([
-    Object.freeze({label:'Open Inventory', href:'./inventory.html', icon:['equipment-slot','chest'], description:'Browse owned equipment across the roster.'})
-  ]),
+  storehouse:Object.freeze([]),
+  bank:Object.freeze([]),
+  armory:Object.freeze([]),
   questboard:Object.freeze([
     Object.freeze({label:'Open Quest Journal', href:'./quest-journal.html', icon:['quest','journal'], description:'Review available, active, and completed quests.'}),
     Object.freeze({label:'Dungeon Map', action:'dungeon-map', icon:['battle','combat'], description:'Open the Azeroth dungeon map and prepare a dungeon party.'})
@@ -240,6 +248,35 @@ function upgradeControlMarkup(building, upgrade) {
       iconMarkup('building','upgrade','sm','base-sidecar__menu-icon') +
       '<span class="base-sidecar__menu-copy"><strong>' + label + '</strong><small>' + stateLabel + '</small></span>' +
     '</button>';
+}
+
+function validateReagentHoldings(payload) {
+  if (!payload || payload.kind !== 'reagent_holdings' || payload.owner_building !== 'storehouse' || !Array.isArray(payload.items)) throw new Error('Storehouse holdings must be authored reagent JSON.');
+  const ids = payload.items.map(item => item.id);
+  if (new Set(ids).size !== ids.length) throw new Error('Storehouse reagent IDs must be unique.');
+  payload.items.forEach(item => {
+    if (item.category !== 'reagent') throw new Error('Storehouse may contain reagent items only.');
+    if (!Number.isInteger(Number(item.tier)) || Number(item.tier) < 1 || Number(item.tier) > 5) throw new Error('Storehouse reagent tier must be 1 through 5.');
+    if (!Number.isFinite(Number(item.quantity)) || Number(item.quantity) < 0) throw new Error('Storehouse reagent quantity must be non-negative.');
+  });
+  return payload;
+}
+
+function validateBankHoldings(payload) {
+  if (!payload || payload.kind !== 'bank_holdings' || payload.owner_building !== 'bank' || !Array.isArray(payload.holdings)) throw new Error('Bank holdings must be authored economy JSON.');
+  const allowed = new Set(['currency','meta_progression','economy']);
+  const ids = payload.holdings.map(item => item.id);
+  if (new Set(ids).size !== ids.length) throw new Error('Bank holding IDs must be unique.');
+  payload.holdings.forEach(item => {
+    if (!allowed.has(item.category)) throw new Error('Bank may contain currency, meta-progression, or economy holdings only.');
+    if (!Number.isFinite(Number(item.quantity)) || Number(item.quantity) < 0) throw new Error('Bank holding quantity must be non-negative.');
+  });
+  return payload;
+}
+
+function armoryOwnedItems() {
+  if (!Equipment || typeof Equipment.owned !== 'function') throw new Error('Armory requires shared equipment ownership state.');
+  return Equipment.owned();
 }
 
 function validateRecruitmentData(payload) {
@@ -1123,13 +1160,9 @@ window.addEventListener('resize', () => {
 
 async function initBase() {
   try {
-    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT),fetch(PROFESSION_DATA_ROOT),fetch(QUEST_OFFER_POOL_ROOT),fetch(DUNGEON_CATALOG_ROOT)]);
-    if(!responses[0].ok) throw new Error('Could not load '+BUILDING_DATA_ROOT);
-    if(!responses[1].ok) throw new Error('Could not load '+BASE_PRESENTATION_ROOT);
-    if(!responses[2].ok) throw new Error('Could not load '+RECRUITMENT_DATA_ROOT);
-    if(!responses[3].ok) throw new Error('Could not load '+PROFESSION_DATA_ROOT);
-    if(!responses[4].ok) throw new Error('Could not load '+QUEST_OFFER_POOL_ROOT);
-    if(!responses[5].ok) throw new Error('Could not load '+DUNGEON_CATALOG_ROOT);
+    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT),fetch(PROFESSION_DATA_ROOT),fetch(QUEST_OFFER_POOL_ROOT),fetch(DUNGEON_CATALOG_ROOT),fetch(REAGENT_HOLDINGS_ROOT),fetch(BANK_HOLDINGS_ROOT)]);
+    const roots=[BUILDING_DATA_ROOT,BASE_PRESENTATION_ROOT,RECRUITMENT_DATA_ROOT,PROFESSION_DATA_ROOT,QUEST_OFFER_POOL_ROOT,DUNGEON_CATALOG_ROOT,REAGENT_HOLDINGS_ROOT,BANK_HOLDINGS_ROOT];
+    responses.forEach((response,index)=>{if(!response.ok)throw new Error('Could not load '+roots[index]);});
     const payload=await responses[0].json();
     buildings=payload.buildings.map(normalizeBuilding);
     basePresentation=validateBasePresentation(await responses[1].json());
@@ -1138,6 +1171,10 @@ async function initBase() {
     questOfferPool=await responses[4].json();
     if(!questOfferPool||!Array.isArray(questOfferPool.offers)||!questOfferPool.offers.length) throw new Error('Quest offer pool is empty.');
     dungeonCatalog=validateDungeonCatalog(await responses[5].json());
+    reagentHoldings=validateReagentHoldings(await responses[6].json());
+    bankHoldings=validateBankHoldings(await responses[7].json());
+    armoryItems=armoryOwnedItems();
+    if(!armoryItems.length) throw new Error('Armory equipment ownership is empty.');
     const artisansBuilding=buildings.find(entry=>entry.id==='artisans');
     if (artisansBuilding) artisansBuilding.level=Math.max(artisansBuilding.level,Professions.getGuildLevel());
     const questBoard=buildings.find(entry=>entry.id==='questboard');
