@@ -1567,7 +1567,7 @@ Remove manual Quest Board round advancement and make offer rotation a gameplay-s
 
 ### WOWUI-065 — Battle Health Bar Repair
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-056
 
