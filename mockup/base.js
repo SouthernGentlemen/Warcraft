@@ -176,7 +176,9 @@ function buildingTooltipModel(building) {
     variant:building.category === 'profession' ? 'profession' : 'building', title:building.name,
     type:building.category === 'profession' ? 'Profession building' : 'Base building', icon:{category:icon[0], key:icon[1]},
     description:building.description,
-    stats:[{label:'Level',value:building.level+' / 5'},{label:'Progression tier',value:'Tier '+building.level},{label:'Unlocks',value:(current.capabilities||[]).join(', ')||'Base capability'}].concat(upgrade.next ? Object.entries(upgrade.next.cost).map(([key,value])=>({label:'Next '+key,value:fmt(value)})) : []),
+    stats:[{label:'Level',value:building.level+' / 5'},{label:'Progression tier',value:'Tier '+building.level},{label:'Unlocks',value:(current.capabilities||[]).join(', ')||'Base capability'}]
+      .concat(attention ? [{label:attention.label,value:attention.detail}] : [])
+      .concat(upgrade.next ? Object.entries(upgrade.next.cost).map(([key,value])=>({label:'Next '+key,value:fmt(value)})) : []),
     meta:[{label:'Category',value:building.category==='profession'?'Profession':'Core'},{label:'Next level',value:upgrade.next ? String(upgrade.next.level) : 'MAX'}].concat(attention ? [{label:'Attention',value:attention.label}] : []),
     locked:attention && attention.key === 'blocked' ? [attention.detail] : (upgrade.reason ? [upgrade.reason] : [])
   };
@@ -198,6 +200,7 @@ function syncResourceBar() {
   $('#goldValue').textContent = fmt(state.resources.gold);
   $('#lumberValue').textContent = fmt(state.resources.lumber);
   $('#stoneValue').textContent = fmt(state.resources.stone);
+  if (buildings.length) syncMapBuildings();
 }
 
 function syncBuildingAttention(plot, building) {
@@ -320,7 +323,7 @@ function renderQuestBoard() {
           Roster.dispatchQuest(quest.tier,ids);
           state.questMessage='Tier '+quest.tier+' dispatched with '+ids.length+' hero'+(ids.length===1?'':'es')+'.';
           syncMapBuildings();
-        renderSidecar();
+          renderSidecar();
         }catch(error){
           state.questMessage=error.message;
           renderSidecar();
