@@ -49,7 +49,7 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 - `index.html` — player-facing entry redirect to `base.html`
 - `dev.html` — developer-only mockup launcher
 - `race-selector.html` — faction, body type, race, class availability, and racial review
-- `talent-calculator.html` — class/spec browser and five-point talent calculator
+- `talent-calculator.html` — class/spec browser using the compact canonical 2 / 2 / 1 talent model
 - `gear.html` — interactive roster equipment screen with one hero per class, seven fixed slots, class armor eligibility, and sample Tier 1–5 gear
 - `battle.html` — player-facing deterministic encounter surface for 1-, 3-, 5-, 10-, and 20-hero parties with NPC opponents, combat log, pause/reset, and speed controls
 - `base.html` — player-facing map-first stronghold landing screen with compact resources, clickable core/profession buildings, shared building sidecar, Quest Board dispatch, upgrades, and attention states
@@ -113,6 +113,12 @@ Runtime gameplay inputs remain authored JSON under `/data/`. Documentation under
 ### Shared roster state
 
 `ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved party loadouts. The Heroes/Roster workspace owns a dedicated roster-level Party Loadouts manager beside the hero list; individual hero detail no longer edits party membership. Party templates store only hero IDs and read current identity and availability from the shared roster. Templates support only 3, 5, 10, or 20 heroes, and ready-state composition validation requires the exact selected size with no duplicate hero IDs. A saved template may contain a hero who later becomes unavailable without losing membership or ready state; Quest Board and dungeon launch-time validation re-check current availability before the party can enter an encounter.
+
+### Talent data contract
+
+Every specialization JSON under `data/heroes/classes/*/specs/` uses one exact compact shape: **2 Tier 1 choices, 2 Tier 2 choices, and 1 capstone**. These records use canonical Classic talent identities and icon/source metadata while leaving prototype tuning separate from the structural contract. The matching Markdown spec is kept byte-for-byte in each JSON file's `source_markdown` field so docs and runtime data cannot describe different trees.
+
+Both the Talent Calculator and canonical combat talent tooling validate this shape. Talent records must have five unique names and complete canonical metadata; malformed 1 / 1 / 1 or oversized trees fail instead of silently rendering a partial set. Combat tooling exposes all five authored records even though a hero selects only one choice from each tier.
 
 ### Hero combat loadout state
 
