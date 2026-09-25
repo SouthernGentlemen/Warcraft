@@ -1883,7 +1883,7 @@ Give every hero a visible authored identity baseline before equipment/talent mod
 
 ### WOWUI-072 — Canonical WoW Ability Icon Mapping
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-068
 
