@@ -1131,10 +1131,36 @@
   white-space: nowrap;
 }
 
-.battle-frame[data-party-size="10"] .combat-team,
+.battle-frame[data-party-size="10"] .combat-team {
+  grid-template-columns: repeat(5, minmax(112px, 1fr));
+  gap: 5px;
+}
+
 .battle-frame[data-party-size="20"] .combat-team {
-  grid-template-columns: repeat(2, minmax(138px, 1fr));
-  gap: 7px;
+  grid-template-columns: repeat(4, minmax(118px, 1fr));
+  gap: 5px;
+}
+
+.battle-frame[data-party-size="10"] .battle-log-scroll {
+  max-height: 220px;
+}
+
+.battle-frame[data-party-size="10"] .battle-combat-log table {
+  min-width: 760px;
+}
+
+.battle-frame[data-party-size="10"] .battle-combat-log th,
+.battle-frame[data-party-size="10"] .battle-combat-log td {
+  white-space: nowrap;
+}
+
+.battle-frame[data-party-size="10"] .combatant-meta,
+.battle-frame[data-party-size="10"] .unit-action-copy small {
+  display: none;
+}
+
+.battle-frame[data-party-size="10"] .combatant-name {
+  font-size: 10px;
 }
 
 .battle-frame[data-party-size="10"] .unit-frame,
@@ -1186,7 +1212,17 @@
 }
 
 @media (max-width: 900px) {
-  .battle-frame[data-party-size="5"] .combat-team,
+  .battle-frame[data-party-size="5"] .combat-team {
+    grid-template-columns: 1fr;
+  }
+
+  .battle-frame[data-party-size="10"] .combat-team,
+  .battle-frame[data-party-size="20"] .combat-team {
+    grid-template-columns: repeat(2, minmax(132px,1fr));
+  }
+}
+
+@media (max-width: 560px) {
   .battle-frame[data-party-size="10"] .combat-team,
   .battle-frame[data-party-size="20"] .combat-team {
     grid-template-columns: 1fr;
