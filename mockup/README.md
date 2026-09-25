@@ -107,3 +107,7 @@ Responsive layouts are maintained in each screen stylesheet for desktop, tablet,
 ### Base landing shell
 
 The Base landing screen now uses only the shared top navigation, persistent resource bar, and stronghold map. The old internal navigation rail, permanent building/Quest panels, bottom action bar, and profile footer have been removed. Building and Quest progression logic remains in `base.js` for the upcoming sidecar migration tasks.
+
+### Map-first Base landing
+
+The Base landing screen now keeps only Gold, Lumber, and Stone in its persistent HUD. The stronghold map consumes the remaining viewport, building labels are limited to name and level, no building is selected by default, and no detail area reserves layout space before a building interaction. Building-specific management remains intentionally deferred to the sidecar tasks.
