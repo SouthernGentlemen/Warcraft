@@ -248,7 +248,9 @@ function validateBasePresentation(payload) {
   ['alliance','horde'].forEach(faction => {
     const variant = payload.variants[faction];
     const ids = Object.keys(variant.positions || {}).sort();
+    const mobileIds = Object.keys(variant.mobile_positions || {}).sort();
     if (JSON.stringify(ids) !== JSON.stringify(requiredIds)) throw new Error('Base presentation hotspots do not match map buildings for ' + faction);
+    if (JSON.stringify(mobileIds) !== JSON.stringify(requiredIds)) throw new Error('Base mobile presentation hotspots do not match map buildings for ' + faction);
   });
   return payload;
 }
@@ -278,7 +280,9 @@ function applyBasePresentation() {
   $('#baseStrongholdName').textContent = variant.map_name;
   $('#baseStrongholdSubtitle').textContent = variant.subtitle;
 
-  Object.entries(variant.positions || {}).forEach(([id, position]) => {
+  const useMobilePositions = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 700px)').matches;
+  const positions = useMobilePositions ? variant.mobile_positions : variant.positions;
+  Object.entries(positions || {}).forEach(([id, position]) => {
     const plot = document.querySelector('[data-building="' + id + '"]');
     if (!plot) return;
     plot.style.setProperty('--x', Number(position.x) + '%');
@@ -557,6 +561,10 @@ document.addEventListener('keydown', event => {
 window.addEventListener('warcraft:roster-changed', () => {
   applyBasePresentation();
   if (state.selected && !$('#baseSidecar').hidden) renderSidecar();
+});
+
+window.addEventListener('resize', () => {
+  if (basePresentation) applyBasePresentation();
 });
 
 async function initBase() {
