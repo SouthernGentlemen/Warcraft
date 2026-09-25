@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "factions": {
+    "alliance": [
+      {
+        "id": "recruit-aelric",
+        "name": "Aelric Dawnward",
+        "race": "Human",
+        "classId": "paladin",
+        "classLabel": "Paladin",
+        "spec": "Holy",
+        "primary": "Intellect"
+      },
+      {
+        "id": "recruit-bryn",
+        "name": "Bryn Flintlock",
+        "race": "Dwarf",
+        "classId": "hunter",
+        "classLabel": "Hunter",
+        "spec": "Survival",
+        "primary": "Agility"
+      },
+      {
+        "id": "recruit-nimble",
+        "name": "Nimble Fizzgear",
+        "race": "Gnome",
+        "classId": "mage",
+        "classLabel": "Mage",
+        "spec": "Frost",
+        "primary": "Intellect"
+      },
+      {
+        "id": "recruit-lyria",
+        "name": "Lyria Moonbrook",
+        "race": "Night Elf",
+        "classId": "priest",
+        "classLabel": "Priest",
+        "spec": "Discipline",
+        "primary": "Intellect"
+      },
+      {
+        "id": "recruit-garran",
+        "name": "Garran Stonefist",
+        "race": "Dwarf",
+        "classId": "warrior",
+        "classLabel": "Warrior",
+        "spec": "Protection",
+        "primary": "Strength"
+      },
+      {
+        "id": "recruit-tessa",
+        "name": "Tessa Quickstep",
+        "race": "Human",
+        "classId": "rogue",
+        "classLabel": "Rogue",
+        "spec": "Subtlety",
+        "primary": "Agility"
+      },
+      {
+        "id": "recruit-caelen",
+        "name": "Caelen Wildbough",
+        "race": "Night Elf",
+        "classId": "druid",
+        "classLabel": "Druid",
+        "spec": "Restoration",
+        "primary": "Intellect"
+      },
+      {
+        "id": "recruit-merrin",
+        "name": "Merrin Cogspell",
+        "race": "Gnome",
+        "classId": "warlock",
+        "classLabel": "Warlock",
+        "spec": "Affliction",
+        "primary": "Intellect"
+      }
+    ],
+    "horde": [
+      {
+        "id": "recruit-grakka",
+        "name": "Grakka Redtusk",
+        "race": "Orc",
+        "classId": "warrior",
+        "classLabel": "Warrior",
+        "spec": "Fury",
+        "primary": "Strength"
+      },
+      {
+        "id": "recruit-vexra",
+        "name": "Vexra Graveshade",
+        "race": "Undead",
+        "classId": "warlock",
+        "classLabel": "Warlock",
+        "spec": "Affliction",
+        "primary": "Intellect"
+      },
+      {
+        "id": "recruit-rokhan",
+        "name": "Rokhan Embertotem",
+        "race": "Troll",
+        "classId": "shaman",
+        "classLabel": "Shaman",
+        "spec": "Elemental",
+        "primary": "Intellect"
+      },
+      {
+        "id": "recruit-hamuul",
+        "name": "Hamuul Dustmane",
+        "race": "Tauren",
+        "classId": "druid",
+        "classLabel": "Druid",
+        "spec": "Balance",
+        "primary": "Intellect"
+      },
+      {
+        "id": "recruit-zira",
+        "name": "Zira Darkeye",
+        "race": "Undead",
+        "classId": "priest",
+        "classLabel": "Priest",
+        "spec": "Shadow",
+        "primary": "Intellect"
+      },
+      {
+        "id": "recruit-korga",
+        "name": "Korga Longshot",
+        "race": "Orc",
+        "classId": "hunter",
+        "classLabel": "Hunter",
+        "spec": "Marksmanship",
+        "primary": "Agility"
+      },
+      {
+        "id": "recruit-senna",
+        "name": "Senna Knifewind",
+        "race": "Troll",
+        "classId": "rogue",
+        "classLabel": "Rogue",
+        "spec": "Assassination",
+        "primary": "Agility"
+      },
+      {
+        "id": "recruit-brakka",
+        "name": "Brakka Stormhoof",
+        "race": "Tauren",
+        "classId": "shaman",
+        "classLabel": "Shaman",
+        "spec": "Enhancement",
+        "primary": "Agility"
+      }
+    ]
+  }
+}
