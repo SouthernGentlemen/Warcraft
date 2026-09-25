@@ -3,9 +3,10 @@ const RACE_DATA_ROOT = "../data/heroes/races/";
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 
-const SLOT_ORDER = ["Head", "Chest", "Pants", "Feet", "Gloves", "Weapon"];
+const SLOT_ORDER = ["Head", "Chest", "Pants", "Feet", "Gloves", "Weapon", "Trinket"];
+const STORAGE_KEY = "warcraft.mockup.gear.v2";
 const LEFT_SLOTS = ["Head", "Chest", "Gloves"];
-const RIGHT_SLOTS = ["Pants", "Feet", "Weapon"];
+const RIGHT_SLOTS = ["Pants", "Feet", "Weapon", "Trinket"];
 const ARMOR_FAMILIES = ["Cloth", "Leather", "Mail", "Plate"];
 const PRIMARY_ITEM_STATS = ["Strength", "Agility", "Intellect", "Stamina"];
 
@@ -142,6 +143,17 @@ function buildArmory() {
       });
     });
 
+    const trinketFocus = ["Strength", "Agility", "Intellect", "Stamina", "Crit"][tier - 1];
+    const quality = QUALITY_BY_TIER[tier];
+    items.push({
+      id:"t" + tier + "-trinket-relic",
+      name:TIER_PREFIX[tier] + " Adventurer's Relic",
+      tier:tier, quality:quality.label, qualityKey:quality.key,
+      slot:"Trinket", family:"Trinket",
+      icon:Icons.resolveSlug("item-family", "Trinket", {slot:"Trinket"}),
+      statFocus:trinketFocus, stats:makeStats(tier, trinketFocus)
+    });
+
     WEAPON_TEMPLATES.forEach(function(weapon) {
       const quality = QUALITY_BY_TIER[tier];
       items.push({
@@ -176,7 +188,7 @@ function defaultBlueprint(classMeta, index) {
 
 function canEquip(hero, item) {
   if (item.tier > hero.level) return {ok:false, reason:"Requires hero level " + item.tier};
-  if (item.slot === "Weapon") return {ok:true, reason:""};
+  if (item.slot === "Weapon" || item.slot === "Trinket") return {ok:true, reason:""};
   const allowed = ARMOR_ACCESS[hero.classId] || ["Cloth"];
   if (!allowed.includes(item.family)) {
     return {ok:false, reason:hero.classLabel + " cannot equip " + item.family};
@@ -188,7 +200,7 @@ function itemScoreForHero(hero, item) {
   const allowed = canEquip(hero, item);
   if (!allowed.ok) return -1;
   let score = item.tier * 100;
-  if (item.slot !== "Weapon" && item.family === PREFERRED_ARMOR[hero.classId]) score += 25;
+  if (!["Weapon", "Trinket"].includes(item.slot) && item.family === PREFERRED_ARMOR[hero.classId]) score += 25;
   if (item.slot === "Weapon" && item.statFocus === hero.primary) score += 30;
   if (item.stats.some(function(s) { return s.stat === hero.primary; })) score += 10;
   return score;
@@ -286,7 +298,7 @@ function itemTooltipModel(item, hero, options) {
     requirements:[
       {label:"Required level", value:String(item.tier)},
       {label:"Slot", value:item.slot},
-      {label:item.slot === "Weapon" ? "Weapon family" : "Armor family", value:item.family}
+      {label:item.slot === "Weapon" ? "Weapon family" : item.slot === "Trinket" ? "Item family" : "Armor family", value:item.family}
     ],
     description:config.description || (eligibility.ok ? "Usable by " + hero.classLabel + "." : "This item cannot currently be equipped."),
     stats:stats,
@@ -334,12 +346,14 @@ function renderRoster() {
       '<span class="roster-copy">' +
         '<strong>' + escapeHtml(hero.name) + '</strong>' +
         '<small>' + escapeHtml(hero.race) + ' · ' + escapeHtml(hero.faction) + '</small>' +
-        '<em class="wow-class--' + hero.classId + '">' + escapeHtml(hero.classLabel) + ' · ' + escapeHtml(hero.spec) + ' · ' + equipped + '/6</em>' +
+        '<em class="wow-class--' + hero.classId + '">' + escapeHtml(hero.classLabel) + ' · ' + escapeHtml(hero.spec) + ' · ' + equipped + '/7</em>' +
       '</span>' +
       '<span class="roster-arrow" aria-hidden="true"></span>';
     button.querySelectorAll("img").forEach(Icons.bindFallback);
     button.addEventListener("click", function() {
       state.selectedHeroId = hero.id;
+      persistGear();
+      closeSlotPicker();
       render();
     });
     root.appendChild(button);
@@ -358,42 +372,99 @@ function slotMarkup(hero, slot) {
   return '<span class="gear-slot-label">' + escapeHtml(slot) + '</span>' +
     '<span class="gear-slot-icon wow-icon-frame ' + qualityFrameClass(item) + '">' +
       '<img src="' + Icons.iconUrl(item.icon) + '" alt="">' +
-      '<span class="wow-icon-tier">T' + item.tier + '</span>' +
-    '</span>' +
-    '<span class="gear-slot-remove" aria-hidden="true">Unequip</span>';
+    '</span>';
+}
+
+function persistGear() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({selectedHeroId:state.selectedHeroId, equipment:Object.fromEntries(state.heroes.map(function(hero) { return [hero.id, hero.equipment]; }))}));
+  } catch (_) {}
+}
+
+function restoreGear() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if (!saved || !saved.equipment) return;
+    state.heroes.forEach(function(hero) {
+      const equipment = saved.equipment[hero.id];
+      if (!equipment) return;
+      SLOT_ORDER.forEach(function(slot) {
+        const item = getItem(equipment[slot]);
+        hero.equipment[slot] = item && item.slot === slot && canEquip(hero, item).ok ? item.id : null;
+      });
+    });
+    if (state.heroes.some(function(hero) { return hero.id === saved.selectedHeroId; })) state.selectedHeroId = saved.selectedHeroId;
+  } catch (_) {}
+}
+
+function closeSlotPicker() {
+  const picker = $("gearSlotPicker");
+  if (picker) picker.remove();
+}
+
+function openSlotPicker(anchor, slot) {
+  closeSlotPicker();
+  const hero = selectedHero();
+  const current = getItem(hero.equipment[slot]);
+  const candidates = state.items.filter(function(item) { return item.slot === slot && canEquip(hero, item).ok; })
+    .sort(function(a, b) { return b.tier - a.tier || a.name.localeCompare(b.name); });
+  const picker = document.createElement("div");
+  picker.id = "gearSlotPicker";
+  picker.className = "gear-slot-picker wow-frame";
+  picker.setAttribute("role", "dialog");
+  picker.setAttribute("aria-label", slot + " item picker");
+  picker.innerHTML = '<div class="gear-slot-picker__head"><strong>' + escapeHtml(slot) + '</strong><span>Choose equipment</span></div><div class="gear-slot-picker__list wow-scroll"></div>';
+  const list = picker.querySelector(".gear-slot-picker__list");
+  candidates.forEach(function(item) {
+    const entry = document.createElement("button");
+    entry.type = "button";
+    entry.className = "gear-picker-item " + qualityClass(item) + (current && current.id === item.id ? " is-equipped" : "");
+    entry.setAttribute("aria-label", (current && current.id === item.id ? "Equipped: " : "Equip ") + item.name + " in " + slot);
+    entry.innerHTML = '<span class="wow-icon-frame wow-icon-frame--sm ' + qualityFrameClass(item) + '"><img src="' + Icons.iconUrl(item.icon) + '" alt=""></span><span><strong>' + escapeHtml(item.name) + '</strong><small>' + escapeHtml(item.quality) + '</small></span>' + (current && current.id === item.id ? '<em>Equipped</em>' : '');
+    Icons.bindFallback(entry.querySelector("img"));
+    Tooltips.attach(entry, function() { return itemComparisonTooltip(item, hero); });
+    entry.addEventListener("click", function() {
+      const previous = current;
+      hero.equipment[slot] = item.id;
+      persistGear(); closeSlotPicker();
+      toast((previous ? "Replaced " + previous.name + " with " : "Equipped ") + item.name); render();
+    });
+    list.appendChild(entry);
+  });
+  if (current) {
+    const unequip = document.createElement("button");
+    unequip.type = "button"; unequip.className = "gear-picker-unequip";
+    unequip.textContent = "Unequip " + current.name;
+    unequip.addEventListener("click", function() { hero.equipment[slot] = null; persistGear(); closeSlotPicker(); toast("Unequipped " + current.name); render(); });
+    list.appendChild(unequip);
+  }
+  document.body.appendChild(picker);
+  const rect = anchor.getBoundingClientRect();
+  const width = Math.min(320, window.innerWidth - 16);
+  picker.style.width = width + "px";
+  picker.style.left = Math.max(8, Math.min(rect.right + 8, window.innerWidth - width - 8)) + "px";
+  picker.style.top = Math.max(8, Math.min(rect.top, window.innerHeight - Math.min(420, picker.scrollHeight) - 8)) + "px";
+  const first = picker.querySelector("button"); if (first) first.focus();
 }
 
 function renderSlots() {
   const hero = selectedHero();
-
   function fill(rootId, slots) {
-    const root = $(rootId);
-    root.innerHTML = "";
+    const root = $(rootId); root.innerHTML = "";
     slots.forEach(function(slot) {
       const item = getItem(hero.equipment[slot]);
-      const button = document.createElement("button");
-      button.type = "button";
+      const button = document.createElement("button"); button.type = "button";
       button.className = "gear-slot" + (item ? " filled" : " empty");
-      button.setAttribute("aria-label", item ? slot + ": " + item.name + ". Click to unequip." : slot + ": empty");
+      button.setAttribute("aria-haspopup", "dialog");
+      button.setAttribute("aria-label", item ? slot + ": " + item.name + ". Open item picker." : slot + ": empty. Open item picker.");
       button.innerHTML = slotMarkup(hero, slot);
-      const img = button.querySelector("img");
-      if (img) Icons.bindFallback(img);
-      if (item) {
-        Tooltips.attach(button, function() {
-          return itemTooltipModel(item, hero, {badge:"Equipped", description:"Click to unequip this item."});
-        });
-        button.addEventListener("click", function() {
-          hero.equipment[slot] = null;
-          toast("Unequipped " + item.name);
-          render();
-        });
-      }
+      const img = button.querySelector("img"); if (img) Icons.bindFallback(img);
+      if (item) Tooltips.attach(button, function() { return itemTooltipModel(item, hero, {badge:"Equipped", description:"Open this slot to compare, replace, or unequip."}); });
+      button.addEventListener("click", function(event) { event.stopPropagation(); openSlotPicker(button, slot); });
       root.appendChild(button);
     });
   }
-
-  fill("leftSlots", LEFT_SLOTS);
-  fill("rightSlots", RIGHT_SLOTS);
+  fill("leftSlots", LEFT_SLOTS); fill("rightSlots", RIGHT_SLOTS);
 }
 
 function addStat(stats, stat, value) {
@@ -527,7 +598,6 @@ function renderArmory() {
     card.innerHTML =
       '<span class="armory-item-icon wow-icon-frame ' + qualityFrameClass(item) + (eligibility.ok ? "" : " is-locked") + (equipped ? " is-selected" : "") + '">' +
         '<img src="' + Icons.iconUrl(item.icon) + '" alt="">' +
-        '<span class="wow-icon-tier">T' + item.tier + '</span>' +
         (equipped ? '<span class="armory-equipped-mark" aria-hidden="true">E</span>' : '') +
       '</span>';
     Icons.bindFallback(card.querySelector("img"));
@@ -537,6 +607,7 @@ function renderArmory() {
       card.addEventListener("click", function() {
         const previous = getItem(hero.equipment[item.slot]);
         hero.equipment[item.slot] = item.id;
+        persistGear();
         toast((previous ? "Replaced " + previous.name + " with " : "Equipped ") + item.name);
         render();
       });
@@ -579,6 +650,8 @@ function syncFilters() {
 function resetRoster() {
   state.heroes = buildHeroes(state.classIndex);
   state.selectedHeroId = state.heroes[0] ? state.heroes[0].id : null;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+  closeSlotPicker();
   render();
   toast("Roster loadouts reset");
 }
@@ -601,12 +674,15 @@ async function init() {
     state.raceIndex = loaded[1];
     state.heroes = buildHeroes(state.classIndex);
     state.selectedHeroId = state.heroes[0] ? state.heroes[0].id : null;
+    restoreGear();
 
     ["tierFilter", "slotFilter", "gearSearch", "equippableOnly"].forEach(function(id) {
       $(id).addEventListener(id === "gearSearch" ? "input" : "change", syncFilters);
     });
     $("resetGear").addEventListener("click", resetRoster);
 
+    document.addEventListener("click", function(event) { const picker = $("gearSlotPicker"); if (picker && !picker.contains(event.target) && !event.target.closest(".gear-slot")) closeSlotPicker(); });
+    document.addEventListener("keydown", function(event) { if (event.key === "Escape") closeSlotPicker(); });
     render();
   } catch (error) {
     showError(error.message + ". Serve the repository over HTTP with npm run dev.");
