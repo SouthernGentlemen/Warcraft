@@ -198,6 +198,17 @@
   font: 700 11px var(--wow-font-display);
 }
 
+.encounter-name small {
+  display: block;
+  margin-top: 2px;
+  max-width: 190px;
+  overflow: hidden;
+  color: var(--wow-text-dim);
+  font-size: 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .battle-arena {
   position: relative;
   min-height: 610px;
