@@ -1,5 +1,6 @@
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
+const Roster = window.WarcraftRoster;
 
 const BASE_TEAMS = {
   alliance: [
@@ -537,6 +538,25 @@ function resetBattle() {
   scheduleNext();
 }
 
+function applyPendingEncounterContext() {
+  if (!Roster || typeof Roster.getPendingEncounter !== 'function') return;
+  const params = new URLSearchParams(location.search);
+  if (params.get('encounter') !== 'dungeon') return;
+  const encounter = Roster.getPendingEncounter();
+  if (!encounter || encounter.kind !== 'dungeon') return;
+  if (params.get('dungeon') && params.get('dungeon') !== encounter.dungeonId) return;
+
+  const type = $("battleEncounterType");
+  const name = $("battleEncounterName");
+  const party = $("battleEncounterParty");
+  if (type) type.textContent = "DUNGEON";
+  if (name) name.textContent = encounter.dungeonName || encounter.dungeonId;
+  if (party) party.textContent = encounter.partySize + " heroes · " + encounter.npcPoolId;
+
+  const event = $("battleEvent");
+  if (event) event.textContent = "Dungeon party prepared from Quest Board. Current prototype combat presentation will be replaced by the shared dungeon encounter framework.";
+}
+
 function init() {
   Icons.hydrate(document);
   Tooltips.hydrate(document);
@@ -547,7 +567,9 @@ function init() {
     button.addEventListener("click", () => setSpeed(Number(button.dataset.speed)));
   });
 
+  applyPendingEncounterContext();
   resetBattle();
+  applyPendingEncounterContext();
 }
 
 init();
