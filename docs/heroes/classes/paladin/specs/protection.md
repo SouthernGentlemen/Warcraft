@@ -7,45 +7,40 @@
 - Primary stat: Strength
 - Auto-attack: Guarded Strike — defensive melee Holy damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Protection** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Protection** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Sacred Armor** | Gain 10% more Stamina from equipped gear. |
-| **Righteous Recovery** | Taking direct damage restores 1% maximum Mana; can trigger once per second. |
-| **Blessed Guard** | Guarded Strike grants a shield equal to 3% maximum health for 4 seconds. |
+| **Improved Devotion Aura** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Redoubt** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Consecration** | Every fourth Guarded Strike also deals 30% of its damage to all enemies. |
-| **Ardent Defender** | While below 30% health, take 20% less damage. |
-| **Judgment** | Damaging equipped cooldowns cause the target to deal 10% less damage for 4 seconds. |
+| **Blessing of Kings** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Improved Righteous Fury** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Divine Protection** | Using the selected ultimate grants 30% damage reduction for 8 seconds. |
-| **Guardian Aura** | Using the selected ultimate grants the entire party 10% damage reduction for 8 seconds. |
+| **Holy Shield** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Paladin/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.

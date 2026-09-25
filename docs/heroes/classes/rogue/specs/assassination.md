@@ -7,45 +7,40 @@
 - Primary stat: Agility
 - Auto-attack: Poisoned Strike — melee weapon damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Assassination** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Assassination** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Deadly Poison** | Auto-attacks apply poison dealing 12% of the hit's damage over 5 seconds; refreshes duration. |
-| **Cut to the Quick** | Auto-attack bar fills 10% faster. |
-| **Cheap Toxins** | Energy costs of equipped cooldown abilities are reduced by 10%. |
+| **Improved Eviscerate** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Remorseless Attacks** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Envenom** | Equipped cooldown abilities deal 15% more damage to poisoned targets. |
-| **Venom Rush** | Poison ticks have a 20% chance to restore 2 Energy. |
-| **Hemorrhage** | Critical auto-attacks extend the active poison by 2 seconds and increase its remaining damage by 10%. |
+| **Relentless Strikes** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Improved Expose Armor** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Master Poisoner** | Deadly Poison can stack up to 3 times; stacks after the first deal 50% of normal poison damage. |
-| **Executioner** | Deal 25% more damage to targets below 30% health. |
+| **Vigor** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Rogue/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.

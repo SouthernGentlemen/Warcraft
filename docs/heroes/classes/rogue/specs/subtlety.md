@@ -7,45 +7,40 @@
 - Primary stat: Agility
 - Auto-attack: Precision Strike — melee weapon damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Subtlety** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Subtlety** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Ambush** | The first auto-attack of each combat deals 100% additional damage. |
-| **Shadow Focus** | The first equipped cooldown used each combat costs 50% less Energy. |
-| **Precision** | Precision Strike gains 10% Critical Strike chance. |
+| **Master of Deception** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Opportunity** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Find Weakness** | After using an equipped cooldown, the next auto-attack ignores 30% of the target's armor. |
-| **Premeditation** | Begin combat with 20% ultimate-bar charge. |
-| **Elusiveness** | After using an equipped cooldown, take 10% less damage for 4 seconds. |
+| **Initiative** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Ghostly Strike** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Shadow Dance** | Using the selected ultimate causes the next three auto-attacks to gain Ambush's opening-hit bonus. |
-| **Cheat Death** | Once per combat, lethal damage instead leaves the hero at 1 health and grants 30% damage reduction for 5 seconds. |
+| **Premeditation** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Rogue/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.
