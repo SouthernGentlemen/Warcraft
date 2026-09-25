@@ -7,6 +7,7 @@ const BUILDING_IDS=Object.freeze(["artisans","gathering-camp","survival-lodge","
 const SLOT_COUNT=3;
 const DURATION_PHASES=2;
 const completionHandlers=new Map();
+const processingBuildings=new Set();
 function clone(value){return value==null?value:JSON.parse(JSON.stringify(value));}
 function buildingId(value){const id=String(value||"");if(!BUILDING_IDS.includes(id))throw new Error("Unsupported assignment building "+id+".");return id;}
 function slotIndex(value){const index=Number(value);if(!Number.isInteger(index)||index<0||index>=SLOT_COUNT)throw new Error("Assignment slot must be 0, 1, or 2.");return index;}
@@ -94,28 +95,31 @@ function registerCompletionHandler(id,handler){
 }
 function processBuilding(id){
   const key=buildingId(id),handler=completionHandlers.get(key);
-  if(!handler)return[];
-  const state=getBuildingState(key),events=[];let changed=false;
-  state.slots.forEach((assignment,index)=>{
-    if(!assignment||assignment.status!=="training")return;
-    const remaining=remainingPhases(assignment);
-    if(assignment.remainingCampaignPhases!==remaining){assignment.remainingCampaignPhases=remaining;changed=true;}
-    if(remaining>0)return;
-    const hero=Roster.hero(assignment.heroId);
-    if(!hero){state.slots[index]=null;changed=true;return;}
-    try{
-      const result=handler(clone(assignment),hero)||{};
-      if(hero.availability==="training")Roster.updateHero(hero.id,{availability:"available"});
-      state.slots[index]=null;changed=true;
-      events.push(Object.assign({type:"building_assignment_complete",buildingId:key,slotIndex:index,heroId:hero.id,heroName:hero.name},result));
-    }catch(error){
-      assignment.status="blocked";assignment.error=error.message;assignment.remainingCampaignPhases=0;changed=true;
-      if(hero.availability==="training")Roster.updateHero(hero.id,{availability:"available"});
-    }
-  });
-  if(changed)persist(key,state);
-  if(events.length)emit("complete",{buildingId:key,events:clone(events)});
-  return events;
+  if(!handler||processingBuildings.has(key))return[];
+  processingBuildings.add(key);
+  try{
+    const state=getBuildingState(key),events=[];let changed=false;
+    state.slots.forEach((assignment,index)=>{
+      if(!assignment||assignment.status!=="training")return;
+      const remaining=remainingPhases(assignment);
+      if(assignment.remainingCampaignPhases!==remaining){assignment.remainingCampaignPhases=remaining;changed=true;}
+      if(remaining>0)return;
+      const hero=Roster.hero(assignment.heroId);
+      if(!hero){state.slots[index]=null;changed=true;return;}
+      try{
+        const result=handler(clone(assignment),hero)||{};
+        if(hero.availability==="training")Roster.updateHero(hero.id,{availability:"available"});
+        state.slots[index]=null;changed=true;
+        events.push(Object.assign({type:"building_assignment_complete",buildingId:key,slotIndex:index,heroId:hero.id,heroName:hero.name},result));
+      }catch(error){
+        assignment.status="blocked";assignment.error=error.message;assignment.remainingCampaignPhases=0;changed=true;
+        if(hero.availability==="training")Roster.updateHero(hero.id,{availability:"available"});
+      }
+    });
+    if(changed)persist(key,state);
+    if(events.length)emit("complete",{buildingId:key,events:clone(events)});
+    return events;
+  }finally{processingBuildings.delete(key);}
 }
 function processAll(){return BUILDING_IDS.flatMap(processBuilding);}
 function heroDragPayload(event,heroId){event.dataTransfer.setData("text/warcraft-hero-id",String(heroId));event.dataTransfer.setData("text/plain",String(heroId));event.dataTransfer.effectAllowed="move";}
