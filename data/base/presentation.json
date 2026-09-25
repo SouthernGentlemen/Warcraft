@@ -33,29 +33,9 @@
           "x": 78,
           "y": 48
         },
-        "blacksmith": {
-          "x": 18,
-          "y": 69
-        },
-        "alchemy": {
-          "x": 38,
+        "artisans": {
+          "x": 58,
           "y": 72
-        },
-        "enchanter": {
-          "x": 56,
-          "y": 72
-        },
-        "tailor": {
-          "x": 72,
-          "y": 66
-        },
-        "leather": {
-          "x": 69,
-          "y": 82
-        },
-        "engineer": {
-          "x": 86,
-          "y": 68
         }
       },
       "mobile_positions": {
@@ -79,29 +59,9 @@
           "x": 85,
           "y": 42
         },
-        "blacksmith": {
-          "x": 16,
-          "y": 60
-        },
-        "alchemy": {
-          "x": 39,
-          "y": 60
-        },
-        "enchanter": {
-          "x": 62,
-          "y": 60
-        },
-        "tailor": {
-          "x": 84,
-          "y": 60
-        },
-        "leather": {
-          "x": 32,
-          "y": 77
-        },
-        "engineer": {
-          "x": 68,
-          "y": 77
+        "artisans": {
+          "x": 50,
+          "y": 66
         }
       }
     },
@@ -136,29 +96,9 @@
           "x": 18,
           "y": 50
         },
-        "blacksmith": {
-          "x": 83,
-          "y": 69
-        },
-        "alchemy": {
-          "x": 63,
-          "y": 72
-        },
-        "enchanter": {
+        "artisans": {
           "x": 45,
-          "y": 71
-        },
-        "tailor": {
-          "x": 28,
-          "y": 66
-        },
-        "leather": {
-          "x": 31,
-          "y": 82
-        },
-        "engineer": {
-          "x": 13,
-          "y": 69
+          "y": 72
         }
       },
       "mobile_positions": {
@@ -182,29 +122,9 @@
           "x": 15,
           "y": 42
         },
-        "blacksmith": {
-          "x": 84,
-          "y": 60
-        },
-        "alchemy": {
-          "x": 61,
-          "y": 60
-        },
-        "enchanter": {
-          "x": 38,
-          "y": 60
-        },
-        "tailor": {
-          "x": 16,
-          "y": 60
-        },
-        "leather": {
-          "x": 68,
-          "y": 77
-        },
-        "engineer": {
-          "x": 32,
-          "y": 77
+        "artisans": {
+          "x": 50,
+          "y": 66
         }
       }
     }
