@@ -26,6 +26,12 @@
       description:"Manage the hero roster, inspect equipment slots, and compare item loadouts.",
       icon:Object.freeze({category:"equipment-slot", key:"chest"})
     }),
+    inventory:Object.freeze({
+      label:"Inventory",
+      title:"Global Inventory",
+      description:"Browse owned equipment across the roster without duplicating hero equipment state.",
+      icon:Object.freeze({category:"equipment-slot", key:"chest"})
+    }),
     journal:Object.freeze({
       label:"Quest Journal",
       title:"Quest Journal",
