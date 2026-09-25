@@ -1443,3 +1443,14 @@ button:focus-visible .wow-icon-frame {
   .wow-demo__grid,
   .wow-demo__form { grid-template-columns: 1fr; }
 }
+
+
+/* WOWUI-011 cross-screen accessibility contract */
+.wow-ui button:focus-visible,
+.wow-ui a:focus-visible,
+.wow-ui [tabindex="0"]:focus-visible {
+  outline: 2px solid var(--wow-focus);
+  outline-offset: 2px;
+}
+.wow-ui [aria-disabled="true"] { cursor: not-allowed; }
+.wow-ui [aria-disabled="true"]:not(.wow-button):not(.wow-icon-button):not(.wow-tab) { filter: saturate(.45); }
