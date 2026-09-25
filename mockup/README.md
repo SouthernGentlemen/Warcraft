@@ -119,3 +119,7 @@ Base building details now use one reusable sidecar that is hidden on initial loa
 ### Building management sidecar
 
 Core and profession buildings now manage progression directly inside the shared Base sidecar. The sidecar reads current/next capabilities, prerequisites, and resource costs from `data/base/buildings.json`; blocked and maximum-level states are explicit, successful upgrades update the resource HUD and map level in place, and the legacy building-list renderer has been removed. Quest Board management remains reserved for WOWUI-026.
+
+### Quest Board sidecar
+
+Quest Board is now a first-class building on the Base map and uses the shared building sidecar for both progression and hero dispatch. The sidecar renders Tier 1–5 quest availability, party-size requirements, available heroes/saved loadouts/ad-hoc selection, active assignments, completion, and rewards directly from authoritative roster state. Dispatch/completion state survives sidecar close/reopen, and the legacy permanent Quest Board panel dependency is gone.
