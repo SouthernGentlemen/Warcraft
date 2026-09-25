@@ -733,6 +733,70 @@
   filter: grayscale(1);
 }
 
+.hero-swing-timer {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 3px;
+  border: 1px solid var(--wow-inset-line);
+  border-radius: var(--wow-radius-tight);
+  background: #090c0e;
+}
+
+.hero-swing-timer__track {
+  position: relative;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid #050607;
+  border-radius: 2px;
+  background: #15191b;
+  box-shadow: inset 0 0 0 1px #252c30;
+}
+
+.hero-swing-timer__fill {
+  display: block;
+  width: 0;
+  min-width: 0;
+  max-width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg,var(--wow-gold-pale),var(--wow-gold),var(--wow-gold-deep));
+  box-shadow: inset 0 1px rgba(255,255,255,.22);
+  transition: width .08s linear;
+}
+
+.hero-swing-timer__copy {
+  min-width: 54px;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.hero-swing-timer__copy small {
+  color: var(--wow-text-dim);
+  font-size: 5px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.hero-swing-timer__copy b {
+  color: var(--wow-gold-pale);
+  font-size: 6px;
+}
+
+.hero-swing-timer.is-ready {
+  border-color: color-mix(in srgb,var(--wow-success) 52%,var(--wow-frame-edge));
+}
+
+.hero-swing-timer.is-dead {
+  opacity: .42;
+  filter: grayscale(1);
+}
+
 .unit-status-row {
   display: flex;
   justify-content: space-between;
@@ -1453,6 +1517,34 @@
 
 .battle-frame[data-party-size="20"] .combatant-name {
   font-size: 11px;
+}
+
+.battle-frame[data-party-size="10"] .hero-swing-timer,
+.battle-frame[data-party-size="20"] .hero-swing-timer {
+  grid-template-columns: minmax(0,1fr);
+  gap: 1px;
+  padding: 1px 2px;
+}
+
+.battle-frame[data-party-size="10"] .hero-swing-timer__track,
+.battle-frame[data-party-size="20"] .hero-swing-timer__track {
+  height: 5px;
+}
+
+.battle-frame[data-party-size="10"] .hero-swing-timer__copy,
+.battle-frame[data-party-size="20"] .hero-swing-timer__copy {
+  min-width: 0;
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.battle-frame[data-party-size="20"] .hero-swing-timer__copy small {
+  display: none;
+}
+
+.battle-frame[data-party-size="20"] .hero-swing-timer__copy b {
+  margin-left: auto;
+  font-size: 5px;
 }
 
 @media (max-width: 900px) {
