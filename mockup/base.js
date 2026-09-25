@@ -1087,10 +1087,10 @@ function upgradeBuilding(id) {
   syncResourceBar();
   syncMapBuildings();
   if (b.id === 'questboard') {
-    state.questMessage='Quest Board upgraded. Tier '+b.level+' quests are now unlocked.';
+    state.questMessage='Quest Board upgraded. Difficulty '+b.level+' quest offers are now unlocked.';
   }
   renderSidecar();
-  toast(b.name+' upgraded to level '+b.level+' (Tier '+b.level+').');
+  toast(b.name+' upgraded to level '+b.level+'.');
 }
 
 $('#baseMap').addEventListener('click', event => {
@@ -1146,6 +1146,13 @@ async function initBase() {
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
     all('[data-resource]').forEach(element=>Tooltips.attach(element,()=>resourceTooltipModel(element.dataset.resource,element),{anchor:'target'}));
     syncResourceBar(); applyBasePresentation(); $('#baseSidecar').hidden = true;
+    const params=new URLSearchParams(window.location.search);
+    const requestedBuilding=params.get('building');
+    if(requestedBuilding&&buildings.some(entry=>entry.id===requestedBuilding)){
+      if(requestedBuilding==='questboard') state.questBoardMode=params.get('mode')==='dungeons'?'dungeons':'offers';
+      const origin=document.querySelector('[data-building="'+requestedBuilding+'"]');
+      openSidecar(requestedBuilding,origin);
+    }
   } catch(error) { toast(error.message); }
 }
 initBase();
