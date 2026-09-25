@@ -65,6 +65,60 @@
           "x": 86,
           "y": 68
         }
+      },
+      "mobile_positions": {
+        "keep": {
+          "x": 50,
+          "y": 14
+        },
+        "command": {
+          "x": 20,
+          "y": 27
+        },
+        "recruitment": {
+          "x": 80,
+          "y": 27
+        },
+        "barracks": {
+          "x": 15,
+          "y": 42
+        },
+        "questboard": {
+          "x": 38,
+          "y": 42
+        },
+        "training": {
+          "x": 62,
+          "y": 42
+        },
+        "storehouse": {
+          "x": 85,
+          "y": 42
+        },
+        "blacksmith": {
+          "x": 16,
+          "y": 60
+        },
+        "alchemy": {
+          "x": 39,
+          "y": 60
+        },
+        "enchanter": {
+          "x": 62,
+          "y": 60
+        },
+        "tailor": {
+          "x": 84,
+          "y": 60
+        },
+        "leather": {
+          "x": 32,
+          "y": 77
+        },
+        "engineer": {
+          "x": 68,
+          "y": 77
+        }
       }
     },
     "horde": {
@@ -129,6 +183,60 @@
         "engineer": {
           "x": 13,
           "y": 69
+        }
+      },
+      "mobile_positions": {
+        "keep": {
+          "x": 50,
+          "y": 14
+        },
+        "command": {
+          "x": 80,
+          "y": 27
+        },
+        "recruitment": {
+          "x": 20,
+          "y": 27
+        },
+        "barracks": {
+          "x": 85,
+          "y": 42
+        },
+        "questboard": {
+          "x": 62,
+          "y": 42
+        },
+        "training": {
+          "x": 38,
+          "y": 42
+        },
+        "storehouse": {
+          "x": 15,
+          "y": 42
+        },
+        "blacksmith": {
+          "x": 84,
+          "y": 60
+        },
+        "alchemy": {
+          "x": 61,
+          "y": 60
+        },
+        "enchanter": {
+          "x": 38,
+          "y": 60
+        },
+        "tailor": {
+          "x": 16,
+          "y": 60
+        },
+        "leather": {
+          "x": 68,
+          "y": 77
+        },
+        "engineer": {
+          "x": 32,
+          "y": 77
         }
       }
     }
