@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "kind": "reagent_holdings",
+  "owner_building": "storehouse",
+  "items": [
+    {
+      "id": "copper-ore",
+      "name": "Copper Ore",
+      "category": "reagent",
+      "family": "metal",
+      "tier": 1,
+      "quantity": 48,
+      "icon_slug": "inv_ore_copper_01",
+      "professions": [
+        "blacksmith",
+        "engineer"
+      ]
+    },
+    {
+      "id": "silverleaf",
+      "name": "Silverleaf",
+      "category": "reagent",
+      "family": "herb",
+      "tier": 1,
+      "quantity": 32,
+      "icon_slug": "inv_misc_herb_10",
+      "professions": [
+        "alchemist"
+      ]
+    },
+    {
+      "id": "linen-cloth",
+      "name": "Linen Cloth",
+      "category": "reagent",
+      "family": "cloth",
+      "tier": 1,
+      "quantity": 40,
+      "icon_slug": "inv_fabric_linen_01",
+      "professions": [
+        "tailor"
+      ]
+    },
+    {
+      "id": "light-leather",
+      "name": "Light Leather",
+      "category": "reagent",
+      "family": "leather",
+      "tier": 1,
+      "quantity": 36,
+      "icon_slug": "inv_misc_leatherscrap_03",
+      "professions": [
+        "leatherworker"
+      ]
+    },
+    {
+      "id": "strange-dust",
+      "name": "Strange Dust",
+      "category": "reagent",
+      "family": "enchanting",
+      "tier": 1,
+      "quantity": 28,
+      "icon_slug": "inv_enchant_duststrange",
+      "professions": [
+        "enchanter"
+      ]
+    },
+    {
+      "id": "bronze-bar",
+      "name": "Bronze Bar",
+      "category": "reagent",
+      "family": "metal",
+      "tier": 2,
+      "quantity": 24,
+      "icon_slug": "inv_ingot_bronze",
+      "professions": [
+        "blacksmith",
+        "engineer"
+      ]
+    },
+    {
+      "id": "briarthorn",
+      "name": "Briarthorn",
+      "category": "reagent",
+      "family": "herb",
+      "tier": 2,
+      "quantity": 18,
+      "icon_slug": "inv_misc_root_01",
+      "professions": [
+        "alchemist"
+      ]
+    },
+    {
+      "id": "wool-cloth",
+      "name": "Wool Cloth",
+      "category": "reagent",
+      "family": "cloth",
+      "tier": 2,
+      "quantity": 22,
+      "icon_slug": "inv_fabric_wool_01",
+      "professions": [
+        "tailor"
+      ]
+    },
+    {
+      "id": "medium-leather",
+      "name": "Medium Leather",
+      "category": "reagent",
+      "family": "leather",
+      "tier": 2,
+      "quantity": 20,
+      "icon_slug": "inv_misc_leatherscrap_05",
+      "professions": [
+        "leatherworker"
+      ]
+    },
+    {
+      "id": "soul-dust",
+      "name": "Soul Dust",
+      "category": "reagent",
+      "family": "enchanting",
+      "tier": 2,
+      "quantity": 16,
+      "icon_slug": "inv_enchant_dustsoul",
+      "professions": [
+        "enchanter"
+      ]
+    }
+  ]
+}

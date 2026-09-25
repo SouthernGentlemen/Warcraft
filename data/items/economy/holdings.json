@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "kind": "bank_holdings",
+  "owner_building": "bank",
+  "holdings": [
+    {
+      "id": "quest-marks",
+      "name": "Quest Marks",
+      "category": "currency",
+      "quantity": 12,
+      "icon": {
+        "category": "quest",
+        "key": "marks"
+      },
+      "description": "Persistent marks earned from completed Quest Board assignments."
+    },
+    {
+      "id": "valor-tokens",
+      "name": "Valor Tokens",
+      "category": "currency",
+      "quantity": 6,
+      "icon": {
+        "category": "currency",
+        "key": "valor"
+      },
+      "description": "Persistent progression currency reserved for higher-tier rewards."
+    },
+    {
+      "id": "faction-renown",
+      "name": "Faction Renown",
+      "category": "meta_progression",
+      "quantity": 3,
+      "icon": {
+        "category": "currency",
+        "key": "renown"
+      },
+      "description": "Persistent faction progression earned across the stronghold."
+    },
+    {
+      "id": "builders-deeds",
+      "name": "Builder's Deeds",
+      "category": "economy",
+      "quantity": 2,
+      "icon": {
+        "category": "currency",
+        "key": "deeds"
+      },
+      "description": "Persistent economy items used by long-term base progression."
+    }
+  ]
+}
