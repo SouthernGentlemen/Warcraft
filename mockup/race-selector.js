@@ -1,4 +1,4 @@
-const DATA_ROOT = "../data/heroes/races/";
+const RACE_INDEX = "../data/heroes/races/index.json";
 const CLASS_ROOT = "../data/heroes/classes/";
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
@@ -302,22 +302,18 @@ function renderDetail(data) {
   renderClasses();
 }
 
-async function renderRace() {
+function renderRace() {
   const meta = currentRaceMeta();
   if (!meta) return;
 
-  const token = ++state.renderToken;
   Tooltips.hide();
-
-  try {
-    const data = await loadJson(DATA_ROOT + meta.data_path.replace("./", ""));
-    if (token !== state.renderToken) return;
-    state.raceData = data;
-    renderStage(data);
-    renderDetail(data);
-  } catch (error) {
-    if (token === state.renderToken) showError(error.message);
-  }
+  state.raceData = {
+    race: meta.label,
+    racial: meta.racial || {name:"Unknown racial", mechanic:""},
+    balance_role: meta.balance_role || ""
+  };
+  renderStage(state.raceData);
+  renderDetail(state.raceData);
 }
 
 async function setFaction(factionId) {
@@ -342,7 +338,7 @@ async function init() {
     Tooltips.hydrate(document);
 
     const loaded = await Promise.all([
-      loadJson(DATA_ROOT + "index.json"),
+      loadJson(RACE_INDEX),
       loadJson(CLASS_ROOT + "index.json")
     ]);
     state.index = loaded[0];
