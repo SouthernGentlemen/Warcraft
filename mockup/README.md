@@ -32,7 +32,7 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 ### Shared Navigation
 
 - `ui/wow-nav.js` enhances the common `.wow-game-shell` / `.wow-game-nav` markup with semantic game icons, shared destination tooltips, and active-screen state while leaving every destination as a normal static HTML `href`.
-- Every primary mockup screen exposes the same top-level destinations: Heroes, Talents, Gear, Battle, Base, and Simulation. The launcher brand returns to `index.html`.
+- Every primary mockup screen exposes the same top-level destinations: Heroes, Talents, Gear, Battle, Base, and Simulation. The shared Warcraft brand/home action returns to `base.html`.
 - Use `data-wow-nav-active` on the shell and `data-wow-nav-key` on destination links. Keep the active link's `is-active` class and `aria-current="page"` in static markup so the selected screen is visible before enhancement.
 - The shared game bar is sticky and horizontally scrollable at narrow widths. Page-specific actions such as Gear/Battle reset controls live in `.wow-game-shell__action` rather than creating a second website-style navbar.
 
@@ -46,7 +46,8 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 
 ## Screens
 
-- `index.html` — mockup launcher
+- `index.html` — player-facing entry redirect to `base.html`
+- `dev.html` — developer-only mockup launcher
 - `race-selector.html` — faction, body type, race, class availability, and racial review
 - `talent-calculator.html` — class/spec browser and five-point talent calculator
 - `gear.html` — interactive roster equipment screen with one hero per class, six fixed slots, class armor eligibility, and sample Tier 1–5 gear
@@ -75,7 +76,7 @@ Every run performs a local server restart only:
 
 You do not need to find or kill ports manually. Running `npm run dev` again replaces the previous Warcraft dev instance.
 
-Once the server is listening, the selected `/mockup/` URL is opened automatically in your default browser. The active URL is also printed in the terminal, and the root URL redirects to `/mockup/`.
+Once the server is listening, `/mockup/` is opened automatically in your default browser and enters the player-facing Base screen. The active URL is also printed in the terminal, and the root URL redirects to `/mockup/`.
 
 `HOST` and `PORT` can still be supplied when needed, but occupied ports are handled automatically. Set `NO_OPEN=1` only when you intentionally want to suppress automatic browser launch.
 
