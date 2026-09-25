@@ -42,10 +42,10 @@ The target is not a collection of separately themed mockups. The target is one r
 | WOWUI-011 | Cross-screen consistency and accessibility pass **(Complete)** | WOWUI-004 through WOWUI-010 |
 | WOWUI-012 | Canonical Classic race/class expansion **(Complete)** | WOWUI-011 |
 | WOWUI-013 | Simplify talents to two tiers plus one capstone **(Complete)** | WOWUI-012 |
-| WOWUI-014 | Slot picker gear flow and trinket support | WOWUI-011 |
-| WOWUI-015 | Building levels 1–5 and tier mapping | WOWUI-011 |
-| WOWUI-016 | Roster management and five saved party loadouts | WOWUI-012, WOWUI-014 |
-| WOWUI-017 | Quest Board meta-progression | WOWUI-015, WOWUI-016 |
+| WOWUI-014 | Slot picker gear flow and trinket support **(Complete)** | WOWUI-011 |
+| WOWUI-015 | Building levels 1–5 and tier mapping **(Complete)** | WOWUI-011 |
+| WOWUI-016 | Roster management and five saved party loadouts **(Complete)** | WOWUI-012, WOWUI-014 |
+| WOWUI-017 | Quest Board meta-progression **(Complete)** | WOWUI-015, WOWUI-016 |
 | WOWUI-018 | Unified hero management workspace | WOWUI-013, WOWUI-014, WOWUI-016 |
 | WOWUI-019 | Gameplay-management integration acceptance | WOWUI-012 through WOWUI-018 |
 
@@ -712,6 +712,8 @@ Turn the roster into the authoritative hero-management source and let players sa
 ---
 
 ## WOWUI-017 — Quest Board Meta-Progression
+
+**Status:** Complete — 2026-09-24
 
 ### Objective
 
