@@ -120,6 +120,8 @@ Every normalized roster hero now owns an authoritative combat loadout in `Warcra
 
 Auto Attack itself is not selected from the class ability pool; its action identity is derived from the active specialization's authored `identity.auto_attack` field when the combat actor is built. Ability 1 and Ability 2 must be distinct learned abilities compatible with the active specialization. Spec changes deterministically normalize incompatible slots. Battle passes the roster-selected normal and ultimate IDs into the canonical hero factory, so encounter actors no longer depend on "first two abilities in the file" as their player loadout.
 
+The hero detail surface presents that state as one compact personal Abilities bar: Auto Attack, Ability 1, Ability 2, and Ultimate. Auto Attack and Ultimate are inspectable fixed slots at this phase; Ability 1 and Ability 2 open an in-place gear-style picker populated only from the selected hero's learned, active-spec-compatible authored cooldown abilities. Picking an action writes through `WarcraftRoster.setCombatLoadout()`; the other equipped normal action is excluded from choices so duplicate normal slots cannot be selected. Shared ability tooltips expose resource/cost, cooldown, target, and effect without navigating away from Roster.
+
 ### Map-first Base architecture
 
 Base is the player-facing landing screen. The default view intentionally contains only the shared Warcraft navigation, a compact Gold/Lumber/Stone HUD, and the full stronghold map. There is no internal navigation rail, permanent building list, Quest Board dashboard, action bar, profile footer, or reserved detail column.
