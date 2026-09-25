@@ -154,13 +154,16 @@ function teamTotals(snapshot,team) {
   return snapshot.actors.filter(actor=>actor.definition.team===team).reduce((sum,actor)=>{
     sum.current+=actor.state.hp;
     sum.max+=actor.definition.derived.maxHealth;
+    sum.total+=1;
+    if(actor.state.alive)sum.alive+=1;
     return sum;
-  },{current:0,max:0});
+  },{current:0,max:0,alive:0,total:0});
 }
 
 function updateSideSummary(side,totals) {
-  const text=$(side+"HpText"),fill=$(side+"HpFill");
+  const text=$(side+"HpText"),fill=$(side+"HpFill"),alive=$(side+"AliveText");
   if(text)text.textContent=formatNumber(totals.current)+" / "+formatNumber(totals.max);
+  if(alive)alive.textContent=totals.alive+" / "+totals.total+" alive";
   if(fill)fill.style.width=(totals.max?Math.max(0,Math.min(100,totals.current/totals.max*100)):0)+"%";
 }
 
