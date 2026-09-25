@@ -49,7 +49,7 @@ function keepUpgradeGate(building, next) {
     blocked,
     currentLevel,
     requiredLevel,
-    reason:blocked ? 'Upgrade Keep to level ' + requiredLevel + ' first.' : ''
+    reason:blocked ? 'Upgrade Keep first.' : ''
   };
 }
 
@@ -366,17 +366,6 @@ function buildingActionMarkup(action) {
   return '<button class="base-sidecar__menu-item base-sidecar__action" type="button" data-building-action="' + action.action + '"' + tooltip + '>' + content + '</button>';
 }
 
-function upgradeControlMarkup(building, upgrade) {
-  const next = upgrade.next;
-  const label = next ? 'Upgrade to Level ' + next.level : 'Max Level';
-  const stateLabel = next ? (upgrade.canUpgrade ? 'Ready' : 'Blocked') : 'Complete';
-  return '<button id="baseSidecarUpgrade" class="base-sidecar__menu-item base-sidecar__upgrade-control' +
-    (upgrade.canUpgrade ? '' : ' is-disabled') + '" type="button" aria-disabled="' +
-    (upgrade.canUpgrade ? 'false' : 'true') + '">' +
-      iconMarkup('building','upgrade','sm','base-sidecar__menu-icon') +
-      '<span class="base-sidecar__menu-copy"><strong>' + label + '</strong><small>' + stateLabel + '</small></span>' +
-    '</button>';
-}
 
 function validateReagentHoldings(payload) {
   if (!payload || payload.kind !== 'reagent_holdings' || payload.owner_building !== 'storehouse' || !Array.isArray(payload.items)) throw new Error('Storehouse holdings must be authored reagent JSON.');
@@ -566,22 +555,18 @@ function upgradeTooltipModel(building) {
       title:building.name + ' · Max Level',
       type:'Building upgrade',
       icon:{category:icon[0], key:icon[1]},
-      description:'This building is already at maximum level.',
-      stats:[{label:'Current level', value:String(building.level)}]
+      description:'Maximum level reached.',
+      stats:[],
+      locked:[]
     };
   }
-  const stats = [
-    {label:'Upgrade', value:'Level ' + building.level + ' → ' + upgrade.next.level}
-  ].concat(Object.entries(upgrade.next.cost).map(([key,value]) => ({label:labelize(key), value:fmt(value)})));
-  if (building.id !== 'keep') {
-    stats.push({label:'Keep gate', value:'Level ' + upgrade.keepGate.requiredLevel + ' required · current ' + upgrade.keepGate.currentLevel});
-  }
+  const stats = Object.entries(upgrade.next.cost).map(([key,value]) => ({label:labelize(key), value:fmt(value)}));
   return {
     variant:'control',
     title:'Upgrade ' + building.name,
     type:upgrade.canUpgrade ? 'Ready' : 'Blocked',
     icon:{category:icon[0], key:icon[1]},
-    description:upgrade.canUpgrade ? 'Spend the listed resources to advance this building.' : upgrade.reason,
+    description:upgrade.canUpgrade ? 'Spend the listed resources to upgrade.' : upgrade.reason,
     stats,
     locked:upgrade.canUpgrade ? [] : [upgrade.reason]
   };
@@ -1124,12 +1109,18 @@ function renderSidecar() {
   $('#baseSidecarCategory').textContent = building.category === 'profession' ? 'PROFESSION BUILDING' : 'CORE BUILDING';
   $('#baseSidecarTitle').textContent = building.name;
   $('#baseSidecarLevel').textContent = 'Level ' + building.level + ' / ' + building.max + ' · Tier ' + current.tier;
+  const upgradeButton = $('#baseSidecarUpgrade');
+  const upgradeLabel = $('#baseSidecarUpgradeLabel');
+  if (upgradeButton) {
+    upgradeButton.classList.toggle('is-disabled', !upgrade.canUpgrade);
+    upgradeButton.setAttribute('aria-disabled', upgrade.canUpgrade ? 'false' : 'true');
+    upgradeButton.setAttribute('aria-label', upgrade.next ? (upgrade.canUpgrade ? 'Upgrade ' + building.name : 'Upgrade ' + building.name + ', blocked') : building.name + ', maximum level');
+  }
+  if (upgradeLabel) upgradeLabel.textContent = upgrade.next ? 'Upgrade' : 'Max';
 
-  body.innerHTML =
-    '<div class="base-sidecar__menu" aria-label="' + building.name + ' actions">' +
-      actions.map(buildingActionMarkup).join('') +
-      upgradeControlMarkup(building, upgrade) +
-    '</div>';
+  body.innerHTML = actions.length
+    ? '<div class="base-sidecar__menu" aria-label="' + building.name + ' actions">' + actions.map(buildingActionMarkup).join('') + '</div>'
+    : '';
 
   if (['storehouse','bank','armory'].includes(building.id)) {
     body.insertAdjacentHTML('beforeend',
@@ -1196,10 +1187,9 @@ function renderSidecar() {
     });
   }
 
-  const upgradeButton = $('#baseSidecarUpgrade');
   if (upgradeButton) {
     Tooltips.attach(upgradeButton, () => upgradeTooltipModel(building), {anchor:'target'});
-    upgradeButton.addEventListener('click', () => upgradeBuilding(building.id));
+    upgradeButton.onclick = () => upgradeBuilding(building.id);
   }
 }
 
