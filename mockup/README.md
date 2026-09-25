@@ -32,13 +32,13 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 ### Shared Navigation
 
 - `ui/wow-nav.js` enhances the common `.wow-game-shell` / `.wow-game-nav` markup with semantic game icons, shared destination tooltips, and active-screen state while leaving every destination as a normal static HTML `href`.
-- Player-facing navigation no longer exposes the retired standalone combat lab. The shared Warcraft brand/home action returns to `base.html`, while hero-specific Gear and Talents remain managed from the roster flow.
+- Player-facing navigation exposes neither standalone Gear nor standalone Talents. The shared Warcraft brand/home action returns to `base.html`; hero equipment and talent management live in the Heroes/Roster workflow. `gear.html` and `talent-calculator.html` remain developer-inspection surfaces reachable only from `dev.html`, not shared navigation.
 - Use `data-wow-nav-active` on the shell and `data-wow-nav-key` on destination links. Keep the active link's `is-active` class and `aria-current="page"` in static markup so the selected screen is visible before enhancement.
-- The shared game bar is sticky and horizontally scrollable at narrow widths. Page-specific actions such as Gear/Battle reset controls live in `.wow-game-shell__action` rather than creating a second website-style navbar.
+- The shared game bar is sticky and horizontally scrollable at narrow widths. Player destinations are kept separate from developer-only inspection pages; page-specific controls such as Battle reset live in `.wow-game-shell__action` rather than creating a second website-style navbar.
 
-### Gear Paper Doll
+### Developer Gear Paper Doll
 
-- `gear.html` uses the seven-slot equipment rule but presents equipment as compact icon slots around a character portrait; item names and stat prose live in the shared tooltip rather than permanent slot chrome.
+- `gear.html` is retained only as a developer inspection surface. It uses the seven-slot equipment rule and presents equipment as compact icon slots around a character portrait; player equipment changes belong to the Heroes/Roster workflow.
 - The central character portrait resolves from race identity, while the class icon is rendered separately with the shared class-color frame.
 - The Armory is an icon-grid/bag surface. Each item exposes its name, quality, tier, slot, armor/weapon family, primary and secondary stats, restrictions, equipped state, and equipped-item comparison through `WowUITooltips`.
 - Tier, slot, search, and equippable-only filters use the shared WoW form controls. Equip/unequip, stat recalculation, search/filter behavior, and class armor restrictions remain unchanged.
@@ -49,8 +49,8 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 - `index.html` — player-facing entry redirect to `base.html`
 - `dev.html` — developer-only mockup launcher
 - `race-selector.html` — faction, body type, race, class availability, and racial review
-- `talent-calculator.html` — class/spec browser using the compact canonical 2 / 2 / 1 talent model
-- `gear.html` — interactive roster equipment screen with one hero per class, seven fixed slots, class armor eligibility, and sample Tier 1–5 gear
+- `talent-calculator.html` — developer-only standalone class/spec inspection surface for the canonical 2 / 2 / 1 model
+- `gear.html` — developer-only standalone equipment inspection surface; player gear management lives in Heroes/Roster
 - `battle.html` — player-facing deterministic encounter surface for 1-, 3-, 5-, 10-, and 20-hero parties with NPC opponents, combat log, pause/reset, and speed controls
 - `base.html` — player-facing map-first stronghold landing screen with compact resources, clickable core/profession buildings, shared building sidecar, Quest Board dispatch, upgrades, and attention states
 - `quest-journal.html` — read-only player Quest Journal mirroring available, active, and completed Quest Board assignments from authoritative roster state
