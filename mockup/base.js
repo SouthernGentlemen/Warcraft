@@ -1,19 +1,37 @@
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
-const buildings = [
-  { id: 'keep', name: 'Headquarters (Keep)', short: 'Keep', category: 'core', level: 10, max: 20, description: 'The heart of your base. Unlocks buildings, tiers, and roster capacity.', costs: [3000, 2000, 500] },
-  { id: 'barracks', name: 'Barracks', category: 'core', level: 6, max: 20, description: 'Trains footmen and basic military units.', costs: [1200, 800, 200] },
-  { id: 'training', name: 'Training Grounds', category: 'core', level: 5, max: 20, description: 'Improves hero training speed and raises training capacity.', costs: [900, 600, 150] },
-  { id: 'recruitment', name: 'Recruitment Hall', category: 'core', level: 4, max: 20, description: 'Adds recruitment capacity and improves hero discovery.', costs: [1000, 700, 250] },
-  { id: 'command', name: 'Command Hall', category: 'core', level: 4, max: 20, description: 'Provides global mission and roster bonuses.', costs: [800, 600, 200] },
-  { id: 'storehouse', name: 'Storehouse', category: 'core', level: 5, max: 20, description: 'Increases persistent resource and crafted-item storage.', costs: [700, 500, 200] },
-  { id: 'blacksmith', name: 'Blacksmith', category: 'profession', level: 4, max: 20, description: 'Crafts and upgrades metal weapons and armor.', costs: [800, 600, 200] },
-  { id: 'alchemy', name: 'Alchemy Lab', category: 'profession', level: 3, max: 20, description: 'Produces potions, reagents, and consumable combat boosts.', costs: [600, 400, 150] },
-  { id: 'enchanter', name: "Enchanter's Study", category: 'profession', level: 3, max: 20, description: 'Creates magical enhancements for equipment.', costs: [650, 450, 175] },
-  { id: 'tailor', name: 'Tailor', category: 'profession', level: 3, max: 20, description: 'Crafts cloth equipment and caster-focused gear.', costs: [520, 350, 130] },
-  { id: 'leather', name: 'Leatherworker', category: 'profession', level: 3, max: 20, description: 'Crafts leather equipment and flexible armor sets.', costs: [520, 350, 130] },
-  { id: 'engineer', name: 'Engineer Workshop', category: 'profession', level: 4, max: 20, description: 'Builds devices, utility equipment, and mechanical upgrades.', costs: [850, 650, 260] }
-];
+const BUILDING_DATA_ROOT = "../data/base/buildings.json";
+let buildings = [];
+
+function normalizeBuilding(raw) {
+  const level = Number(raw.level);
+  const max = Number(raw.max_level);
+  if (!Number.isInteger(level) || level < 1 || level > 5 || max !== 5) throw new Error("Invalid building level contract for " + raw.id);
+  return Object.assign({}, raw, {level:level, max:max});
+}
+
+function currentProgression(building) {
+  return building.progression.find(entry => entry.level === building.level);
+}
+
+function nextProgression(building) {
+  return building.progression.find(entry => entry.level === building.level + 1) || null;
+}
+
+function upgradeState(building) {
+  const next = nextProgression(building);
+  if (!next) return {canUpgrade:false, reason:"Maximum level reached", next:null};
+  const unmet = [];
+  Object.entries(next.cost).forEach(([key,value]) => { if ((state.resources[key] || 0) < value) unmet.push(key + " " + fmt(value)); });
+  (next.requirements || []).forEach(req => {
+    if (req.type === "building_level") {
+      const dependency = buildings.find(entry => entry.id === req.building);
+      if (!dependency || dependency.level < req.level) unmet.push((dependency ? dependency.name : req.building) + " level " + req.level);
+    }
+  });
+  return {canUpgrade:unmet.length === 0, reason:unmet.length ? "Requires " + unmet.join(", ") : "", next:next};
+}
+
 
 const state = {
   selected: 'keep',
@@ -33,12 +51,12 @@ const buildingIconKeys = {
   recruitment:['building','recruitment-hall'],
   command:['building','command-hall'],
   storehouse:['building','storehouse'],
-  blacksmith:['profession','blacksmith'],
-  alchemy:['profession','alchemist'],
-  enchanter:['profession','enchanter'],
-  tailor:['profession','tailor'],
-  leather:['profession','leatherworker'],
-  engineer:['profession','engineer']
+  blacksmith:['profession','blacksmithing'],
+  alchemy:['profession','alchemy'],
+  enchanter:['profession','enchanting'],
+  tailor:['profession','tailoring'],
+  leather:['profession','leatherworking'],
+  engineer:['profession','engineering']
 };
 
 const costIconKeys = {
@@ -72,20 +90,15 @@ function bindResolvedIcons(root) {
 
 function buildingTooltipModel(building) {
   const icon = buildingIconKeys[building.id] || ['building','keep'];
+  const current = currentProgression(building);
+  const upgrade = upgradeState(building);
   return {
-    variant:building.category === 'profession' ? 'profession' : 'building',
-    title:building.name,
-    type:building.category === 'profession' ? 'Profession building' : 'Base building',
-    icon:{category:icon[0], key:icon[1]},
+    variant:building.category === 'profession' ? 'profession' : 'building', title:building.name,
+    type:building.category === 'profession' ? 'Profession building' : 'Base building', icon:{category:icon[0], key:icon[1]},
     description:building.description,
-    stats:[
-      {label:'Level', value:building.level + ' / ' + building.max},
-      {label:'Gold', value:fmt(building.costs[0])},
-      {label:'Lumber', value:fmt(building.costs[1])},
-      {label:'Stone', value:fmt(building.costs[2])}
-    ],
-    meta:{label:'Category', value:building.category === 'profession' ? 'Profession' : 'Core'},
-    locked:building.level >= building.max ? ['Maximum level reached'] : []
+    stats:[{label:'Level',value:building.level+' / 5'},{label:'Progression tier',value:'Tier '+building.level},{label:'Unlocks',value:(current.capabilities||[]).join(', ')||'Base capability'}].concat(upgrade.next ? Object.entries(upgrade.next.cost).map(([key,value])=>({label:'Next '+key,value:fmt(value)})) : []),
+    meta:[{label:'Category',value:building.category==='profession'?'Profession':'Core'},{label:'Next level',value:upgrade.next ? String(upgrade.next.level) : 'MAX'}],
+    locked:upgrade.reason ? [upgrade.reason] : []
   };
 }
 
@@ -137,52 +150,25 @@ function syncResourceBar() {
 }
 
 function renderBuildings() {
-  const list = $('#buildingList');
-  const filtered = buildings.filter(b => state.filter === 'all' || b.category === state.filter);
-  list.innerHTML = filtered.map(b => `
-    <article class="building-row ${state.selected === b.id ? 'selected' : ''}" data-building-row="${b.id}">
-      <button class="building-thumb" type="button" data-select-building="${b.id}" aria-label="Select ${b.name}">
-        ${buildingIconMarkup(b, 'lg', 'building-thumb-icon')}
-      </button>
-      <div class="building-copy">
-        <div class="building-title"><strong>${b.name}</strong><span class="wow-tier-label">Lv. ${b.level} / ${b.max}</span></div>
-        <p>${b.description}</p>
-        <div class="building-costs">
-          ${costMarkup('gold', b.costs[0])}
-          ${costMarkup('lumber', b.costs[1])}
-          ${costMarkup('stone', b.costs[2])}
-        </div>
-      </div>
-      <button class="building-upgrade wow-button wow-button--primary" type="button" data-upgrade="${b.id}" ${b.level >= b.max ? 'disabled aria-label="Maximum level reached"' : ''}>${b.level >= b.max ? 'MAX LEVEL' : 'Upgrade'}</button>
-    </article>`).join('');
-
-  bindResolvedIcons(list);
-  bindBuildingTooltips(list);
-  renderSelection();
+  const list=$('#buildingList'); const filtered=buildings.filter(b=>state.filter==='all'||b.category===state.filter);
+  list.innerHTML=filtered.map(b=>{ const up=upgradeState(b); const next=up.next; return `
+    <article class="building-row ${state.selected===b.id?'selected':''}" data-building-row="${b.id}">
+      <button class="building-thumb" type="button" data-select-building="${b.id}" aria-label="Select ${b.name}">${buildingIconMarkup(b,'lg','building-thumb-icon')}</button>
+      <div class="building-copy"><div class="building-title"><strong>${b.name}</strong><span>Level ${b.level} / 5</span></div><p>${b.description}</p>
+      <div class="building-costs">${next ? Object.entries(next.cost).map(([key,value])=>costMarkup(key,value)).join('') : '<strong class="building-max-copy">Maximum level</strong>'}</div>
+      ${up.reason && next ? '<small class="building-requirement">'+up.reason+'</small>' : ''}</div>
+      <button class="building-upgrade wow-button wow-button--primary" type="button" data-upgrade="${b.id}" ${!up.canUpgrade?'disabled':''} aria-label="${up.canUpgrade?'Upgrade '+b.name+' to level '+next.level:up.reason}">${next?'Upgrade to '+next.level:'MAX LEVEL'}</button>
+    </article>`; }).join('');
+  bindResolvedIcons(list); bindBuildingTooltips(list); renderSelection();
 }
 
 function renderSelection() {
-  const b = buildings.find(item => item.id === state.selected) || buildings[0];
-  $('#selectionDetail').innerHTML = `
-    <span class="wow-kicker">SELECTED BUILDING</span>
-    <div class="selection-title">
-      ${buildingIconMarkup(b, 'md', 'selection-building-icon')}
-      <div><strong>${b.name}</strong><small>Level ${b.level} / ${b.max}</small></div>
-    </div>
-    <p>${b.description}</p>
-    <div class="selection-progress wow-statusbar wow-statusbar--success">
-      <span class="wow-statusbar__fill" style="--wow-value:${Math.round((b.level / b.max) * 100)}%"></span>
-      <span class="wow-statusbar__text">${b.level} / ${b.max}</span>
-    </div>`;
-
-  bindResolvedIcons($('#selectionDetail'));
-  all('.base-plot').forEach(plot => {
-    plot.classList.toggle('selected', plot.dataset.building === b.id);
-    plot.setAttribute('aria-pressed', plot.dataset.building === b.id ? 'true' : 'false');
-    const level = plot.querySelector('.plot-label b');
-    const item = buildings.find(entry => entry.id === plot.dataset.building);
-    if (level && item) level.textContent = item.level;
-  });
+  const b=buildings.find(item=>item.id===state.selected)||buildings[0]; const current=currentProgression(b); const up=upgradeState(b);
+  $('#selectionDetail').innerHTML=`
+    <span class="wow-kicker">SELECTED BUILDING</span><div class="selection-title">${buildingIconMarkup(b,'md','selection-building-icon')}<div><strong>${b.name}</strong><small>Level ${b.level} / 5 · Tier ${b.level}</small></div></div>
+    <p>${b.description}</p><div class="selection-progress wow-statusbar wow-statusbar--success"><span class="wow-statusbar__fill" style="--wow-value:${b.level*20}%"></span><span class="wow-statusbar__text">Level ${b.level} / 5</span></div>
+    <div class="selection-upgrade"><strong>${up.next?'Next: Level '+up.next.level+' · Tier '+up.next.tier:'Maximum level reached'}</strong><small>Unlocked: ${(current.capabilities||[]).join(', ')}</small>${up.reason&&up.next?'<small class="building-requirement">'+up.reason+'</small>':''}</div>`;
+  bindResolvedIcons($('#selectionDetail')); all('.base-plot').forEach(plot=>{ plot.classList.toggle('selected',plot.dataset.building===b.id); plot.setAttribute('aria-pressed',plot.dataset.building===b.id?'true':'false'); const level=plot.querySelector('.plot-label b'); const item=buildings.find(entry=>entry.id===plot.dataset.building); if(level&&item) level.textContent=item.level; });
 }
 
 function toast(message) {
@@ -199,23 +185,12 @@ function selectBuilding(id) {
 }
 
 function upgradeBuilding(id) {
-  const b = buildings.find(item => item.id === id);
-  if (!b || b.level >= b.max) return;
-  const [gold, lumber, stone] = b.costs;
-  if (state.resources.gold < gold || state.resources.lumber < lumber || state.resources.stone < stone) {
-    toast(`Not enough resources to upgrade ${b.name}.`);
-    return;
-  }
-
-  state.resources.gold -= gold;
-  state.resources.lumber -= lumber;
-  state.resources.stone -= stone;
-  b.level += 1;
-  b.costs = b.costs.map(value => Math.ceil(value * 1.22 / 10) * 10);
-  state.selected = id;
-  syncResourceBar();
-  renderBuildings();
-  toast(`${b.name} upgraded to level ${b.level}.`);
+  const b=buildings.find(item=>item.id===id); if(!b) return; const up=upgradeState(b);
+  if(!up.next){ toast(b.name+' is already level 5.'); return; }
+  if(!up.canUpgrade){ toast(up.reason); return; }
+  Object.entries(up.next.cost).forEach(([key,value])=>{ state.resources[key]-=value; });
+  if(up.next.level!==b.level+1||up.next.level>5) throw new Error('Invalid building level transition');
+  b.level=up.next.level; state.selected=id; syncResourceBar(); renderBuildings(); toast(b.name+' upgraded to level '+b.level+' (Tier '+b.level+').');
 }
 
 $('#buildingFilter').addEventListener('change', event => {
@@ -276,19 +251,15 @@ $('.base-game-nav').addEventListener('click', event => {
   toast(`${label ? label.textContent : button.dataset.panel} is a navigation hook in this base mockup.`);
 });
 
-Icons.hydrate(document);
-Tooltips.hydrate(document);
-bindResolvedIcons(document);
-all('[data-building]').forEach(plot => {
-  const building = buildings.find(entry => entry.id === plot.dataset.building);
-  if (building) Tooltips.attach(plot, () => buildingTooltipModel(building));
-});
-all('[data-resource]').forEach(element => {
-  Tooltips.attach(element, () => resourceTooltipModel(element.dataset.resource, element), {anchor:'target'});
-});
-all('[data-currency]').forEach(element => {
-  Tooltips.attach(element, () => currencyTooltipModel(element.dataset.currency, element), {anchor:'target'});
-});
-
-syncResourceBar();
-renderBuildings();
+async function initBase() {
+  try {
+    const response=await fetch(BUILDING_DATA_ROOT); if(!response.ok) throw new Error('Could not load '+BUILDING_DATA_ROOT);
+    const payload=await response.json(); buildings=payload.buildings.map(normalizeBuilding);
+    Icons.hydrate(document); Tooltips.hydrate(document); bindResolvedIcons(document);
+    all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
+    all('[data-resource]').forEach(element=>Tooltips.attach(element,()=>resourceTooltipModel(element.dataset.resource,element),{anchor:'target'}));
+    all('[data-currency]').forEach(element=>Tooltips.attach(element,()=>currencyTooltipModel(element.dataset.currency,element),{anchor:'target'}));
+    syncResourceBar(); renderBuildings();
+  } catch(error) { toast(error.message); }
+}
+initBase();
