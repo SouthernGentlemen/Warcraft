@@ -127,7 +127,13 @@
               <small id="baseSidecarLevel">Level 1 / 5</small>
             </div>
           </div>
-          <button id="baseSidecarClose" class="base-sidecar__close wow-button" type="button" aria-label="Close building details">×</button>
+          <div class="base-sidecar__header-actions">
+            <button id="baseSidecarUpgrade" class="base-sidecar__header-upgrade wow-button" type="button" aria-disabled="false">
+              <span class="base-sidecar__header-upgrade-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="building" data-wow-key="upgrade" alt=""></span>
+              <span id="baseSidecarUpgradeLabel">Upgrade</span>
+            </button>
+            <button id="baseSidecarClose" class="base-sidecar__close wow-button" type="button" aria-label="Close building details">×</button>
+          </div>
         </header>
         <div id="baseSidecarBody" class="base-sidecar__body"></div>
       </aside>
