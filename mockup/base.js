@@ -650,7 +650,7 @@ function renderQuestOffers() {
       '<small class="quest-reward">Reward · '+fmt(offer.reward.gold)+' gold · '+offer.reward.meta_amount+' quest mark'+(offer.reward.meta_amount===1?'':'s')+'</small>';
 
     const selection=card.querySelector('.quest-selection');
-    const battleOffer=[1,3].includes(offer.party_size)&&offer.encounter&&offer.encounter.kind==='npc';
+    const battleOffer=Boolean(offer.encounter&&offer.encounter.kind==='npc');
     if(active){
       if(battleOffer){
         selection.innerHTML='<span class="quest-dispatched">Committed: '+quest.heroIds.map(id=>{const h=Roster.hero(id);return h?h.name:id;}).join(', ')+'</span><button class="wow-button wow-button--primary" type="button">Resume Battle</button>';
