@@ -55,6 +55,7 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 - `battle.html` — interactive six-on-six battleground combat mockup with team HP, combat FX, pause, reset, and 1×/2×/4× speed controls
 - `base.html` — player-facing map-first stronghold landing screen with compact resources, clickable core/profession buildings, shared building sidecar, Quest Board dispatch, upgrades, and attention states
 - `quest-journal.html` — read-only player Quest Journal mirroring available, active, and completed Quest Board assignments from authoritative roster state
+- `inventory.html` — global owned-item inventory with compact bag/grid browsing, filters, rarity frames, shared item tooltips, and derived equipped-by state
 
 ## Development
 
@@ -124,3 +125,7 @@ Base presentation is driven by the persisted player faction in `WarcraftRoster`.
 ### Quest Journal
 
 `quest-journal.html` is a read-only projection of `WarcraftRoster.getState().quests`. It groups current assignments into Available/Accepted, Active, and Completed sections, shows party/reward context with shared icons and tooltips, updates on `warcraft:roster-changed`, and never dispatches/completes/rerolls quests itself. Dungeon and world-map selection remain Quest Board responsibilities.
+
+### Global Inventory
+
+`inventory.html` reads owned prototype items from `WarcraftEquipment.owned()`, which derives from the same shared equipment catalog used by Gear and Hero Management. The Inventory never writes equipment state: equipped status is derived from `WarcraftRoster` item-ID references, and actual equip/unequip actions remain in hero-management workflows. This keeps one item catalog plus one authoritative roster equipment state with no duplicate Inventory copy.
