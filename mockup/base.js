@@ -738,6 +738,16 @@ function ensureQuestRoundOffers(board) {
   return offerIds;
 }
 
+function maybeTransitionQuestRound(board) {
+  const status = Roster.getQuestRoundStatus();
+  if (!status.resolved) return false;
+  const nextRound = status.round + 1;
+  const nextIds = ensureDifferentQuestOfferSet(generateQuestOfferIds(nextRound, board.level), status.offerIds, board.level);
+  Roster.transitionQuestRound(nextIds);
+  state.questMessage = 'Round ' + status.round + ' complete · Round ' + nextRound + ' ready.';
+  return true;
+}
+
 function questBattleEncounter(offer,heroIds,assignment,loadoutId=null){
   const dungeon=factionStarterDungeon();
   if(!dungeon)throw new Error('No faction starter dungeon is available.');
@@ -766,36 +776,26 @@ function renderQuestOffers() {
   const board=questBoardBuilding(), root=$('#questOfferList');
   if(!board||!root||!questOfferPool)return;
   ensureQuestRoundOffers(board);
+  maybeTransitionQuestRound(board);
   root.innerHTML='';
 
   const boardState=Roster.getQuestBoardState();
   const status=$('#questBoardStatus');
-  if(status) status.textContent=state.questMessage || 'Round '+boardState.round+' · Choose an offer and dispatch the required party.';
-
-  const roundButton=$('#questBoardAdvance');
-  if(roundButton){
-    roundButton.textContent='Advance to Round '+(boardState.round+1);
-    roundButton.addEventListener('click',()=>{
-      const nextRound=boardState.round+1;
-      const nextIds=ensureDifferentQuestOfferSet(generateQuestOfferIds(nextRound,board.level),boardState.offerIds,board.level);
-      Roster.advanceQuestRound(nextIds);
-      state.questMessage='Quest Board advanced to Round '+nextRound+'.';
-      renderSidecar();
-    },{once:true});
-  }
+  if(status) status.textContent=state.questMessage || 'Round '+boardState.round+' · Complete all current offers to reveal the next round.';
 
   currentQuestOffers().forEach(offer=>{
     const quest=currentRoundQuestForOffer(offer.id);
     const active=quest&&quest.status==='active';
     const completed=quest&&quest.status==='completed';
+    const retry=quest&&quest.status==='available'&&quest.lastResult==='defeat';
     const card=document.createElement('article');
-    card.className='quest-offer-card'+(active?' is-active':'')+(completed?' is-completed':'');
+    card.className='quest-offer-card'+(active?' is-active':'')+(completed?' is-completed':'')+(retry?' is-retry':'');
     card.dataset.partySize=String(offer.party_size);
     const loadouts=offer.party_size>1?compatibleLoadouts(offer.party_size):[];
     const available=Roster.getState().heroes.filter(h=>h.availability==='available');
     card.innerHTML=
       '<div class="quest-offer-head"><strong>'+offer.title+'</strong><span>'+offer.party_size+' hero'+(offer.party_size===1?'':'es')+'</span><em>'+
-      (active?'ACTIVE':completed?'COMPLETED':'AVAILABLE')+
+      (active?'ACTIVE':completed?'COMPLETED':retry?'RETRY':'AVAILABLE')+
       '</em></div>'+
       '<div class="quest-offer-description">'+offer.description+'</div>'+
       '<div class="quest-selection"></div>'+
@@ -1148,7 +1148,6 @@ function renderSidecar() {
         '<div id="questBoardStatus" class="base-sidecar__quest-status" role="status" aria-live="polite"></div>'+
         '<div id="questOffersView">'+
           '<div id="questOfferList" class="quest-offer-list"></div>'+
-          '<button id="questBoardAdvance" class="wow-button base-sidecar__quest-advance" type="button">Advance Round</button>'+
         '</div>'+
         '<div id="dungeonMapView" hidden>'+
           '<div id="dungeonWorldMap" class="dungeon-world-map wow-inset" aria-label="Azeroth dungeon map"></div>'+
