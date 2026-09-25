@@ -110,6 +110,12 @@ Alliance and Horde use the same loop. Faction state chooses the Base presentatio
 
 Runtime gameplay inputs remain authored JSON under `/data/`. Documentation under `/docs/` does not generate or rewrite runtime data.
 
+### Faction-scoped campaign state
+
+`ui/warcraft-campaign.js` is the persistent player-state boundary. It stores exactly one Alliance campaign and one Horde campaign under `warcraft.mockup.campaigns.v2`, plus an explicit active-faction selector shared by the player surfaces. Each campaign independently owns Base/Keep and building levels, resource balances, mutable Bank/meta holdings, roster data, Party/Raid/Siege formation state, Quest Board/Embark state, profession state/selections, building assignments, and the campaign clock. Authored JSON remains shared and is used to seed/default player-owned state rather than being rewritten at runtime.
+
+`WarcraftRoster` and `WarcraftProfessions` are compatibility-facing adapters over the active campaign rather than separate global save files. Switching faction changes the records returned by those APIs without copying or mutating the inactive campaign. Fresh state seeds the existing sample heroes into their authored faction only. A legacy `warcraft.mockup.roster.v1` / `warcraft.mockup.professions.v1` save migrates once into its previously active faction; the opposite campaign is left independent and legacy hero IDs are never cloned into both campaigns.
+
 ### Shared roster state
 
 `ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved party loadouts. The Heroes/Roster workspace owns a dedicated roster-level Party Loadouts manager beside the hero list; individual hero detail no longer edits party membership. Party templates store only hero IDs and read current identity and availability from the shared roster. Templates support only 3, 5, 10, or 20 heroes, and ready-state composition validation requires the exact selected size with no duplicate hero IDs. A saved template may contain a hero who later becomes unavailable without losing membership or ready state; Quest Board and dungeon launch-time validation re-check current availability before the party can enter an encounter.
@@ -146,7 +152,7 @@ Responsive behavior remains map-first: desktop and tablet use an overlay sidecar
 
 ### Faction-aware Base presentation
 
-Base presentation is driven by the persisted player faction in `WarcraftRoster`. Race Selector writes that faction state, while `data/base/presentation.json` defines Alliance/Horde stronghold identity, crest, Keep art, terrain theme, and desktop/mobile hotspot coordinates. Building IDs, levels, upgrade rules, resources, quests, and sidecar logic remain shared between factions.
+Base presentation is driven by the active faction in `WarcraftCampaign`. Race Selector and the shared shell selector both switch that active campaign, while `data/base/presentation.json` continues to define shared authored Alliance/Horde stronghold identity, crest, Keep art, terrain theme, and desktop/mobile hotspot coordinates. Building definitions and upgrade rules remain authored data; building levels, Keep/Base level, resources, mutable Bank balances, quests, and roster-backed sidecar state resolve from the selected faction campaign.
 
 ### Quest Journal
 
@@ -190,7 +196,7 @@ Base building sidecars now contain only building identity in the header, one or 
 
 ### Recruitment Hall
 
-Recruitment Hall now opens a real in-sidecar discovery workflow. Level progression carries authored `roster_capacity` and `discovery_limit` values, so higher Hall levels reveal more faction-valid candidates and support a larger faction roster. Candidates come from `data/base/recruitment.json`; recruiting writes through `WarcraftRoster.recruitHero()`, which rejects duplicates, wrong-faction candidates, and over-capacity writes. Recruited heroes persist in shared roster storage, survive normalization/reload, and appear automatically in the existing Roster workspace.
+Recruitment Hall now opens a real in-sidecar discovery workflow. Level progression carries authored `roster_capacity` and `discovery_limit` values, so higher Hall levels reveal more faction-valid candidates and support a larger faction roster. Candidates come from `data/base/recruitment.json`; recruiting writes through `WarcraftRoster.recruitHero()`, which rejects duplicates, wrong-faction candidates, and over-capacity writes. Recruited heroes persist only in the active faction campaign, survive normalization/reload, and appear automatically in that faction's Roster workspace.
 
 ### Artisans Guild Base hotspot
 
@@ -198,7 +204,7 @@ The six standalone profession hotspots have been consolidated into one `Artisans
 
 ### Artisans Guild profession workspace
 
-Artisans Guild now exposes Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, and Engineer through one compact profession menu. All six professions are always available; there is no per-profession unlock ladder. `WarcraftProfessions` persists the shared Artisans Guild level and selected profession, and every profession reads that same level as its current tier. `profession.html` is the shared profession workspace and renders the preserved profession progression data for the selected profession. Profession-specific material and recipe requirements are intentionally deferred until they are authored later.
+Artisans Guild now exposes Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, and Engineer through one compact profession menu. All six professions are always available; there is no per-profession unlock ladder. `WarcraftProfessions` persists the active faction's Artisans Guild level and selected profession inside `WarcraftCampaign`, and every profession reads that faction-scoped level as its current tier. `profession.html` is the shared profession workspace and renders the preserved profession progression data for the selected profession. Profession-specific material and recipe requirements are intentionally deferred until they are authored later.
 
 ### Randomized Quest Board rounds
 
