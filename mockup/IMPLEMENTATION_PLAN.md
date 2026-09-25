@@ -1,8 +1,8 @@
 # Warcraft Mockup Implementation Plan
 
-WOWUI-001 through WOWUI-029 are complete as of 2026-09-24. The queue below is the next gameplay/navigation implementation phase.
+WOWUI-001 through WOWUI-054 are complete as of 2026-09-25. The current gameplay/navigation implementation queue is complete.
 
-Completed scope: WOWUI-001 through WOWUI-029.
+Completed scope: WOWUI-001 through WOWUI-054.
 
 The active mockup now uses the shared WoW UI foundation, canonical race/class data, compact Classic talent model, seven-slot equipment including Trinket, five-level Base progression, authoritative roster state, five saved party loadouts, Quest Board meta-progression, and the unified Hero Management workspace.
 
@@ -20,7 +20,7 @@ Run the full mockup development server with:
 npm run dev
 ```
 
-New implementation work should be added here as a new scoped task rather than reopening completed WOWUI-001–019 items.
+No planned WOWUI tasks remain in this phase. New implementation work should be added here as a new scoped task rather than reopening completed items.
 
 ## WOWUI-020 — Roster Popup and Runtime Cleanup
 
@@ -1176,7 +1176,7 @@ Delete the obsolete Simulation product surface after Battle owns every required 
 
 ### WOWUI-054 — Gameplay Navigation and Loop Cleanup
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-053
 
