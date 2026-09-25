@@ -979,7 +979,7 @@ Make battle enemies real NPC entities selected from authored NPC lists rather th
 
 ### WOWUI-047 — Shared Battle Encounter Framework
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-046
 
