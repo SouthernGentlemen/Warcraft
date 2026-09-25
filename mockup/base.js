@@ -340,7 +340,7 @@ const BUILDING_ACTIONS = Object.freeze({
     Object.freeze({label:'Open Roster', href:'./heroes.html', icon:['resource','population'], description:'Manage heroes, equipment, talents, and saved parties.'})
   ]),
   recruitment:Object.freeze([
-    Object.freeze({label:'Recruit Heroes', action:'recruitment', icon:['resource','population'], description:'Discover and recruit heroes allowed by the current Recruitment Hall level.'})
+    Object.freeze({label:'Recruit Heroes', action:'recruitment', icon:['resource','population'], description:'Discover heroes here; roster capacity is controlled by the active faction Base Level.'})
   ]),
   training:Object.freeze([]),
   storehouse:Object.freeze([]),
@@ -409,7 +409,7 @@ function validateRecruitmentData(payload) {
 
 function recruitmentConfig(building) {
   const progression = currentProgression(building);
-  return progression && progression.recruitment ? progression.recruitment : {roster_capacity:0, discovery_limit:0};
+  return progression && progression.recruitment ? progression.recruitment : {discovery_limit:0};
 }
 
 function currentFactionRoster() {
@@ -445,14 +445,16 @@ function renderRecruitmentWorkflow(building) {
   const faction = currentFactionId();
   const roster = currentFactionRoster();
   const candidates = discoveredRecruitmentCandidates(building);
-  const full = roster.length >= config.roster_capacity;
+  const capacity = Roster.getRosterCapacity();
+  const baseLevel = Campaign.getBaseLevel();
+  const full = roster.length >= capacity;
 
   root.hidden = !state.recruitmentOpen;
   if (!state.recruitmentOpen) return;
 
   root.innerHTML =
     '<div class="base-sidecar__recruitment-head">' +
-      '<span><strong>' + roster.length + ' / ' + config.roster_capacity + '</strong><small>Faction roster</small></span>' +
+      '<span><strong>' + roster.length + ' / ' + capacity + '</strong><small>Faction roster · Base ' + baseLevel + '</small></span>' +
       '<span><strong>' + candidates.length + '</strong><small>Discovered</small></span>' +
     '</div>' +
     '<div id="recruitmentStatus" class="base-sidecar__recruitment-status" role="status" aria-live="polite">' +
@@ -477,7 +479,7 @@ function renderRecruitmentWorkflow(building) {
       if (button.getAttribute('aria-disabled') === 'true') return;
       try {
         const factionLabel = faction === 'horde' ? 'Horde' : 'Alliance';
-        Roster.recruitHero(Object.assign({}, candidate, {faction:factionLabel, level:1}), {rosterCapacity:config.roster_capacity});
+        Roster.recruitHero(Object.assign({}, candidate, {faction:factionLabel, level:1}));
         state.recruitmentMessage = candidate.name + ' joined the roster.';
         state.recruitmentOpen = true;
         renderSidecar();
