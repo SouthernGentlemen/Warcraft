@@ -255,6 +255,64 @@
 .trees-b { right:5%; top:18%; transform:scale(.8); }
 .trees-c { left:7%; bottom:8%; transform:scale(1.15); }
 
+/* Compact player action dock */
+
+.base-action-dock {
+  position: absolute;
+  z-index: 24;
+  left: 10px;
+  top: 50%;
+  width: 72px;
+  display: grid;
+  gap: 1px;
+  padding: 2px;
+  transform: translateY(-50%);
+  border-radius: var(--wow-radius-tight);
+  background: rgba(8,10,11,.9);
+  box-shadow: 0 8px 20px rgba(0,0,0,.38);
+}
+
+.base-action-dock__item {
+  min-width: 0;
+  min-height: 58px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 5px 3px;
+  border: var(--wow-border-thin) solid transparent;
+  background: rgba(24,29,32,.94);
+  color: var(--wow-text-muted);
+  text-decoration: none;
+}
+
+.base-action-dock__item:hover,
+.base-action-dock__item:focus-visible {
+  position: relative;
+  z-index: 2;
+  border-color: var(--wow-gold-muted);
+  outline: none;
+  background: linear-gradient(180deg, rgba(53,49,35,.98), rgba(24,25,20,.98));
+  color: var(--wow-gold-pale);
+}
+
+.base-action-dock__icon {
+  --wow-icon-size: 32px;
+}
+
+.base-action-dock__label {
+  max-width: 62px;
+  overflow: hidden;
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  line-height: 1.15;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 /* Clickable buildings */
 
 .base-plot {
@@ -855,6 +913,39 @@
 }
 
 @media (max-width: 700px) {
+  .base-action-dock {
+    left: 50%;
+    top: auto;
+    bottom: 8px;
+    width: auto;
+    grid-template-columns: repeat(3, minmax(76px, 1fr));
+    gap: 1px;
+    transform: translateX(-50%);
+  }
+
+  .base-action-dock__item {
+    min-height: 50px;
+    grid-template-columns: 28px auto;
+    justify-items: start;
+    align-content: center;
+    gap: 5px;
+    padding: 5px 8px;
+  }
+
+  .base-action-dock__icon {
+    --wow-icon-size: 26px;
+  }
+
+  .base-action-dock__label {
+    max-width: 88px;
+    font-size: 6px;
+    text-align: left;
+  }
+
+  .base-map-caption {
+    bottom: 66px;
+  }
+
   .base-page {
     overflow-x: hidden;
   }
@@ -1004,6 +1095,26 @@
 }
 
 @media (max-width: 420px) {
+  .base-action-dock {
+    width: calc(100% - 12px);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .base-action-dock__item {
+    min-width: 0;
+    grid-template-columns: 24px minmax(0,1fr);
+    padding-inline: 5px;
+  }
+
+  .base-action-dock__icon {
+    --wow-icon-size: 23px;
+  }
+
+  .base-action-dock__label {
+    max-width: 100%;
+    font-size: 5px;
+  }
+
   .base-resource-copy small { font-size: 6px; }
   .base-resource-copy strong { font-size: 8px; }
 
