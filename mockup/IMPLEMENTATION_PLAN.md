@@ -1715,3 +1715,906 @@ Finish the phase by deleting superseded UI/runtime paths and locking the new con
 - Both factions retain a complete Base → Quest/Dungeon → Battle → result loop.
 - npm test passes cleanly in CI.
 
+---
+
+## Phase 4 — Formations, Halls, and Embark Progression
+
+This phase turns the current mockup from a collection of functional screens into the intended faction-scoped progression loop.
+
+Core contracts for this phase:
+
+- The player owns exactly one Alliance campaign and one Horde campaign.
+- Alliance and Horde have independent:
+  - Base/Keep level
+  - building levels
+  - resources and meta progression
+  - roster
+  - saved formations/loadouts
+  - profession choices and building assignments
+  - Quest Board/Embark progression
+- Heroes can never cross faction boundaries.
+- Keep level is the canonical faction **Base Level** from 1–5.
+- Faction roster capacity is:
+  - Base 1 → 10 heroes
+  - Base 2 → 20 heroes
+  - Base 3 → 30 heroes
+  - Base 4 → 40 heroes
+  - Base 5 → 50 heroes
+- Every hero uses a 20-segment XP bar for the next level:
+  - Quest victory → +1 XP
+  - Incursion victory → +2 XP
+  - Dungeon victory → +3 XP
+  - Raid/Siege → no hero XP
+- Reaching 20 / 20 XP makes a hero eligible to level, but does not level automatically.
+- Level-up is completed through the Class Hall and may never raise a hero above the active faction Base Level.
+- Five-player parties use a fixed **2 / 2 / 1** formation displayed rear-to-front:
+  - rear-left
+  - rear-right
+  - middle-left
+  - middle-right
+  - front
+- The single front slot is the primary aggro target through the highest authored deterministic RNG target weight; it is not an unconditional forced target.
+- Raid formations contain two adjacent five-player formations.
+- Siege formations contain four five-player formations.
+- Party, Raid, and Siege formation editors use drag-and-drop blank slots rather than checkbox/checklist selection.
+- Saved formation editors are collapsed by default and expand only when being edited.
+- Raid/Siege groups may inherit a saved Party Loadout as their default and then override individual slots with roster heroes.
+- Profession tracks are:
+  - **Artisan** — Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, Engineer
+  - **Gathering** — Mining, Skinning, Herbalism
+  - **Survival** — Fishing, First Aid, Cooking
+- A hero may learn exactly one profession from each track.
+- Artisans Guild, Gathering Camp, Survival Lodge, and Class Hall each use three Darkest Dungeon-style hero assignment slots.
+- One building assignment lasts one full campaign day.
+- Campaign time alternates Day → Night → Day on each successful Embark; one full day is two phase advances.
+- Quest/Incursion/Dungeon progression is centered on the Embark surface.
+- Raid/Siege launch is a separate top-level player surface.
+
+### WOWUI-069 — Faction-Scoped Campaign State
+
+Status: planned
+
+Depends on: WOWUI-068
+
+#### Objective
+
+Split persistent player state into one independent Alliance campaign and one independent Horde campaign before adding new progression systems.
+
+#### Work
+
+- Replace globally shared Base/roster progression state with faction-scoped campaign records.
+- Persist one Alliance campaign and one Horde campaign.
+- Give each faction its own:
+  - Keep/Base level
+  - building levels
+  - resource balances
+  - Bank/meta-progression holdings where mutable
+  - roster
+  - saved Party/Raid/Siege formation state
+  - quest/embark state
+  - profession selections
+  - building assignments
+  - campaign clock
+- Keep authored static JSON shared where the data is not player progression.
+- Add an explicit active-faction selector/state used by Base, Roster, Embark, Battle launch, and future Raid/Siege surfaces.
+- Migrate legacy single-campaign mockup saves into one faction without duplicating heroes into both factions.
+- Do not allow one faction's progression mutation to change the other faction's state.
+
+#### Acceptance Criteria
+
+- Alliance and Horde Base levels can differ.
+- Alliance and Horde building/resource/meta state can differ.
+- Switching faction changes the visible Base/Roster/progression state without rewriting the other faction.
+- Legacy data migrates once without duplicating heroes across factions.
+- Runtime data remains authored JSON + faction-scoped player state.
+- npm test passes.
+
+---
+
+### WOWUI-070 — Faction Roster Isolation and Capacity
+
+Status: planned
+
+Depends on: WOWUI-069
+
+#### Objective
+
+Make roster membership and recruitment strictly faction-owned and scale roster capacity from Base Level.
+
+#### Work
+
+- Enforce faction-specific rosters:
+  - Alliance roster may contain Alliance heroes only.
+  - Horde roster may contain Horde heroes only.
+- Use Keep level as canonical Base Level.
+- Set faction roster caps:
+  - Level 1 → 10
+  - Level 2 → 20
+  - Level 3 → 30
+  - Level 4 → 40
+  - Level 5 → 50
+- Update Recruitment Hall validation and UI to use the active faction's cap.
+- Prevent Party/Raid/Siege loadouts, building assignments, Quest Board automation, Embark, and Battle handoffs from referencing heroes from the other faction.
+- Add migration/validation for stale cross-faction saved IDs.
+- Surface current roster count/cap compactly in Roster and Recruitment Hall.
+
+#### Acceptance Criteria
+
+- No Alliance/Horde roster mixing is possible through any player flow.
+- Roster caps are exactly 10 / 20 / 30 / 40 / 50 by Base Level.
+- Recruitment refuses over-cap and wrong-faction additions.
+- Saved loadouts and assignments reject wrong-faction hero IDs.
+- npm test passes.
+
+---
+
+### WOWUI-071 — Authored Class Base Stats and Racial Presentation
+
+Status: planned
+
+Depends on: WOWUI-070
+
+#### Objective
+
+Give every hero a visible authored identity baseline before equipment/talent modifiers.
+
+#### Work
+
+- Author base Strength, Agility, Intellect, Stamina, and Spirit for every class at hero levels 1–5.
+- Store the class-level stat table in runtime JSON rather than Markdown parsing or UI constants.
+- Keep base stats separate from equipment/talent/temporary derived bonuses.
+- Ensure combat actor construction consumes the same authored base stat source.
+- Surface the hero's racial passive in the Roster detail.
+- Surface base stats in Roster with clear distinction between:
+  - base value
+  - equipment/talent modifiers where available
+  - final combat value
+- Keep faction-exclusive class rules intact.
+
+#### Acceptance Criteria
+
+- Every class has all five primary/base stats authored at levels 1–5.
+- Roster visibly shows the hero's racial passive.
+- Roster visibly shows Strength, Agility, Intellect, Stamina, and Spirit.
+- Combat and Roster do not maintain separate class-stat tables.
+- npm test passes.
+
+---
+
+### WOWUI-072 — Canonical WoW Ability Icon Mapping
+
+Status: planned
+
+Depends on: WOWUI-068
+
+#### Objective
+
+Make every authored hero ability use the matching World of Warcraft ability icon instead of generic or approximate art.
+
+#### Work
+
+- Audit every authored class Auto Attack/normal ability/Ultimate.
+- Add canonical icon slug/source metadata to ability JSON where missing or incorrect.
+- Resolve icons through the shared icon layer rather than per-screen image URLs.
+- Prefer the specific real WoW spell/ability icon for that named action.
+- Keep generic fallback art only for genuinely unauthored/unknown actions.
+- Add validation that every authored hero combat action has a non-empty canonical icon mapping.
+- Ensure Roster, Talent UI, Class Hall, and Battle use the same resolved ability icon.
+
+#### Acceptance Criteria
+
+- Every authored hero combat ability has its matching WoW icon mapping.
+- Roster and Battle show the same icon for the same ability ID.
+- Known abilities do not silently render generic fallback art.
+- Icon source metadata remains authored data.
+- npm test passes.
+
+---
+
+### WOWUI-073 — Tabbed Hero Character Workspace
+
+Status: planned
+
+Depends on: WOWUI-071, WOWUI-072
+
+#### Objective
+
+Turn the selected Roster hero into a compact WoW character workspace instead of stacking every management surface together.
+
+#### Work
+
+- Add hero-detail tabs:
+  - Abilities
+  - Gear
+  - Stats
+  - Talents
+- Keep selected hero identity/portrait/class/faction visible while switching tabs.
+- Move the current personal Auto Attack / Ability 1 / Ability 2 / Ultimate controls into Abilities.
+- Move full stat/racial presentation into Stats.
+- Reserve Gear and Talents for the dedicated implementations below.
+- Preserve hero selection when tabs change.
+- Support direct navigation to a hero + requested tab so Class Hall can open the Talents view.
+- Keep Party/Raid/Siege loadout management roster-level, outside hero tabs.
+
+#### Acceptance Criteria
+
+- Hero detail has exactly Abilities / Gear / Stats / Talents tabs.
+- Abilities remain editable from the hero.
+- Stats show authored base stats and racial identity.
+- Formation/loadout editing does not return to hero detail.
+- A hero/tab can be opened directly from Class Hall.
+- npm test passes.
+
+---
+
+### WOWUI-074 — WoW Character Gear Tab
+
+Status: planned
+
+Depends on: WOWUI-073
+
+#### Objective
+
+Bring the successful paper-doll Gear mockup back into the Roster hero workflow.
+
+#### Work
+
+- Reuse the prior WoW-style character gear visual identity instead of the current compact-only equipment treatment.
+- Render the seven committed slots around the selected hero:
+  - Head
+  - Chest
+  - Pants
+  - Feet
+  - Gloves
+  - Weapon
+  - Trinket
+- Show equipped item icons directly on the paper doll.
+- Add an Armory-style owned-item browser/picker inside the Gear tab.
+- Allow equip, replace, and unequip directly from Roster.
+- Preserve class armor/weapon eligibility and current stat recalculation.
+- Reuse shared rarity frames and item comparison tooltips.
+- Do not restore a top-level Gear navigation tab.
+
+#### Acceptance Criteria
+
+- Gear can be fully managed from Roster.
+- The Gear tab visually resembles the prior WoW paper-doll mockup.
+- All seven slots are visible and functional.
+- Invalid equipment cannot be equipped.
+- Equipped changes immediately update Stats and Battle actor construction.
+- npm test passes.
+
+---
+
+### WOWUI-075 — Classic Talent Tree Visual Restoration
+
+Status: planned
+
+Depends on: WOWUI-073
+
+#### Objective
+
+Restore the stronger old Talent mockup visual identity while keeping the new authoritative talent data contract.
+
+#### Work
+
+- Reuse the previous standalone Talent mockup's WoW tree presentation:
+  - large talent icons
+  - framed specialization panel
+  - visible tier/branch relationships
+  - connector/tree treatment
+  - selected/available/locked states
+- Render the current exact 2 / 2 / 1 specialization model without returning to the visually flat Roster talent treatment.
+- Keep the specialization capstone visibly connected to the hero's Ultimate.
+- Talent changes remain hero-scoped and write through authoritative roster state.
+- The Roster Talents tab becomes the primary player talent surface.
+- Class Hall hero interactions open this same Talents tab rather than a separate implementation.
+- Keep standalone talent-calculator developer-only if still useful for inspection.
+
+#### Acceptance Criteria
+
+- Roster Talents uses the old tree-style visual identity.
+- Every specialization still renders exactly 2 Tier 1 / 2 Tier 2 / 1 capstone.
+- The selected capstone still determines Ultimate.
+- Class Hall and Roster use one talent editor implementation.
+- npm test passes.
+
+---
+
+### WOWUI-076 — Twenty-Point Hero XP and Base-Level Cap
+
+Status: planned
+
+Depends on: WOWUI-069, WOWUI-071
+
+#### Objective
+
+Introduce the Darkest Dungeon-style advancement cadence: heroes earn small XP increments, fill a 20-point bar, then train at Class Hall.
+
+#### Work
+
+- Add per-hero level-progress XP from 0–20.
+- Render XP as a clear 20-segment bar.
+- Award on successful content completion:
+  - Quest: +1
+  - Incursion: +2
+  - Dungeon: +3
+  - Raid: +0
+  - Siege: +0
+- Clamp XP at 20 while waiting for level-up training.
+- Do not auto-level at 20.
+- A hero may never level above the active faction Base Level/Keep level.
+- Level 5 heroes are permanently level-capped.
+- Reset the next-level XP bar appropriately after a successful Class Hall level-up.
+- Persist XP independently per faction hero.
+- Add reward events to the existing encounter-result pipeline rather than UI-only increments.
+
+#### Acceptance Criteria
+
+- Quest/Incursion/Dungeon rewards are exactly 1 / 2 / 3 XP.
+- Raid and Siege grant no hero XP.
+- 20 / 20 marks a hero ready to train but does not change level.
+- No hero can exceed faction Base Level.
+- XP survives reload and encounter-result navigation.
+- npm test passes.
+
+---
+
+### WOWUI-077 — Class Hall and Talent Trainers
+
+Status: planned
+
+Depends on: WOWUI-075, WOWUI-076
+
+#### Objective
+
+Add a faction Base Class Hall that owns talent training and hero level-up interactions.
+
+#### Work
+
+- Add Class Hall to authored Base building data and both faction layouts.
+- Present class trainers inside the Class Hall using shared class icons.
+- Show only classes valid for the active faction while preserving shared-class trainer data.
+- Give Class Hall three hero assignment slots through the shared assignment framework from WOWUI-079.
+- Assigned heroes must match an available class trainer.
+- Clicking an assigned hero opens that hero's Roster Talents tab.
+- Handle hero level-up here:
+  - hero must be 20 / 20 XP
+  - next hero level must be <= faction Base Level
+  - hero uses a Class Hall training slot for the authored one-day duration
+  - successful completion applies the level increase and resets XP progress
+- Keep talent respec/training interactions available from the assigned hero without creating another talent UI.
+- Add normal Keep-gated five-level Class Hall building progression unless later authored mechanics override it.
+
+#### Acceptance Criteria
+
+- Class Hall exists for Alliance and Horde.
+- Class trainers cover every faction-valid class.
+- Class Hall exposes three assignable hero slots.
+- Eligible heroes level only through Class Hall.
+- Clicking an assigned hero opens the same tree-style Talent editor used by Roster.
+- npm test passes.
+
+---
+
+### WOWUI-078 — Gathering and Survival Profession Tracks
+
+Status: planned
+
+Depends on: WOWUI-070
+
+#### Objective
+
+Expand professions into three independent hero profession tracks with Base ownership.
+
+#### Work
+
+- Keep **Artisan** professions in Artisans Guild:
+  - Blacksmith
+  - Alchemist
+  - Enchanter
+  - Tailor
+  - Leatherworker
+  - Engineer
+- Add **Gathering Camp** with:
+  - Mining
+  - Skinning
+  - Herbalism
+- Add **Survival Lodge** with:
+  - Fishing
+  - First Aid
+  - Cooking
+- Allow each hero to learn exactly:
+  - one Artisan profession
+  - one Gathering profession
+  - one Survival profession
+- Store the three choices independently on the faction hero.
+- Author profession metadata/progression in JSON.
+- Add both new buildings to Alliance/Horde Base presentation and shared building icon data.
+- Give Artisans Guild, Gathering Camp, and Survival Lodge three assignable hero slots through WOWUI-079.
+
+#### Acceptance Criteria
+
+- A hero may own one profession from each of the three tracks.
+- A second profession in the same track replaces/changes only that track according to the authored training rule.
+- Gathering Camp contains only Mining/Skinning/Herbalism.
+- Survival Lodge contains only Fishing/First Aid/Cooking.
+- Profession state cannot cross factions.
+- npm test passes.
+
+---
+
+### WOWUI-079 — Shared Darkest Dungeon-Style Building Assignment Slots
+
+Status: planned
+
+Depends on: WOWUI-077, WOWUI-078
+
+#### Objective
+
+Create one reusable drag/drop hero-assignment interaction for training/profession buildings.
+
+#### Work
+
+- Build a shared three-slot assignment component.
+- Use it for:
+  - Artisans Guild
+  - Gathering Camp
+  - Survival Lodge
+  - Class Hall
+- Each slot starts visually empty and accepts a dragged active-faction roster hero.
+- Support remove/replace before the assignment begins.
+- Persist:
+  - building ID
+  - slot index
+  - hero ID
+  - selected trainer/profession/action
+  - start phase
+  - remaining campaign phases
+- A hero may not occupy multiple building assignment slots at the same time.
+- Assigned heroes become unavailable for Embark/formation assignment while training.
+- One assignment lasts one full campaign day, completed by the clock rules in WOWUI-080.
+- Reuse the same slot/drop visual language later for Quest Board automation.
+
+#### Acceptance Criteria
+
+- All four training/profession buildings expose exactly three slots.
+- Drag/drop from the current faction roster fills empty slots.
+- Heroes cannot be duplicated across concurrent building assignments.
+- Assignment state survives reload.
+- Completion is driven by campaign time, not wall-clock timers.
+- npm test passes.
+
+---
+
+### WOWUI-080 — Faction Day/Night Campaign Clock
+
+Status: planned
+
+Depends on: WOWUI-069, WOWUI-079
+
+#### Objective
+
+Add the deterministic campaign clock that drives one-day training/assignment progress.
+
+#### Work
+
+- Add a faction-scoped campaign phase:
+  - Day
+  - Night
+- Each confirmed successful Embark advances exactly one phase:
+  - Day → Night
+  - Night → Day
+- Define one full campaign day as two phase advances.
+- Advance only the active faction's assignment clock.
+- Decrement/resolve Class Hall and profession-building assignments from phase advancement.
+- Keep the phase deterministic and persisted; do not use real-world time.
+- Show the active phase in Base and Embark with compact shared presentation.
+- Ensure reload does not advance time.
+- Keep Battle pause/speed controls unrelated to campaign time.
+
+#### Acceptance Criteria
+
+- One Embark toggles Day/Night exactly once.
+- Two Embarks complete one one-day assignment.
+- Alliance and Horde clocks advance independently.
+- Reloading does not change phase or assignment duration.
+- Assignment completion produces deterministic state changes.
+- npm test passes.
+
+---
+
+### WOWUI-081 — Five-Hero Formation Data Contract
+
+Status: planned
+
+Depends on: WOWUI-070
+
+#### Objective
+
+Replace unordered five-player membership lists with authored positional formations.
+
+#### Work
+
+- Define one five-hero formation as rear-to-front **2 / 2 / 1**:
+  - rear-left
+  - rear-right
+  - middle-left
+  - middle-right
+  - front
+- Store slot IDs explicitly rather than relying on array position.
+- Allow blank slots while editing; readiness requires all five slots filled.
+- Add faction ownership to every saved Party Loadout.
+- Add a default-party flag/reference usable by Raid and Siege loadouts.
+- Migrate existing five-person saved lists into deterministic formation slots.
+- Remove the old generic multi-size saved-party contract for 10/20-player content; Raid and Siege get dedicated loadout types.
+- Add authored formation target-weight configuration for combat use.
+- Front must have the highest target weight but must not be guaranteed to receive every attack.
+
+#### Acceptance Criteria
+
+- A ready Party Loadout always resolves to exactly five unique faction-valid heroes.
+- Formation slots retain identity through save/reload.
+- Blank editing slots are valid; incomplete formations cannot launch content.
+- Front is explicitly identifiable to combat targeting.
+- npm test passes.
+
+---
+
+### WOWUI-082 — Drag-and-Drop Party Loadout Editor
+
+Status: planned
+
+Depends on: WOWUI-081
+
+#### Objective
+
+Replace the current checklist-based Party Loadout manager with compact collapsed drag/drop formation editors.
+
+#### Work
+
+- Remove checkbox/checklist hero selection from Party Loadouts.
+- Render all Party Loadouts collapsed by default.
+- Use a single-open accordion/dropdown editing pattern.
+- Expanded loadout shows five empty/filled formation slots in 2 / 2 / 1 geometry.
+- Use the active faction Roster as the drag source.
+- Support:
+  - drag hero into blank slot
+  - drag hero between slots
+  - replace occupied slot
+  - remove hero back to roster/empty state
+- Show hero portrait/class/role compactly inside a filled slot.
+- Keep faction-invalid, unavailable, or already-used heroes visibly non-droppable.
+- Provide compact rename/default controls without returning to large stacked panels.
+- Keep the formation spatially legible on mobile.
+
+#### Acceptance Criteria
+
+- Party Loadouts no longer use checklists.
+- All loadouts start collapsed.
+- A party is built entirely by dragging roster heroes into formation slots.
+- The single front slot is visually obvious.
+- Ready state is derived from exactly five unique valid heroes.
+- npm test passes.
+
+---
+
+### WOWUI-083 — Raid Loadouts from Party Defaults and Hero Overrides
+
+Status: planned
+
+Depends on: WOWUI-082
+
+#### Objective
+
+Build ten-player Raid Loadouts as two adjacent five-player formations with inheritance from saved Party Loadouts.
+
+#### Work
+
+- Add a collapsed Raid Loadouts section directly below Party Loadouts in the Roster workspace.
+- Each Raid Loadout contains two adjacent five-player formation groups.
+- Allow a saved Party Loadout to be dragged onto either group as that group's default.
+- Resolve each group from:
+  - default Party Loadout formation
+  - per-slot hero overrides
+- Allow individual active-faction roster heroes to be dragged onto any slot to override the inherited hero in that position.
+- Preserve overrides independently from the source Party Loadout.
+- If the source Party Loadout changes, non-overridden slots update automatically.
+- Provide explicit clear-override behavior to return a slot to its inherited default.
+- Validate ten unique heroes across both groups.
+- Reject cross-faction or duplicate resolved heroes.
+
+#### Acceptance Criteria
+
+- A Raid Loadout displays two adjacent 2 / 2 / 1 groups.
+- Either group can inherit a saved Party Loadout.
+- Individual slots can override inherited heroes.
+- Source-party edits propagate only to non-overridden slots.
+- Ready state requires ten unique valid heroes.
+- npm test passes.
+
+---
+
+### WOWUI-084 — Siege Loadouts from Four Party Groups
+
+Status: planned
+
+Depends on: WOWUI-083
+
+#### Objective
+
+Build twenty-player Siege Loadouts from four five-player Party groups using the same inheritance/override model as Raids.
+
+#### Work
+
+- Add a collapsed Siege Loadouts section below Raid Loadouts.
+- Each Siege Loadout contains four five-player formations.
+- Present groups in a compact 2×2 formation-grid layout on desktop with usable responsive fallback.
+- Allow each group to inherit a saved Party Loadout.
+- Allow per-slot roster hero overrides.
+- Preserve source Party references and overrides separately.
+- Validate twenty unique active-faction heroes after inheritance + override resolution.
+- Keep the resolved formation available to Battle without flattening away slot/group identity.
+
+#### Acceptance Criteria
+
+- Siege Loadout resolves exactly four five-player formations.
+- All four groups support Party default + individual override behavior.
+- Twenty-player duplicate/faction validation is enforced.
+- Large loadouts remain collapsed until explicitly edited.
+- npm test passes.
+
+---
+
+### WOWUI-085 — Formation-Aware Deterministic Aggro
+
+Status: planned
+
+Depends on: WOWUI-081, WOWUI-083, WOWUI-084
+
+#### Objective
+
+Make saved formation position matter in deterministic combat targeting.
+
+#### Work
+
+- Carry formation group + slot ID into combat actor definitions.
+- Replace purely lowest-index hostile selection for applicable enemy single-target attacks with seeded weighted formation targeting.
+- Use authored slot weights from the formation data contract.
+- The single front slot in each five-player group receives the highest aggro/target weight.
+- Other formation slots remain possible RNG targets.
+- Keep all target rolls inside the combat simulation's seeded RNG stream.
+- Preserve deterministic replay hashes.
+- For Raid/Siege, preserve five-player group identity so each group's front position remains meaningful.
+- Do not change explicit encounter mechanics that author a different target rule.
+
+#### Acceptance Criteria
+
+- Front heroes are the primary weighted aggro targets without being guaranteed targets.
+- Replaying the same formation + seed produces the same targets.
+- Moving heroes between formation slots can change deterministic targeting outcomes.
+- Raid and Siege retain per-group front positions.
+- Combat logs expose enough formation/target context to debug selection.
+- npm test passes.
+
+---
+
+### WOWUI-086 — Tiered Content Progression Contract
+
+Status: planned
+
+Depends on: WOWUI-069, WOWUI-076
+
+#### Objective
+
+Define the intended manual-to-automated content ladder before building the new Embark screens.
+
+#### Work
+
+- Establish authored runtime catalogs/contracts for:
+  - Quests
+  - Incursions
+  - Dungeons
+  - Raids
+  - Sieges
+- Use faction Base Level as unlock tier:
+  - Base 1 → manual Quest focus
+  - Base 2 → Quest automation unlocks; manual Incursion focus
+  - Base 3 → Incursion automation unlocks; manual Dungeon focus
+  - Base 4 → Dungeon automation unlocks; Raid access
+  - Base 5 → Siege access
+- Keep Quests/Incursions/Dungeons available for lower-tier progression after later tiers unlock.
+- Keep Raid/Siege hero XP at zero.
+- Define party requirements per content type through authored data.
+- Keep encounter/Battle handoff deterministic and faction-scoped.
+- Do not auto-run Raid/Siege content in this phase unless explicitly authored later.
+
+#### Acceptance Criteria
+
+- Content availability follows Base Level 1–5 exactly.
+- XP rewards match WOWUI-076.
+- Unlock/automation rules come from authored runtime data.
+- Both factions can progress independently through the same content contract.
+- npm test passes.
+
+---
+
+### WOWUI-087 — Quest Board Auto-Assignment Slots
+
+Status: planned
+
+Depends on: WOWUI-079, WOWUI-080, WOWUI-086
+
+#### Objective
+
+When automation is unlocked, make Quest Board assignments behave like Darkest Dungeon building assignments rather than button-driven dispatch.
+
+#### Work
+
+- At Base Level 1, keep Quest play manual through Embark and allow only one active manual Quest expedition at a time.
+- At Base Level 2+, expose auto-Quest assignment slots/cards on Quest Board.
+- Reuse the shared blank-slot drag/drop interaction from building assignments.
+- Drag active-faction heroes onto eligible automated Quest assignments.
+- Persist hero/content assignment without immediately routing to Battle.
+- Assigned heroes become unavailable to other concurrent content/training.
+- Resolve automated Quest work from campaign phase/day advancement.
+- Award the normal +1 Quest XP on successful automated completion.
+- Preserve retry/failure state deterministically.
+- At later Base Levels, extend the same assignment architecture to automated Incursions/Dungeons as unlocked by WOWUI-086 rather than inventing a separate checkbox workflow.
+
+#### Acceptance Criteria
+
+- Level-1 Questing remains manual and one-expedition-at-a-time.
+- Level-2 Quest automation uses drag/drop hero assignments.
+- Automated content consumes campaign-time advancement.
+- Auto-assigned heroes cannot simultaneously train or embark elsewhere.
+- No checklist-based auto-assignment UI is introduced.
+- npm test passes.
+
+---
+
+### WOWUI-088 — Embark Top-Level Gameplay Surface
+
+Status: planned
+
+Depends on: WOWUI-080, WOWUI-082, WOWUI-086, WOWUI-087
+
+#### Objective
+
+Create Embark as the primary manual gameplay loop for Quest/Incursion/Dungeon content.
+
+#### Work
+
+- Add **Embark** as a top-level player navigation destination beside Base / Roster / Battle.
+- Make Embark faction-aware.
+- Provide a compact quick dropdown/list of currently available:
+  - Quests
+  - Incursions
+  - Dungeons
+- Emphasize the current Base-Level focus:
+  - Level 1 → Quest
+  - Level 2 → Incursion
+  - Level 3 → Dungeon
+- Keep lower-tier manual content available where authored even after automation unlocks.
+- Quest/Incursion launches select the required hero(s) from the active faction.
+- Dungeon launches use a ready five-player Party Loadout/formation.
+- Confirming a manual Embark:
+  - validates roster availability/faction
+  - persists the encounter handoff
+  - advances the faction Day/Night phase exactly once
+  - advances one-day building/auto-content assignments
+  - routes into Battle where the content has a combat encounter
+- Returning from Battle restores the active faction/Embark context.
+
+#### Acceptance Criteria
+
+- Embark is a real top-level player screen.
+- Available Quest/Incursion/Dungeon content is reachable through a quick compact selector.
+- Base 1/2/3 focuses Quest/Incursion/Dungeon respectively.
+- Every confirmed Embark advances the faction campaign phase once.
+- Dungeon launch preserves 2 / 2 / 1 formation identity into Battle.
+- npm test passes.
+
+---
+
+### WOWUI-089 — Raids and Sieges Top-Level Surface
+
+Status: planned
+
+Depends on: WOWUI-083, WOWUI-084, WOWUI-085, WOWUI-086
+
+#### Objective
+
+Give 10- and 20-player endgame content its own player destination instead of forcing it through the normal Embark picker.
+
+#### Work
+
+- Add a dedicated top-level **Raids & Sieges** player navigation destination.
+- Keep it faction-aware and locked until relevant Base Level:
+  - Raid → Base Level 4
+  - Siege → Base Level 5
+- Raid launch uses a ready Raid Loadout with two resolved five-player formations.
+- Siege launch uses a ready Siege Loadout with four resolved five-player formations.
+- Show compact formation preview before launch.
+- Carry group/slot position into Battle.
+- Use authored Raid/Siege encounter data and existing deterministic combat runtime.
+- Raid/Siege completion does not grant hero XP.
+- Persist result/history independently per faction.
+- Keep Battle return navigation back to the correct Raid/Siege context.
+
+#### Acceptance Criteria
+
+- Raid and Siege have a unique top-level player surface.
+- Raid cannot launch before Base 4.
+- Siege cannot launch before Base 5.
+- Launch consumes the correct saved formation type.
+- Formation-aware aggro remains active in Battle.
+- Raid/Siege grant no hero XP.
+- npm test passes.
+
+---
+
+### WOWUI-090 — New Progression Phase Integration, Migration, and Regression Coverage
+
+Status: planned
+
+Depends on: WOWUI-072, WOWUI-074, WOWUI-075, WOWUI-077, WOWUI-078, WOWUI-085, WOWUI-088, WOWUI-089
+
+#### Objective
+
+Finish the phase by removing superseded loadout/progression paths and proving the new faction-scoped gameplay loop end-to-end.
+
+#### Work
+
+- Remove obsolete checklist Party Loadout UI/handlers.
+- Remove old generic 3/5/10/20 saved-party editing paths that conflict with:
+  - five-player Party formations
+  - ten-player Raid formations
+  - twenty-player Siege formations
+- Migrate compatible existing saved five-player parties into 2 / 2 / 1 slots.
+- Remove stale hero leveling paths outside Class Hall.
+- Remove stale profession assumptions that only Artisans exist.
+- Ensure no faction-global mutable progression remains where faction ownership is required.
+- Update:
+  - mockup/README.md
+  - docs/heroes/
+  - docs/base/
+  - docs/combat/
+  - profession docs
+  - content/progression docs
+  - authored JSON mirrors
+- Add acceptance coverage for:
+  - Alliance/Horde campaign isolation
+  - 10/20/30/40/50 roster caps
+  - racial + level-1–5 class base stats
+  - canonical ability icons
+  - Abilities/Gear/Stats/Talents hero tabs
+  - seven-slot Roster paper doll
+  - classic tree-style Talents
+  - 20-point XP and Class Hall leveling
+  - Artisan/Gathering/Survival profession limits
+  - three-slot one-day building assignments
+  - faction Day/Night progression
+  - drag/drop 2 / 2 / 1 Party formations
+  - Raid Party-default inheritance + per-slot overrides
+  - four-group Siege formations
+  - deterministic formation-weighted aggro
+  - Quest Board automation assignments
+  - Embark Quest/Incursion/Dungeon loop
+  - Base-4 Raid and Base-5 Siege flow
+  - no Raid/Siege hero XP
+- Run the complete integration/combat suite in CI.
+
+#### Acceptance Criteria
+
+- No checklist loadout editor remains.
+- No Alliance/Horde mutable progression leaks across faction state.
+- Party/Raid/Siege use positional drag/drop formation contracts.
+- Class Hall is the only hero level-up path.
+- All three profession tracks and assignment buildings work.
+- Embark advances deterministic faction Day/Night time.
+- Quest/Incursion/Dungeon/Raid/Siege unlocks match Base Level.
+- Battle receives correct formation and faction state.
+- Both faction campaigns complete their full independent progression loops.
+- npm test passes cleanly in CI.
+
