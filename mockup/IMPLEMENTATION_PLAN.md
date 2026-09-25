@@ -150,7 +150,7 @@ Make the stronghold map the dominant landing surface and reduce persistent infor
 
 ### WOWUI-024 — Hidden Building Sidecar Framework
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-023
 
