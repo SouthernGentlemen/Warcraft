@@ -698,3 +698,23 @@
   .armory-grid .armory-item { width: 50px; height: 50px; }
   .armory-grid .armory-item-icon { --wow-icon-size: 46px; }
 }
+
+
+/* WOWUI-014 slot-first equipment picker */
+.gear-slot.empty { cursor:pointer; }
+.gear-slot.empty:hover .gear-slot-icon,.gear-slot.empty:focus-visible .gear-slot-icon { filter:brightness(1.16); opacity:1; transform:translateY(-1px); }
+.gear-slot-picker { position:fixed; z-index:1200; max-height:min(420px,calc(100vh - 16px)); overflow:hidden; background:var(--wow-surface); box-shadow:0 14px 34px rgba(0,0,0,.72); }
+.gear-slot-picker__head { display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:8px 10px; border-bottom:var(--wow-border-thin) solid var(--wow-frame-edge); background:var(--wow-surface-raised); }
+.gear-slot-picker__head strong { color:var(--wow-gold-pale); font:700 14px var(--wow-font-display); }
+.gear-slot-picker__head span { color:var(--wow-text-dim); font-size:8px; text-transform:uppercase; letter-spacing:.08em; }
+.gear-slot-picker__list { max-height:360px; overflow:auto; padding:5px; }
+.gear-picker-item,.gear-picker-unequip { width:100%; min-height:46px; display:grid; grid-template-columns:38px minmax(0,1fr) auto; align-items:center; gap:8px; padding:5px 7px; border:var(--wow-border-thin) solid transparent; background:var(--wow-surface-inset); color:var(--wow-text); text-align:left; cursor:pointer; }
+.gear-picker-item + .gear-picker-item { margin-top:3px; }
+.gear-picker-item:hover,.gear-picker-item:focus-visible { border-color:var(--wow-gold-muted); background:var(--wow-surface-hover); outline:none; }
+.gear-picker-item.is-equipped { border-color:var(--wow-gold); }
+.gear-picker-item strong,.gear-picker-item small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.gear-picker-item strong { font-size:10px; }
+.gear-picker-item small { margin-top:2px; color:var(--wow-text-muted); font-size:8px; }
+.gear-picker-item em { color:var(--wow-success); font-size:8px; font-style:normal; text-transform:uppercase; }
+.gear-picker-unequip { grid-template-columns:1fr; min-height:34px; margin-top:6px; border-color:var(--wow-error-deep); color:#ff9c9c; text-align:center; }
+.gear-picker-unequip:hover,.gear-picker-unequip:focus-visible { border-color:var(--wow-error); outline:none; }
