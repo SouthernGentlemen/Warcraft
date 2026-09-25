@@ -53,6 +53,13 @@ function specLocked(specId) {
   return Boolean(state.primarySpec && !primaryComplete() && specId !== state.primarySpec);
 }
 
+function tierThreshold(specId, tier) {
+  const model = state.specs.get(specId)?.talent_model || {};
+  if (tier === "tier_1") return Number(model.tier_1_unlock_points || 0);
+  if (tier === "tier_2") return Number(model.tier_2_unlock_points ?? 1);
+  return Number(model.capstone_unlock_points ?? 2);
+}
+
 function requirementFor(specId, tier) {
   const picks = state.picks[specId];
 
@@ -61,27 +68,12 @@ function requirementFor(specId, tier) {
     return `Requires ${label} capstone`;
   }
 
-  if (tier === "tier_1") {
-    if (state.level < 1) return "Requires Level 1";
-    if (state.primarySpec && !primaryComplete() && specId !== state.primarySpec) return "Other trees are locked";
-    if (pointCount() >= state.level && !picks.tier_1) return "Requires another hero level";
-    return "";
+  const threshold = tierThreshold(specId, tier);
+  const current = pointsInSpec(specId);
+  if (current < threshold && !picks[tier]) {
+    return `Requires ${threshold} point${threshold === 1 ? "" : "s"} spent in this tree`;
   }
-
-  if (tier === "tier_2") {
-    if (state.level < 2) return "Requires Level 2";
-    if (!picks.tier_1) return "Requires 1 point in Tier 1";
-    if (pointCount() >= state.level && !picks.tier_2) return "Requires another hero level";
-    return "";
-  }
-
-  if (tier === "capstones") {
-    if (state.level < 3) return "Requires Level 3";
-    if (!picks.tier_2) return "Requires 1 point in Tier 2";
-    if (pointCount() >= state.level && !picks.capstones) return "Requires another hero level";
-    return "";
-  }
-
+  if (pointCount() >= state.level && !picks[tier]) return "Requires another hero level";
   return "";
 }
 
@@ -152,7 +144,7 @@ function tooltipRequirement(specId, tier, selected) {
 function talentTooltipModel(specId, tier, item, selected, iconUrl) {
   const spec = state.specs.get(specId);
   const requirement = tooltipRequirement(specId, tier, selected);
-  const level = tier === "tier_1" ? 1 : tier === "tier_2" ? 2 : 3;
+  const threshold = tierThreshold(specId, tier);
   const capstone = tier === "capstones";
 
   return {
@@ -163,7 +155,7 @@ function talentTooltipModel(specId, tier, item, selected, iconUrl) {
     icon:{url:iconUrl, classId:state.classMeta.id},
     requirements:[
       {label:"Class", value:state.classMeta.label},
-      {label:"Required level", value:String(level)}
+      {label:"Tree spend to unlock", value:String(threshold)}
     ],
     description:item.effect,
     meta:[
@@ -173,38 +165,6 @@ function talentTooltipModel(specId, tier, item, selected, iconUrl) {
     ],
     locked:requirement ? [requirement] : []
   };
-}
-
-function connectorSvg(specId) {
-  const picks = state.picks[specId];
-  const firstActive = Boolean(picks.tier_1);
-  const secondActive = Boolean(picks.tier_2);
-  const firstClass = firstActive ? " active" : "";
-  const secondClass = secondActive ? " active" : "";
-  const arrowId = "talent-arrow-" + specId;
-  const edges = [
-    {state:firstClass, d:"M18 24 L18 43"},
-    {state:firstClass, d:"M50 24 L50 43"},
-    {state:firstClass, d:"M82 24 L82 43"},
-    {state:secondClass, d:"M18 54 L18 61 L36 72"},
-    {state:secondClass, d:"M50 54 L50 66 L36 72"},
-    {state:secondClass, d:"M50 54 L50 66 L64 72"},
-    {state:secondClass, d:"M82 54 L82 61 L64 72"}
-  ];
-
-  return `
-    <svg class="wow-connectors" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <marker id="${arrowId}" class="wow-connector-arrow" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-          <path d="M0,0 L5,2.5 L0,5 Z"/>
-        </marker>
-      </defs>
-      ${edges.map(edge =>
-        '<path class="wow-connector-shadow" d="' + edge.d + '"/>' +
-        '<path class="wow-connector' + edge.state + '" d="' + edge.d + '" marker-end="url(#' + arrowId + ')"/>'
-      ).join("")}
-    </svg>
-  `;
 }
 
 function createTalentNode(specId, tier, item, index, capstone=false) {
@@ -225,7 +185,7 @@ function createTalentNode(specId, tier, item, index, capstone=false) {
   button.setAttribute("aria-disabled", canUse || selected ? "false" : "true");
   const requirement = tooltipRequirement(specId, tier, selected);
   button.setAttribute("aria-label", item.name + ", " + tierLabel(tier) + (selected ? ", learned" : requirement ? ", locked: " + requirement : ", available"));
-  const talentIconUrl = Icons.talentUrl(specId, item.name, index);
+  const talentIconUrl = Icons.iconUrl(item.icon_slug);
   button.innerHTML = `
     <span class="wow-icon-frame${selected ? " is-selected" : ""}${canUse ? "" : " is-locked"}">
       <img src="${talentIconUrl}" alt="" loading="lazy">
@@ -240,6 +200,12 @@ function createTalentNode(specId, tier, item, index, capstone=false) {
   button.addEventListener("contextmenu", event => {
     event.preventDefault();
     unlearn(specId, tier, item.name);
+  });
+  button.addEventListener("keydown", event => {
+    if ((event.key === "Delete" || event.key === "Backspace") && selected) {
+      event.preventDefault();
+      unlearn(specId, tier, item.name);
+    }
   });
 
   return button;
@@ -278,7 +244,7 @@ function renderSpecPanel(meta, panelIndex) {
       <span class="wow-spec-points wow-tier-label">${pointsInSpec(meta.id)} / 3</span>
     </header>
     <div class="wow-spec-body">
-      ${connectorSvg(meta.id)}
+      <span class="wow-tier-model-note">Talent tiers · not item tiers</span>
       <div class="wow-tier-markers" aria-hidden="true">
         <span>Tier 1</span><span>Tier 2</span><span>Capstone</span>
       </div>
