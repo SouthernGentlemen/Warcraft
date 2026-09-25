@@ -1500,7 +1500,7 @@ Make the three storage buildings functional in place instead of using redirect l
 
 ### WOWUI-063 — Base Building Banner Upgrade Control
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-062
 
