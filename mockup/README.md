@@ -115,3 +115,7 @@ The Base landing screen now keeps only Gold, Lumber, and Stone in its persistent
 ### Base building sidecar
 
 Base building details now use one reusable sidecar that is hidden on initial load and overlays the map only after a building is selected. Selecting another building replaces the sidecar identity in place; close, Escape, and empty-map dismissal clear selection, and explicit close restores focus to the originating building. Building management content remains intentionally deferred to WOWUI-025.
+
+### Building management sidecar
+
+Core and profession buildings now manage progression directly inside the shared Base sidecar. The sidecar reads current/next capabilities, prerequisites, and resource costs from `data/base/buildings.json`; blocked and maximum-level states are explicit, successful upgrades update the resource HUD and map level in place, and the legacy building-list renderer has been removed. Quest Board management remains reserved for WOWUI-026.
