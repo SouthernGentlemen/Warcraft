@@ -170,3 +170,7 @@ Artisans Guild now exposes Blacksmith, Alchemist, Enchanter, Tailor, Leatherwork
 ### Randomized Quest Board rounds
 
 Quest Board no longer owns one permanent quest per tier. `data/base/quest-offers.json` is an authored offer pool covering 1, 3, 5, 10, and 20 hero assignments, while `WarcraftRoster.questBoard` persists the current round, seed, and selected offer IDs. Base generates a bounded set of offers deterministically from that stored round state, so reloads do not reroll. Advancing the round selects a new offer set without mutating accepted/active/completed quest-log records. Dispatching an offer creates a stable quest-log assignment in `WarcraftRoster.quests`, and Quest Journal remains a read-only projection of that quest history.
+
+### Canonical dungeon catalog
+
+`data/dungeons/catalog.json` is the authored Quest Board dungeon catalog. Each dungeon has a stable ID, canonical display/location metadata, normalized Azeroth/continent map coordinates, faction starter/presentation rules, canonical party-size metadata, and an `npc_pool_id` resolving into `data/npcs/dungeon-pools.json`. The initial catalog contains Ragefire Chasm, The Stockade, Scarlet Monastery, and Zul'Farrak. Ragefire Chasm is marked as the Horde starter and The Stockade as the Alliance starter. NPC pools currently contain identity-only boss seeds; combat stats and encounter composition remain future work.
