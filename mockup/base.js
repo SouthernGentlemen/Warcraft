@@ -232,6 +232,8 @@ function syncMapBuildings() {
     const attention = syncBuildingAttention(plot, building);
     plot.classList.toggle('selected', selected);
     plot.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    plot.setAttribute('aria-expanded', selected ? 'true' : 'false');
+    plot.setAttribute('aria-controls', 'baseSidecar');
     plot.setAttribute('aria-label', building.name + ', level ' + building.level + (attention ? ', attention: ' + attention.label : ''));
     const level = plot.querySelector('.plot-label b');
     if (level) level.textContent = building.level;
@@ -433,6 +435,8 @@ function openSidecar(id, origin) {
   syncMapBuildings();
   renderSidecar();
   sidecar.hidden = false;
+  const body = $('#baseSidecarBody');
+  if (body) body.scrollTop = 0;
   $('#baseSidecarClose')?.focus({preventScroll:true});
 }
 
