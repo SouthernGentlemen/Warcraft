@@ -1118,6 +1118,19 @@
   grid-template-columns: repeat(2, minmax(190px, 1fr));
 }
 
+.battle-frame[data-party-size="5"] .battle-log-scroll {
+  max-height: 190px;
+}
+
+.battle-frame[data-party-size="5"] .battle-combat-log table {
+  min-width: 680px;
+}
+
+.battle-frame[data-party-size="5"] .battle-combat-log td,
+.battle-frame[data-party-size="5"] .battle-combat-log th {
+  white-space: nowrap;
+}
+
 .battle-frame[data-party-size="10"] .combat-team,
 .battle-frame[data-party-size="20"] .combat-team {
   grid-template-columns: repeat(2, minmax(138px, 1fr));
