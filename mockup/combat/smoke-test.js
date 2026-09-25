@@ -39,6 +39,38 @@ function runTwice(actors,seed,maxFrames){
 }
 
 const enemyPool=resolveNpcPoolDefinitions({catalog:npcCatalog,pools:npcPools,poolId:"dungeon-the-stockade",team:1});
+
+const swingHero=await hero("warrior","arms","swing-hero");
+const durableSwingHero={
+  ...swingHero,
+  derived:{...swingHero.derived,maxHealth:1_000_000}
+};
+const hastedSwingHero={
+  ...durableSwingHero,
+  id:"hasted-swing-hero",
+  derived:{...durableSwingHero.derived,hasteBp:durableSwingHero.derived.hasteBp+2_500},
+  talentHooks:{...durableSwingHero.talentHooks,autoHasteBp:durableSwingHero.talentHooks.autoHasteBp+1_500}
+};
+const baseSwingSim=new CombatSimulation({actors:[durableSwingHero,enemyPool[0]],seed:0x670067});
+const hastedSwingSim=new CombatSimulation({actors:[hastedSwingHero,enemyPool[0]],seed:0x670067});
+if(baseSwingSim.actionState(0).auto.progressBp!==0)throw new Error("Swing timer must start at zero");
+baseSwingSim.step();
+hastedSwingSim.step();
+const baseSwing=baseSwingSim.actionState(0).auto;
+const hastedSwing=hastedSwingSim.actionState(0).auto;
+if(!(baseSwing.progressBp>0&&hastedSwing.progressBp>baseSwing.progressBp))throw new Error("Haste must accelerate swing progress");
+if(!(hastedSwing.remainingTicks<baseSwing.remainingTicks))throw new Error("Haste must reduce remaining swing ticks");
+
+const resetSwingSim=new CombatSimulation({actors:[durableSwingHero,enemyPool[0]],seed:0x670068});
+let swingFired=false;
+for(let frame=0;frame<FPS*10&&!swingFired;frame+=1){
+  const report=resetSwingSim.step();
+  swingFired=report.events.some(event=>event.type==="action_start"&&event.actor===0&&event.source==="auto");
+}
+if(!swingFired)throw new Error("Auto Attack did not fire from swing threshold");
+const resetSwing=resetSwingSim.actionState(0).auto;
+if(!(resetSwing.progress<resetSwing.threshold&&resetSwing.progressBp<10_000))throw new Error("Swing timer did not reset when Auto Attack fired");
+
 const one=runTwice([await hero("warrior","arms","hero-0"),...enemyPool],0x470047,FPS*120);
 const three=runTwice([
   await hero("warrior","protection","hero-0"),
