@@ -6,12 +6,14 @@ const BASE_PRESENTATION_ROOT = "../data/base/presentation.json";
 const RECRUITMENT_DATA_ROOT = "../data/base/recruitment.json";
 const PROFESSION_DATA_ROOT = "../data/base/profession-buildings/index.json";
 const QUEST_OFFER_POOL_ROOT = "../data/base/quest-offers.json";
+const DUNGEON_CATALOG_ROOT = "../data/dungeons/catalog.json";
 const Professions = window.WarcraftProfessions;
 let buildings = [];
 let basePresentation = null;
 let recruitmentData = null;
 let professionData = null;
 let questOfferPool = null;
+let dungeonCatalog = null;
 let sidecarOrigin = null;
 
 function normalizeBuilding(raw) {
@@ -75,6 +77,9 @@ const state = {
   recruitmentOpen: false,
   recruitmentMessage: "",
   artisansOpen: false,
+  questBoardMode: "offers",
+  selectedDungeonId: null,
+  dungeonMessage: "",
   resources: { gold: 25430, lumber: 12680, stone: 8440 }
 };
 
@@ -202,7 +207,8 @@ const BUILDING_ACTIONS = Object.freeze({
     Object.freeze({label:'Open Inventory', href:'./inventory.html', icon:['equipment-slot','chest'], description:'Browse owned equipment across the roster.'})
   ]),
   questboard:Object.freeze([
-    Object.freeze({label:'Open Quest Journal', href:'./quest-journal.html', icon:['quest','journal'], description:'Review available, active, and completed quests.'})
+    Object.freeze({label:'Open Quest Journal', href:'./quest-journal.html', icon:['quest','journal'], description:'Review available, active, and completed quests.'}),
+    Object.freeze({label:'Dungeon Map', action:'dungeon-map', icon:['battle','combat'], description:'Open the Azeroth dungeon map and prepare a dungeon party.'})
   ]),
   artisans:Object.freeze([
     Object.freeze({label:'Open Professions', action:'artisans', icon:['building','artisans-guild'], description:'Open the Artisans Guild profession roster.'})
@@ -582,7 +588,7 @@ function ensureQuestRoundOffers(board) {
   return offerIds;
 }
 
-function renderQuestBoard() {
+function renderQuestOffers() {
   const board=questBoardBuilding(), root=$('#questOfferList');
   if(!board||!root||!questOfferPool)return;
   ensureQuestRoundOffers(board);
@@ -681,6 +687,193 @@ function renderQuestBoard() {
   });
 }
 
+function validateDungeonCatalog(payload) {
+  if (!payload || !Array.isArray(payload.dungeons) || !payload.dungeons.length) throw new Error('Dungeon catalog is empty.');
+  const ids = payload.dungeons.map(dungeon => dungeon.id);
+  if (new Set(ids).size !== ids.length) throw new Error('Dungeon IDs must be unique.');
+  payload.dungeons.forEach(dungeon => {
+    const point = dungeon.map && dungeon.map.azeroth;
+    if (!point || point.x_pct < 0 || point.x_pct > 100 || point.y_pct < 0 || point.y_pct > 100) throw new Error('Invalid Azeroth coordinate for ' + dungeon.id);
+    if (!dungeon.npc_pool_id) throw new Error('Dungeon NPC pool missing for ' + dungeon.id);
+  });
+  return payload;
+}
+
+function dungeonForId(id) {
+  return dungeonCatalog && dungeonCatalog.dungeons.find(dungeon => dungeon.id === id) || null;
+}
+
+function factionStarterDungeon() {
+  if (!dungeonCatalog) return null;
+  const faction = currentFactionId();
+  return dungeonCatalog.dungeons.find(dungeon => (dungeon.faction.starter_for || []).includes(faction)) || dungeonCatalog.dungeons[0] || null;
+}
+
+function dungeonTooltipModel(dungeon) {
+  const faction = currentFactionId();
+  const starter = (dungeon.faction.starter_for || []).includes(faction);
+  return {
+    variant:'control',
+    title:dungeon.display_name,
+    type:dungeon.continent + ' · ' + dungeon.zone,
+    icon:{category:'battle', key:'combat'},
+    description:dungeon.subregion + (starter ? ' · Faction starter dungeon.' : ''),
+    stats:[
+      {label:'Party size', value:String(dungeon.party.canonical_size)},
+      {label:'Access', value:(dungeon.faction.available_to || []).includes(faction) ? 'Available' : 'Unavailable'},
+      {label:'NPC pool', value:dungeon.npc_pool_id}
+    ],
+    meta:[
+      {label:'Continent', value:dungeon.continent},
+      {label:'Zone', value:dungeon.zone}
+    ]
+  };
+}
+
+function renderDungeonSelection(dungeon) {
+  const root = $('#dungeonSelection');
+  if (!root || !dungeon) return;
+  const size = Number(dungeon.party.canonical_size) || 5;
+  const loadouts = compatibleLoadouts(size);
+  const available = Roster.getState().heroes.filter(hero => hero.availability === 'available');
+  root.innerHTML =
+    '<div class="dungeon-selection__head">' +
+      '<div><span class="wow-kicker">SELECTED DUNGEON</span><h4>' + dungeon.display_name + '</h4><small>' + dungeon.continent + ' · ' + dungeon.zone + ' · ' + size + ' players</small></div>' +
+      '<span class="dungeon-selection__pool">' + dungeon.npc_pool_id + '</span>' +
+    '</div>' +
+    '<div id="dungeonPartyPicker" class="dungeon-party-picker"></div>';
+
+  const picker = $('#dungeonPartyPicker');
+  const select = document.createElement('select');
+  select.className='wow-select dungeon-party-source';
+  select.innerHTML='<option value="">Choose party source</option>'+
+    loadouts.map(loadout=>'<option value="loadout:'+loadout.id+'">Saved · '+loadout.name+'</option>').join('')+
+    '<option value="adhoc">Ad-hoc roster</option>';
+  picker.appendChild(select);
+
+  const adhoc=document.createElement('div');
+  adhoc.className='quest-adhoc dungeon-party-adhoc';
+  picker.appendChild(adhoc);
+
+  const launch=document.createElement('button');
+  launch.type='button';
+  launch.className='wow-button wow-button--primary';
+  launch.textContent='Launch Battle';
+  launch.disabled=true;
+  picker.appendChild(launch);
+
+  let ids=[];
+  function sync(){
+    launch.disabled=ids.length!==size||ids.some(id=>{const hero=Roster.hero(id);return !hero||hero.availability!=='available';});
+  }
+
+  select.addEventListener('change',()=>{
+    ids=[];
+    adhoc.innerHTML='';
+    if(select.value.startsWith('loadout:')){
+      const loadout=Roster.getState().loadouts.find(entry=>entry.id===select.value.slice(8));
+      ids=loadout?loadout.heroIds.slice():[];
+    } else if(select.value==='adhoc'){
+      available.forEach(hero=>{
+        const label=document.createElement('label');
+        label.className='quest-hero-choice';
+        label.innerHTML='<input type="checkbox" value="'+hero.id+'"><span>'+hero.name+'<small>'+hero.classLabel+'</small></span>';
+        label.querySelector('input').addEventListener('change',event=>{
+          ids=event.target.checked?ids.concat(hero.id):ids.filter(id=>id!==hero.id);
+          if(ids.length>size){event.target.checked=false;ids=ids.filter(id=>id!==hero.id);}
+          sync();
+        });
+        adhoc.appendChild(label);
+      });
+    }
+    sync();
+  });
+
+  launch.addEventListener('click',()=>{
+    try{
+      Roster.setPendingEncounter({
+        kind:'dungeon',
+        dungeonId:dungeon.id,
+        dungeonName:dungeon.display_name,
+        npcPoolId:dungeon.npc_pool_id,
+        partySize:size,
+        heroIds:ids,
+        faction:currentFactionId(),
+        source:'questboard'
+      });
+      window.location.href='./battle.html?encounter=dungeon&dungeon='+encodeURIComponent(dungeon.id);
+    }catch(error){
+      state.dungeonMessage=error.message;
+      const status=$('#questBoardStatus');
+      if(status) status.textContent=state.dungeonMessage;
+    }
+  });
+}
+
+function renderDungeonMap() {
+  const map = $('#dungeonWorldMap');
+  if (!map || !dungeonCatalog) return;
+  const faction = currentFactionId();
+  map.innerHTML =
+    '<div class="dungeon-map__continent is-kalimdor" aria-hidden="true"><span>Kalimdor</span></div>' +
+    '<div class="dungeon-map__continent is-eastern-kingdoms" aria-hidden="true"><span>Eastern Kingdoms</span></div>';
+
+  let selected = dungeonForId(state.selectedDungeonId);
+  if (!selected) {
+    selected = factionStarterDungeon();
+    state.selectedDungeonId = selected ? selected.id : null;
+  }
+
+  dungeonCatalog.dungeons.forEach(dungeon=>{
+    const point=dungeon.map.azeroth;
+    const starter=(dungeon.faction.starter_for||[]).includes(faction);
+    const available=(dungeon.faction.available_to||[]).includes(faction);
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='dungeon-map__hotspot'+(starter?' is-starter':'')+(dungeon.id===state.selectedDungeonId?' is-selected':'')+(available?'':' is-locked');
+    button.style.setProperty('--x',point.x_pct+'%');
+    button.style.setProperty('--y',point.y_pct+'%');
+    button.dataset.dungeonId=dungeon.id;
+    button.setAttribute('aria-label',dungeon.display_name+', '+dungeon.zone+', '+dungeon.party.canonical_size+' players'+(starter?', faction starter':''));
+    button.innerHTML=
+      '<span class="dungeon-map__marker wow-icon-frame wow-icon-frame--xs"><img src="'+Icons.resolve('battle','combat')+'" alt=""></span>'+
+      '<span class="dungeon-map__label"><strong>'+dungeon.display_name+'</strong><small>'+dungeon.zone+(starter?' · STARTER':'')+'</small></span>';
+    button.querySelectorAll('img').forEach(Icons.bindFallback);
+    Tooltips.attach(button,()=>dungeonTooltipModel(dungeon),{anchor:'target'});
+    if(available) button.addEventListener('click',()=>{
+      state.selectedDungeonId=dungeon.id;
+      state.dungeonMessage='';
+      renderDungeonMap();
+    });
+    map.appendChild(button);
+  });
+
+  const status=$('#questBoardStatus');
+  if(status) status.textContent=state.dungeonMessage || (selected ? selected.display_name+' selected · choose a '+selected.party.canonical_size+'-hero party.' : 'Select a dungeon.');
+  if(selected) renderDungeonSelection(selected);
+}
+
+function renderQuestBoard() {
+  const offersView=$('#questOffersView');
+  const mapView=$('#dungeonMapView');
+  const offersTab=$('#questBoardOffersTab');
+  const dungeonsTab=$('#questBoardDungeonsTab');
+  if(!offersView||!mapView)return;
+  const dungeonMode=state.questBoardMode==='dungeons';
+  offersView.hidden=dungeonMode;
+  mapView.hidden=!dungeonMode;
+  if(offersTab){
+    offersTab.classList.toggle('is-selected',!dungeonMode);
+    offersTab.setAttribute('aria-pressed',dungeonMode?'false':'true');
+  }
+  if(dungeonsTab){
+    dungeonsTab.classList.toggle('is-selected',dungeonMode);
+    dungeonsTab.setAttribute('aria-pressed',dungeonMode?'true':'false');
+  }
+  if(dungeonMode) renderDungeonMap();
+  else renderQuestOffers();
+}
+
 function toast(message) {
   const node = $('#baseToast');
   node.textContent = message;
@@ -724,15 +917,33 @@ function renderSidecar() {
     body.insertAdjacentHTML('beforeend',
       '<section class="base-sidecar__section base-sidecar__quests">'+
         '<div class="base-sidecar__quest-head"><div><span class="wow-kicker">HERO DISPATCH</span><h3>Quest Board</h3></div><small>Round <span id="questBoardRound">'+Roster.getQuestBoardState().round+'</span></small></div>'+
+        '<div class="quest-board-mode-tabs" role="group" aria-label="Quest Board mode">'+
+          '<button id="questBoardOffersTab" class="wow-tab" type="button" aria-pressed="true">Quest Offers</button>'+
+          '<button id="questBoardDungeonsTab" class="wow-tab" type="button" aria-pressed="false">Dungeon Map</button>'+
+        '</div>'+
         '<div id="questBoardStatus" class="base-sidecar__quest-status" role="status" aria-live="polite"></div>'+
-        '<div id="questOfferList" class="quest-offer-list"></div>'+
-        '<button id="questBoardAdvance" class="wow-button base-sidecar__quest-advance" type="button">Advance Round</button>'+
+        '<div id="questOffersView">'+
+          '<div id="questOfferList" class="quest-offer-list"></div>'+
+          '<button id="questBoardAdvance" class="wow-button base-sidecar__quest-advance" type="button">Advance Round</button>'+
+        '</div>'+
+        '<div id="dungeonMapView" hidden>'+
+          '<div id="dungeonWorldMap" class="dungeon-world-map wow-inset" aria-label="Azeroth dungeon map"></div>'+
+          '<div id="dungeonSelection" class="dungeon-selection"></div>'+
+        '</div>'+
       '</section>');
   }
 
   bindResolvedIcons(sidecar);
   Tooltips.hydrate(sidecar);
-  if (building.id === 'questboard') renderQuestBoard();
+  if (building.id === 'questboard') {
+    renderQuestBoard();
+    const offersTab=$('#questBoardOffersTab');
+    const dungeonsTab=$('#questBoardDungeonsTab');
+    if(offersTab) offersTab.addEventListener('click',()=>{state.questBoardMode='offers';state.questMessage='';renderSidecar();});
+    if(dungeonsTab) dungeonsTab.addEventListener('click',()=>{state.questBoardMode='dungeons';state.dungeonMessage='';renderSidecar();});
+    const dungeonAction=sidecar.querySelector('[data-building-action="dungeon-map"]');
+    if(dungeonAction) dungeonAction.addEventListener('click',()=>{state.questBoardMode='dungeons';state.dungeonMessage='';renderSidecar();});
+  }
   if (building.id === 'recruitment') {
     renderRecruitmentWorkflow(building);
     const recruitmentAction = sidecar.querySelector('[data-building-action="recruitment"]');
@@ -767,6 +978,11 @@ function openSidecar(id, origin) {
     state.recruitmentOpen = false;
     state.recruitmentMessage = '';
     state.artisansOpen = false;
+    if (id !== 'questboard') {
+      state.questBoardMode = 'offers';
+      state.selectedDungeonId = null;
+      state.dungeonMessage = '';
+    }
   }
   state.selected = id;
   sidecarOrigin = origin || sidecarOrigin;
@@ -844,12 +1060,13 @@ window.addEventListener('resize', () => {
 
 async function initBase() {
   try {
-    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT),fetch(PROFESSION_DATA_ROOT),fetch(QUEST_OFFER_POOL_ROOT)]);
+    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT),fetch(PROFESSION_DATA_ROOT),fetch(QUEST_OFFER_POOL_ROOT),fetch(DUNGEON_CATALOG_ROOT)]);
     if(!responses[0].ok) throw new Error('Could not load '+BUILDING_DATA_ROOT);
     if(!responses[1].ok) throw new Error('Could not load '+BASE_PRESENTATION_ROOT);
     if(!responses[2].ok) throw new Error('Could not load '+RECRUITMENT_DATA_ROOT);
     if(!responses[3].ok) throw new Error('Could not load '+PROFESSION_DATA_ROOT);
     if(!responses[4].ok) throw new Error('Could not load '+QUEST_OFFER_POOL_ROOT);
+    if(!responses[5].ok) throw new Error('Could not load '+DUNGEON_CATALOG_ROOT);
     const payload=await responses[0].json();
     buildings=payload.buildings.map(normalizeBuilding);
     basePresentation=validateBasePresentation(await responses[1].json());
@@ -857,6 +1074,7 @@ async function initBase() {
     professionData=validateProfessionData(await responses[3].json());
     questOfferPool=await responses[4].json();
     if(!questOfferPool||!Array.isArray(questOfferPool.offers)||!questOfferPool.offers.length) throw new Error('Quest offer pool is empty.');
+    dungeonCatalog=validateDungeonCatalog(await responses[5].json());
     const artisansBuilding=buildings.find(entry=>entry.id==='artisans');
     if (artisansBuilding) artisansBuilding.level=Math.max(artisansBuilding.level,Professions.getGuildLevel());
     const questBoard=buildings.find(entry=>entry.id==='questboard');
