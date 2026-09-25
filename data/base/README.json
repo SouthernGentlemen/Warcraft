@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_path": "docs/base/README.md",
   "kind": "document",
   "title": "Base",
