@@ -161,6 +161,7 @@ function syncMapBuildings() {
     const level = plot.querySelector('.plot-label b');
     if (level) level.textContent = building.level;
   });
+  syncQuestBoardMapState();
 }
 
 function questBoardBuilding(){return buildings.find(b=>b.id==="questboard");}
@@ -394,10 +395,8 @@ function upgradeBuilding(id) {
   state.selected=id;
   syncResourceBar();
   syncMapBuildings();
-  renderSidecar();
   if (b.id === 'questboard') {
     state.questMessage='Quest Board upgraded. Tier '+b.level+' quests are now unlocked.';
-    syncQuestBoardMapState();
   }
   renderSidecar();
   toast(b.name+' upgraded to level '+b.level+' (Tier '+b.level+').');
