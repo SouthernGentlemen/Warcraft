@@ -44,6 +44,9 @@ function validateTalentData(spec) {
       throw new Error((spec?.specialization || "Specialization") + " has incomplete canonical talent metadata");
     }
   });
+  if (!talents.capstones[0].ultimate_id) {
+    throw new Error((spec?.specialization || "Specialization") + " capstone is missing its Ultimate action mapping");
+  }
   return spec;
 }
 
