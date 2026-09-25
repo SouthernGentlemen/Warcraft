@@ -1,0 +1,791 @@
+{
+  "schema_version": 1,
+  "kind": "npc_enemy_catalog",
+  "schema": "./schema.json",
+  "npcs": [
+    {
+      "id": "adarogg",
+      "name": "Adarogg",
+      "family": "beast",
+      "type": "boss",
+      "level": 2,
+      "tier": 1,
+      "combat": {
+        "max_health": 4200,
+        "physical_power": 125,
+        "spell_power": 0,
+        "healing_power": 0,
+        "crit_bp": 680,
+        "hit_bp": 9600,
+        "haste_bp": 50,
+        "mastery_bp": 40
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Savage Bite",
+        "kind": "damage",
+        "school": "physical",
+        "target": "enemy",
+        "power": 70,
+        "coefficient_bp": 6500,
+        "base_ticks": 132,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "fiery-breath",
+          "name": "Fiery Breath",
+          "kind": "damage",
+          "school": "spell",
+          "target": "all-enemies",
+          "power": 80,
+          "coefficient_bp": 5500,
+          "cooldown_ticks": 300,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "ragefire-chasm"
+      ],
+      "pool_ids": [
+        "dungeon-ragefire-chasm"
+      ]
+    },
+    {
+      "id": "dark-shaman-koranthal",
+      "name": "Dark Shaman Koranthal",
+      "family": "humanoid",
+      "type": "boss",
+      "level": 2,
+      "tier": 1,
+      "combat": {
+        "max_health": 3900,
+        "physical_power": 70,
+        "spell_power": 145,
+        "healing_power": 0,
+        "crit_bp": 680,
+        "hit_bp": 9600,
+        "haste_bp": 50,
+        "mastery_bp": 40
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Shadow Bolt",
+        "kind": "damage",
+        "school": "spell",
+        "target": "enemy",
+        "power": 65,
+        "coefficient_bp": 6500,
+        "base_ticks": 138,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "dark-flame",
+          "name": "Dark Flame",
+          "kind": "damage",
+          "school": "spell",
+          "target": "enemy",
+          "power": 95,
+          "coefficient_bp": 6000,
+          "cooldown_ticks": 330,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "ragefire-chasm"
+      ],
+      "pool_ids": [
+        "dungeon-ragefire-chasm"
+      ]
+    },
+    {
+      "id": "slagmaw",
+      "name": "Slagmaw",
+      "family": "beast",
+      "type": "boss",
+      "level": 2,
+      "tier": 1,
+      "combat": {
+        "max_health": 4600,
+        "physical_power": 135,
+        "spell_power": 0,
+        "healing_power": 0,
+        "crit_bp": 680,
+        "hit_bp": 9600,
+        "haste_bp": 50,
+        "mastery_bp": 40
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Magma Bite",
+        "kind": "damage",
+        "school": "physical",
+        "target": "enemy",
+        "power": 75,
+        "coefficient_bp": 6500,
+        "base_ticks": 144,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "lava-spit",
+          "name": "Lava Spit",
+          "kind": "damage",
+          "school": "spell",
+          "target": "enemy",
+          "power": 90,
+          "coefficient_bp": 5200,
+          "cooldown_ticks": 300,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "ragefire-chasm"
+      ],
+      "pool_ids": [
+        "dungeon-ragefire-chasm"
+      ]
+    },
+    {
+      "id": "lava-guard-gordoth",
+      "name": "Lava Guard Gordoth",
+      "family": "elemental",
+      "type": "boss",
+      "level": 2,
+      "tier": 1,
+      "combat": {
+        "max_health": 5000,
+        "physical_power": 140,
+        "spell_power": 70,
+        "healing_power": 0,
+        "crit_bp": 680,
+        "hit_bp": 9600,
+        "haste_bp": 50,
+        "mastery_bp": 40
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Molten Smash",
+        "kind": "damage",
+        "school": "physical",
+        "target": "enemy",
+        "power": 80,
+        "coefficient_bp": 6700,
+        "base_ticks": 150,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "searing-cleave",
+          "name": "Searing Cleave",
+          "kind": "damage",
+          "school": "physical",
+          "target": "all-enemies",
+          "power": 105,
+          "coefficient_bp": 6200,
+          "cooldown_ticks": 360,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "ragefire-chasm"
+      ],
+      "pool_ids": [
+        "dungeon-ragefire-chasm"
+      ]
+    },
+    {
+      "id": "randolph-moloch",
+      "name": "Randolph Moloch",
+      "family": "humanoid",
+      "type": "boss",
+      "level": 2,
+      "tier": 1,
+      "combat": {
+        "max_health": 4300,
+        "physical_power": 130,
+        "spell_power": 0,
+        "healing_power": 0,
+        "crit_bp": 680,
+        "hit_bp": 9600,
+        "haste_bp": 50,
+        "mastery_bp": 40
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Shiv",
+        "kind": "damage",
+        "school": "physical",
+        "target": "enemy",
+        "power": 72,
+        "coefficient_bp": 6400,
+        "base_ticks": 126,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "sweeping-strike",
+          "name": "Sweeping Strike",
+          "kind": "damage",
+          "school": "physical",
+          "target": "all-enemies",
+          "power": 90,
+          "coefficient_bp": 5800,
+          "cooldown_ticks": 300,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "the-stockade"
+      ],
+      "pool_ids": [
+        "dungeon-the-stockade"
+      ]
+    },
+    {
+      "id": "lord-overheat",
+      "name": "Lord Overheat",
+      "family": "elemental",
+      "type": "boss",
+      "level": 2,
+      "tier": 1,
+      "combat": {
+        "max_health": 4700,
+        "physical_power": 90,
+        "spell_power": 140,
+        "healing_power": 0,
+        "crit_bp": 680,
+        "hit_bp": 9600,
+        "haste_bp": 50,
+        "mastery_bp": 40
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Burning Slam",
+        "kind": "damage",
+        "school": "spell",
+        "target": "enemy",
+        "power": 76,
+        "coefficient_bp": 6200,
+        "base_ticks": 144,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "heat-wave",
+          "name": "Heat Wave",
+          "kind": "damage",
+          "school": "spell",
+          "target": "all-enemies",
+          "power": 100,
+          "coefficient_bp": 6000,
+          "cooldown_ticks": 360,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "the-stockade"
+      ],
+      "pool_ids": [
+        "dungeon-the-stockade"
+      ]
+    },
+    {
+      "id": "hogger",
+      "name": "Hogger",
+      "family": "humanoid",
+      "type": "boss",
+      "level": 2,
+      "tier": 1,
+      "combat": {
+        "max_health": 5200,
+        "physical_power": 150,
+        "spell_power": 0,
+        "healing_power": 0,
+        "crit_bp": 680,
+        "hit_bp": 9600,
+        "haste_bp": 50,
+        "mastery_bp": 40
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Gnoll Smash",
+        "kind": "damage",
+        "school": "physical",
+        "target": "enemy",
+        "power": 82,
+        "coefficient_bp": 6800,
+        "base_ticks": 150,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "vicious-swipe",
+          "name": "Vicious Swipe",
+          "kind": "damage",
+          "school": "physical",
+          "target": "enemy",
+          "power": 110,
+          "coefficient_bp": 6500,
+          "cooldown_ticks": 330,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "the-stockade"
+      ],
+      "pool_ids": [
+        "dungeon-the-stockade"
+      ]
+    },
+    {
+      "id": "thalnos-the-soulrender",
+      "name": "Thalnos the Soulrender",
+      "family": "undead",
+      "type": "boss",
+      "level": 3,
+      "tier": 2,
+      "combat": {
+        "max_health": 6500,
+        "physical_power": 80,
+        "spell_power": 190,
+        "healing_power": 0,
+        "crit_bp": 760,
+        "hit_bp": 9600,
+        "haste_bp": 100,
+        "mastery_bp": 80
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Shadow Bolt",
+        "kind": "damage",
+        "school": "spell",
+        "target": "enemy",
+        "power": 88,
+        "coefficient_bp": 6600,
+        "base_ticks": 132,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "soul-flame",
+          "name": "Soul Flame",
+          "kind": "damage",
+          "school": "spell",
+          "target": "all-enemies",
+          "power": 125,
+          "coefficient_bp": 6500,
+          "cooldown_ticks": 300,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "scarlet-monastery"
+      ],
+      "pool_ids": [
+        "dungeon-scarlet-monastery"
+      ]
+    },
+    {
+      "id": "brother-korloff",
+      "name": "Brother Korloff",
+      "family": "humanoid",
+      "type": "boss",
+      "level": 3,
+      "tier": 2,
+      "combat": {
+        "max_health": 7200,
+        "physical_power": 190,
+        "spell_power": 0,
+        "healing_power": 0,
+        "crit_bp": 760,
+        "hit_bp": 9600,
+        "haste_bp": 100,
+        "mastery_bp": 80
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Crusader Strike",
+        "kind": "damage",
+        "school": "physical",
+        "target": "enemy",
+        "power": 95,
+        "coefficient_bp": 6800,
+        "base_ticks": 126,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "blazing-fists",
+          "name": "Blazing Fists",
+          "kind": "damage",
+          "school": "physical",
+          "target": "all-enemies",
+          "power": 135,
+          "coefficient_bp": 6500,
+          "cooldown_ticks": 300,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "scarlet-monastery"
+      ],
+      "pool_ids": [
+        "dungeon-scarlet-monastery"
+      ]
+    },
+    {
+      "id": "high-inquisitor-whitemane",
+      "name": "High Inquisitor Whitemane",
+      "family": "humanoid",
+      "type": "boss",
+      "level": 3,
+      "tier": 2,
+      "combat": {
+        "max_health": 6800,
+        "physical_power": 95,
+        "spell_power": 205,
+        "healing_power": 0,
+        "crit_bp": 760,
+        "hit_bp": 9600,
+        "haste_bp": 100,
+        "mastery_bp": 80
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Holy Smite",
+        "kind": "damage",
+        "school": "spell",
+        "target": "enemy",
+        "power": 92,
+        "coefficient_bp": 6600,
+        "base_ticks": 138,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "mass-smite",
+          "name": "Mass Smite",
+          "kind": "damage",
+          "school": "spell",
+          "target": "all-enemies",
+          "power": 130,
+          "coefficient_bp": 6200,
+          "cooldown_ticks": 360,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "scarlet-monastery"
+      ],
+      "pool_ids": [
+        "dungeon-scarlet-monastery"
+      ]
+    },
+    {
+      "id": "antusul",
+      "name": "Antu'sul",
+      "family": "humanoid",
+      "type": "boss",
+      "level": 4,
+      "tier": 3,
+      "combat": {
+        "max_health": 8200,
+        "physical_power": 205,
+        "spell_power": 60,
+        "healing_power": 0,
+        "crit_bp": 840,
+        "hit_bp": 9600,
+        "haste_bp": 150,
+        "mastery_bp": 120
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Sandfury Strike",
+        "kind": "damage",
+        "school": "physical",
+        "target": "enemy",
+        "power": 105,
+        "coefficient_bp": 6900,
+        "base_ticks": 126,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "earth-shock",
+          "name": "Earth Shock",
+          "kind": "damage",
+          "school": "spell",
+          "target": "enemy",
+          "power": 145,
+          "coefficient_bp": 6400,
+          "cooldown_ticks": 300,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "zul-farrak"
+      ],
+      "pool_ids": [
+        "dungeon-zul-farrak"
+      ]
+    },
+    {
+      "id": "witch-doctor-zumrah",
+      "name": "Witch Doctor Zum'rah",
+      "family": "humanoid",
+      "type": "boss",
+      "level": 4,
+      "tier": 3,
+      "combat": {
+        "max_health": 7600,
+        "physical_power": 85,
+        "spell_power": 220,
+        "healing_power": 0,
+        "crit_bp": 840,
+        "hit_bp": 9600,
+        "haste_bp": 150,
+        "mastery_bp": 120
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Shadow Bolt",
+        "kind": "damage",
+        "school": "spell",
+        "target": "enemy",
+        "power": 102,
+        "coefficient_bp": 6600,
+        "base_ticks": 132,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "grave-dust",
+          "name": "Grave Dust",
+          "kind": "damage",
+          "school": "spell",
+          "target": "all-enemies",
+          "power": 150,
+          "coefficient_bp": 6200,
+          "cooldown_ticks": 330,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "zul-farrak"
+      ],
+      "pool_ids": [
+        "dungeon-zul-farrak"
+      ]
+    },
+    {
+      "id": "gahzrilla",
+      "name": "Gahz'rilla",
+      "family": "beast",
+      "type": "boss",
+      "level": 4,
+      "tier": 3,
+      "combat": {
+        "max_health": 9000,
+        "physical_power": 230,
+        "spell_power": 0,
+        "healing_power": 0,
+        "crit_bp": 840,
+        "hit_bp": 9600,
+        "haste_bp": 150,
+        "mastery_bp": 120
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Frost Bite",
+        "kind": "damage",
+        "school": "physical",
+        "target": "enemy",
+        "power": 112,
+        "coefficient_bp": 7000,
+        "base_ticks": 144,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "frost-breath",
+          "name": "Frost Breath",
+          "kind": "damage",
+          "school": "spell",
+          "target": "all-enemies",
+          "power": 165,
+          "coefficient_bp": 6500,
+          "cooldown_ticks": 360,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "zul-farrak"
+      ],
+      "pool_ids": [
+        "dungeon-zul-farrak"
+      ]
+    },
+    {
+      "id": "chief-ukorz-sandscalp",
+      "name": "Chief Ukorz Sandscalp",
+      "family": "humanoid",
+      "type": "boss",
+      "level": 4,
+      "tier": 3,
+      "combat": {
+        "max_health": 9400,
+        "physical_power": 240,
+        "spell_power": 0,
+        "healing_power": 0,
+        "crit_bp": 840,
+        "hit_bp": 9600,
+        "haste_bp": 150,
+        "mastery_bp": 120
+      },
+      "auto_attack": {
+        "id": "auto",
+        "name": "Sandscalp Cleave",
+        "kind": "damage",
+        "school": "physical",
+        "target": "enemy",
+        "power": 118,
+        "coefficient_bp": 7200,
+        "base_ticks": 126,
+        "resource": "none",
+        "cost": 0,
+        "effect": "none",
+        "can_crit": true,
+        "can_miss": true
+      },
+      "abilities": [
+        {
+          "id": "wide-cleave",
+          "name": "Wide Cleave",
+          "kind": "damage",
+          "school": "physical",
+          "target": "all-enemies",
+          "power": 170,
+          "coefficient_bp": 6600,
+          "cooldown_ticks": 330,
+          "resource": "none",
+          "cost": 0,
+          "effect": "none",
+          "can_crit": true,
+          "can_miss": true
+        }
+      ],
+      "dungeon_ids": [
+        "zul-farrak"
+      ],
+      "pool_ids": [
+        "dungeon-zul-farrak"
+      ]
+    }
+  ]
+}
