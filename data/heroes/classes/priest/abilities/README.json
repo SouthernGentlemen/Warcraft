@@ -17,7 +17,8 @@
       "cooldown_ticks": 360,
       "resource": "mana",
       "cost": 100,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_penance"
     },
     {
       "id": "flash-heal",
@@ -30,7 +31,8 @@
       "cooldown_ticks": 480,
       "resource": "mana",
       "cost": 130,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_flashheal"
     },
     {
       "id": "mind-blast",
@@ -43,7 +45,8 @@
       "cooldown_ticks": 420,
       "resource": "mana",
       "cost": 100,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_shadow_unholyfrenzy"
     },
     {
       "id": "power-word-shield",
@@ -56,7 +59,8 @@
       "cooldown_ticks": 600,
       "resource": "mana",
       "cost": 120,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_powerwordshield"
     }
   ],
   "ultimates": [
@@ -73,7 +77,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "all_power_bp:+2000@480"
+      "effect": "all_power_bp:+2000@480",
+      "icon_slug": "spell_holy_powerinfusion"
     },
     {
       "id": "capstone-lightwell",
@@ -88,7 +93,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_summonlightwell"
     },
     {
       "id": "capstone-shadowform",
@@ -103,7 +109,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_shadow_shadowform"
     }
   ],
   "ultimate_model": "specialization-capstone"
