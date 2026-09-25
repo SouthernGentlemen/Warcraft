@@ -21,3 +21,13 @@ npm run dev
 ```
 
 New implementation work should be added here as a new scoped task rather than reopening completed WOWUI-001–019 items.
+
+## WOWUI-020 — Roster Popup and Runtime Cleanup
+
+Status: complete (2026-09-24)
+
+- Guard race/class rendering against stale or incomplete race metadata; canonical Night Elf and Tauren entries remain authoritative.
+- Keep Heroes as the primary management surface; Gear and Talents are hero-specific popup content opened from the roster, not standalone navigation destinations.
+- Hide the Simulation lab from player-facing navigation while retaining the under-the-hood deterministic engine.
+- Restore Base runtime/icon hydration by removing invalid escaped newline artifacts from `base.js`.
+- Add the combat event log directly to Battle using the simulation log event vocabulary for damage, healing, criticals, and deaths.
