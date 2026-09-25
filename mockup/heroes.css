@@ -9,3 +9,13 @@
 .hero-talent-dialog[hidden]{display:none}.hero-talent-dialog{position:fixed;z-index:1500;inset:0;display:grid;place-items:center;padding:18px}.hero-talent-dialog__backdrop{position:absolute;inset:0;background:rgba(0,0,0,.72)}.hero-talent-dialog__panel{position:relative;z-index:1;width:min(760px,calc(100vw - 24px));max-height:min(720px,calc(100vh - 32px));overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.9)}.hero-talent-dialog__close{position:absolute;z-index:3;top:7px;right:7px;width:30px;height:26px;padding:0;font-size:18px}.hero-talent-dialog__header{display:flex;align-items:end;justify-content:space-between;gap:42px;padding-right:46px}.hero-talent-dialog__header h2{margin:0;color:var(--wow-gold-pale);font-size:16px}.hero-talent-dialog__spec{width:min(240px,40vw)}.hero-talent-tree{display:grid;gap:7px;padding:7px}.hero-talent-tier{padding:7px;border:1px solid var(--wow-frame-edge);background:var(--wow-surface-inset)}.hero-talent-tier.is-capstone{border-color:var(--wow-gold-muted)}.hero-talent-tier>header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.hero-talent-tier>header small{color:var(--wow-text-dim);font-size:8px}.hero-talent-tier__choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.hero-talent-tier.is-capstone .hero-talent-tier__choices{grid-template-columns:minmax(0,1fr)}.hero-talent-choice{display:grid;grid-template-columns:42px minmax(0,1fr);gap:7px;align-items:center;min-width:0;padding:6px;border:1px solid var(--wow-frame-edge);background:var(--wow-surface);color:var(--wow-text);text-align:left;cursor:pointer}.hero-talent-choice:hover,.hero-talent-choice:focus-visible{border-color:var(--wow-gold);outline:none}.hero-talent-choice.is-selected{border-color:var(--wow-gold);background:var(--wow-surface-hover)}.hero-talent-choice.is-capstone{cursor:default}.hero-talent-choice strong,.hero-talent-choice small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.hero-talent-choice strong{font-size:9px}.hero-talent-choice small{margin-top:2px;color:var(--wow-text-dim);font-size:7px}
 @media(max-width:700px){.hero-combat-loadout__controls{align-items:flex-end;flex-direction:column}.hero-talent-dialog{padding:8px}.hero-talent-dialog__header{align-items:stretch;flex-direction:column;gap:7px}.hero-talent-dialog__spec{width:100%}.hero-talent-tier__choices{grid-template-columns:1fr}}
 
+
+.hero-rail-empty {
+  margin: 12px;
+  padding: 18px 14px;
+  border: 1px solid var(--wow-frame-inner);
+  background: var(--wow-surface-inset);
+  color: var(--wow-text-muted);
+  text-align: center;
+}
+.hero-rail-empty p { margin: 8px 0 0; font-size: 11px; line-height: 1.45; }
