@@ -38,7 +38,7 @@ The target is not a collection of separately themed mockups. The target is one r
 | WOWUI-007 | Talent calculator refinement | WOWUI-001, WOWUI-002, WOWUI-003 |
 | WOWUI-008 | Battle HUD redesign | WOWUI-001, WOWUI-002, WOWUI-003 |
 | WOWUI-009 | Base management redesign | WOWUI-001, WOWUI-002, WOWUI-003 |
-| WOWUI-010 | Simulation lab reskin | WOWUI-001, WOWUI-002, WOWUI-003 |
+| WOWUI-010 | Simulation lab reskin **(Complete)** | WOWUI-001, WOWUI-002, WOWUI-003 |
 | WOWUI-011 | Cross-screen consistency and accessibility pass | WOWUI-004 through WOWUI-010 |
 | WOWUI-012 | Canonical Classic race/class expansion | WOWUI-011 |
 | WOWUI-013 | Simplify talents to two tiers plus one capstone | WOWUI-012 |
@@ -410,6 +410,8 @@ Keep the current base-management mechanics while removing the mobile-strategy/ad
 ---
 
 ## WOWUI-010 — Simulation Lab Reskin
+
+**Status:** Complete — 2026-09-24
 
 ### Objective
 
