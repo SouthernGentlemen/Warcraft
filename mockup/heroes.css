@@ -19,3 +19,5 @@
   text-align: center;
 }
 .hero-rail-empty p { margin: 8px 0 0; font-size: 11px; line-height: 1.45; }
+
+.hero-roster-capacity{margin-left:auto;padding:3px 6px;border:1px solid var(--wow-frame-edge);background:var(--wow-surface-inset);color:var(--wow-gold-pale);font-size:9px;font-weight:800;white-space:nowrap}
