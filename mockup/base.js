@@ -67,6 +67,55 @@ const costIconKeys = {
   stone:['resource','stone']
 };
 
+const attentionIcons = {
+  'quest-complete':['status','victory'],
+  'quest-ready':['status','combat'],
+  'profession-action':['status','speed'],
+  'upgrade-ready':['status','victory'],
+  'blocked':['status','critical']
+};
+
+function professionActionAvailable(building) {
+  const current = currentProgression(building);
+  return Boolean(building.category === 'profession' && current && current.action_available === true);
+}
+
+function buildingAttentionState(building) {
+  if (!building) return null;
+
+  if (building.id === 'questboard') {
+    const quests = Roster.getState().quests;
+    const completed = quests.some(quest => quest.status === 'completed' && quest.tier <= building.level);
+    if (completed) return {key:'quest-complete', label:'Quest complete', detail:'A completed quest is ready for review or another dispatch.'};
+
+    const active = quests.some(quest => quest.status === 'active' && quest.tier <= building.level);
+    const availableHeroes = Roster.getState().heroes.filter(hero => hero.availability === 'available').length;
+    const ready = quests.some(quest => quest.tier <= building.level && quest.status !== 'active' && availableHeroes >= quest.requiredHeroes);
+    if (ready) return {key:'quest-ready', label:'Quest ready', detail:'An unlocked quest can be dispatched with the currently available roster.'};
+    if (active) return null;
+  }
+
+  if (professionActionAvailable(building)) {
+    return {key:'profession-action', label:'Profession action available', detail:'This profession building has an available action.'};
+  }
+
+  const upgrade = upgradeState(building);
+  if (upgrade.next && upgrade.canUpgrade) {
+    return {key:'upgrade-ready', label:'Upgrade available', detail:'Resources and building requirements are met for the next level.'};
+  }
+  if (upgrade.next && !upgrade.canUpgrade) {
+    return {key:'blocked', label:'Upgrade blocked', detail:upgrade.reason || 'The next building level is currently blocked.'};
+  }
+  return null;
+}
+
+function attentionIconMarkup(attention) {
+  const icon = attentionIcons[attention.key] || ['status','critical'];
+  return '<span class="base-plot-attention is-' + attention.key + '" data-attention-state="' + attention.key + '" aria-hidden="true">' +
+    '<span class="wow-icon-frame wow-icon-frame--xs"><img src="' + Icons.resolve(icon[0], icon[1]) + '" alt=""></span>' +
+  '</span>';
+}
+
 function iconMarkup(category, key, size, extraClass) {
   return '<span class="wow-icon-frame ' + (size ? 'wow-icon-frame--' + size : '') + ' ' + (extraClass || '') + '">' +
     '<img src="' + Icons.resolve(category, key) + '" alt="">' +
@@ -122,13 +171,14 @@ function buildingTooltipModel(building) {
   const icon = buildingIconKeys[building.id] || ['building','keep'];
   const current = currentProgression(building);
   const upgrade = upgradeState(building);
+  const attention = buildingAttentionState(building);
   return {
     variant:building.category === 'profession' ? 'profession' : 'building', title:building.name,
     type:building.category === 'profession' ? 'Profession building' : 'Base building', icon:{category:icon[0], key:icon[1]},
     description:building.description,
     stats:[{label:'Level',value:building.level+' / 5'},{label:'Progression tier',value:'Tier '+building.level},{label:'Unlocks',value:(current.capabilities||[]).join(', ')||'Base capability'}].concat(upgrade.next ? Object.entries(upgrade.next.cost).map(([key,value])=>({label:'Next '+key,value:fmt(value)})) : []),
-    meta:[{label:'Category',value:building.category==='profession'?'Profession':'Core'},{label:'Next level',value:upgrade.next ? String(upgrade.next.level) : 'MAX'}],
-    locked:upgrade.reason ? [upgrade.reason] : []
+    meta:[{label:'Category',value:building.category==='profession'?'Profession':'Core'},{label:'Next level',value:upgrade.next ? String(upgrade.next.level) : 'MAX'}].concat(attention ? [{label:'Attention',value:attention.label}] : []),
+    locked:attention && attention.key === 'blocked' ? [attention.detail] : (upgrade.reason ? [upgrade.reason] : [])
   };
 }
 
@@ -150,14 +200,36 @@ function syncResourceBar() {
   $('#stoneValue').textContent = fmt(state.resources.stone);
 }
 
+function syncBuildingAttention(plot, building) {
+  const attention = buildingAttentionState(building);
+  const existing = plot.querySelector('.base-plot-attention');
+
+  if (!attention) {
+    if (existing) existing.remove();
+    delete plot.dataset.attentionState;
+    return null;
+  }
+
+  plot.dataset.attentionState = attention.key;
+  if (!existing || existing.dataset.attentionState !== attention.key) {
+    if (existing) existing.remove();
+    plot.insertAdjacentHTML('beforeend', attentionIconMarkup(attention));
+    const marker = plot.querySelector('.base-plot-attention');
+    if (marker) marker.dataset.attentionState = attention.key;
+    bindResolvedIcons(plot);
+  }
+  return attention;
+}
+
 function syncMapBuildings() {
   all('.base-plot[data-building]').forEach(plot => {
     const building = buildings.find(entry => entry.id === plot.dataset.building);
     if (!building) return;
     const selected = state.selected === building.id;
+    const attention = syncBuildingAttention(plot, building);
     plot.classList.toggle('selected', selected);
     plot.setAttribute('aria-pressed', selected ? 'true' : 'false');
-    plot.setAttribute('aria-label', building.name + ', level ' + building.level);
+    plot.setAttribute('aria-label', building.name + ', level ' + building.level + (attention ? ', attention: ' + attention.label : ''));
     const level = plot.querySelector('.plot-label b');
     if (level) level.textContent = building.level;
   });
@@ -174,9 +246,8 @@ function syncQuestBoardMapState() {
   const quests = Roster.getState().quests;
   const active = quests.some(q => q.status === 'active');
   const completed = quests.some(q => q.status === 'completed');
-  const status = active ? 'active' : completed ? 'completed' : 'available';
+  const status = completed ? 'completed' : active ? 'active' : 'available';
   plot.dataset.questStatus = status;
-  plot.setAttribute('aria-label', board.name + ', level ' + board.level + ', quest status ' + status);
 }
 
 function renderQuestBoard() {
@@ -207,7 +278,7 @@ function renderQuestBoard() {
       selection.querySelector('button').addEventListener('click',()=>{
         const result=Roster.completeQuest(quest.tier);
         state.questMessage=result?'Tier '+quest.tier+' completed. Heroes returned to available status.':'Quest is not active.';
-        syncQuestBoardMapState();
+        syncMapBuildings();
         renderSidecar();
       });
     } else if(unlocked){
@@ -248,8 +319,8 @@ function renderQuestBoard() {
         try{
           Roster.dispatchQuest(quest.tier,ids);
           state.questMessage='Tier '+quest.tier+' dispatched with '+ids.length+' hero'+(ids.length===1?'':'es')+'.';
-          syncQuestBoardMapState();
-          renderSidecar();
+          syncMapBuildings();
+        renderSidecar();
         }catch(error){
           state.questMessage=error.message;
           renderSidecar();
@@ -421,7 +492,7 @@ document.addEventListener('keydown', event => {
 });
 
 window.addEventListener('warcraft:roster-changed', () => {
-  syncQuestBoardMapState();
+  syncMapBuildings();
   if (state.selected === 'questboard' && !$('#baseSidecar').hidden) renderSidecar();
 });
 
@@ -432,7 +503,7 @@ async function initBase() {
     Icons.hydrate(document); Tooltips.hydrate(document); bindResolvedIcons(document);
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
     all('[data-resource]').forEach(element=>Tooltips.attach(element,()=>resourceTooltipModel(element.dataset.resource,element),{anchor:'target'}));
-    syncResourceBar(); syncMapBuildings(); syncQuestBoardMapState(); $('#baseSidecar').hidden = true;
+    syncResourceBar(); syncMapBuildings(); $('#baseSidecar').hidden = true;
   } catch(error) { toast(error.message); }
 }
 initBase();
