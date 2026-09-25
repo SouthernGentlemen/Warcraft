@@ -1813,7 +1813,7 @@ Split persistent player state into one independent Alliance campaign and one ind
 
 ### WOWUI-070 — Faction Roster Isolation and Capacity
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-069
 
