@@ -284,7 +284,9 @@ function completionHook(result) {
   const detail=questResult
     ? (heroesWin?"Quest completed · hero returned to available status":"Quest failed · hero released and offer can be retried")
     : "Encounter result saved · reset to replay the same seed";
-  banner.innerHTML='<span>'+(heroesWin?"VICTORY":"DEFEAT")+'</span><strong>'+(heroesWin?"Heroes":"NPC Enemies")+'</strong><small>'+detail+'</small>';
+  const returnMode=questResult?"offers":"dungeons";
+  banner.innerHTML='<span>'+(heroesWin?"VICTORY":"DEFEAT")+'</span><strong>'+(heroesWin?"Heroes":"NPC Enemies")+'</strong><small>'+detail+'</small>'+
+    '<div class="result-banner__actions"><a class="wow-button wow-button--primary" href="./base.html?building=questboard&mode='+returnMode+'">Return to Quest Board</a><a class="wow-button" href="./base.html">Return to Base</a></div>';
   banner.hidden=false;
   $("battleStatus").textContent="Encounter complete";
   if(resolved&&resolved.result)$("battleEvent").textContent=(heroesWin?"Victory":"Defeat")+" recorded for "+(state.encounter.encounterName||state.encounter.dungeonName||"encounter")+".";
