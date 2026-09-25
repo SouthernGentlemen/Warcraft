@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_path": "docs/heroes/classes/rogue/abilities/README.md",
   "kind": "abilities",
   "title": "Rogue Abilities",
-  "source_markdown": "# Rogue Abilities\n\n## Purpose\n\nThis document defines the initial class-wide active ability pool used by hero loadouts and the deterministic combat simulator.\n\nA Rogue equips exactly **2 cooldown abilities** and exactly **1 ultimate**. Specialization talents can modify these actions without adding extra active slots.\n\nAll timing is authored in **60 Hz simulation ticks**. These are prototype combat values and can be tuned without changing the action schema.\n\n## Cooldowns\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| mutilate | Mutilate | damage | physical | enemy | 110 | 9000 | 300 | energy | 35 | none |\n| sinister-strike | Sinister Strike | damage | physical | enemy | 95 | 8000 | 240 | energy | 30 | none |\n| backstab | Backstab | damage | physical | enemy | 135 | 10000 | 420 | energy | 40 | none |\n| evasion | Evasion | buff | none | self | 0 | 0 | 600 | energy | 25 | damage_reduction_bp:+3000@300 |\n\n## Ultimates\n\nUltimates consume a full 10,000-point ultimate bar.\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| killing-spree | Killing Spree | damage | physical | all-enemies | 260 | 11000 | 0 | ultimate | 10000 | none |\n| shadow-dance | Shadow Dance | buff | none | self | 0 | 0 | 0 | ultimate | 10000 | haste_bp:+3000@480 |\n\n## Action Fields\n\n- **Kind** — damage, heal, shield, or buff.\n- **School** — physical, spell, healing, or none.\n- **Target** — enemy, all-enemies, lowest-ally, self, or all-allies.\n- **Power** — flat integer action power.\n- **Coefficient BP** — basis-point scaling against the mapped hero power stat. 10,000 BP = 100%.\n- **Cooldown Ticks** — fixed base cooldown before Haste progression.\n- **Resource / Cost** — deterministic resource spend required to execute the action.\n- **Effect** — optional deterministic buff hook in `key:+basisPoints@ticks` form.\n\n## Selection\n\nThe simulator currently selects the first two resource-compatible cooldowns and the first ultimate by default.\n\nThe battle system can later provide explicit loadout IDs without changing the simulation engine.\n",
+  "source_markdown": "# Rogue Abilities\n\n## Purpose\n\nThis document defines the class-wide active ability pool used by hero loadouts and deterministic combat.\n\nEvery hero equips exactly **2 learned cooldown abilities**. The Ultimate is not independently selected: the hero's active specialization capstone resolves to exactly one authored Ultimate action.\n\nAll timing is authored in **60 Hz simulation ticks**.\n\n## Cooldowns\n\n| ID | Name | Kind | School | Target | Power | Coefficient BP | Cooldown Ticks | Resource | Cost | Effect |\n| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- |\n| mutilate | Mutilate | damage | physical | enemy | 110 | 9000 | 300 | energy | 35 | none |\n| sinister-strike | Sinister Strike | damage | physical | enemy | 95 | 8000 | 240 | energy | 30 | none |\n| backstab | Backstab | damage | physical | enemy | 135 | 10000 | 420 | energy | 40 | none |\n| evasion | Evasion | buff | none | self | 0 | 0 | 600 | energy | 25 | damage_reduction_bp:+3000@300 |\n\n## Capstone Ultimates\n\nUltimates consume the full 10,000-point ultimate bar. Each specialization capstone owns exactly one Ultimate action ID.\n\n| Spec | Capstone | Action ID | Kind | School | Target | Power | Coefficient BP | Effect |\n| --- | --- | --- | --- | --- | --- | ---: | ---: | --- |\n| assassination | Vigor | capstone-vigor | buff | none | self | 0 | 0 | haste_bp:+2500@480 |\n| combat | Adrenaline Rush | capstone-adrenaline-rush | buff | none | self | 0 | 0 | haste_bp:+3500@480 |\n| subtlety | Premeditation | capstone-premeditation | damage | physical | enemy | 400 | 13000 | none |\n\n## Selection\n\nAbility 1 and Ability 2 come from the learned compatible cooldown pool. Ultimate resolution comes only from the active specialization's selected capstone `ultimate_id`.\n",
   "class": "Rogue",
   "cooldowns": [
     {
@@ -61,21 +61,10 @@
   ],
   "ultimates": [
     {
-      "id": "killing-spree",
-      "name": "Killing Spree",
-      "kind": "damage",
-      "school": "physical",
-      "target": "all-enemies",
-      "power": 260,
-      "coefficient_bp": 11000,
-      "cooldown_ticks": 0,
-      "resource": "ultimate",
-      "cost": 10000,
-      "effect": "none"
-    },
-    {
-      "id": "shadow-dance",
-      "name": "Shadow Dance",
+      "id": "capstone-vigor",
+      "name": "Vigor",
+      "spec_id": "assassination",
+      "capstone": "Vigor",
       "kind": "buff",
       "school": "none",
       "target": "self",
@@ -84,7 +73,38 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "haste_bp:+3000@480"
+      "effect": "haste_bp:+2500@480"
+    },
+    {
+      "id": "capstone-adrenaline-rush",
+      "name": "Adrenaline Rush",
+      "spec_id": "combat",
+      "capstone": "Adrenaline Rush",
+      "kind": "buff",
+      "school": "none",
+      "target": "self",
+      "power": 0,
+      "coefficient_bp": 0,
+      "cooldown_ticks": 0,
+      "resource": "ultimate",
+      "cost": 10000,
+      "effect": "haste_bp:+3500@480"
+    },
+    {
+      "id": "capstone-premeditation",
+      "name": "Premeditation",
+      "spec_id": "subtlety",
+      "capstone": "Premeditation",
+      "kind": "damage",
+      "school": "physical",
+      "target": "enemy",
+      "power": 400,
+      "coefficient_bp": 13000,
+      "cooldown_ticks": 0,
+      "resource": "ultimate",
+      "cost": 10000,
+      "effect": "none"
     }
-  ]
+  ],
+  "ultimate_model": "specialization-capstone"
 }
