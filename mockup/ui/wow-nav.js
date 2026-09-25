@@ -26,6 +26,12 @@
       description:"Manage the hero roster, inspect equipment slots, and compare item loadouts.",
       icon:Object.freeze({category:"equipment-slot", key:"chest"})
     }),
+    journal:Object.freeze({
+      label:"Quest Journal",
+      title:"Quest Journal",
+      description:"Review available, active, and completed Quest Board assignments from authoritative roster state.",
+      icon:Object.freeze({category:"quest", key:"journal"})
+    }),
     battle:Object.freeze({
       label:"Battle",
       title:"Battle Mockup",
