@@ -3,7 +3,7 @@
   "source_path": "docs/heroes/classes/rogue/specs/combat.md",
   "kind": "specialization",
   "title": "Rogue — Combat",
-  "source_markdown": "# Rogue — Combat\n\n## Talent Prototype\n\nTwo normal talent tiers plus one capstone. Canonical Classic identities/icons come from the Combat tree. Unlocks use only the structured tier thresholds; there are no per-node prerequisite chains.\n",
+  "source_markdown": "# Rogue — Combat\n\n## Talent Prototype\n\nTwo normal talent tiers plus one capstone. Canonical Classic identities/icons come from the Combat tree. Unlocks use only structured tier thresholds; there are no per-node prerequisite chains.\n",
   "class": "Rogue",
   "specialization": "Combat",
   "identity": {
