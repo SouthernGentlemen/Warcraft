@@ -1,0 +1,1189 @@
+{
+  "schema_version": 1,
+  "kind": "building_progression",
+  "level_tier_mapping": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5
+  },
+  "buildings": [
+    {
+      "id": "keep",
+      "name": "Headquarters (Keep)",
+      "short": "Keep",
+      "category": "core",
+      "level": 1,
+      "max_level": 5,
+      "description": "The heart of your base. Unlocks buildings, tiers, and roster capacity.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "quest_board_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 3000,
+            "lumber": 2000,
+            "stone": 500
+          },
+          "requirements": [],
+          "capabilities": [
+            "quest_board_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 3660,
+            "lumber": 2440,
+            "stone": 610
+          },
+          "requirements": [],
+          "capabilities": [
+            "quest_board_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 4470,
+            "lumber": 2980,
+            "stone": 750
+          },
+          "requirements": [],
+          "capabilities": [
+            "quest_board_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 5450,
+            "lumber": 3640,
+            "stone": 910
+          },
+          "requirements": [],
+          "capabilities": [
+            "quest_board_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "barracks",
+      "name": "Barracks",
+      "short": "Barracks",
+      "category": "core",
+      "level": 1,
+      "max_level": 5,
+      "description": "Trains footmen and basic military units.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "military_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 1200,
+            "lumber": 800,
+            "stone": 200
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "military_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 1470,
+            "lumber": 980,
+            "stone": 250
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "military_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 1790,
+            "lumber": 1200,
+            "stone": 300
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "military_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 2180,
+            "lumber": 1460,
+            "stone": 370
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "military_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "training",
+      "name": "Training Grounds",
+      "short": "Training Grounds",
+      "category": "core",
+      "level": 1,
+      "max_level": 5,
+      "description": "Improves hero training speed and raises training capacity.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "training_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 900,
+            "lumber": 600,
+            "stone": 150
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "training_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 1100,
+            "lumber": 740,
+            "stone": 190
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "training_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 1340,
+            "lumber": 900,
+            "stone": 230
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "training_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 1640,
+            "lumber": 1090,
+            "stone": 280
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "training_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "recruitment",
+      "name": "Recruitment Hall",
+      "short": "Recruitment Hall",
+      "category": "core",
+      "level": 1,
+      "max_level": 5,
+      "description": "Adds recruitment capacity and improves hero discovery.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "recruitment_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 1000,
+            "lumber": 700,
+            "stone": 250
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "recruitment_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 1220,
+            "lumber": 860,
+            "stone": 310
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "recruitment_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 1490,
+            "lumber": 1050,
+            "stone": 380
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "recruitment_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 1820,
+            "lumber": 1280,
+            "stone": 460
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "recruitment_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "command",
+      "name": "Command Hall",
+      "short": "Command Hall",
+      "category": "core",
+      "level": 1,
+      "max_level": 5,
+      "description": "Provides global mission and roster bonuses.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "missions_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 800,
+            "lumber": 600,
+            "stone": 200
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "missions_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 980,
+            "lumber": 740,
+            "stone": 250
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "missions_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 1200,
+            "lumber": 900,
+            "stone": 300
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "missions_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 1460,
+            "lumber": 1090,
+            "stone": 370
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "missions_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "storehouse",
+      "name": "Storehouse",
+      "short": "Storehouse",
+      "category": "core",
+      "level": 1,
+      "max_level": 5,
+      "description": "Increases persistent resource and crafted-item storage.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "storage_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 700,
+            "lumber": 500,
+            "stone": 200
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "storage_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 860,
+            "lumber": 610,
+            "stone": 250
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "storage_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 1050,
+            "lumber": 750,
+            "stone": 300
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "storage_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 1280,
+            "lumber": 910,
+            "stone": 370
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "storage_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "blacksmith",
+      "name": "Blacksmith",
+      "short": "Blacksmith",
+      "category": "profession",
+      "level": 1,
+      "max_level": 5,
+      "description": "Crafts and upgrades metal weapons and armor.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "blacksmithing_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 800,
+            "lumber": 600,
+            "stone": 200
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "blacksmithing_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 980,
+            "lumber": 740,
+            "stone": 250
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "blacksmithing_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 1200,
+            "lumber": 900,
+            "stone": 300
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "blacksmithing_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 1460,
+            "lumber": 1090,
+            "stone": 370
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "blacksmithing_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "alchemy",
+      "name": "Alchemy Lab",
+      "short": "Alchemy Lab",
+      "category": "profession",
+      "level": 1,
+      "max_level": 5,
+      "description": "Produces potions, reagents, and consumable combat boosts.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "alchemy_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 600,
+            "lumber": 400,
+            "stone": 150
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "alchemy_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 740,
+            "lumber": 490,
+            "stone": 190
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "alchemy_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 900,
+            "lumber": 600,
+            "stone": 230
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "alchemy_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 1090,
+            "lumber": 730,
+            "stone": 280
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "alchemy_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enchanter",
+      "name": "Enchanter's Study",
+      "short": "Enchanter's Study",
+      "category": "profession",
+      "level": 1,
+      "max_level": 5,
+      "description": "Creates magical enhancements for equipment.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "enchanting_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 650,
+            "lumber": 450,
+            "stone": 180
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "enchanting_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 800,
+            "lumber": 550,
+            "stone": 220
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "enchanting_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 970,
+            "lumber": 670,
+            "stone": 270
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "enchanting_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 1190,
+            "lumber": 820,
+            "stone": 320
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "enchanting_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tailor",
+      "name": "Tailor",
+      "short": "Tailor",
+      "category": "profession",
+      "level": 1,
+      "max_level": 5,
+      "description": "Crafts cloth equipment and caster-focused gear.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "tailoring_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 520,
+            "lumber": 350,
+            "stone": 130
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "tailoring_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 640,
+            "lumber": 430,
+            "stone": 160
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "tailoring_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 780,
+            "lumber": 530,
+            "stone": 200
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "tailoring_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 950,
+            "lumber": 640,
+            "stone": 240
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "tailoring_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "leather",
+      "name": "Leatherworker",
+      "short": "Leatherworker",
+      "category": "profession",
+      "level": 1,
+      "max_level": 5,
+      "description": "Crafts leather equipment and flexible armor sets.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "leatherworking_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 520,
+            "lumber": 350,
+            "stone": 130
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "leatherworking_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 640,
+            "lumber": 430,
+            "stone": 160
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "leatherworking_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 780,
+            "lumber": 530,
+            "stone": 200
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "leatherworking_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 950,
+            "lumber": 640,
+            "stone": 240
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "leatherworking_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "engineer",
+      "name": "Engineer Workshop",
+      "short": "Engineer Workshop",
+      "category": "profession",
+      "level": 1,
+      "max_level": 5,
+      "description": "Builds devices, utility equipment, and mechanical upgrades.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "engineering_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 850,
+            "lumber": 650,
+            "stone": 260
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 2
+            }
+          ],
+          "capabilities": [
+            "engineering_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 1040,
+            "lumber": 800,
+            "stone": 320
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 3
+            }
+          ],
+          "capabilities": [
+            "engineering_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 1270,
+            "lumber": 970,
+            "stone": 390
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 4
+            }
+          ],
+          "capabilities": [
+            "engineering_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 1550,
+            "lumber": 1190,
+            "stone": 480
+          },
+          "requirements": [
+            {
+              "type": "building_level",
+              "building": "keep",
+              "level": 5
+            }
+          ],
+          "capabilities": [
+            "engineering_tier_5"
+          ]
+        }
+      ]
+    }
+  ]
+}
