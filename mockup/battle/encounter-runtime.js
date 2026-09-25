@@ -68,6 +68,22 @@ async function heroDefinition(hero,classIndex,team=0){
   });
 }
 
+function expandNpcGroup(poolEnemies,count){
+  if(!poolEnemies.length)return [];
+  const total=Math.max(1,integer(count,poolEnemies.length));
+  return Array.from({length:total},(_,index)=>{
+    const template=poolEnemies[index%poolEnemies.length];
+    const cycle=Math.floor(index/poolEnemies.length)+1;
+    if(cycle===1)return Object.assign({},template,{sourceNpcId:template.id,encounterInstance:index+1});
+    return Object.assign({},template,{
+      id:template.id+"-instance-"+cycle,
+      name:template.name+" #"+cycle,
+      sourceNpcId:template.id,
+      encounterInstance:index+1
+    });
+  });
+}
+
 export async function resolveEncounter({encounter,roster}){
   const config=validateEncounterHandoff(encounter,roster);
   const [classIndex,npcCatalog,npcPools]=await Promise.all([
@@ -78,7 +94,7 @@ export async function resolveEncounter({encounter,roster}){
   const heroes=await Promise.all(config.heroIds.map(id=>heroDefinition(roster.hero(id),classIndex,0)));
   const poolEnemies=resolveNpcPoolDefinitions({catalog:npcCatalog,pools:npcPools,poolId:config.npcPoolId,team:1});
   const enemyCount=Math.max(1,integer(config.enemyCount,poolEnemies.length));
-  const enemies=poolEnemies.slice(0,Math.min(enemyCount,poolEnemies.length));
+  const enemies=expandNpcGroup(poolEnemies,enemyCount);
   if(!enemies.length)throw new Error("NPC pool is empty: "+config.npcPoolId);
   return {
     config,
