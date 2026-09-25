@@ -15,7 +15,7 @@ The item system is divided into four top-level groups:
 
 Equipment directly improves heroes.
 
-The committed hero loadout currently contains six fixed slots:
+The committed hero loadout contains seven fixed slots:
 
 - Head
 - Chest
@@ -23,12 +23,13 @@ The committed hero loadout currently contains six fixed slots:
 - Feet
 - Gloves
 - Weapon
+- Trinket
 
 Armor is divided into Cloth, Leather, Mail, and Plate.
 
 Weapon items occupy a single weapon slot. Weapon families include melee and ranged categories such as axes, swords, maces, daggers, staves, wands, bows, guns, and crossbows. Exact class weapon proficiencies will be defined with the class and equipment specifications.
 
-Trinkets are part of the equipment item family, but a trinket slot has not yet been committed to the loadout.
+Trinkets occupy the dedicated Trinket slot. They remain part of the equipment item family and may provide specialized stats or effects without changing the one-item-per-slot loadout rule.
 
 ## Reagents
 
@@ -75,7 +76,7 @@ Later item design must define:
 - item generation
 - loot rules
 - class weapon proficiencies
-- trinket equip rules
+- trinket effect and restriction rules
 - enchantment rules
 - consumable limits
 - inventory behavior
