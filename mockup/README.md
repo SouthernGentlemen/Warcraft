@@ -103,3 +103,7 @@ Responsive layouts are maintained in each screen stylesheet for desktop, tablet,
 ### Shared roster state
 
 `ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved party loadouts. Hero-management surfaces should store only hero IDs in party templates and read current identity, availability, equipment, and talent-build data from this shared layer. Party templates support only 3, 5, 10, or 20 heroes; ready-state validation requires the exact selected size with no duplicate hero IDs. A saved template may contain a hero who later becomes unavailable, but launch-time validation must re-check current availability.
+
+### Base landing shell
+
+The Base landing screen now uses only the shared top navigation, persistent resource bar, and stronghold map. The old internal navigation rail, permanent building/Quest panels, bottom action bar, and profile footer have been removed. Building and Quest progression logic remains in `base.js` for the upcoming sidecar migration tasks.
