@@ -52,6 +52,12 @@ async function heroDefinition(hero,classIndex,team=0){
     fetchJson(CLASS_DATA_ROOT+(classMeta.abilities_path||("./"+classMeta.id+"/abilities/README.json")).replace("./",""))
   ]);
 
+  const capstone=specData.talents?.capstones?.[0];
+  if(!capstone?.ultimate_id)throw new Error("Specialization capstone is missing an Ultimate action mapping.");
+  if(hero.talentBuild?.capstone&&hero.talentBuild.capstone!==capstone.name)throw new Error("Hero capstone does not match the active specialization.");
+  if(hero.talentBuild?.capstoneUltimateId&&hero.talentBuild.capstoneUltimateId!==capstone.ultimate_id)throw new Error("Hero capstone Ultimate mapping is stale.");
+  if(hero.combatLoadout?.ultimateId!==capstone.ultimate_id)throw new Error("Hero Ultimate must match the active specialization capstone.");
+
   return Object.assign(createHeroDefinition({
     id:hero.id,
     name:hero.name,
@@ -60,7 +66,7 @@ async function heroDefinition(hero,classIndex,team=0){
     abilityData,
     level:Math.max(1,integer(hero.level,1)),
     selectedCooldownIds:[hero.combatLoadout.ability1Id,hero.combatLoadout.ability2Id],
-    selectedUltimateId:hero.combatLoadout.ultimateId,
+    selectedUltimateId:capstone.ultimate_id,
     selectedTalentNames:Array.isArray(hero.talentBuild&&hero.talentBuild.picks)?hero.talentBuild.picks:null,
     team
   }),{
