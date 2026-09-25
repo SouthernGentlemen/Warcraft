@@ -1,0 +1,307 @@
+.quest-journal-page {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 50% -18%, rgba(183,139,59,.08), transparent 28%),
+    var(--wow-bg-canvas);
+  color: var(--wow-text);
+  font-family: var(--wow-font-ui);
+}
+
+.quest-journal-shell {
+  width: min(1180px, calc(100% - 24px));
+  margin: 0 auto;
+  padding: 22px 0 48px;
+}
+
+.quest-journal {
+  overflow: hidden;
+}
+
+.quest-journal__header {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 16px;
+}
+
+.quest-journal__identity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quest-journal__icon {
+  --wow-icon-size: 58px;
+  flex: 0 0 auto;
+}
+
+.quest-journal__identity h1 {
+  margin: 2px 0 3px;
+  color: var(--wow-gold-pale);
+  font: 700 24px var(--wow-font-display);
+}
+
+.quest-journal__identity p {
+  margin: 0;
+  color: var(--wow-text-muted);
+  font-size: 9px;
+}
+
+.quest-journal__faction {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface-inset);
+  color: var(--wow-text-muted);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.quest-journal__faction.is-alliance {
+  border-color: var(--wow-alliance);
+  color: var(--wow-alliance-bright);
+}
+
+.quest-journal__faction.is-horde {
+  border-color: var(--wow-horde);
+  color: var(--wow-horde-bright);
+}
+
+.quest-journal__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  border-top: var(--wow-border-thin) solid var(--wow-inset-line);
+  border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
+  background: var(--wow-surface-inset);
+}
+
+.quest-journal__summary > div {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 10px;
+}
+
+.quest-journal__summary > div + div {
+  border-left: var(--wow-border-thin) solid var(--wow-inset-line);
+}
+
+.quest-journal__summary span {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.quest-journal__summary strong {
+  color: var(--wow-gold-pale);
+  font-size: 13px;
+}
+
+.quest-journal__columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 1px;
+  background: #07090a;
+}
+
+.quest-journal__section {
+  min-width: 0;
+  min-height: 360px;
+  padding: 10px;
+  background: linear-gradient(180deg, var(--wow-surface), var(--wow-surface-inset));
+}
+
+.quest-journal__section > header {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 2px 8px;
+  border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
+}
+
+.quest-journal__section h2 {
+  margin: 1px 0 0;
+  color: var(--wow-text);
+  font: 700 14px var(--wow-font-display);
+}
+
+.quest-journal__list {
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+.quest-journal__row {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 38px minmax(0,1fr) auto auto;
+  align-items: center;
+  gap: 7px;
+  padding: 7px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: rgba(0,0,0,.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
+}
+
+.quest-journal__row:hover,
+.quest-journal__row:focus-visible {
+  border-color: var(--wow-gold-muted);
+  outline: none;
+  background: rgba(183,139,59,.07);
+}
+
+.quest-journal__row.is-active {
+  border-left: 3px solid var(--wow-warning);
+}
+
+.quest-journal__row.is-completed {
+  border-left: 3px solid var(--wow-success);
+}
+
+.quest-journal__row-icon {
+  --wow-icon-size: 34px;
+}
+
+.quest-journal__row-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.quest-journal__row-copy strong {
+  overflow: hidden;
+  color: var(--wow-gold-pale);
+  font: 700 11px var(--wow-font-display);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quest-journal__row-copy small {
+  overflow: hidden;
+  color: var(--wow-text-muted);
+  font-size: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.quest-journal__reward,
+.quest-journal__marks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.quest-journal__reward .wow-icon-frame,
+.quest-journal__marks .wow-icon-frame {
+  --wow-icon-size: 20px;
+}
+
+.quest-journal__reward > span:last-child,
+.quest-journal__marks > span:last-child {
+  display: grid;
+  gap: 1px;
+}
+
+.quest-journal__reward strong,
+.quest-journal__marks strong {
+  color: var(--wow-text);
+  font-size: 8px;
+}
+
+.quest-journal__reward small,
+.quest-journal__marks small {
+  color: var(--wow-text-dim);
+  font-size: 6px;
+  text-transform: uppercase;
+}
+
+.quest-journal__empty {
+  min-height: 86px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 3px;
+  padding: 10px;
+  border: var(--wow-border-thin) dashed var(--wow-frame-edge);
+  color: var(--wow-text-dim);
+  text-align: center;
+}
+
+.quest-journal__empty p {
+  margin: 0;
+  font-size: 8px;
+}
+
+.quest-journal__base-link {
+  text-decoration: none;
+}
+
+@media (max-width: 900px) {
+  .quest-journal__columns {
+    grid-template-columns: 1fr;
+  }
+
+  .quest-journal__section {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .quest-journal-shell {
+    width: 100%;
+    padding: 0 0 32px;
+  }
+
+  .quest-journal {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .quest-journal__header {
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .quest-journal__icon {
+    --wow-icon-size: 46px;
+  }
+
+  .quest-journal__identity h1 {
+    font-size: 19px;
+  }
+
+  .quest-journal__identity p {
+    display: none;
+  }
+
+  .quest-journal__summary > div {
+    display: grid;
+    justify-items: center;
+    gap: 2px;
+  }
+
+  .quest-journal__row {
+    grid-template-columns: 34px minmax(0,1fr) auto;
+  }
+
+  .quest-journal__marks {
+    display: none;
+  }
+
+  .quest-journal__base-link {
+    display: none;
+  }
+}
