@@ -1360,7 +1360,7 @@ Repair the current talent data so every specialization has the same small protot
 
 ### WOWUI-059 — Hero Talent Popout and Capstone Ultimate Contract
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-057, WOWUI-058
 
