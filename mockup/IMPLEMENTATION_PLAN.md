@@ -104,7 +104,7 @@ Remove duplicated navigation and unrelated persistent chrome so the Base screen 
 
 ### WOWUI-023 — Map-First Base Layout and Compact Resources
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-022
 
