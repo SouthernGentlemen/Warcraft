@@ -1148,7 +1148,7 @@ Deliver the largest required 20-hero encounter mode.
 
 ### WOWUI-053 — Remove Simulation Surface and Simulation-Specific Runtime
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-052
 
