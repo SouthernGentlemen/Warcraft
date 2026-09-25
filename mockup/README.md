@@ -114,6 +114,12 @@ Runtime gameplay inputs remain authored JSON under `/data/`. Documentation under
 
 `ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved party loadouts. The Heroes/Roster workspace owns a dedicated roster-level Party Loadouts manager beside the hero list; individual hero detail no longer edits party membership. Party templates store only hero IDs and read current identity and availability from the shared roster. Templates support only 3, 5, 10, or 20 heroes, and ready-state composition validation requires the exact selected size with no duplicate hero IDs. A saved template may contain a hero who later becomes unavailable without losing membership or ready state; Quest Board and dungeon launch-time validation re-check current availability before the party can enter an encounter.
 
+### Hero combat loadout state
+
+Every normalized roster hero now owns an authoritative combat loadout in `WarcraftRoster`: fixed `autoAttackId: "auto"`, `ability1Id`, `ability2Id`, and `ultimateId`. Learned normal and ultimate ability IDs are tracked separately from the equipped slots, and all IDs resolve to the authored class ability pools under `data/heroes/classes/*/abilities/README.json`. Existing saves are migrated during roster normalization without resetting unrelated hero identity, equipment, talents, availability, or party membership.
+
+Auto Attack itself is not selected from the class ability pool; its action identity is derived from the active specialization's authored `identity.auto_attack` field when the combat actor is built. Ability 1 and Ability 2 must be distinct learned abilities compatible with the active specialization. Spec changes deterministically normalize incompatible slots. Battle passes the roster-selected normal and ultimate IDs into the canonical hero factory, so encounter actors no longer depend on "first two abilities in the file" as their player loadout.
+
 ### Map-first Base architecture
 
 Base is the player-facing landing screen. The default view intentionally contains only the shared Warcraft navigation, a compact Gold/Lumber/Stone HUD, and the full stronghold map. There is no internal navigation rail, permanent building list, Quest Board dashboard, action bar, profile footer, or reserved detail column.
