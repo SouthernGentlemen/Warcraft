@@ -153,7 +153,8 @@
 
     scope.querySelectorAll(".wow-game-shell").forEach(function(shell) {
       const activeKey = shell.dataset.wowNavActive || "";
-      ensureFactionSelector(shell);
+      const selectorSuppressed = activeKey === "battle" || activeKey === "dev-inspection" || document.body.classList.contains("race-page");
+      if (!selectorSuppressed) ensureFactionSelector(shell);
       const brand = shell.querySelector(".wow-game-shell__brand");
       if (brand) {
         const activeHome = activeKey === "menu";
