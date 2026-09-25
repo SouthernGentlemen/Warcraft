@@ -193,7 +193,6 @@
       "keep-horde":"inv_misc_tournaments_symbol_orc",
       "command-hall":"inv_bannerpvp_02",
       "recruitment-hall":"achievement_guildperk_everybodysfriend",
-      barracks:"ability_warrior_battleshout",
       "training-grounds":"ability_dualwield",
       storehouse:"inv_crate_03"
     },
