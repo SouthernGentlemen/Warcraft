@@ -942,7 +942,7 @@ Add a special Quest Board menu that presents dungeon content spatially on an Aze
 
 ### WOWUI-046 — Enemy NPC Catalog and Encounter Contract
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-044
 
