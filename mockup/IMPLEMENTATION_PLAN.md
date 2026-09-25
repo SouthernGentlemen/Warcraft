@@ -257,7 +257,7 @@ Move real building progression and upgrade management into the sidecar and elimi
 
 ### WOWUI-026 — Quest Board Sidecar Migration
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-025
 
