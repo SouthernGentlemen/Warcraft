@@ -1913,7 +1913,7 @@ Make every authored hero ability use the matching World of Warcraft ability icon
 
 ### WOWUI-073 — Tabbed Hero Character Workspace
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-071, WOWUI-072
 
