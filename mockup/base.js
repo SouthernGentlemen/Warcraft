@@ -3,6 +3,7 @@ const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 let buildings = [];
+let sidecarOrigin = null;
 
 function normalizeBuilding(raw) {
   const level = Number(raw.level);
@@ -221,9 +222,48 @@ function toast(message) {
   toast.timer = setTimeout(() => node.hidden = true, 1800);
 }
 
-function selectBuilding(id) {
+function renderSidecar() {
+  const sidecar = $('#baseSidecar');
+  const building = buildings.find(item => item.id === state.selected);
+  if (!sidecar || !building) return;
+
+  $('#baseSidecarIcon').innerHTML = buildingIconMarkup(building, 'lg', 'base-sidecar__building-icon');
+  $('#baseSidecarCategory').textContent = building.category === 'profession' ? 'PROFESSION BUILDING' : 'CORE BUILDING';
+  $('#baseSidecarTitle').textContent = building.name;
+  $('#baseSidecarLevel').textContent = 'Level ' + building.level + ' / ' + building.max;
+  bindResolvedIcons(sidecar);
+}
+
+function openSidecar(id, origin) {
+  const building = buildings.find(item => item.id === id);
+  const sidecar = $('#baseSidecar');
+  if (!building || !sidecar) return;
+
   state.selected = id;
+  sidecarOrigin = origin || sidecarOrigin;
   renderBuildings();
+  renderSidecar();
+  sidecar.hidden = false;
+  $('#baseSidecarClose')?.focus({preventScroll:true});
+}
+
+function closeSidecar(options = {}) {
+  const sidecar = $('#baseSidecar');
+  if (!sidecar || sidecar.hidden) return;
+
+  const restoreFocus = options.restoreFocus !== false;
+  sidecar.hidden = true;
+  state.selected = null;
+  renderBuildings();
+
+  if (restoreFocus && sidecarOrigin && typeof sidecarOrigin.focus === 'function') {
+    sidecarOrigin.focus({preventScroll:true});
+  }
+  sidecarOrigin = null;
+}
+
+function selectBuilding(id, origin) {
+  openSidecar(id, origin);
 }
 
 function upgradeBuilding(id) {
@@ -237,7 +277,20 @@ function upgradeBuilding(id) {
 
 $('#baseMap').addEventListener('click', event => {
   const plot = event.target.closest('[data-building]');
-  if (plot) selectBuilding(plot.dataset.building);
+  if (plot) {
+    selectBuilding(plot.dataset.building, plot);
+    return;
+  }
+  closeSidecar({restoreFocus:false});
+});
+
+$('#baseSidecarClose').addEventListener('click', () => closeSidecar());
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !$('#baseSidecar').hidden) {
+    event.preventDefault();
+    closeSidecar();
+  }
 });
 
 async function initBase() {
@@ -248,7 +301,7 @@ async function initBase() {
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
     all('[data-resource]').forEach(element=>Tooltips.attach(element,()=>resourceTooltipModel(element.dataset.resource,element),{anchor:'target'}));
     all('[data-currency]').forEach(element=>Tooltips.attach(element,()=>currencyTooltipModel(element.dataset.currency,element),{anchor:'target'}));
-    syncResourceBar(); renderBuildings(); renderQuestBoard();
+    syncResourceBar(); renderBuildings(); renderQuestBoard(); $('#baseSidecar').hidden = true;
   } catch(error) { toast(error.message); }
 }
 initBase();
