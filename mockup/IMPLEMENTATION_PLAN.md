@@ -68,7 +68,7 @@ Make Base the player-facing landing screen without deleting the developer-orient
 
 ### WOWUI-022 — Base Shell De-clutter
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-021
 
