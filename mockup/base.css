@@ -939,6 +939,24 @@
   font-size: 7px;
 }
 
+.quest-party-count {
+  grid-column: 1 / -1;
+  min-height: 12px;
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  text-align: right;
+}
+
+.quest-offer-card[data-party-size="20"] .quest-adhoc {
+  max-height: 260px;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+}
+
+.quest-offer-card[data-party-size="20"] .quest-hero-choice {
+  min-height: 30px;
+  padding: 4px;
+}
+
 .quest-dispatched {
   min-width: 0;
   align-self: center;
