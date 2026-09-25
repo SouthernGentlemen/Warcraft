@@ -1,5 +1,5 @@
 const Icons = window.WowUIIcons;
-const Tooltips = window.WowUITooltips;
+const Tooltips = window.WowUITooltips;\nconst Roster = window.WarcraftRoster;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 let buildings = [];
 
@@ -56,7 +56,7 @@ const buildingIconKeys = {
   enchanter:['profession','enchanting'],
   tailor:['profession','tailoring'],
   leather:['profession','leatherworking'],
-  engineer:['profession','engineering']
+  engineer:['profession','engineering'],\n  questboard:['building','command-hall']
 };
 
 const costIconKeys = {
@@ -171,6 +171,24 @@ function renderSelection() {
   bindResolvedIcons($('#selectionDetail')); all('.base-plot').forEach(plot=>{ plot.classList.toggle('selected',plot.dataset.building===b.id); plot.setAttribute('aria-pressed',plot.dataset.building===b.id?'true':'false'); const level=plot.querySelector('.plot-label b'); const item=buildings.find(entry=>entry.id===plot.dataset.building); if(level&&item) level.textContent=item.level; });
 }
 
+function questBoardBuilding(){return buildings.find(b=>b.id==="questboard");}
+function compatibleLoadouts(size){return Roster.getState().loadouts.filter(l=>l.size===size&&Roster.validateLoadout(l,true).valid);}
+function renderQuestBoard(){
+  const board=questBoardBuilding();if(!board)return;$('#questBoardLevel').textContent='Level '+board.level+' / 5';const root=$('#questTierList');root.innerHTML='';
+  Roster.getState().quests.forEach(quest=>{const unlocked=board.level>=quest.tier,active=quest.status==='active',card=document.createElement('article');card.className='quest-tier-card'+(!unlocked?' is-locked':'')+(active?' is-active':'')+(quest.status==='completed'?' is-completed':'');
+    const loadouts=quest.tier>1?compatibleLoadouts(quest.requiredHeroes):[];const available=Roster.getState().heroes.filter(h=>h.availability==='available');
+    card.innerHTML='<div class="quest-tier-head"><strong>Tier '+quest.tier+'</strong><span>'+quest.requiredHeroes+' hero'+(quest.requiredHeroes===1?'':'es')+'</span><em>'+(!unlocked?'LOCKED · Quest Board level '+quest.tier:active?'ACTIVE':quest.status==='completed'?'COMPLETED · Ready again':'AVAILABLE')+'</em></div><div class="quest-selection"></div><small class="quest-reward">Reward hook · '+quest.reward.gold+' gold · '+quest.reward.amount+' quest mark'+(quest.reward.amount===1?'':'s')+'</small>';
+    const selection=card.querySelector('.quest-selection');
+    if(active){selection.innerHTML='<span>Dispatched: '+quest.heroIds.map(id=>{const h=Roster.hero(id);return h?h.name:id;}).join(', ')+'</span><button class="wow-button" type="button">Complete Quest</button>';selection.querySelector('button').addEventListener('click',()=>{Roster.completeQuest(quest.tier);renderQuestBoard();toast('Tier '+quest.tier+' quest completed. Heroes are available again.');});}
+    else if(unlocked){const select=document.createElement('select');select.className='wow-select quest-source';select.innerHTML='<option value="">Choose '+(quest.tier===1?'hero':'party source')+'</option>'+(quest.tier===1?available.map(h=>'<option value="hero:'+h.id+'">'+h.name+' · '+h.classLabel+'</option>').join(''):loadouts.map(l=>'<option value="loadout:'+l.id+'">Saved · '+l.name+'</option>').join(''))+'<option value="adhoc">Ad-hoc roster</option>';if(quest.tier===1)select.querySelector('option[value="adhoc"]').remove();selection.appendChild(select);const adhoc=document.createElement('div');adhoc.className='quest-adhoc';selection.appendChild(adhoc);const dispatch=document.createElement('button');dispatch.type='button';dispatch.className='wow-button wow-button--primary';dispatch.textContent='Dispatch';dispatch.disabled=true;selection.appendChild(dispatch);let ids=[];
+      function sync(){dispatch.disabled=ids.length!==quest.requiredHeroes||ids.some(id=>{const h=Roster.hero(id);return !h||h.availability!=='available';});}
+      select.addEventListener('change',()=>{ids=[];adhoc.innerHTML='';if(select.value.startsWith('hero:'))ids=[select.value.slice(5)];else if(select.value.startsWith('loadout:')){const l=Roster.getState().loadouts.find(x=>x.id===select.value.slice(8));ids=l?l.heroIds.slice():[];}else if(select.value==='adhoc'){available.forEach(h=>{const label=document.createElement('label');label.className='quest-hero-choice';label.innerHTML='<input type="checkbox" value="'+h.id+'"><span>'+h.name+'<small>'+h.classLabel+'</small></span>';label.querySelector('input').addEventListener('change',e=>{ids=e.target.checked?ids.concat(h.id):ids.filter(id=>id!==h.id);if(ids.length>quest.requiredHeroes){e.target.checked=false;ids=ids.filter(id=>id!==h.id);}sync();});adhoc.appendChild(label);});}sync();});
+      dispatch.addEventListener('click',()=>{try{Roster.dispatchQuest(quest.tier,ids);renderQuestBoard();toast('Tier '+quest.tier+' quest dispatched.');}catch(error){toast(error.message);}});
+    }
+    root.appendChild(card);
+  });
+}
+
 function toast(message) {
   const node = $('#baseToast');
   node.textContent = message;
@@ -190,7 +208,7 @@ function upgradeBuilding(id) {
   if(!up.canUpgrade){ toast(up.reason); return; }
   Object.entries(up.next.cost).forEach(([key,value])=>{ state.resources[key]-=value; });
   if(up.next.level!==b.level+1||up.next.level>5) throw new Error('Invalid building level transition');
-  b.level=up.next.level; state.selected=id; syncResourceBar(); renderBuildings(); toast(b.name+' upgraded to level '+b.level+' (Tier '+b.level+').');
+  b.level=up.next.level; state.selected=id; syncResourceBar(); renderBuildings(); renderQuestBoard(); toast(b.name+' upgraded to level '+b.level+' (Tier '+b.level+').');
 }
 
 $('#buildingFilter').addEventListener('change', event => {
@@ -234,7 +252,7 @@ $('.base-action-bar').addEventListener('click', event => {
     recruit: 'Recruitment flow hook ready for roster expansion.',
     mission: 'Mission launch hook ready for content selection.'
   };
-  if (button.dataset.action === 'keep') selectBuilding('keep');
+  if (button.dataset.action === 'keep') selectBuilding('keep');\n  if (button.dataset.action === 'mission') { state.selected='questboard'; renderBuildings(); document.querySelector('.quest-board').scrollIntoView({block:'nearest'}); }
   toast(labels[button.dataset.action]);
 });
 
@@ -259,7 +277,7 @@ async function initBase() {
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
     all('[data-resource]').forEach(element=>Tooltips.attach(element,()=>resourceTooltipModel(element.dataset.resource,element),{anchor:'target'}));
     all('[data-currency]').forEach(element=>Tooltips.attach(element,()=>currencyTooltipModel(element.dataset.currency,element),{anchor:'target'}));
-    syncResourceBar(); renderBuildings();
+    syncResourceBar(); renderBuildings(); renderQuestBoard();
   } catch(error) { toast(error.message); }
 }
 initBase();
