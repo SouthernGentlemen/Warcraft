@@ -129,3 +129,7 @@ Base presentation is driven by the persisted player faction in `WarcraftRoster`.
 ### Global Inventory
 
 `inventory.html` reads owned prototype items from `WarcraftEquipment.owned()`, which derives from the same shared equipment catalog used by Gear and Hero Management. The Inventory never writes equipment state: equipped status is derived from `WarcraftRoster` item-ID references, and actual equip/unequip actions remain in hero-management workflows. This keeps one item catalog plus one authoritative roster equipment state with no duplicate Inventory copy.
+
+### Base player action dock
+
+Base now overlays a compact three-action player dock on the map with exactly Quest Journal, Roster, and Inventory. The dock uses shared semantic icons/tooltips and ordinary links to the functional destinations created in WOWUI-032/033. It does not consume layout width or reintroduce the old multi-system rail; narrow screens collapse it into a three-item bottom dock.
