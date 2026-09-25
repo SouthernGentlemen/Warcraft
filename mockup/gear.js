@@ -628,7 +628,7 @@ async function init() {
     $("resetGear").addEventListener("click", resetRoster);
 
     document.addEventListener("click", function(event) { const picker = $("gearSlotPicker"); if (picker && !picker.contains(event.target) && !event.target.closest(".gear-slot")) closeSlotPicker(); });
-    document.addEventListener("keydown", function(event) { if (event.key === "Escape") closeSlotPicker(); });
+    document.addEventListener("keydown", function(event) { if (event.key === "Escape") closeSlotPicker(); });\n    window.addEventListener("warcraft:roster-changed", function() { state.heroes = buildHeroes(state.classIndex); if (!state.heroes.some(h=>h.id===state.selectedHeroId)) state.selectedHeroId=state.heroes[0]?.id||null; render(); });
     render();
   } catch (error) {
     showError(error.message + ". Serve the repository over HTTP with npm run dev.");
