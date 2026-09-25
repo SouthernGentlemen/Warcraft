@@ -639,6 +639,7 @@ function renderQuestOffers() {
     const completed=quest&&quest.status==='completed';
     const card=document.createElement('article');
     card.className='quest-offer-card'+(active?' is-active':'')+(completed?' is-completed':'');
+    card.dataset.partySize=String(offer.party_size);
     const loadouts=offer.party_size>1?compatibleLoadouts(offer.party_size):[];
     const available=Roster.getState().heroes.filter(h=>h.availability==='available');
     card.innerHTML=
@@ -688,10 +689,16 @@ function renderQuestOffers() {
       if(offer.party_size===1)select.querySelector('option[value="adhoc"]').remove();
       selection.appendChild(select);
       const adhoc=document.createElement('div');adhoc.className='quest-adhoc';selection.appendChild(adhoc);
-      const dispatch=document.createElement('button');dispatch.type='button';dispatch.className='wow-button wow-button--primary';dispatch.textContent=battleOffer?'Launch Battle':'Dispatch';dispatch.disabled=true;selection.appendChild(dispatch);
+      const partyCount=document.createElement('small');partyCount.className='quest-party-count';selection.appendChild(partyCount);
+      const dispatch=document.createElement('button');dispatch.type='button';dispatch.className='wow-button wow-button--primary';dispatch.disabled=true;selection.appendChild(dispatch);
       let ids=[];
       let selectedLoadoutId=null;
-      function sync(){dispatch.disabled=ids.length!==offer.party_size||ids.some(id=>{const h=Roster.hero(id);return !h||h.availability!=='available';});}
+      function sync(){
+        const invalid=ids.length!==offer.party_size||ids.some(id=>{const h=Roster.hero(id);return !h||h.availability!=='available';});
+        dispatch.disabled=invalid;
+        partyCount.textContent=offer.party_size===1?'':ids.length+' / '+offer.party_size+' heroes selected';
+        dispatch.textContent=battleOffer?('Launch Battle'+(offer.party_size>=10?' · '+ids.length+'/'+offer.party_size:'')):'Dispatch';
+      }
       select.addEventListener('change',()=>{
         ids=[];adhoc.innerHTML='';
         selectedLoadoutId=null;
