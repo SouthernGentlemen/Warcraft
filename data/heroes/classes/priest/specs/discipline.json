@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_path": "docs/heroes/classes/priest/specs/discipline.md",
   "kind": "specialization",
   "title": "Priest — Discipline",
-  "source_markdown": "# Priest — Discipline\n\n## Identity\n\n- Role: Hybrid healing / prevention\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Smite — ranged Holy damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Discipline** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Atonement** | 20% of damage dealt by equipped cooldown abilities heals the lowest-health ally. |\n| **Shielding Faith** | Every third Smite grants the lowest-health ally a shield equal to 5% of that ally's maximum health. |\n| **Focused Mind** | Mana costs of equipped cooldown abilities are reduced by 10%. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Grace** | Targets healed or shielded by this hero receive 10% more healing from this hero for 4 seconds. |\n| **Penance** | Every third equipped cooldown triggers a second effect at 30% of the original damage or healing. |\n| **Inner Focus** | Every fourth equipped cooldown costs no Mana and gains 20% Critical Strike chance. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Evangelism** | Using the selected ultimate refreshes this hero's active shields and grants 25% Healing Power for 8 seconds. |\n| **Power Infusion** | Using the selected ultimate grants the lowest-health ally 25% Haste and 15% damage reduction for 8 seconds. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "source_markdown": "# Priest — Discipline\n\n## Talent Prototype\n\nTwo normal talent tiers plus one capstone. Canonical Classic identities/icons come from the Discipline tree. Unlocks use only the structured tier thresholds; there are no per-node prerequisite chains.\n",
   "class": "Priest",
   "specialization": "Discipline",
   "identity": {
@@ -15,41 +15,38 @@
   "talents": {
     "tier_1": [
       {
-        "name": "Atonement",
-        "effect": "20% of damage dealt by equipped cooldown abilities heals the lowest-health ally."
-      },
-      {
-        "name": "Shielding Faith",
-        "effect": "Every third Smite grants the lowest-health ally a shield equal to 5% of that ally's maximum health."
-      },
-      {
-        "name": "Focused Mind",
-        "effect": "Mana costs of equipped cooldown abilities are reduced by 10%."
+        "name": "Unbreakable Will",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_magic_magearmor",
+        "canonical_tree": "Discipline",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Priest/data.ts"
       }
     ],
     "tier_2": [
       {
-        "name": "Grace",
-        "effect": "Targets healed or shielded by this hero receive 10% more healing from this hero for 4 seconds."
-      },
-      {
-        "name": "Penance",
-        "effect": "Every third equipped cooldown triggers a second effect at 30% of the original damage or healing."
-      },
-      {
         "name": "Inner Focus",
-        "effect": "Every fourth equipped cooldown costs no Mana and gains 20% Critical Strike chance."
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_frost_windwalkon",
+        "canonical_tree": "Discipline",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Priest/data.ts"
       }
     ],
     "capstones": [
       {
-        "name": "Evangelism",
-        "effect": "Using the selected ultimate refreshes this hero's active shields and grants 25% Healing Power for 8 seconds."
-      },
-      {
         "name": "Power Infusion",
-        "effect": "Using the selected ultimate grants the lowest-health ally 25% Haste and 15% damage reduction for 8 seconds."
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_holy_powerinfusion",
+        "canonical_tree": "Discipline",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Priest/data.ts"
       }
     ]
+  },
+  "talent_model": {
+    "kind": "two-tier-plus-capstone",
+    "tier_semantics": "Talent tiers are prototype talent progression only and are unrelated to item/building T1–T5 progression.",
+    "tier_1_unlock_points": 0,
+    "tier_2_unlock_points": 1,
+    "capstone_unlock_points": 2,
+    "dependency_rule": "tier-only; no per-node prerequisites"
   }
 }
