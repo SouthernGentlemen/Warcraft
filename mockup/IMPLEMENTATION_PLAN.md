@@ -717,7 +717,7 @@ Replace the current verbose sidecar content with compact functional building men
 
 ### WOWUI-039 — Functional Recruitment Hall
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-038
 
