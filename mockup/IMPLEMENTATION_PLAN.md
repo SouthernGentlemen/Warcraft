@@ -1009,7 +1009,7 @@ Refactor Battle into one encounter framework that supports multiple player party
 
 ### WOWUI-048 — One-Hero Battle Mode
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-047
 
