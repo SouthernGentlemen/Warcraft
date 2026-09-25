@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_path": "docs/heroes/classes/rogue/specs/subtlety.md",
   "kind": "specialization",
   "title": "Rogue — Subtlety",
-  "source_markdown": "# Rogue — Subtlety\n\n## Identity\n\n- Role: Burst melee damage / utility\n- Resource: Energy\n- Primary stat: Agility\n- Auto-attack: Precision Strike — melee weapon damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Subtlety** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Ambush** | The first auto-attack of each combat deals 100% additional damage. |\n| **Shadow Focus** | The first equipped cooldown used each combat costs 50% less Energy. |\n| **Precision** | Precision Strike gains 10% Critical Strike chance. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Find Weakness** | After using an equipped cooldown, the next auto-attack ignores 30% of the target's armor. |\n| **Premeditation** | Begin combat with 20% ultimate-bar charge. |\n| **Elusiveness** | After using an equipped cooldown, take 10% less damage for 4 seconds. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Shadow Dance** | Using the selected ultimate causes the next three auto-attacks to gain Ambush's opening-hit bonus. |\n| **Cheat Death** | Once per combat, lethal damage instead leaves the hero at 1 health and grants 30% damage reduction for 5 seconds. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "source_markdown": "# Rogue — Subtlety\n\n## Talent Prototype\n\nTwo normal talent tiers plus one capstone. Canonical Classic identities/icons come from the Subtlety tree. Unlocks use only structured tier thresholds; there are no per-node prerequisite chains.\n",
   "class": "Rogue",
   "specialization": "Subtlety",
   "identity": {
@@ -15,41 +15,38 @@
   "talents": {
     "tier_1": [
       {
-        "name": "Ambush",
-        "effect": "The first auto-attack of each combat deals 100% additional damage."
-      },
-      {
-        "name": "Shadow Focus",
-        "effect": "The first equipped cooldown used each combat costs 50% less Energy."
-      },
-      {
-        "name": "Precision",
-        "effect": "Precision Strike gains 10% Critical Strike chance."
+        "name": "Master of Deception",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_shadow_charm",
+        "canonical_tree": "Subtlety",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Rogue/data.ts"
       }
     ],
     "tier_2": [
       {
-        "name": "Find Weakness",
-        "effect": "After using an equipped cooldown, the next auto-attack ignores 30% of the target's armor."
-      },
-      {
-        "name": "Premeditation",
-        "effect": "Begin combat with 20% ultimate-bar charge."
-      },
-      {
-        "name": "Elusiveness",
-        "effect": "After using an equipped cooldown, take 10% less damage for 4 seconds."
+        "name": "Initiative",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_shadow_fumble",
+        "canonical_tree": "Subtlety",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Rogue/data.ts"
       }
     ],
     "capstones": [
       {
-        "name": "Shadow Dance",
-        "effect": "Using the selected ultimate causes the next three auto-attacks to gain Ambush's opening-hit bonus."
-      },
-      {
-        "name": "Cheat Death",
-        "effect": "Once per combat, lethal damage instead leaves the hero at 1 health and grants 30% damage reduction for 5 seconds."
+        "name": "Premeditation",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_shadow_possession",
+        "canonical_tree": "Subtlety",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Rogue/data.ts"
       }
     ]
+  },
+  "talent_model": {
+    "kind": "two-tier-plus-capstone",
+    "tier_semantics": "Talent tiers are prototype talent progression only and are unrelated to item/building T1–T5 progression.",
+    "tier_1_unlock_points": 0,
+    "tier_2_unlock_points": 1,
+    "capstone_unlock_points": 2,
+    "dependency_rule": "tier-only; no per-node prerequisites"
   }
 }
