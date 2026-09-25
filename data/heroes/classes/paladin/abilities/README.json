@@ -17,7 +17,8 @@
       "cooldown_ticks": 360,
       "resource": "mana",
       "cost": 95,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_searinglight"
     },
     {
       "id": "shield-of-the-righteous",
@@ -30,7 +31,8 @@
       "cooldown_ticks": 360,
       "resource": "mana",
       "cost": 90,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "ability_paladin_shieldofvengeance"
     },
     {
       "id": "templars-verdict",
@@ -43,7 +45,8 @@
       "cooldown_ticks": 420,
       "resource": "mana",
       "cost": 110,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_retributionaura"
     },
     {
       "id": "consecration",
@@ -56,7 +59,8 @@
       "cooldown_ticks": 480,
       "resource": "mana",
       "cost": 105,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_innerfire"
     }
   ],
   "ultimates": [
@@ -73,7 +77,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_searinglight"
     },
     {
       "id": "capstone-holy-shield",
@@ -88,7 +93,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "classic_spell_holy_blessingofprotection"
     },
     {
       "id": "capstone-repentence",
@@ -103,7 +109,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_prayerofhealing"
     }
   ],
   "ultimate_model": "specialization-capstone"
