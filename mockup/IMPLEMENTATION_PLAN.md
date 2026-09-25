@@ -1424,7 +1424,7 @@ Remove obsolete player navigation now that gear, abilities, and talents live in 
 
 ### WOWUI-061 — Storehouse, Bank, and Armory Ownership Model
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-060
 
