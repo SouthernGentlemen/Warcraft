@@ -1288,7 +1288,7 @@ Define one authoritative per-hero combat loadout matching the player-facing acti
 
 ### WOWUI-057 — Hero Ability Loadout Picker
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-056
 
