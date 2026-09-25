@@ -1216,7 +1216,7 @@ This phase makes hero combat loadouts explicit, moves party composition to the r
 
 ### WOWUI-055 — Roster-Level Party Loadout Management
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-054
 
