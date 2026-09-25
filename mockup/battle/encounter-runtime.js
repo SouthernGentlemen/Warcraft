@@ -160,6 +160,7 @@ export class BattleEncounterRuntime{
       actors:this.actors.map((definition,index)=>({
         definition,
         state:simulationState.actors[index],
+        actionState:this.simulation.actionState(index),
         index
       }))
     };
