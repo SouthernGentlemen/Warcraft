@@ -140,18 +140,25 @@ export function createHeroDefinition({
   const resourceType = normalizeResource(specData.identity?.resource);
 
   let cooldowns = (abilityData.cooldowns || []).filter(action => compatibleCooldown(action, resourceType));
-  if (selectedCooldownIds?.length) {
-    const selected = selectedCooldownIds
-      .map(actionId => cooldowns.find(action => action.id === actionId))
-      .filter(Boolean);
+  if (selectedCooldownIds != null) {
+    const requested = [...new Set(selectedCooldownIds.map(String))];
+    if (requested.length !== 2) throw new Error("Hero combat loadout requires exactly two unique cooldown abilities.");
+    const selected = requested.map(actionId => cooldowns.find(action => action.id === actionId));
+    if (selected.some(action => !action)) throw new Error("Hero combat loadout references an unknown or incompatible cooldown ability.");
     cooldowns = selected;
+  } else {
+    cooldowns = cooldowns.slice(0, 2);
   }
-  cooldowns = cooldowns.slice(0, 2).map(copyAction);
+  cooldowns = cooldowns.map(copyAction);
 
   const ultimates = (abilityData.ultimates || []).map(copyAction);
-  const ultimate = selectedUltimateId
-    ? ultimates.find(action => action.id === selectedUltimateId) || ultimates[0]
-    : ultimates[0];
+  let ultimate = null;
+  if (selectedUltimateId != null) {
+    ultimate = ultimates.find(action => action.id === selectedUltimateId) || null;
+    if (!ultimate) throw new Error("Hero combat loadout references an unknown ultimate ability.");
+  } else {
+    ultimate = ultimates[0] || null;
+  }
 
   const maxResource =
     resourceType === "mana" ? derived.maxMana :
@@ -181,6 +188,12 @@ export function createHeroDefinition({
     auto: autoAction(specData),
     cooldowns,
     ultimate,
+    combatLoadout: {
+      autoAttackId: "auto",
+      ability1Id: cooldowns[0]?.id || null,
+      ability2Id: cooldowns[1]?.id || null,
+      ultimateId: ultimate?.id || null
+    },
     selectedTalents: talents,
     talentHooks
   };
