@@ -438,7 +438,7 @@ This queue replaces the current prototype-heavy Base interactions with compact f
 
 ### WOWUI-030 — Lumber Resource Icon
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-029
 
