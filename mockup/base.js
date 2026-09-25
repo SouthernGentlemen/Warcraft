@@ -37,6 +37,7 @@ function upgradeState(building) {
 
 const state = {
   selected: null,
+  questMessage: "",
   resources: { gold: 25430, lumber: 12680, stone: 8440 }
 };
 
@@ -164,19 +165,95 @@ function syncMapBuildings() {
 
 function questBoardBuilding(){return buildings.find(b=>b.id==="questboard");}
 function compatibleLoadouts(size){return Roster.getState().loadouts.filter(l=>l.size===size&&Roster.validateLoadout(l,true).valid);}
-function renderQuestBoard(){
-  const board=questBoardBuilding(), levelNode=$('#questBoardLevel'), root=$('#questTierList');
-  if(!board||!levelNode||!root)return;
-  levelNode.textContent='Level '+board.level+' / 5';root.innerHTML='';
-  Roster.getState().quests.forEach(quest=>{const unlocked=board.level>=quest.tier,active=quest.status==='active',card=document.createElement('article');card.className='quest-tier-card'+(!unlocked?' is-locked':'')+(active?' is-active':'')+(quest.status==='completed'?' is-completed':'');
-    const loadouts=quest.tier>1?compatibleLoadouts(quest.requiredHeroes):[];const available=Roster.getState().heroes.filter(h=>h.availability==='available');
-    card.innerHTML='<div class="quest-tier-head"><strong>Tier '+quest.tier+'</strong><span>'+quest.requiredHeroes+' hero'+(quest.requiredHeroes===1?'':'es')+'</span><em>'+(!unlocked?'LOCKED · Quest Board level '+quest.tier:active?'ACTIVE':quest.status==='completed'?'COMPLETED · Ready again':'AVAILABLE')+'</em></div><div class="quest-selection"></div><small class="quest-reward">Reward hook · '+quest.reward.gold+' gold · '+quest.reward.amount+' quest mark'+(quest.reward.amount===1?'':'s')+'</small>';
+
+function syncQuestBoardMapState() {
+  const plot = document.querySelector('[data-building="questboard"]');
+  const board = questBoardBuilding();
+  if (!plot || !board) return;
+  const quests = Roster.getState().quests;
+  const active = quests.some(q => q.status === 'active');
+  const completed = quests.some(q => q.status === 'completed');
+  const status = active ? 'active' : completed ? 'completed' : 'available';
+  plot.dataset.questStatus = status;
+  plot.setAttribute('aria-label', board.name + ', level ' + board.level + ', quest status ' + status);
+}
+
+function renderQuestBoard() {
+  const board=questBoardBuilding(), root=$('#questTierList');
+  if(!board||!root)return;
+  root.innerHTML='';
+  const status=$('#questBoardStatus');
+  if(status) status.textContent=state.questMessage || 'Dispatch available heroes to unlocked quest tiers.';
+
+  Roster.getState().quests.forEach(quest=>{
+    const unlocked=board.level>=quest.tier;
+    const active=quest.status==='active';
+    const completed=quest.status==='completed';
+    const card=document.createElement('article');
+    card.className='quest-tier-card'+(!unlocked?' is-locked':'')+(active?' is-active':'')+(completed?' is-completed':'');
+    const loadouts=quest.tier>1?compatibleLoadouts(quest.requiredHeroes):[];
+    const available=Roster.getState().heroes.filter(h=>h.availability==='available');
+    card.innerHTML=
+      '<div class="quest-tier-head"><strong>Tier '+quest.tier+'</strong><span>'+quest.requiredHeroes+' hero'+(quest.requiredHeroes===1?'':'es')+'</span><em>'+
+      (!unlocked?'LOCKED · Quest Board level '+quest.tier:active?'ACTIVE':completed?'COMPLETED · Ready again':'AVAILABLE')+
+      '</em></div>'+
+      '<div class="quest-selection"></div>'+
+      '<small class="quest-reward">Reward · '+fmt(quest.reward.gold)+' gold · '+quest.reward.amount+' quest mark'+(quest.reward.amount===1?'':'s')+'</small>';
+
     const selection=card.querySelector('.quest-selection');
-    if(active){selection.innerHTML='<span>Dispatched: '+quest.heroIds.map(id=>{const h=Roster.hero(id);return h?h.name:id;}).join(', ')+'</span><button class="wow-button" type="button">Complete Quest</button>';selection.querySelector('button').addEventListener('click',()=>{Roster.completeQuest(quest.tier);renderQuestBoard();toast('Tier '+quest.tier+' quest completed. Heroes are available again.');});}
-    else if(unlocked){const select=document.createElement('select');select.className='wow-select quest-source';select.innerHTML='<option value="">Choose '+(quest.tier===1?'hero':'party source')+'</option>'+(quest.tier===1?available.map(h=>'<option value="hero:'+h.id+'">'+h.name+' · '+h.classLabel+'</option>').join(''):loadouts.map(l=>'<option value="loadout:'+l.id+'">Saved · '+l.name+'</option>').join(''))+'<option value="adhoc">Ad-hoc roster</option>';if(quest.tier===1)select.querySelector('option[value="adhoc"]').remove();selection.appendChild(select);const adhoc=document.createElement('div');adhoc.className='quest-adhoc';selection.appendChild(adhoc);const dispatch=document.createElement('button');dispatch.type='button';dispatch.className='wow-button wow-button--primary';dispatch.textContent='Dispatch';dispatch.disabled=true;selection.appendChild(dispatch);let ids=[];
+    if(active){
+      selection.innerHTML='<span class="quest-dispatched">Dispatched: '+quest.heroIds.map(id=>{const h=Roster.hero(id);return h?h.name:id;}).join(', ')+'</span><button class="wow-button" type="button">Complete Quest</button>';
+      selection.querySelector('button').addEventListener('click',()=>{
+        const result=Roster.completeQuest(quest.tier);
+        state.questMessage=result?'Tier '+quest.tier+' completed. Heroes returned to available status.':'Quest is not active.';
+        syncQuestBoardMapState();
+        renderSidecar();
+      });
+    } else if(unlocked){
+      const select=document.createElement('select');
+      select.className='wow-select quest-source';
+      select.innerHTML='<option value="">Choose '+(quest.tier===1?'hero':'party source')+'</option>'+
+        (quest.tier===1
+          ? available.map(h=>'<option value="hero:'+h.id+'">'+h.name+' · '+h.classLabel+'</option>').join('')
+          : loadouts.map(l=>'<option value="loadout:'+l.id+'">Saved · '+l.name+'</option>').join(''))+
+        '<option value="adhoc">Ad-hoc roster</option>';
+      if(quest.tier===1)select.querySelector('option[value="adhoc"]').remove();
+      selection.appendChild(select);
+      const adhoc=document.createElement('div');adhoc.className='quest-adhoc';selection.appendChild(adhoc);
+      const dispatch=document.createElement('button');dispatch.type='button';dispatch.className='wow-button wow-button--primary';dispatch.textContent='Dispatch';dispatch.disabled=true;selection.appendChild(dispatch);
+      let ids=[];
       function sync(){dispatch.disabled=ids.length!==quest.requiredHeroes||ids.some(id=>{const h=Roster.hero(id);return !h||h.availability!=='available';});}
-      select.addEventListener('change',()=>{ids=[];adhoc.innerHTML='';if(select.value.startsWith('hero:'))ids=[select.value.slice(5)];else if(select.value.startsWith('loadout:')){const l=Roster.getState().loadouts.find(x=>x.id===select.value.slice(8));ids=l?l.heroIds.slice():[];}else if(select.value==='adhoc'){available.forEach(h=>{const label=document.createElement('label');label.className='quest-hero-choice';label.innerHTML='<input type="checkbox" value="'+h.id+'"><span>'+h.name+'<small>'+h.classLabel+'</small></span>';label.querySelector('input').addEventListener('change',e=>{ids=e.target.checked?ids.concat(h.id):ids.filter(id=>id!==h.id);if(ids.length>quest.requiredHeroes){e.target.checked=false;ids=ids.filter(id=>id!==h.id);}sync();});adhoc.appendChild(label);});}sync();});
-      dispatch.addEventListener('click',()=>{try{Roster.dispatchQuest(quest.tier,ids);renderQuestBoard();toast('Tier '+quest.tier+' quest dispatched.');}catch(error){toast(error.message);}});
+      select.addEventListener('change',()=>{
+        ids=[];adhoc.innerHTML='';
+        if(select.value.startsWith('hero:')) ids=[select.value.slice(5)];
+        else if(select.value.startsWith('loadout:')){
+          const l=Roster.getState().loadouts.find(x=>x.id===select.value.slice(8));
+          ids=l?l.heroIds.slice():[];
+        } else if(select.value==='adhoc'){
+          available.forEach(h=>{
+            const label=document.createElement('label');label.className='quest-hero-choice';
+            label.innerHTML='<input type="checkbox" value="'+h.id+'"><span>'+h.name+'<small>'+h.classLabel+'</small></span>';
+            label.querySelector('input').addEventListener('change',e=>{
+              ids=e.target.checked?ids.concat(h.id):ids.filter(id=>id!==h.id);
+              if(ids.length>quest.requiredHeroes){e.target.checked=false;ids=ids.filter(id=>id!==h.id);}
+              sync();
+            });
+            adhoc.appendChild(label);
+          });
+        }
+        sync();
+      });
+      dispatch.addEventListener('click',()=>{
+        try{
+          Roster.dispatchQuest(quest.tier,ids);
+          state.questMessage='Tier '+quest.tier+' dispatched with '+ids.length+' hero'+(ids.length===1?'':'es')+'.';
+          syncQuestBoardMapState();
+          renderSidecar();
+        }catch(error){
+          state.questMessage=error.message;
+          renderSidecar();
+        }
+      });
     }
     root.appendChild(card);
   });
@@ -256,7 +333,17 @@ function renderSidecar() {
         : '');
   }
 
+  if (building.id === 'questboard') {
+    body.insertAdjacentHTML('beforeend',
+      '<section class="base-sidecar__section base-sidecar__quests">'+
+        '<div class="base-sidecar__quest-head"><div><span class="wow-kicker">HERO DISPATCH</span><h3>Quest Board</h3></div><small>Tier 1–'+building.level+' unlocked</small></div>'+
+        '<p id="questBoardStatus" class="base-sidecar__quest-status" role="status" aria-live="polite"></p>'+
+        '<div id="questTierList" class="quest-tier-list"></div>'+
+      '</section>');
+  }
+
   bindResolvedIcons(sidecar);
+  if (building.id === 'questboard') renderQuestBoard();
   const upgradeButton = $('#baseSidecarUpgrade');
   if (upgradeButton) upgradeButton.addEventListener('click', () => upgradeBuilding(building.id));
 }
@@ -308,7 +395,11 @@ function upgradeBuilding(id) {
   syncResourceBar();
   syncMapBuildings();
   renderSidecar();
-  renderQuestBoard();
+  if (b.id === 'questboard') {
+    state.questMessage='Quest Board upgraded. Tier '+b.level+' quests are now unlocked.';
+    syncQuestBoardMapState();
+  }
+  renderSidecar();
   toast(b.name+' upgraded to level '+b.level+' (Tier '+b.level+').');
 }
 
@@ -330,6 +421,11 @@ document.addEventListener('keydown', event => {
   }
 });
 
+window.addEventListener('warcraft:roster-changed', () => {
+  syncQuestBoardMapState();
+  if (state.selected === 'questboard' && !$('#baseSidecar').hidden) renderSidecar();
+});
+
 async function initBase() {
   try {
     const response=await fetch(BUILDING_DATA_ROOT); if(!response.ok) throw new Error('Could not load '+BUILDING_DATA_ROOT);
@@ -337,7 +433,7 @@ async function initBase() {
     Icons.hydrate(document); Tooltips.hydrate(document); bindResolvedIcons(document);
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
     all('[data-resource]').forEach(element=>Tooltips.attach(element,()=>resourceTooltipModel(element.dataset.resource,element),{anchor:'target'}));
-    syncResourceBar(); syncMapBuildings(); renderQuestBoard(); $('#baseSidecar').hidden = true;
+    syncResourceBar(); syncMapBuildings(); syncQuestBoardMapState(); $('#baseSidecar').hidden = true;
   } catch(error) { toast(error.message); }
 }
 initBase();
