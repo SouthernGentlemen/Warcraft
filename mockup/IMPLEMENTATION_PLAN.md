@@ -909,7 +909,7 @@ Create an authored dungeon catalog based on World of Warcraft dungeon locations 
 
 ### WOWUI-045 — Quest Board Azeroth Dungeon Map
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-044
 
