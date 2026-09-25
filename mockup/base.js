@@ -588,6 +588,27 @@ function ensureQuestRoundOffers(board) {
   return offerIds;
 }
 
+function oneHeroQuestEncounter(offer,heroIds,assignment){
+  const dungeon=factionStarterDungeon();
+  if(!dungeon)throw new Error('No faction starter dungeon is available.');
+  return {
+    kind:'quest',
+    encounterName:offer.title,
+    questOfferId:offer.id,
+    questAssignmentId:assignment.id,
+    questRound:assignment.round,
+    dungeonId:dungeon.id,
+    dungeonName:dungeon.display_name,
+    npcPoolId:dungeon.npc_pool_id,
+    partySize:1,
+    enemyCount:Number(offer.encounter&&offer.encounter.enemy_count)||1,
+    heroIds:heroIds.slice(),
+    faction:currentFactionId(),
+    seed:questSeedHash(offer.id+':'+assignment.round+':'+heroIds.join(',')),
+    source:'questboard'
+  };
+}
+
 function renderQuestOffers() {
   const board=questBoardBuilding(), root=$('#questOfferList');
   if(!board||!root||!questOfferPool)return;
@@ -627,14 +648,31 @@ function renderQuestOffers() {
       '<small class="quest-reward">Reward · '+fmt(offer.reward.gold)+' gold · '+offer.reward.meta_amount+' quest mark'+(offer.reward.meta_amount===1?'':'s')+'</small>';
 
     const selection=card.querySelector('.quest-selection');
+    const battleOffer=offer.party_size===1&&offer.encounter&&offer.encounter.kind==='npc';
     if(active){
-      selection.innerHTML='<span class="quest-dispatched">Dispatched: '+quest.heroIds.map(id=>{const h=Roster.hero(id);return h?h.name:id;}).join(', ')+'</span><button class="wow-button" type="button">Complete Quest</button>';
-      selection.querySelector('button').addEventListener('click',()=>{
-        const result=Roster.completeQuest(quest.id);
-        state.questMessage=result?offer.title+' completed. Heroes returned to available status.':'Quest is not active.';
-        syncMapBuildings();
-        renderSidecar();
-      });
+      if(battleOffer){
+        selection.innerHTML='<span class="quest-dispatched">Committed: '+quest.heroIds.map(id=>{const h=Roster.hero(id);return h?h.name:id;}).join(', ')+'</span><button class="wow-button wow-button--primary" type="button">Resume Battle</button>';
+        selection.querySelector('button').addEventListener('click',()=>{
+          try{
+            const pending=Roster.getPendingEncounter();
+            if(!pending||pending.questAssignmentId!==quest.id||pending.status==='resolved'){
+              Roster.setPendingEncounter(oneHeroQuestEncounter(offer,quest.heroIds,quest));
+            }
+            window.location.href='./battle.html?encounter=quest&quest='+encodeURIComponent(quest.id);
+          }catch(error){
+            state.questMessage=error.message;
+            renderSidecar();
+          }
+        });
+      }else{
+        selection.innerHTML='<span class="quest-dispatched">Dispatched: '+quest.heroIds.map(id=>{const h=Roster.hero(id);return h?h.name:id;}).join(', ')+'</span><button class="wow-button" type="button">Complete Quest</button>';
+        selection.querySelector('button').addEventListener('click',()=>{
+          const result=Roster.completeQuest(quest.id);
+          state.questMessage=result?offer.title+' completed. Heroes returned to available status.':'Quest is not active.';
+          syncMapBuildings();
+          renderSidecar();
+        });
+      }
     } else if(completed){
       selection.innerHTML='<span class="quest-dispatched">Completed this round.</span>';
     } else {
@@ -648,7 +686,7 @@ function renderQuestOffers() {
       if(offer.party_size===1)select.querySelector('option[value="adhoc"]').remove();
       selection.appendChild(select);
       const adhoc=document.createElement('div');adhoc.className='quest-adhoc';selection.appendChild(adhoc);
-      const dispatch=document.createElement('button');dispatch.type='button';dispatch.className='wow-button wow-button--primary';dispatch.textContent='Dispatch';dispatch.disabled=true;selection.appendChild(dispatch);
+      const dispatch=document.createElement('button');dispatch.type='button';dispatch.className='wow-button wow-button--primary';dispatch.textContent=battleOffer?'Launch Battle':'Dispatch';dispatch.disabled=true;selection.appendChild(dispatch);
       let ids=[];
       function sync(){dispatch.disabled=ids.length!==offer.party_size||ids.some(id=>{const h=Roster.hero(id);return !h||h.availability!=='available';});}
       select.addEventListener('change',()=>{
@@ -673,7 +711,12 @@ function renderQuestOffers() {
       });
       dispatch.addEventListener('click',()=>{
         try{
-          Roster.dispatchQuest(offer,ids);
+          const assignment=Roster.dispatchQuest(offer,ids);
+          if(battleOffer){
+            Roster.setPendingEncounter(oneHeroQuestEncounter(offer,ids,assignment));
+            window.location.href='./battle.html?encounter=quest&quest='+encodeURIComponent(assignment.id);
+            return;
+          }
           state.questMessage=offer.title+' dispatched with '+ids.length+' hero'+(ids.length===1?'':'es')+'.';
           syncMapBuildings();
           renderSidecar();
