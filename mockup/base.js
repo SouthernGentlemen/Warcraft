@@ -80,7 +80,7 @@ const state = {
   questMessage: "",
   recruitmentOpen: false,
   recruitmentMessage: "",
-  artisansOpen: false,
+  professionOpen: null,
   questBoardMode: "offers",
   selectedDungeonId: null,
   dungeonMessage: "",
@@ -110,6 +110,8 @@ const buildingIconKeys = {
   bank:['building','bank'],
   armory:['building','armory'],
   artisans:['building','artisans-guild'],
+  "gathering-camp":['building','gathering-camp'],
+  "survival-lodge":['building','survival-lodge'],
   classhall:['building','class-hall'],
   questboard:['building','quest-board']
 };
@@ -356,7 +358,13 @@ const BUILDING_ACTIONS = Object.freeze({
     Object.freeze({label:'Dungeon Map', action:'dungeon-map', icon:['battle','combat'], description:'Open the Azeroth dungeon map and prepare a dungeon party.'})
   ]),
   artisans:Object.freeze([
-    Object.freeze({label:'Open Professions', action:'artisans', icon:['building','artisans-guild'], description:'Open the Artisans Guild profession roster.'})
+    Object.freeze({label:'Open Artisan Professions', action:'profession-track', icon:['building','artisans-guild'], description:'Open Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, and Engineer.'})
+  ]),
+  "gathering-camp":Object.freeze([
+    Object.freeze({label:'Open Gathering Professions', action:'profession-track', icon:['building','gathering-camp'], description:'Open Mining, Skinning, and Herbalism.'})
+  ]),
+  "survival-lodge":Object.freeze([
+    Object.freeze({label:'Open Survival Professions', action:'profession-track', icon:['building','survival-lodge'], description:'Open Fishing, First Aid, and Cooking.'})
   ]),
   classhall:Object.freeze([])
 });
@@ -501,37 +509,50 @@ function renderRecruitmentWorkflow(building) {
 }
 
 function validateProfessionData(payload) {
-  if (!payload || !Array.isArray(payload.professions) || payload.professions.length !== 6) throw new Error('Profession index requires six professions.');
+  if (!payload || !Array.isArray(payload.tracks) || !Array.isArray(payload.professions) || payload.professions.length !== 12) throw new Error('Profession index requires three tracks and twelve professions.');
+  const trackIds = payload.tracks.map(entry => entry.id);
+  if (JSON.stringify(trackIds) !== JSON.stringify(['artisan','gathering','survival'])) throw new Error('Profession tracks must be Artisan, Gathering, Survival.');
   const ids = payload.professions.map(entry => entry.id);
   if (new Set(ids).size !== ids.length) throw new Error('Profession IDs must be unique.');
-  payload.professions.forEach(entry => {
-    if (!entry.label || !entry.icon_key || !entry.definition_path || !entry.progression_id) throw new Error('Invalid profession metadata for ' + entry.id);
+  payload.tracks.forEach(track => {
+    if (Number(track.assignment_slots) !== 3 || track.training_rule !== 'replace_same_track') throw new Error('Profession track requires three assignment slots and replace_same_track training: ' + track.id);
+    const owned = payload.professions.filter(entry => entry.track === track.id && entry.owner_building === track.building_id).map(entry => entry.id);
+    if (JSON.stringify(owned) !== JSON.stringify(track.professions)) throw new Error('Profession membership mismatch for ' + track.id);
   });
+  payload.professions.forEach(entry => {
+    if (!entry.label || !entry.icon_key || !entry.definition_path || !entry.progression_id || !entry.track || !entry.owner_building) throw new Error('Invalid profession metadata for ' + entry.id);
+  });
+  Professions.configure(payload);
   return payload;
 }
 
-function renderArtisansWorkflow(building) {
-  const root = $('#artisansWorkflow');
+function professionTrackForBuilding(buildingId) {
+  return professionData && professionData.tracks ? professionData.tracks.find(track => track.building_id === buildingId) || null : null;
+}
+
+function renderProfessionBuildingWorkflow(building) {
+  const root = $('#professionWorkflow');
   if (!root || !building || !professionData) return;
-  root.hidden = !state.artisansOpen;
-  if (!state.artisansOpen) return;
+  const track = professionTrackForBuilding(building.id);
+  root.hidden = state.professionOpen !== building.id;
+  if (root.hidden || !track) return;
 
   root.innerHTML =
     '<div class="base-sidecar__artisan-head">' +
-      '<span class="wow-kicker">PROFESSIONS</span>' +
-      '<small>All professions · Level ' + building.level + '</small>' +
+      '<span class="wow-kicker">' + escapeHtml(track.label.toUpperCase()) + ' PROFESSIONS</span>' +
+      '<small>' + track.professions.length + ' professions · Level ' + building.level + '</small>' +
     '</div>' +
     '<div class="base-sidecar__profession-list"></div>';
 
   const list = root.querySelector('.base-sidecar__profession-list');
-  professionData.professions.forEach(definition => {
+  track.professions.map(id => professionData.professions.find(definition => definition.id === id)).filter(Boolean).forEach(definition => {
     const item = document.createElement('a');
     item.className = 'base-sidecar__profession-entry';
-    item.href = './profession.html?profession=' + encodeURIComponent(definition.id);
-    item.setAttribute('aria-label', 'Open ' + definition.label + ', level ' + building.level);
+    item.href = './profession.html?track=' + encodeURIComponent(track.id) + '&profession=' + encodeURIComponent(definition.id);
+    item.setAttribute('aria-label', 'Open ' + definition.label + ', ' + track.label + ' level ' + building.level);
     item.innerHTML =
       iconMarkup('profession', definition.icon_key, 'sm', 'base-sidecar__profession-icon') +
-      '<span class="base-sidecar__profession-copy"><strong>' + definition.label + '</strong><small>Level ' + building.level + ' · Open profession</small></span>';
+      '<span class="base-sidecar__profession-copy"><strong>' + definition.label + '</strong><small>' + escapeHtml(track.label) + ' · Level ' + building.level + '</small></span>';
     list.appendChild(item);
   });
   bindResolvedIcons(root);
@@ -1278,9 +1299,9 @@ function renderSidecar() {
       '<section id="recruitmentWorkflow" class="base-sidecar__section base-sidecar__recruitment" hidden></section>');
   }
 
-  if (building.id === 'artisans') {
+  if (['artisans','gathering-camp','survival-lodge'].includes(building.id)) {
     body.insertAdjacentHTML('beforeend',
-      '<section id="artisansWorkflow" class="base-sidecar__section base-sidecar__artisans" hidden></section>');
+      '<section id="professionWorkflow" class="base-sidecar__section base-sidecar__artisans" hidden></section>');
   }
 
   if (building.id === 'classhall') {
@@ -1329,11 +1350,11 @@ function renderSidecar() {
       renderSidecar();
     });
   }
-  if (building.id === 'artisans') {
-    renderArtisansWorkflow(building);
-    const artisansAction = sidecar.querySelector('[data-building-action="artisans"]');
-    if (artisansAction) artisansAction.addEventListener('click', () => {
-      state.artisansOpen = true;
+  if (['artisans','gathering-camp','survival-lodge'].includes(building.id)) {
+    renderProfessionBuildingWorkflow(building);
+    const professionAction = sidecar.querySelector('[data-building-action="profession-track"]');
+    if (professionAction) professionAction.addEventListener('click', () => {
+      state.professionOpen = building.id;
       renderSidecar();
     });
   }
@@ -1352,7 +1373,7 @@ function openSidecar(id, origin) {
   if (state.selected !== id) {
     state.recruitmentOpen = false;
     state.recruitmentMessage = '';
-    state.artisansOpen = false;
+    state.professionOpen = null;
     if (id !== 'questboard') {
       state.questBoardMode = 'offers';
       state.selectedDungeonId = null;

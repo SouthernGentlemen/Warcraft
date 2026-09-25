@@ -185,7 +185,13 @@
       leatherworker:"trade_leatherworking",
       leatherworking:"trade_leatherworking",
       engineer:"trade_engineering",
-      engineering:"trade_engineering"
+      engineering:"trade_engineering",
+      mining:"trade_mining",
+      skinning:"inv_misc_pelt_wolf_01",
+      herbalism:"trade_herbalism",
+      fishing:"trade_fishing",
+      "first-aid":"inv_misc_bandage_15",
+      cooking:"inv_misc_food_15"
     },
     building: {
       keep:"inv_misc_tournaments_symbol_human",
@@ -199,7 +205,9 @@
       bank:"inv_misc_coin_02",
       armory:"inv_chest_plate04",
       "artisans-guild":"trade_engineering",
-      "class-hall":"inv_misc_book_09"
+      "class-hall":"inv_misc_book_09",
+      "gathering-camp":"trade_mining",
+      "survival-lodge":"inv_misc_food_15"
     },
     quest: {
       journal:"inv_misc_note_01",

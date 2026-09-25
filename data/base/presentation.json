@@ -48,6 +48,14 @@
         "classhall": {
           "x": 17,
           "y": 30
+        },
+        "gathering-camp": {
+          "x": 70,
+          "y": 65
+        },
+        "survival-lodge": {
+          "x": 31,
+          "y": 75
         }
       },
       "mobile_positions": {
@@ -73,7 +81,7 @@
         },
         "artisans": {
           "x": 50,
-          "y": 66
+          "y": 82
         },
         "bank": {
           "x": 77,
@@ -86,6 +94,14 @@
         "classhall": {
           "x": 50,
           "y": 54
+        },
+        "gathering-camp": {
+          "x": 20,
+          "y": 72
+        },
+        "survival-lodge": {
+          "x": 80,
+          "y": 72
         }
       }
     },
@@ -135,6 +151,14 @@
         "classhall": {
           "x": 83,
           "y": 30
+        },
+        "gathering-camp": {
+          "x": 63,
+          "y": 70
+        },
+        "survival-lodge": {
+          "x": 28,
+          "y": 75
         }
       },
       "mobile_positions": {
@@ -160,7 +184,7 @@
         },
         "artisans": {
           "x": 50,
-          "y": 66
+          "y": 82
         },
         "bank": {
           "x": 23,
@@ -173,6 +197,14 @@
         "classhall": {
           "x": 50,
           "y": 54
+        },
+        "gathering-camp": {
+          "x": 20,
+          "y": 72
+        },
+        "survival-lodge": {
+          "x": 80,
+          "y": 72
         }
       }
     }
