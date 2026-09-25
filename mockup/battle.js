@@ -1,6 +1,8 @@
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
+const NPC_CATALOG_ROOT = "../data/npcs/catalog.json";
+const NPC_POOLS_ROOT = "../data/npcs/dungeon-pools.json";
 
 const BASE_TEAMS = {
   alliance: [
@@ -28,16 +30,23 @@ const state = {
   timer: null,
   turn: 0,
   finished: false,
-  log: []
+  log: [],
+  dungeonEncounter: null,
+  dungeonNpcTeam: null,
+  dungeonEnemyFaction: null
 };
 
 const $ = id => document.getElementById(id);
 
 function cloneTeams() {
-  return {
+  const teams = {
     alliance: BASE_TEAMS.alliance.map(unit => ({...unit, currentHp:unit.hp, currentResource:unit.resource})),
     horde: BASE_TEAMS.horde.map(unit => ({...unit, currentHp:unit.hp, currentResource:unit.resource}))
   };
+  if (state.dungeonNpcTeam && state.dungeonEnemyFaction) {
+    teams[state.dungeonEnemyFaction] = state.dungeonNpcTeam.map(unit => ({...unit, currentHp:unit.hp, currentResource:unit.resource}));
+  }
+  return teams;
 }
 
 function slug(value) {
@@ -45,6 +54,7 @@ function slug(value) {
 }
 
 function resourceLabel(unit) {
+  if (unit.kind === "npc") return "Threat";
   if (unit.className === "Warrior") return "Rage";
   if (unit.className === "Rogue") return "Energy";
   return "Mana";
@@ -55,17 +65,17 @@ function unitTooltipModel(unit, faction) {
   return {
     variant:"unit",
     title:unit.name,
-    type:unit.race + " " + unit.className,
+    type:unit.kind === "npc" ? unit.family + " " + unit.npcType : unit.race + " " + unit.className,
     classId:slug(unit.className),
     icon:{slug:unit.icon, classId:slug(unit.className)},
-    description:unit.role.charAt(0).toUpperCase() + unit.role.slice(1) + " combatant.",
+    description:unit.kind === "npc" ? "Dungeon NPC from " + (unit.poolId || "encounter pool") + "." : unit.role.charAt(0).toUpperCase() + unit.role.slice(1) + " combatant.",
     stats:[
       {label:"Health", value:unit.currentHp + " / " + unit.hp},
       {label:resource, value:unit.currentResource + " / " + unit.resource},
       {label:"Power", value:String(unit.power)}
     ],
     meta:[
-      {label:"Faction", value:faction === "alliance" ? "Alliance" : "Horde"},
+      {label:"Faction", value:unit.kind === "npc" ? "Dungeon NPC" : (faction === "alliance" ? "Alliance" : "Horde")},
       {label:"Level", value:String(unit.level)}
     ],
     locked:unit.currentHp <= 0 ? ["Defeated"] : []
@@ -225,6 +235,7 @@ function logEvent(type, actor, target, detail, amount) {
 }
 
 function abilityLabel(unit, mode) {
+  if (unit.kind === "npc") return unit.autoAttackName || "NPC Auto Attack";
   if (mode === "heal") {
     if (unit.className === "Paladin") return "Holy Light";
     if (unit.className === "Priest") return "Flash Heal";
@@ -538,6 +549,74 @@ function resetBattle() {
   scheduleNext();
 }
 
+function npcDisplayUnit(record, poolId) {
+  const combat=record.combat || {};
+  const auto=record.auto_attack || {};
+  return {
+    id:"npc-"+record.id,
+    npcId:record.id,
+    kind:"npc",
+    name:record.name,
+    family:record.family || "Unknown",
+    npcType:record.type || "enemy",
+    race:record.family || "Unknown",
+    className:"NPC",
+    level:Number(record.level)||1,
+    icon:"ability_warrior_savageblow",
+    hp:Number(combat.max_health)||1,
+    resource:0,
+    role:record.type || "enemy",
+    power:Math.max(Number(combat.physical_power)||0,Number(combat.spell_power)||0,1),
+    autoAttackName:auto.name || "NPC Auto Attack",
+    poolId
+  };
+}
+
+async function loadPendingDungeonNpcTeam() {
+  if (!Roster || typeof Roster.getPendingEncounter !== "function") return null;
+  const params=new URLSearchParams(location.search);
+  if(params.get("encounter")!=="dungeon") return null;
+  const encounter=Roster.getPendingEncounter();
+  if(!encounter||encounter.kind!=="dungeon"||!encounter.npcPoolId) return null;
+  if(params.get("dungeon")&&params.get("dungeon")!==encounter.dungeonId) return null;
+
+  const responses=await Promise.all([fetch(NPC_CATALOG_ROOT),fetch(NPC_POOLS_ROOT)]);
+  if(!responses[0].ok) throw new Error("Could not load "+NPC_CATALOG_ROOT);
+  if(!responses[1].ok) throw new Error("Could not load "+NPC_POOLS_ROOT);
+  const catalog=await responses[0].json();
+  const pools=await responses[1].json();
+  const pool=pools.pools.find(entry=>entry.id===encounter.npcPoolId);
+  if(!pool) throw new Error("Unknown dungeon NPC pool: "+encounter.npcPoolId);
+  const byId=new Map(catalog.npcs.map(record=>[record.id,record]));
+  const records=(pool.npc_ids||[]).map(id=>{
+    const record=byId.get(id);
+    if(!record) throw new Error("Dungeon NPC pool references unknown NPC: "+id);
+    return record;
+  });
+  if(!records.length) throw new Error("Dungeon NPC pool is empty: "+encounter.npcPoolId);
+
+  state.dungeonEncounter=encounter;
+  state.dungeonEnemyFaction=encounter.faction==="horde"?"alliance":"horde";
+  state.dungeonNpcTeam=records.map(record=>npcDisplayUnit(record,pool.id));
+  return state.dungeonNpcTeam;
+}
+
+function applyDungeonTeamLabels() {
+  if(!state.dungeonEncounter||!state.dungeonEnemyFaction)return;
+  const enemy=state.dungeonEnemyFaction;
+  const player=enemy==="alliance"?"horde":"alliance";
+  const enemyLabel=$(enemy+"TeamLabel");
+  const enemyName=$(enemy+"TeamName");
+  const playerLabel=$(player+"TeamLabel");
+  const playerName=$(player+"TeamName");
+  const enemyRoot=$(enemy+"Team");
+  if(enemyLabel)enemyLabel.textContent="NPC ENEMIES";
+  if(enemyName)enemyName.textContent=state.dungeonEncounter.dungeonName||"Dungeon Encounter";
+  if(playerLabel)playerLabel.textContent=player.toUpperCase();
+  if(playerName)playerName.textContent="Quest Board Party";
+  if(enemyRoot)enemyRoot.setAttribute("aria-label",(state.dungeonEncounter.dungeonName||"Dungeon")+" NPC enemies");
+}
+
 function applyPendingEncounterContext() {
   if (!Roster || typeof Roster.getPendingEncounter !== 'function') return;
   const params = new URLSearchParams(location.search);
@@ -554,10 +633,13 @@ function applyPendingEncounterContext() {
   if (party) party.textContent = encounter.partySize + " heroes · " + encounter.npcPoolId;
 
   const event = $("battleEvent");
-  if (event) event.textContent = "Dungeon party prepared from Quest Board. Current prototype combat presentation will be replaced by the shared dungeon encounter framework.";
+  if (event) event.textContent = state.dungeonNpcTeam && state.dungeonNpcTeam.length
+    ? "Encounter loaded: " + state.dungeonNpcTeam.map(unit => unit.name).join(", ") + "."
+    : "Dungeon party prepared from Quest Board.";
+  applyDungeonTeamLabels();
 }
 
-function init() {
+async function init() {
   Icons.hydrate(document);
   Tooltips.hydrate(document);
   $("pauseBattle").addEventListener("click", () => setPaused(!state.paused));
@@ -567,6 +649,11 @@ function init() {
     button.addEventListener("click", () => setSpeed(Number(button.dataset.speed)));
   });
 
+  try { await loadPendingDungeonNpcTeam(); }
+  catch (error) {
+    const event=$("battleEvent");
+    if(event)event.textContent=error.message;
+  }
   applyPendingEncounterContext();
   resetBattle();
   applyPendingEncounterContext();
