@@ -603,6 +603,7 @@ function questBattleEncounter(offer,heroIds,assignment,loadoutId=null){
     npcPoolId:dungeon.npc_pool_id,
     partySize,
     enemyCount:Number(offer.encounter&&offer.encounter.enemy_count)||partySize,
+    reward:Object.assign({},offer.reward||{}),
     heroIds:heroIds.slice(),
     loadoutId:loadoutId||null,
     faction:currentFactionId(),
