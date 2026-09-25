@@ -226,6 +226,12 @@ Quest Board now switches between randomized quest offers and a data-driven Azero
 
 Dungeon enemies now come from `data/npcs/catalog.json`, governed by `data/npcs/schema.json`. NPC records own stable identity, family/type, level/tier, integer combat stats, auto attack, optional abilities, dungeon membership, and pool membership. `data/npcs/dungeon-pools.json` contains only ordered NPC IDs and resolves through the authoritative catalog. `mockup/combat/engine/npc-factory.js` converts those records into the fixed-tick combat definition shape, and repeated combat with the same actor set/seed is regression-tested for identical final-state and combat-log hashes. Battle uses that same catalog/pool contract so combat cards and log entries name authored dungeon NPCs.
 
+### Battle health rendering
+
+Battle health presentation is normalized through `mockup/battle/health-bars.js`. Individual cards clamp snapshot HP to `0..maxHealth`, force dead actors to visual zero, and derive their fill width from that normalized percentage. Team/raid summaries sum those same normalized actor values, so aggregate health cannot drift from the visible unit cards.
+
+Every runtime pulse processes combat events and then refreshes health from the returned deterministic snapshot. Reset rebuilds cards from the runtime's reset snapshot, restoring full-health fills without retaining stale DOM widths. Both actor and team bars expose progressbar values for current/max HP. The fill CSS keeps explicit `min-width: 0` / `max-width: 100%` bounds and no conflicting right inset, so inline snapshot widths remain visibly resizable in 1-, 3-, 5-, 10-, and 20-hero layouts.
+
 ### Shared Battle encounter framework
 
 Battle now runs through `mockup/battle/encounter-runtime.js`, which accepts explicit party sizes `1, 3, 5, 10, 20`, resolves player participants from `WarcraftRoster` / saved loadout hero IDs, resolves enemies through the NPC catalog + pool contract, and drives one fixed-tick `CombatSimulation` event stream. Pause, reset, completion, deterministic seed replay, and the reward-completion hook are owned by this runtime rather than by separate size-specific loops. The canonical combat engine lives exclusively under `mockup/combat/engine/`, and `npm test` runs `mockup/combat/smoke-test.js` alongside integration acceptance. Battle presentation consumes runtime snapshots/events and uses `data-party-size` layout primitives for 1/3/5/10/20 without changing combat rules.
