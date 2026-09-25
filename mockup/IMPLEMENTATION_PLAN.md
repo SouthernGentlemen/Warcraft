@@ -1850,7 +1850,7 @@ Make roster membership and recruitment strictly faction-owned and scale roster c
 
 ### WOWUI-071 — Authored Class Base Stats and Racial Presentation
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-070
 
