@@ -58,7 +58,9 @@ function buildBaseStats(level,classMeta){
   return base;
 }
 
-function buildStats(level,classMeta,specData) {
+function normalizeEquipmentStats(value){const source=value&&typeof value==="object"?value:{};const keys=["strength","agility","intellect","stamina","spirit","crit","haste","hitRating","mastery"];return Object.fromEntries(keys.map(key=>[key,Number(source[key])||0]));}
+
+function buildStats(level,classMeta,specData,equipmentStats={}) {
   const baseStats=buildBaseStats(level,classMeta);
   const ratings=COMBAT_RATING_BASELINES[level] || COMBAT_RATING_BASELINES[5];
   const stats = {
@@ -71,6 +73,9 @@ function buildStats(level,classMeta,specData) {
     mastery: ratings.mastery
   };
 
+  const equipment=normalizeEquipmentStats(equipmentStats);
+  Object.entries(equipment).forEach(([key,value])=>{if(Object.prototype.hasOwnProperty.call(stats,key))stats[key]+=value;});
+
   const role = String(specData.identity?.role || "").toLowerCase();
   if (role.includes("spell") || role.includes("shadow") || role.includes("elemental")) {
     stats.spellPower = level * 3;
@@ -79,7 +84,7 @@ function buildStats(level,classMeta,specData) {
     stats.healingPower = level * 3;
   }
 
-  return {baseStats,stats};
+  return {baseStats,equipmentStats:equipment,stats};
 }
 
 function buildDerived(stats, hooks) {
@@ -149,11 +154,12 @@ export function createHeroDefinition({
   selectedCooldownIds = null,
   selectedUltimateId = null,
   selectedTalentNames = null,
+  equipmentStats = null,
   team = 0
 }) {
   const talents = selectedTalentNames || defaultTalentNames(specData, level);
   const talentHooks = compileTalentHooks(specData, talents);
-  const {baseStats,stats} = buildStats(level, classMeta, specData);
+  const {baseStats,equipmentStats:resolvedEquipmentStats,stats} = buildStats(level, classMeta, specData, equipmentStats);
   const derived = buildDerived(stats, talentHooks);
   const resourceType = normalizeResource(specData.identity?.resource);
 
@@ -191,6 +197,7 @@ export function createHeroDefinition({
     specId: classMeta.specs.find(s => s.label === specData.specialization)?.id || specData.specialization.toLowerCase(),
     specName: specData.specialization,
     baseStats,
+    equipmentStats:resolvedEquipmentStats,
     stats,
     derived,
     resourceType,

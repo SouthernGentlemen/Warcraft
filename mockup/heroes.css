@@ -36,3 +36,27 @@
 .hero-talents-panel__head h2{margin:2px 0 0;color:var(--wow-gold-pale);font-size:13px}
 .hero-talents-panel__spec{min-width:190px}
 @media(max-width:620px){.hero-tabs{grid-template-columns:repeat(2,minmax(0,1fr));padding:5px}.hero-tab{border-bottom:1px solid var(--wow-frame-edge)}.hero-talents-panel__head{align-items:stretch;flex-direction:column}.hero-talents-panel__spec{width:100%;min-width:0}}
+
+/* WOWUI-074 — Roster-owned WoW paper doll + Armory */
+.hero-gear-workspace{display:grid;grid-template-columns:minmax(430px,1.3fr) minmax(280px,.7fr);gap:7px;min-height:0}
+.hero-paperdoll{min-height:430px;display:grid;grid-template-columns:86px minmax(210px,1fr) 86px;align-items:center;gap:16px;padding:18px 20px;background:radial-gradient(circle at 50% 38%,rgba(183,139,59,.11),transparent 29%),linear-gradient(180deg,#171b18,#0b0e0d 78%);box-shadow:inset 0 0 0 1px var(--wow-inset-line),inset 0 0 48px rgba(0,0,0,.55)}
+.hero-gear-slot-column{display:grid;align-content:center;justify-items:center;gap:13px}
+.hero-gear-slot{width:82px;min-height:94px;display:grid;grid-template-rows:12px 58px auto;justify-items:center;align-items:center;gap:3px;padding:0;border:0;background:transparent;color:var(--wow-text-dim);cursor:pointer;text-align:center}
+.hero-gear-slot:hover .hero-gear-slot__icon,.hero-gear-slot:focus-visible .hero-gear-slot__icon{filter:brightness(1.16);transform:translateY(-1px)}.hero-gear-slot:focus-visible{outline:none}
+.hero-gear-slot__label{width:100%;overflow:hidden;font-size:7px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-overflow:ellipsis;white-space:nowrap}
+.hero-gear-slot__icon{--wow-icon-size:56px;transition:filter .12s ease,transform .12s ease}.hero-gear-slot.is-empty .hero-gear-slot__icon{opacity:.6}
+.hero-gear-slot__name{max-width:82px;overflow:hidden;color:var(--wow-text-muted);font-size:7px;text-overflow:ellipsis;white-space:nowrap}
+.hero-gear-portrait-stage{display:grid;place-items:center;align-content:center;gap:12px;min-width:0}
+.hero-gear-portrait-ring{position:relative;width:min(210px,76%);aspect-ratio:1;border:4px double var(--wow-gold-muted);border-radius:50%;overflow:hidden;background:radial-gradient(circle,#28251b,#0d0f0e 70%);box-shadow:0 0 0 4px #0a0b0a,0 0 22px rgba(183,139,59,.18),inset 0 0 28px rgba(0,0,0,.65)}
+.hero-gear-portrait-ring img{width:100%;height:100%;object-fit:cover;image-rendering:auto}
+.hero-gear-level{position:absolute;right:8px;bottom:8px;min-width:30px;height:30px;display:grid;place-items:center;border:2px solid var(--wow-gold-muted);border-radius:50%;background:#111;color:var(--wow-gold-bright);font:700 14px var(--wow-font-display)}
+.hero-gear-proficiency,.hero-gear-summary{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 12px;color:var(--wow-text-dim);font-size:8px;text-align:center}.hero-gear-proficiency strong{color:var(--wow-gold-pale)}
+.hero-armory{display:flex;min-width:0;min-height:430px;flex-direction:column;padding:7px;overflow:hidden}.hero-armory .hero-panel-head h2{margin:1px 0 0;color:var(--wow-gold-pale);font-size:13px}.hero-armory .hero-panel-head>span{color:var(--wow-text-dim);font-size:8px}
+.hero-armory-filters{display:grid;grid-template-columns:1fr 1fr;gap:5px}.hero-armory-search{grid-column:1/-1}.hero-armory-check{grid-column:1/-1;align-self:center;font-size:8px}
+.hero-armory-grid{min-height:260px;display:grid;grid-template-columns:repeat(auto-fill,58px);grid-auto-rows:58px;align-content:start;gap:7px;margin-top:7px;padding:8px;overflow:auto;background:var(--wow-surface-inset)}
+.hero-armory-item{position:relative;width:58px;height:58px;display:grid;place-items:center;padding:0;border:0;background:transparent;cursor:pointer}.hero-armory-item>.wow-icon-frame{--wow-icon-size:54px;transition:filter .12s ease,transform .12s ease}.hero-armory-item:hover>.wow-icon-frame,.hero-armory-item:focus-visible>.wow-icon-frame{filter:brightness(1.16);transform:translateY(-1px)}.hero-armory-item:focus-visible{outline:none}.hero-armory-item.is-locked{opacity:.5;cursor:not-allowed}
+.hero-armory-equipped-mark{position:absolute;left:-5px;top:-5px;z-index:2;width:17px;height:17px;display:grid;place-items:center;border:1px solid var(--wow-success-deep);border-radius:50%;background:#0b2110;color:var(--wow-success);font:900 9px Arial,sans-serif;box-shadow:0 1px 3px #000}
+.hero-armory-empty{grid-column:1/-1;min-height:180px;display:grid;place-items:center;align-content:center;gap:4px;color:var(--wow-text-dim);font-size:9px;text-align:center}.hero-armory-empty strong{color:var(--wow-text-muted);font:700 14px var(--wow-font-display)}
+.hero-picker-unequip{border-color:var(--wow-warning)!important}.hero-picker-item.is-selected{border-color:var(--wow-gold)}
+@media(max-width:900px){.hero-gear-workspace{grid-template-columns:1fr}.hero-armory{min-height:360px}.hero-paperdoll{grid-template-columns:74px minmax(190px,1fr) 74px}}
+@media(max-width:620px){.hero-paperdoll{grid-template-columns:62px minmax(140px,1fr) 62px;gap:6px;padding:10px 5px;min-height:380px}.hero-gear-slot{width:60px;min-height:78px;grid-template-rows:11px 48px auto}.hero-gear-slot__icon{--wow-icon-size:46px}.hero-gear-slot__name{max-width:60px}.hero-gear-portrait-ring{width:min(145px,90%)}.hero-armory-grid{grid-template-columns:repeat(auto-fill,50px);grid-auto-rows:50px}.hero-armory-item{width:50px;height:50px}.hero-armory-item>.wow-icon-frame{--wow-icon-size:46px}}

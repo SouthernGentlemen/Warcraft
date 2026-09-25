@@ -1,6 +1,9 @@
 import { CombatSimulation } from "../combat/engine/combat-sim.js";
 import { createHeroDefinition } from "../combat/engine/hero-factory.js";
 import { resolveNpcPoolDefinitions } from "../combat/engine/npc-factory.js";
+import "../ui/warcraft-equipment-rules.js";
+
+const EquipmentRules=globalThis.WarcraftEquipmentRules;
 
 export const SUPPORTED_PARTY_SIZES = Object.freeze([1,3,5,10,20]);
 const CLASS_DATA_ROOT = "../../data/heroes/classes/";
@@ -68,6 +71,7 @@ async function heroDefinition(hero,classIndex,team=0){
     selectedCooldownIds:[hero.combatLoadout.ability1Id,hero.combatLoadout.ability2Id],
     selectedUltimateId:capstone.ultimate_id,
     selectedTalentNames:Array.isArray(hero.talentBuild&&hero.talentBuild.picks)?hero.talentBuild.picks:null,
+    equipmentStats:EquipmentRules.modifiers(hero.equipment,hero),
     team
   }),{
     race:hero.race,

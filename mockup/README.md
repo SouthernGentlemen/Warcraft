@@ -118,6 +118,8 @@ Keep level is the canonical Base Level for each faction and is the only source o
 
 Roster hero detail uses one four-tab character workspace: **Abilities / Gear / Stats / Talents**. Hero identity remains visible while switching tabs; Party/Raid/Siege management stays outside hero detail. Direct links use `heroes.html?hero=<hero-id>&tab=<abilities|gear|stats|talents>`, which is the stable entry contract for the later Class Hall implementation.
 
+The Roster **Gear** tab is the player-facing equipment surface: a seven-slot WoW-style paper doll (Head, Chest, Pants, Feet, Gloves, Weapon, Trinket) plus an owned Armory browser. Equip/replace/unequip writes through `WarcraftRoster`; shared `warcraft-equipment-rules.js` owns catalog eligibility and stat modifiers for both the Roster Stats tab and Battle actor construction. The standalone `gear.html` remains developer inspection only.
+
 `WarcraftRoster` and `WarcraftProfessions` are compatibility-facing adapters over the active campaign rather than separate global save files. Switching faction changes the records returned by those APIs without copying or mutating the inactive campaign. Fresh state seeds the existing sample heroes into their authored faction only. A legacy `warcraft.mockup.roster.v1` / `warcraft.mockup.professions.v1` save migrates once into its previously active faction; the opposite campaign is left independent and legacy hero IDs are never cloned into both campaigns.
 
 ### Shared roster state
