@@ -1671,7 +1671,7 @@ Expose the deterministic Auto Attack cadence as a real Battle swing timer.
 
 ### WOWUI-068 — Phase Cleanup and Regression Coverage
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-064, WOWUI-067
 
