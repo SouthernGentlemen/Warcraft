@@ -588,9 +588,10 @@ function ensureQuestRoundOffers(board) {
   return offerIds;
 }
 
-function oneHeroQuestEncounter(offer,heroIds,assignment){
+function questBattleEncounter(offer,heroIds,assignment,loadoutId=null){
   const dungeon=factionStarterDungeon();
   if(!dungeon)throw new Error('No faction starter dungeon is available.');
+  const partySize=Number(offer.party_size)||heroIds.length;
   return {
     kind:'quest',
     encounterName:offer.title,
@@ -600,9 +601,10 @@ function oneHeroQuestEncounter(offer,heroIds,assignment){
     dungeonId:dungeon.id,
     dungeonName:dungeon.display_name,
     npcPoolId:dungeon.npc_pool_id,
-    partySize:1,
-    enemyCount:Number(offer.encounter&&offer.encounter.enemy_count)||1,
+    partySize,
+    enemyCount:Number(offer.encounter&&offer.encounter.enemy_count)||partySize,
     heroIds:heroIds.slice(),
+    loadoutId:loadoutId||null,
     faction:currentFactionId(),
     seed:questSeedHash(offer.id+':'+assignment.round+':'+heroIds.join(',')),
     source:'questboard'
@@ -648,7 +650,7 @@ function renderQuestOffers() {
       '<small class="quest-reward">Reward · '+fmt(offer.reward.gold)+' gold · '+offer.reward.meta_amount+' quest mark'+(offer.reward.meta_amount===1?'':'s')+'</small>';
 
     const selection=card.querySelector('.quest-selection');
-    const battleOffer=offer.party_size===1&&offer.encounter&&offer.encounter.kind==='npc';
+    const battleOffer=[1,3].includes(offer.party_size)&&offer.encounter&&offer.encounter.kind==='npc';
     if(active){
       if(battleOffer){
         selection.innerHTML='<span class="quest-dispatched">Committed: '+quest.heroIds.map(id=>{const h=Roster.hero(id);return h?h.name:id;}).join(', ')+'</span><button class="wow-button wow-button--primary" type="button">Resume Battle</button>';
@@ -656,7 +658,7 @@ function renderQuestOffers() {
           try{
             const pending=Roster.getPendingEncounter();
             if(!pending||pending.questAssignmentId!==quest.id||pending.status==='resolved'){
-              Roster.setPendingEncounter(oneHeroQuestEncounter(offer,quest.heroIds,quest));
+              Roster.setPendingEncounter(questBattleEncounter(offer,quest.heroIds,quest));
             }
             window.location.href='./battle.html?encounter=quest&quest='+encodeURIComponent(quest.id);
           }catch(error){
@@ -688,12 +690,15 @@ function renderQuestOffers() {
       const adhoc=document.createElement('div');adhoc.className='quest-adhoc';selection.appendChild(adhoc);
       const dispatch=document.createElement('button');dispatch.type='button';dispatch.className='wow-button wow-button--primary';dispatch.textContent=battleOffer?'Launch Battle':'Dispatch';dispatch.disabled=true;selection.appendChild(dispatch);
       let ids=[];
+      let selectedLoadoutId=null;
       function sync(){dispatch.disabled=ids.length!==offer.party_size||ids.some(id=>{const h=Roster.hero(id);return !h||h.availability!=='available';});}
       select.addEventListener('change',()=>{
         ids=[];adhoc.innerHTML='';
+        selectedLoadoutId=null;
         if(select.value.startsWith('hero:')) ids=[select.value.slice(5)];
         else if(select.value.startsWith('loadout:')){
-          const l=Roster.getState().loadouts.find(x=>x.id===select.value.slice(8));
+          selectedLoadoutId=select.value.slice(8);
+          const l=Roster.getState().loadouts.find(x=>x.id===selectedLoadoutId);
           ids=l?l.heroIds.slice():[];
         } else if(select.value==='adhoc'){
           available.forEach(h=>{
@@ -713,7 +718,7 @@ function renderQuestOffers() {
         try{
           const assignment=Roster.dispatchQuest(offer,ids);
           if(battleOffer){
-            Roster.setPendingEncounter(oneHeroQuestEncounter(offer,ids,assignment));
+            Roster.setPendingEncounter(questBattleEncounter(offer,ids,assignment,selectedLoadoutId));
             window.location.href='./battle.html?encounter=quest&quest='+encodeURIComponent(assignment.id);
             return;
           }
