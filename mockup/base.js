@@ -81,12 +81,7 @@ const buildingIconKeys = {
   training:['building','training-grounds'],
   recruitment:['building','recruitment-hall'],
   storehouse:['building','storehouse'],
-  blacksmith:['profession','blacksmithing'],
-  alchemy:['profession','alchemy'],
-  enchanter:['profession','enchanting'],
-  tailor:['profession','tailoring'],
-  leather:['profession','leatherworking'],
-  engineer:['profession','engineering'],
+  artisans:['building','artisans-guild'],
   questboard:['building','quest-board']
 };
 
@@ -190,23 +185,8 @@ const BUILDING_ACTIONS = Object.freeze({
   questboard:Object.freeze([
     Object.freeze({label:'Open Quest Journal', href:'./quest-journal.html', icon:['quest','journal'], description:'Review available, active, and completed quests.'})
   ]),
-  blacksmith:Object.freeze([
-    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','blacksmithing'], description:'Review owned equipment while profession workflows are consolidated into Artisans Guild.'})
-  ]),
-  alchemy:Object.freeze([
-    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','alchemy'], description:'Review owned items while profession workflows are consolidated into Artisans Guild.'})
-  ]),
-  enchanter:Object.freeze([
-    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','enchanting'], description:'Review owned equipment while profession workflows are consolidated into Artisans Guild.'})
-  ]),
-  tailor:Object.freeze([
-    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','tailoring'], description:'Review owned equipment while profession workflows are consolidated into Artisans Guild.'})
-  ]),
-  leather:Object.freeze([
-    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','leatherworking'], description:'Review owned equipment while profession workflows are consolidated into Artisans Guild.'})
-  ]),
-  engineer:Object.freeze([
-    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','engineering'], description:'Review owned items while profession workflows are consolidated into Artisans Guild.'})
+  artisans:Object.freeze([
+    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['building','artisans-guild'], description:'Review owned equipment and materials managed through the Artisans Guild.'})
   ])
 });
 
