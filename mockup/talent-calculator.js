@@ -1,6 +1,6 @@
 const DATA_ROOT = "../data/heroes/classes/";
 const Icons = window.WowUIIcons;
-const Tooltips = window.WowUITooltips;
+const Tooltips = window.WowUITooltips;\nconst Roster = window.WarcraftRoster;
 
 const state = {
   index: null,
@@ -335,7 +335,7 @@ async function init() {
     });
     $("resetBuild").addEventListener("click", resetBuild);
 
-    await changeClass(state.index.classes[0].id);
+    const firstHero=Roster.getState().heroes[0];\n    state.rosterHeroId=firstHero ? firstHero.id : null;\n    const initialClass=firstHero ? firstHero.classId : state.index.classes[0].id;\n    $("classSelect").value=initialClass;\n    await changeClass(initialClass);
   } catch (error) {
     showError(error.message + ". Serve the repository over HTTP; see mockup/README.md.");
   }
