@@ -1037,7 +1037,7 @@ Deliver a functional 1-hero versus NPC battle mode.
 
 ### WOWUI-049 — Three-Hero Battle Mode
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-048
 
