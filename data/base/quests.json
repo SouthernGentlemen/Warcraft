@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "kind": "quest_board",
+  "tier_size_mapping": {
+    "1": 1,
+    "2": 3,
+    "3": 5,
+    "4": 10,
+    "5": 20
+  },
+  "tiers": [
+    {
+      "tier": 1,
+      "required_heroes": 1,
+      "requires": {
+        "building": "questboard",
+        "level": 1
+      },
+      "selection_modes": [
+        "solo"
+      ],
+      "state_hooks": [
+        "available",
+        "active",
+        "completed"
+      ],
+      "reward": {
+        "gold": 250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 1
+      }
+    },
+    {
+      "tier": 2,
+      "required_heroes": 3,
+      "requires": {
+        "building": "questboard",
+        "level": 2
+      },
+      "selection_modes": [
+        "saved_loadout",
+        "ad_hoc"
+      ],
+      "state_hooks": [
+        "available",
+        "active",
+        "completed"
+      ],
+      "reward": {
+        "gold": 500,
+        "meta_currency": "quest_marks",
+        "meta_amount": 2
+      }
+    },
+    {
+      "tier": 3,
+      "required_heroes": 5,
+      "requires": {
+        "building": "questboard",
+        "level": 3
+      },
+      "selection_modes": [
+        "saved_loadout",
+        "ad_hoc"
+      ],
+      "state_hooks": [
+        "available",
+        "active",
+        "completed"
+      ],
+      "reward": {
+        "gold": 750,
+        "meta_currency": "quest_marks",
+        "meta_amount": 3
+      }
+    },
+    {
+      "tier": 4,
+      "required_heroes": 10,
+      "requires": {
+        "building": "questboard",
+        "level": 4
+      },
+      "selection_modes": [
+        "saved_loadout",
+        "ad_hoc"
+      ],
+      "state_hooks": [
+        "available",
+        "active",
+        "completed"
+      ],
+      "reward": {
+        "gold": 1000,
+        "meta_currency": "quest_marks",
+        "meta_amount": 4
+      }
+    },
+    {
+      "tier": 5,
+      "required_heroes": 20,
+      "requires": {
+        "building": "questboard",
+        "level": 5
+      },
+      "selection_modes": [
+        "saved_loadout",
+        "ad_hoc"
+      ],
+      "state_hooks": [
+        "available",
+        "active",
+        "completed"
+      ],
+      "reward": {
+        "gold": 1250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 5
+      }
+    }
+  ]
+}
