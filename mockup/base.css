@@ -545,6 +545,31 @@
   font-size: 8px;
 }
 
+.base-sidecar__header-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.base-sidecar__header-upgrade {
+  min-width: 92px;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 9px;
+}
+
+.base-sidecar__header-upgrade[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.base-sidecar__header-upgrade-icon {
+  --wow-icon-size: 24px;
+}
+
 .base-sidecar__close {
   flex: 0 0 auto;
   width: 38px;
@@ -626,14 +651,6 @@
   font-weight: 800;
   letter-spacing: .06em;
   text-transform: uppercase;
-}
-
-.base-sidecar__upgrade-control {
-  cursor: pointer;
-}
-
-.base-sidecar__upgrade-control[aria-disabled="true"] {
-  cursor: not-allowed;
 }
 
 /* Storehouse / Bank / Armory browsers */
