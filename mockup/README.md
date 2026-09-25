@@ -152,9 +152,19 @@ Base presentation is driven by the persisted player faction in `WarcraftRoster`.
 
 `quest-journal.html` is a read-only projection of `WarcraftRoster.getState().quests`. It groups current assignments into Available/Accepted, Active, and Completed sections, shows party/reward context with shared icons and tooltips, updates on `warcraft:roster-changed`, and never dispatches/completes/rerolls quests itself. Dungeon and world-map selection remain Quest Board responsibilities.
 
+### Storage ownership model
+
+Persistent item ownership is split across three Base buildings rather than one generic storage concept:
+
+- **Storehouse** owns profession reagents only. Prototype reagent balances are authored in `data/items/reagents/holdings.json`; every record is categorized as `reagent`, tiered 1–5, and associated with its profession consumers.
+- **Bank** owns persistent currencies, economy items, and meta-progression holdings. Prototype balances are authored in `data/items/economy/holdings.json` and restricted to `currency`, `meta_progression`, or `economy`.
+- **Armory** owns equipment. It does not duplicate equipment into a new JSON inventory; Base derives Armory ownership from `WarcraftEquipment.owned()`, the same authoritative equipment catalog used by hero management.
+
+Storehouse, Bank, and Armory are all normal five-level core Base buildings and therefore inherit the centralized Keep gate used by every non-Keep upgrade. Alliance and Horde presentation data supplies desktop/mobile hotspots for all three. Their in-sidecar browsing UI is handled by the subsequent storage-browser phase.
+
 ### Global Inventory
 
-`inventory.html` reads owned prototype items from `WarcraftEquipment.owned()`, which derives from the same shared equipment catalog used by Gear and Hero Management. The Inventory never writes equipment state: equipped status is derived from `WarcraftRoster` item-ID references, and actual equip/unequip actions remain in hero-management workflows. This keeps one item catalog plus one authoritative roster equipment state with no duplicate Inventory copy.
+`inventory.html` remains a developer/prototype-wide equipment browser backed by `WarcraftEquipment.owned()`. It never writes equipment state: equipped status is derived from `WarcraftRoster` item-ID references, and actual equip/unequip actions remain in hero-management workflows. Player-facing Base ownership is represented by the Armory rather than by treating Storehouse as a generic Inventory link.
 
 ### Base player action dock
 
