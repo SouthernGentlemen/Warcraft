@@ -2062,7 +2062,7 @@ Introduce the Darkest Dungeon-style advancement cadence: heroes earn small XP in
 
 ### WOWUI-077 — Class Hall and Talent Trainers
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-075, WOWUI-076
 
