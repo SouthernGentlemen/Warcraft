@@ -123,3 +123,7 @@ Core and profession buildings now manage progression directly inside the shared 
 ### Quest Board sidecar
 
 Quest Board is now a first-class building on the Base map and uses the shared building sidecar for both progression and hero dispatch. The sidecar renders Tier 1–5 quest availability, party-size requirements, available heroes/saved loadouts/ad-hoc selection, active assignments, completion, and rewards directly from authoritative roster state. Dispatch/completion state survives sidecar close/reopen, and the legacy permanent Quest Board panel dependency is gone.
+
+### Base attention signaling
+
+The closed-sidecar Base map now exposes one deterministic attention state per building. Priority is Quest complete, Quest ready, profession action, upgrade ready, then blocked. Ready/completed states use compact semantic icon markers while blocked upgrades use a deliberately subdued treatment. Building accessible labels and tooltips explain the active state, and attention recalculates after resource, upgrade, roster, dispatch, and completion changes without adding a separate overview panel.
