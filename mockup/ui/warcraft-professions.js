@@ -1,16 +1,13 @@
 (function(global){
 "use strict";
-const STORAGE_KEY="warcraft.mockup.professions.v1";
-function defaults(){return {guildLevel:1,activeProfession:null};}
-function normalize(raw){const next=Object.assign(defaults(),raw&&typeof raw==="object"?raw:{});next.guildLevel=Math.max(1,Math.min(5,Number(next.guildLevel)||1));next.activeProfession=next.activeProfession?String(next.activeProfession):null;return next;}
-function load(){try{return normalize(JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"));}catch(_){return defaults();}}
-let state=load();
-function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(_){}if(!save.queued){save.queued=true;queueMicrotask(()=>{save.queued=false;global.dispatchEvent(new CustomEvent("warcraft:professions-changed",{detail:getState()}));});}}
-function getState(){return state;}
-function getGuildLevel(){return state.guildLevel;}
-function setGuildLevel(level){const next=Math.max(1,Math.min(5,Number(level)||1));if(next<state.guildLevel)return state.guildLevel;if(next===state.guildLevel)return state.guildLevel;state.guildLevel=next;save();return state.guildLevel;}
-function setActiveProfession(id){state.activeProfession=String(id);save();return state.activeProfession;}
-function clearActiveProfession(){if(state.activeProfession==null)return;state.activeProfession=null;save();}
-function reset(){state=defaults();save();}
+const Campaign=global.WarcraftCampaign;if(!Campaign)throw new Error("WarcraftCampaign must load before WarcraftProfessions.");
+function getState(){return Campaign.getProfessionState();}
+function getGuildLevel(){return getState().guildLevel;}
+function save(patch){const next=Campaign.setProfessionState(patch);if(!save.queued){save.queued=true;queueMicrotask(()=>{save.queued=false;global.dispatchEvent(new CustomEvent("warcraft:professions-changed",{detail:getState()}));});}return next;}
+function setGuildLevel(level){const next=Math.max(1,Math.min(5,Number(level)||1));if(next===getGuildLevel())return next;save({guildLevel:next});return next;}
+function setActiveProfession(id){const next=id?String(id):null;if(next===getState().activeProfession)return next;save({activeProfession:next});return next;}
+function clearActiveProfession(){if(getState().activeProfession==null)return;save({activeProfession:null});}
+function reset(){save({guildLevel:1,activeProfession:null});}
+if(typeof global.addEventListener==="function")global.addEventListener("warcraft:campaign-changed",event=>{if(event&&event.detail&&event.detail.reason==="faction")global.dispatchEvent(new CustomEvent("warcraft:professions-changed",{detail:getState()}));});
 global.WarcraftProfessions=Object.freeze({getState,getGuildLevel,setGuildLevel,setActiveProfession,clearActiveProfession,reset});
 })(window);
