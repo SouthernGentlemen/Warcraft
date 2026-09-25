@@ -168,7 +168,7 @@ Storehouse is a direct Base entry point into global Inventory. Its compact sidec
 
 ### Artisans Guild Base hotspot
 
-The six standalone profession hotspots have been consolidated into one `Artisans Guild` Base building. Alliance and Horde each position the Guild from shared faction presentation data, and the Guild participates in the normal five-level Keep-gated upgrade system. The original Blacksmith, Alchemy, Enchanting, Tailoring, Leatherworking, and Engineering definitions and their former five-tier progression records are preserved under `data/base/profession-buildings/`; only their standalone Base building entries/routes were removed. WOWUI-042 owns the Guild's profession selection and lock/unlock menu.
+The six standalone profession hotspots have been consolidated into one `Artisans Guild` Base building. Alliance and Horde each position the Guild from shared faction presentation data, and the Guild participates in the normal five-level Keep-gated upgrade system. The original Blacksmith, Alchemy, Enchanting, Tailoring, Leatherworking, and Engineering definitions and their former five-tier progression records are preserved under `data/base/profession-buildings/`; only their standalone Base building entries/routes were removed. The Guild owns the shared profession selection menu; all six professions are available at every Guild level.
 
 ### Artisans Guild profession workspace
 
