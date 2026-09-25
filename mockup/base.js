@@ -205,8 +205,14 @@ function renderSidecar() {
   $('#baseSidecarTitle').textContent = building.name;
   $('#baseSidecarLevel').textContent = 'Level ' + building.level + ' / ' + building.max + ' · Tier ' + current.tier;
 
+  const identitySection =
+    '<section class="base-sidecar__section base-sidecar__summary">' +
+      '<p>' + building.description + '</p>' +
+    '</section>';
+
   if (!next) {
     body.innerHTML =
+      identitySection +
       '<section class="base-sidecar__section">' +
         '<span class="wow-label">Current Capability</span>' +
         capabilityMarkup(current.capabilities) +
@@ -222,6 +228,7 @@ function renderSidecar() {
         : '');
   } else {
     body.innerHTML =
+      identitySection +
       '<section class="base-sidecar__section">' +
         '<span class="wow-label">Current Capability</span>' +
         capabilityMarkup(current.capabilities) +
