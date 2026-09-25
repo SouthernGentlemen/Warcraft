@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_path": "docs/heroes/classes/mage/specs/arcane.md",
   "kind": "specialization",
   "title": "Mage — Arcane",
-  "source_markdown": "# Mage — Arcane\n\n## Identity\n\n- Role: Ranged spell damage / resource control\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Arcane Bolt — ranged Arcane damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Arcane** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Mana Adept** | Increase maximum Mana by 10%. |\n| **Arcane Focus** | Arcane Bolt deals 15% more damage. |\n| **Clearcasting** | Arcane Bolt has a 12% chance to make the next equipped cooldown ability cost no Mana. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Arcane Momentum** | Using an equipped cooldown advances the auto-attack bar by 20%. |\n| **Spell Weaving** | Using an equipped cooldown grants 8% Spell Power for 6 seconds; stacks up to 2 times. |\n| **Mana Shielding** | When falling below 40% health, consume 10% current Mana to gain a shield equal to 15% maximum health; 15-second internal cooldown. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Arcane Power** | While above 50% Mana, gain 20% Spell Power and generate ultimate-bar charge 15% faster. |\n| **Evocation** | Using the selected ultimate restores 40% maximum Mana and grants 20% Haste for 8 seconds. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "source_markdown": "# Mage — Arcane\n\n## Talent Prototype\n\nThis compact prototype uses two normal talent tiers plus one capstone. Talent identity and icon slugs are sourced from the Classic tree named **Arcane**. There are no per-node prerequisite chains; unlocks are controlled only by the structured tier thresholds in this JSON.\n",
   "class": "Mage",
   "specialization": "Arcane",
   "identity": {
@@ -15,41 +15,38 @@
   "talents": {
     "tier_1": [
       {
-        "name": "Mana Adept",
-        "effect": "Increase maximum Mana by 10%."
-      },
-      {
-        "name": "Arcane Focus",
-        "effect": "Arcane Bolt deals 15% more damage."
-      },
-      {
-        "name": "Clearcasting",
-        "effect": "Arcane Bolt has a 12% chance to make the next equipped cooldown ability cost no Mana."
+        "name": "Arcane Subtlety",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_holy_dispelmagic",
+        "canonical_tree": "Arcane",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
       }
     ],
     "tier_2": [
       {
-        "name": "Arcane Momentum",
-        "effect": "Using an equipped cooldown advances the auto-attack bar by 20%."
-      },
-      {
-        "name": "Spell Weaving",
-        "effect": "Using an equipped cooldown grants 8% Spell Power for 6 seconds; stacks up to 2 times."
-      },
-      {
-        "name": "Mana Shielding",
-        "effect": "When falling below 40% health, consume 10% current Mana to gain a shield equal to 15% maximum health; 15-second internal cooldown."
+        "name": "Magic Attunement",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_nature_abolishmagic",
+        "canonical_tree": "Arcane",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
       }
     ],
     "capstones": [
       {
         "name": "Arcane Power",
-        "effect": "While above 50% Mana, gain 20% Spell Power and generate ultimate-bar charge 15% faster."
-      },
-      {
-        "name": "Evocation",
-        "effect": "Using the selected ultimate restores 40% maximum Mana and grants 20% Haste for 8 seconds."
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_nature_lightning",
+        "canonical_tree": "Arcane",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
       }
     ]
+  },
+  "talent_model": {
+    "kind": "two-tier-plus-capstone",
+    "tier_semantics": "Talent tiers are prototype talent progression only and are unrelated to item/building T1–T5 progression.",
+    "tier_1_unlock_points": 0,
+    "tier_2_unlock_points": 1,
+    "capstone_unlock_points": 2,
+    "dependency_rule": "tier-only; no per-node prerequisites"
   }
 }
