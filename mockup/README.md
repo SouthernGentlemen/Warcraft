@@ -214,9 +214,13 @@ Recruitment Hall now opens a real in-sidecar discovery workflow. Level progressi
 
 The six standalone profession hotspots have been consolidated into one `Artisans Guild` Base building. Alliance and Horde each position the Guild from shared faction presentation data, and the Guild participates in the normal five-level Keep-gated upgrade system. The original Blacksmith, Alchemy, Enchanting, Tailoring, Leatherworking, and Engineering definitions and their former five-tier progression records are preserved under `data/base/profession-buildings/`; only their standalone Base building entries/routes were removed. The Guild owns the shared profession selection menu; all six professions are available at every Guild level.
 
-### Artisans Guild profession workspace
+### Profession tracks and Base buildings
 
-Artisans Guild now exposes Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, and Engineer through one compact profession menu. All six professions are always available; there is no per-profession unlock ladder. `WarcraftProfessions` persists the active faction's Artisans Guild level and selected profession inside `WarcraftCampaign`, and every profession reads that faction-scoped level as its current tier. `profession.html` is the shared profession workspace and renders the preserved profession progression data for the selected profession. Profession-specific material and recipe requirements are intentionally deferred until they are authored later.
+The profession system has three independent hero tracks. **Artisan** remains in Artisans Guild with Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, and Engineer. **Gathering** belongs to Gathering Camp with Mining, Skinning, and Herbalism. **Survival** belongs to Survival Lodge with Fishing, First Aid, and Cooking.
+
+Each hero can own one choice from each track simultaneously. `WarcraftProfessions.setHeroProfession(heroId, track, professionId)` uses the active faction's hero-scoped `professionSelections` record; choosing another profession in the same track replaces only that track. The other two choices are preserved. Cross-faction hero IDs are rejected by `WarcraftCampaign`.
+
+All three profession buildings are normal five-level, Keep-gated Base buildings. The shared `profession.html` workspace is track-aware, filters the profession list to the owning building, uses that building's level as the track level, and exposes the current faction roster for learn/change actions. Each track authors three assignment slots and a `replace_same_track` rule for the shared WOWUI-079 assignment framework.
 
 ### Randomized Quest Board rounds
 

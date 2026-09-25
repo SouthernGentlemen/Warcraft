@@ -2,11 +2,13 @@
 
 ## Purpose
 
-Profession buildings are the base facilities that unlock and advance the game's crafting professions.
+Profession buildings are faction Base facilities that own three independent hero profession tracks. Every hero may learn exactly one profession from each track, for a maximum of three profession choices per hero.
 
-Each profession building is treated as its own base system and is expected to progress through the same five tiers as the rest of the game.
+Learning a different profession in a track replaces only that track. It never clears either of the hero's other profession choices.
 
-## Profession Buildings
+## Artisan — Artisans Guild
+
+The Artisans Guild owns the Artisan track:
 
 - [Blacksmith](./blacksmith/README.md)
 - [Alchemist](./alchemist/README.md)
@@ -15,16 +17,38 @@ Each profession building is treated as its own base system and is expected to pr
 - [Leatherworker](./leatherworker/README.md)
 - [Engineer](./engineer/README.md)
 
+## Gathering — Gathering Camp
+
+The Gathering Camp owns the Gathering track:
+
+- [Mining](./mining/README.md)
+- [Skinning](./skinning/README.md)
+- [Herbalism](./herbalism/README.md)
+
+## Survival — Survival Lodge
+
+The Survival Lodge owns the Survival track:
+
+- [Fishing](./fishing/README.md)
+- [First Aid](./first-aid/README.md)
+- [Cooking](./cooking/README.md)
+
+## Shared Rules
+
+All three buildings use normal five-level Keep-gated Base progression. A profession's effective level mirrors the level of the building that owns its track.
+
+Hero profession selections are stored inside the active faction campaign and are keyed by hero ID as independent `artisan`, `gathering`, and `survival` values. Cross-faction hero references are rejected by the campaign state boundary.
+
+Artisans Guild, Gathering Camp, and Survival Lodge each author three future hero assignment slots. WOWUI-079 supplies the shared drag/drop assignment and timed-training interaction; the track catalog already declares the slot count and replace-same-track training rule so that task does not need to redefine profession ownership.
+
 ## Shared Direction
 
-Profession buildings are expected to control some combination of:
+Profession buildings can later control:
 
-- profession tier
-- available recipes
-- crafting queues
-- crafting speed
+- available recipes or gathering activities
 - material processing
 - output quality or capability
-- automation
+- training queues and automation
+- assignment duration and completion effects
 
-Exact shared rules will be defined after the individual profession roles are reviewed.
+Material requirements and profession-specific recipes can be authored independently without changing the three-track ownership contract.
