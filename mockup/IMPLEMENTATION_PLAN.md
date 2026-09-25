@@ -32,144 +32,403 @@ Status: complete (2026-09-24)
 - Restore Base runtime/icon hydration by removing invalid escaped newline artifacts from `base.js`.
 - Add the combat event log directly to Battle using the simulation log event vocabulary for damage, healing, criticals, and deaths.
 
+## Base Landing Redesign Queue
 
-## WOWUI-021 — Base Landing Page Simplification
+The Base redesign is intentionally split into dependency-ordered tasks. Each task must leave the mockup in a coherent, testable state before the next begins.
+
+### WOWUI-021 — Base Entry Point and Player-Facing Routing
 
 Status: planned
 
-### Objective
+Depends on: WOWUI-020
 
-Make Base the primary landing screen for the mockup and simplify it into a spatial stronghold dashboard. The base map should be the interface: persistent chrome communicates resources and high-level state, while building-specific detail stays out of view until the player explicitly selects a building.
+#### Objective
 
-The default Base view must feel calm and readable. It should answer three questions without opening anything:
+Make Base the player-facing landing screen without deleting the developer-oriented screen index.
 
-- What resources do I have?
-- What in my base needs attention?
-- What should I interact with next?
+#### Work
 
-### Work Items
+- Change `/mockup/` so it opens or redirects to `base.html`.
+- Preserve the existing launcher as a developer-only screen, moved or duplicated to a clearly non-player-facing path such as `/mockup/dev.html`.
+- Keep direct URLs to Heroes, Battle, Race Selector, and other mockups working.
+- Ensure the shared brand/home action returns to Base rather than the developer launcher.
+- Do not alter Base layout yet beyond what is required for routing.
+- Do not introduce any generated-data or file-writing behavior.
 
-1. Make Base the landing page.
-   - Change the root mockup flow so `/mockup/` opens or redirects to `base.html`.
-   - Keep a developer screen index available separately if useful, but do not present it as part of the player-facing game flow.
-   - Base becomes the default entry point into the mockup.
+#### Acceptance Criteria
 
-2. Remove duplicate navigation from inside Base.
-   - Remove the Base/Heroes/Combat/Crafting/Research/Events/Challenges left rail.
-   - Keep the shared top-level WoW navigation as the only primary screen navigation.
-   - Do not duplicate global destinations inside the Base layout.
+- Visiting `/mockup/` lands on Base.
+- The developer screen index remains available at a separate URL.
+- Shared player-facing home/brand navigation returns to Base.
+- Direct links to other mockup screens still work.
+- No gameplay state is reset by navigation.
+- `npm test` passes.
 
-3. Reduce the persistent resource bar.
-   - Keep only important persistent resources visible at all times.
-   - Prioritize Gold, Lumber, Stone, and at most one additional progression resource if needed.
-   - Move secondary currencies, explanations, and detailed rates into tooltips or the relevant subsystem.
-   - Keep the resource bar compact enough that the map remains visually dominant.
+---
 
-4. Make the stronghold map the primary interface.
-   - The map should occupy the majority of the Base screen.
-   - Core buildings and profession buildings remain directly clickable.
-   - Remove permanent prose-heavy building cards from the default view.
-   - Building labels should be compact: name, level, and at most one concise status cue.
-   - Preserve the Warcraft-style framed/icon language already established by the shared UI system.
+### WOWUI-022 — Base Shell De-clutter
 
-5. Replace the permanent right panel with a hidden sidecar.
-   - No right-side panel is visible on initial page load.
-   - Clicking a building opens a sidecar from the right edge.
-   - The sidecar shows only the selected building's information and actions.
-   - Clicking another building replaces the sidecar contents without stacking dialogs or panels.
-   - The sidecar must have an explicit close control.
-   - Escape closes the sidecar.
-   - Closing the sidecar returns the map to the full-width calm landing state.
-   - Clicking empty map space may close the sidecar if it does not conflict with map interaction.
-   - The selected building must remain visually highlighted while its sidecar is open.
-   - The sidecar must not reserve permanent layout width while hidden.
+Status: planned
 
-6. Move building management into the sidecar.
-   - Core building sidecars show current level, current capability, next level, requirements, upgrade cost, and upgrade action.
-   - Profession building sidecars show profession identity, current tier/level, relevant capabilities, and profession-specific actions or placeholders.
-   - Keep upgrade errors and unmet requirements inside the selected building sidecar rather than adding global warning panels.
-   - Do not keep a permanent building list beside the map.
+Depends on: WOWUI-021
 
-7. Make Quest Board a map building interaction.
-   - Quest Board stays represented as a building/location on the base map.
-   - Remove the permanently visible Quest Board section from the Base layout.
-   - Clicking Quest Board opens its sidecar.
-   - Quest tier selection, hero dispatch, active quest state, and completion controls live inside that sidecar.
-   - Quest status should be communicated on the map with a compact state badge when attention is required.
+#### Objective
 
-8. Remove unrelated Base actions from the landing screen.
-   - Remove the large bottom action bar.
-   - Remove generic actions such as Train Heroes and Start Mission from Base.
-   - Hero progression belongs on Heroes.
-   - Combat/content launch belongs on Battle or the appropriate content surface.
-   - Base actions should originate from interacting with buildings.
+Remove duplicated navigation and unrelated persistent chrome so the Base screen has a clean structural shell before the map layout is redesigned.
 
-9. Remove the persistent profile/status footer.
-   - Remove the large bottom profile strip and secondary currency cluster.
-   - If account/base identity is still needed, reduce it to a compact element in the shared header or resource bar.
-   - Do not dedicate a full-width persistent footer to information that is not immediately actionable.
+#### Work
 
-10. Add compact building attention states.
-    - Buildings may show one small icon/badge/glow for actionable state.
-    - Supported states should include at minimum:
-      - upgrade available
-      - blocked/requirements unmet
-      - quest complete or quest attention
-      - profession action available
-    - Attention cues must use iconography plus accessible text/labels and must not rely on color alone.
-    - Avoid multiple simultaneous badges on one building unless there is a strong gameplay reason.
+- Remove the internal Base/Heroes/Combat/Crafting/Research/Events/Challenges left rail.
+- Keep the shared top WoW navigation as the only primary screen navigation.
+- Remove the large bottom action bar.
+- Remove the persistent full-width profile/status footer.
+- Remove generic Base-screen actions that belong elsewhere, including Train Heroes and Start Mission.
+- Remove the permanent building list from the right side.
+- Remove the permanently visible Quest Board section.
+- Keep all existing upgrade and quest logic in JavaScript temporarily if later tasks still depend on it; remove only the persistent presentation at this stage.
+- Preserve Base resource state and map building buttons.
 
-11. Keep the default landing state intentionally sparse.
-    - Initial load shows shared top navigation, compact resource state, and the full base map.
-    - No building sidecar is open by default.
-    - No building list, Quest Board panel, large action bar, profile footer, or duplicate navigation rail is visible.
-    - The player should be able to visually scan the entire base without reading dense panels.
+#### Acceptance Criteria
 
-12. Preserve existing data and mechanics.
-    - Continue using `data/base/buildings.json` as authored runtime data.
-    - Preserve current five-level building progression and upgrade requirements.
-    - Preserve Quest Board dispatch/completion mechanics and roster integration.
-    - Preserve shared icon/tooltips and WoW UI primitives.
-    - Do not reintroduce Markdown-to-JSON generation or runtime file mutation.
+- No duplicate internal navigation rail remains.
+- No bottom action bar remains.
+- No persistent profile/status footer remains.
+- No permanent building list remains.
+- No permanent Quest Board panel remains.
+- The map and resource area still render.
+- Existing Base JavaScript initializes without console/runtime errors.
+- No upgrade or quest state data is deleted.
+- `npm test` passes.
 
-### Interaction Model
+---
 
-Default state:
+### WOWUI-023 — Map-First Base Layout and Compact Resources
 
-`Shared Navigation + Compact Resources + Full Base Map`
+Status: planned
 
-Building selected:
+Depends on: WOWUI-022
 
-`Shared Navigation + Compact Resources + Base Map + Right Sidecar`
+#### Objective
 
-Sidecar behavior:
+Make the stronghold map the dominant landing surface and reduce persistent information to the minimum needed for a quick scan.
 
-- closed by default
-- opens only after a building click
-- one selected building at a time
-- replaces content when another building is clicked
-- closes via close button or Escape
-- does not permanently shrink the map when closed
-- selected building remains visibly active while open
+#### Work
 
-### Acceptance Criteria
+- Rework the Base layout so the map occupies the majority of the available viewport.
+- Keep the map centered and visually dominant on desktop.
+- Simplify the persistent resource bar to:
+  - Gold
+  - Lumber
+  - Stone
+  - at most one additional progression resource if it is truly required
+- Move secondary currencies and explanatory details into shared tooltips or their relevant subsystem.
+- Remove unnecessary resource-rate prose from the default view where it creates noise.
+- Standardize building labels to:
+  - building name
+  - level
+  - at most one concise status cue
+- Preserve all currently visible core and profession buildings.
+- Add a clear visual hierarchy between:
+  - map terrain/background
+  - building interaction points
+  - building label
+  - actionable state
+- Ensure no detail panel occupies width on initial load.
 
-- `/mockup/` lands on Base rather than the mockup launcher.
-- The Base screen has no internal left navigation rail.
-- The Base screen has no permanent right-side detail panel.
-- The Base screen has no permanent building list.
-- The Base screen has no permanent Quest Board panel.
-- The Base screen has no large bottom action bar.
-- The Base screen has no full-width profile/status footer.
-- The map is the dominant visual surface on initial load.
-- No sidecar is visible on initial load.
-- Clicking every visible building opens the correct building sidecar.
-- Clicking Quest Board opens quest management in the sidecar.
-- Clicking another building replaces the current sidecar content.
-- Closing the sidecar restores the full landing layout.
-- Building upgrade state, requirements, and costs remain functional.
-- Quest dispatch and completion remain functional.
-- Base icons render through the shared icon resolver.
-- Actionable buildings expose compact, accessible attention states.
-- Responsive layouts keep the map usable and the sidecar accessible on desktop, tablet, and mobile.
-- `npm test` continues to pass.
+#### Acceptance Criteria
+
+- Initial Base load is primarily the stronghold map.
+- Persistent resource chrome is compact.
+- All current buildings remain discoverable and clickable.
+- Building labels do not contain dense descriptive prose.
+- No side detail area is visible or reserved.
+- Desktop layout can visually scan the whole base without scrolling through panels.
+- Existing shared icons/tooltips continue to render.
+- `npm test` passes.
+
+---
+
+### WOWUI-024 — Hidden Building Sidecar Framework
+
+Status: planned
+
+Depends on: WOWUI-023
+
+#### Objective
+
+Create the reusable right-side sidecar interaction model before moving any building-specific management into it.
+
+#### Work
+
+- Add a reusable Base sidecar container.
+- Sidecar is closed and non-layout-reserving by default.
+- Clicking a map building:
+  - selects that building
+  - visually highlights the selected building
+  - opens the sidecar
+  - renders a minimal building identity shell
+- Sidecar identity shell contains:
+  - building icon
+  - building name
+  - category
+  - current level
+  - close control
+- Clicking another building replaces sidecar content in-place.
+- Never stack multiple sidecars or dialogs.
+- Escape closes the sidecar.
+- Explicit close control closes the sidecar.
+- Clicking empty map space closes the sidecar unless the click originated from another interactive Base control.
+- Closing clears selected-building visual state.
+- Sidecar must overlay or slide beside the map without permanently shrinking the closed-state layout.
+- On narrow screens, sidecar may become a bottom sheet or full-height overlay, but must retain the same interaction semantics.
+- Manage focus sensibly:
+  - opening does not strand keyboard users
+  - close control is reachable
+  - closing restores focus to the originating building when possible
+
+#### Acceptance Criteria
+
+- No sidecar is visible on page load.
+- Every map building can open the sidecar.
+- Only one sidecar exists.
+- Switching buildings replaces content rather than stacking UI.
+- Close button works.
+- Escape works.
+- Empty-map dismissal works where appropriate.
+- Selected building has a clear active state only while sidecar is open.
+- Closed sidecar occupies no persistent layout width.
+- Keyboard interaction remains usable.
+- `npm test` passes.
+
+---
+
+### WOWUI-025 — Building Management in the Sidecar
+
+Status: planned
+
+Depends on: WOWUI-024
+
+#### Objective
+
+Move real building progression and upgrade management into the sidecar and eliminate the old right-panel/building-list interaction model completely.
+
+#### Work
+
+- Replace the temporary identity-only sidecar contents with data-driven building detail.
+- Core building sidecars show:
+  - current level
+  - maximum level
+  - current capabilities
+  - next-level capabilities
+  - upgrade requirements
+  - upgrade resource costs
+  - upgrade action
+  - maximum-level state
+- Profession building sidecars show:
+  - profession identity
+  - current level/tier
+  - current capabilities
+  - next-level capability
+  - requirements/cost
+  - profession-specific action placeholder only where no real action exists yet
+- Reuse `data/base/buildings.json` as the authored source.
+- Reuse existing upgrade-state calculation rather than duplicating progression logic.
+- Keep insufficient-resource and unmet-requirement feedback inside the sidecar.
+- After a successful upgrade:
+  - update resources
+  - update building level
+  - refresh map label/state
+  - refresh sidecar contents without closing it
+- Ensure every map building's displayed level is driven from current runtime building state rather than hardcoded HTML values.
+- Remove obsolete building-list rendering and event handlers once the sidecar owns this functionality.
+
+#### Acceptance Criteria
+
+- Every non-Quest-Board building has functional sidecar detail.
+- Upgrade costs and requirements match authored building data.
+- Successful upgrades update both sidecar and map immediately.
+- Blocked upgrades explain why they are blocked.
+- Maximum-level buildings cannot upgrade and show an explicit max state.
+- Profession buildings use the same sidecar framework.
+- No legacy building-list UI or dead list handlers remain.
+- `npm test` passes.
+
+---
+
+### WOWUI-026 — Quest Board Sidecar Migration
+
+Status: planned
+
+Depends on: WOWUI-025
+
+#### Objective
+
+Treat Quest Board as a first-class map building and move the entire hero-dispatch workflow into its sidecar.
+
+#### Work
+
+- Ensure Quest Board is represented as a clear clickable location on the map.
+- Clicking Quest Board opens the shared Base sidecar rather than a special permanent panel.
+- Move into the Quest Board sidecar:
+  - quest tier list
+  - required hero count
+  - hero eligibility/availability
+  - hero selection
+  - dispatch action
+  - active quest state
+  - completion action
+  - reward presentation
+- Preserve existing roster integration through `WarcraftRoster`.
+- Preserve current quest tier rules and hero-count requirements.
+- Preserve hero availability transitions:
+  - available
+  - on quest
+  - returned after completion
+- Keep quest errors/status inside the Quest Board sidecar.
+- Do not create a second quest-specific modal or panel system.
+- Refresh map-level Quest Board state after dispatch/completion.
+
+#### Acceptance Criteria
+
+- Quest Board has no permanent Base panel.
+- Clicking Quest Board opens quest management in the shared sidecar.
+- Tier 1–5 quest definitions remain available.
+- Required party sizes remain correct.
+- Dispatch validates hero availability.
+- Dispatched heroes become unavailable elsewhere.
+- Completion returns heroes to available state.
+- Rewards/completion state render without leaving the Base screen.
+- Quest Board sidecar can be closed/reopened without losing state.
+- `npm test` passes.
+
+---
+
+### WOWUI-027 — Building Attention and Landing-State Signaling
+
+Status: planned
+
+Depends on: WOWUI-026
+
+#### Objective
+
+Let the default closed-sidecar Base view communicate actionable state without reintroducing dense dashboards.
+
+#### Work
+
+- Define a single compact attention-state contract for map buildings.
+- Support at minimum:
+  - upgrade available
+  - blocked by requirement/resource
+  - quest ready/attention
+  - quest complete
+  - profession action available
+- Give each building at most one primary attention marker at a time.
+- Establish deterministic priority when multiple states are true.
+- Use shared semantic icons where possible.
+- Include accessible labels/text so state is not color-only.
+- Keep markers visually subordinate to building identity.
+- Add tooltip detail for attention markers rather than permanent explanatory prose.
+- Recalculate attention state after:
+  - upgrades
+  - resource changes
+  - quest dispatch
+  - quest completion
+- Avoid notification badges for passive/non-actionable information.
+
+#### Acceptance Criteria
+
+- Actionable buildings are identifiable from the closed-sidecar map.
+- Attention state is understandable without opening every building.
+- No building accumulates a stack of noisy badges.
+- State changes update immediately after relevant actions.
+- Attention cues are keyboard/screen-reader understandable.
+- No dense overview panel is added to compensate for removed UI.
+- `npm test` passes.
+
+---
+
+### WOWUI-028 — Base Responsive Behavior and Interaction Polish
+
+Status: planned
+
+Depends on: WOWUI-027
+
+#### Objective
+
+Make the map-first/sidecar model work cleanly across desktop, tablet, and mobile without restoring permanent panels.
+
+#### Work
+
+- Desktop:
+  - map remains dominant
+  - sidecar opens from the right
+  - closed state uses full map width
+- Tablet:
+  - preserve useful map scale
+  - sidecar may overlay more aggressively
+- Mobile:
+  - use a full-width sheet/overlay or bottom sheet
+  - maintain close/Escape semantics where supported
+  - keep building targets large enough to tap
+- Ensure map labels do not collide excessively at supported widths.
+- Ensure sidecar content scrolls independently when necessary.
+- Ensure tooltips do not render offscreen.
+- Ensure selected/attention states remain visible at smaller sizes.
+- Reduce unnecessary animation if it harms clarity.
+- Respect reduced-motion preferences for sidecar transitions.
+- Verify no horizontal page overflow.
+
+#### Acceptance Criteria
+
+- Base is usable at desktop, tablet, and mobile widths.
+- Closed sidecar never consumes permanent screen width.
+- Mobile sidecar does not make the map permanently inaccessible.
+- All buildings remain tappable.
+- Sidecar close behavior remains consistent.
+- No persistent horizontal overflow.
+- Focus and tooltip behavior remain usable.
+- `npm test` passes.
+
+---
+
+### WOWUI-029 — Base Cleanup, Dead-Code Removal, and Regression Coverage
+
+Status: planned
+
+Depends on: WOWUI-028
+
+#### Objective
+
+Finish the redesign by deleting superseded Base code and strengthening automated checks around the new interaction contract.
+
+#### Work
+
+- Remove obsolete CSS for:
+  - left Base navigation rail
+  - old building list
+  - old permanent right panel
+  - old action bar
+  - old profile footer
+  - old permanent Quest Board layout
+- Remove obsolete JavaScript renderers/listeners for superseded UI.
+- Remove stale HTML nodes and data attributes.
+- Keep only one source of truth for selected building state.
+- Add integration assertions covering:
+  - Base is the landing route
+  - no sidecar open by default
+  - Base HTML has no removed persistent panels
+  - building runtime data remains five-level
+  - Quest Board still integrates with roster state
+  - malformed escaped-newline corruption is rejected by tests
+- Update `mockup/README.md` to describe the map-first Base interaction model.
+- Update this implementation plan statuses as tasks are completed.
+
+#### Acceptance Criteria
+
+- No dead Base UI implementation remains.
+- No duplicate building-selection system remains.
+- No old permanent Quest Board implementation remains.
+- Base source is materially simpler than before the redesign.
+- Automated tests cover the new structural contract.
+- `npm test` passes cleanly.
+
