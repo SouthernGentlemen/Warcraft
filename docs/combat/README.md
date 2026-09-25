@@ -46,7 +46,7 @@ Each class defines a pool of cooldown abilities in its class `abilities/README.m
 
 A hero equips exactly two cooldown abilities. The deterministic simulator automatically uses the first equipped cooldown that is ready, affordable, and has a valid target.
 
-Cooldown timing is expressed in fixed 60 Hz simulation ticks and advances through the same Haste accumulator used by the authoritative combat simulation.
+Cooldown timing is expressed in fixed 60 Hz combat ticks and advances through the same Haste accumulator used by the authoritative combat runtime.
 
 ## Ultimate
 
@@ -58,14 +58,14 @@ When the bar is full, that class's ultimate becomes available.
 
 The prototype ultimate bar uses a 10,000-point integer scale.
 
-Current simulation generation:
+Current runtime generation:
 
 - successful auto-attack or auto-heal: +1,000
 - successful cooldown action: +2,000
 - taking direct damage: +300
 - ultimate use: consumes the full bar
 
-These values are prototype tuning and are documented in [Simulation](./simulation/README.md).
+These values are prototype tuning and are documented in [Combat Runtime](./runtime/README.md).
 
 ## Combat Stats
 
@@ -73,22 +73,22 @@ Combat uses the primary and tertiary stat families defined in [Content / Stats](
 
 The stat model includes primary attributes such as Strength, Agility, Intellect, Stamina, and Spirit as well as tertiary combat modifiers such as Crit, Haste, Spell Power, Healing Power, Hit Rating, and Mastery.
 
-The current prototype mappings are defined in [Content / Stats](../content/stats/README.md) and [Simulation](./simulation/README.md). Production balance can change the numbers without changing the deterministic action contract.
+The current prototype mappings are defined in [Content / Stats](../content/stats/README.md) and [Combat Runtime](./runtime/README.md). Production balance can change the numbers without changing the deterministic action contract.
 
-## Deterministic Simulation
+## Deterministic Combat Runtime
 
 The combat prototype follows the deterministic fixed-tick model used by Hexframe:
 
 - 60 fixed ticks per second
-- one simulation `step()` advances exactly one tick
-- no wall-clock or browser delta-time inside simulation logic
+- one combat-runtime `step()` advances exactly one tick
+- no wall-clock or browser delta-time inside combat-runtime logic
 - authoritative arithmetic uses integers
 - percentages use 10,000 basis points
-- seeded RNG is carried in simulation state
+- seeded RNG is carried in combat state
 - actor-index order resolves all ties deterministically
 - every tick produces a frame report and deterministic state hash
 
-See [Simulation](./simulation/README.md).
+See [Combat Runtime](./runtime/README.md).
 
 ## Party Capability
 
