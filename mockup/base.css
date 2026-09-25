@@ -976,10 +976,6 @@
     padding: 8px;
   }
 
-  .base-sidecar__costs {
-    grid-template-columns: repeat(3,minmax(0,1fr));
-  }
-
   .quest-selection {
     grid-template-columns: 1fr;
   }
