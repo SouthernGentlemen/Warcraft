@@ -1600,7 +1600,7 @@ Make Battle health bars accurately reflect deterministic combat state at all tim
 
 ### WOWUI-066 — Battle Hero Action Strip
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-057, WOWUI-059, WOWUI-065
 
