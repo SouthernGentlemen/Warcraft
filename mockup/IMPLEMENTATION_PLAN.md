@@ -1,6 +1,6 @@
 # Warcraft Mockup Implementation Plan
 
-WOWUI-001 through WOWUI-054 are complete as of 2026-09-25. The current gameplay/navigation implementation queue is complete.
+WOWUI-001 through WOWUI-054 are complete as of 2026-09-25. WOWUI-055 onward is the active hero-loadout, Base-storage, and Battle-HUD implementation phase.
 
 Completed scope: WOWUI-001 through WOWUI-054.
 
@@ -20,7 +20,7 @@ Run the full mockup development server with:
 npm run dev
 ```
 
-No planned WOWUI tasks remain in this phase. New implementation work should be added here as a new scoped task rather than reopening completed items.
+New implementation work should continue through the dependency-ordered queue below rather than reopening completed items.
 
 ## WOWUI-020 — Roster Popup and Runtime Cleanup
 
@@ -1209,4 +1209,509 @@ Finish the phase by validating the complete player loop and deleting superseded 
 - All five Battle sizes have automated acceptance coverage.
 - No Simulation references remain.
 - `npm test` passes cleanly in CI.
+
+## Hero Loadout, Base Storage, and Battle HUD Queue
+
+This phase makes hero combat loadouts explicit, moves party composition to the roster level, repairs the talent model, gives Base storage buildings clear item ownership, and exposes the actual combat timing/action state in Battle.
+
+### WOWUI-055 — Roster-Level Party Loadout Management
+
+Status: planned
+
+Depends on: WOWUI-054
+
+#### Objective
+
+Move saved party management out of individual hero detail and make it a roster-level management system.
+
+#### Work
+
+- Preserve the existing hero-specific personal loadout presentation and hero-selection workflow.
+- Remove the PARTY LOADOUTS panel from individual hero detail.
+- Remove hero-level add/remove-party controls from heroes.js.
+- Remove party-membership copy from hero identity where it makes the hero detail read like a party editor.
+- Add a dedicated roster-level Party Loadouts area to the Heroes/Roster workspace.
+- Manage the existing five saved party records from that roster-level surface.
+- Support the existing 3-, 5-, 10-, and 20-hero saved party sizes.
+- Continue storing only authoritative hero IDs in saved loadouts.
+- Keep availability validation at launch time rather than mutating party membership when a hero becomes temporarily unavailable.
+
+#### Acceptance Criteria
+
+- Selecting a hero never exposes party editing controls.
+- The roster has one dedicated saved-party management surface.
+- All five saved party records remain editable.
+- Party state still uses the existing authoritative WarcraftRoster.loadouts records.
+- Quest Board and dungeon party selection continue to consume the same saved parties.
+- npm test passes.
+
+---
+
+### WOWUI-056 — Hero Combat Loadout State
+
+Status: planned
+
+Depends on: WOWUI-055
+
+#### Objective
+
+Define one authoritative per-hero combat loadout matching the player-facing action bar.
+
+#### Work
+
+- Every hero always has a fixed Auto Attack.
+- Define exactly three hero-selected combat action slots:
+  - Ability 1
+  - Ability 2
+  - Ultimate
+- Derive Auto Attack identity from the hero's active specialization data.
+- Persist hero combat-loadout IDs in WarcraftRoster rather than relying on combat-engine array order.
+- Track or derive each hero's learned ability IDs separately from the equipped combat slots.
+- Limit selectable Ability 1 / Ability 2 choices to abilities the hero has learned.
+- Seed existing heroes deterministically from the current authored class ability pools.
+- Keep Auto Attack non-removable and non-empty.
+- Update mockup/combat/engine/hero-factory.js to consume the hero's explicit selected ability IDs.
+- Stop treating "first two compatible cooldowns" as the long-term authoritative player loadout.
+- Preserve migration handling for old saved roster state without duplicating ability state.
+
+#### Acceptance Criteria
+
+- Every normalized hero has Auto Attack, Ability 1, Ability 2, and Ultimate state.
+- Auto Attack cannot be removed.
+- Ability slots reference authored ability IDs.
+- Invalid, duplicate, or unlearned Ability 1 / Ability 2 selections are rejected or normalized deterministically.
+- Combat actor creation uses the selected hero loadout.
+- Existing saves migrate without resetting unrelated hero state.
+- npm test passes.
+
+---
+
+### WOWUI-057 — Hero Ability Loadout Picker
+
+Status: planned
+
+Depends on: WOWUI-056
+
+#### Objective
+
+Make the hero's personal loadout bar the primary place to inspect and equip combat abilities.
+
+#### Work
+
+- Keep the current compact hero personal-loadout visual language rather than replacing it with another full panel.
+- Show four action positions:
+  - Auto Attack
+  - Ability 1
+  - Ability 2
+  - Ultimate
+- Replace any direct Talent-page action in the personal loadout with an Abilities interaction.
+- Clicking Ability 1 or Ability 2 opens a compact picker/dropdown using the same interaction pattern as the existing hero gear picker.
+- The picker lists only the selected hero's currently learned compatible abilities.
+- Show ability icon, name, resource/cost, cooldown, target, and effect through the shared tooltip system.
+- Mark the currently equipped action in the picker.
+- Prevent the same normal ability from occupying both Ability 1 and Ability 2.
+- Auto Attack is visible and inspectable but not replaceable.
+- Do not navigate away from the Roster screen to change combat abilities.
+
+#### Acceptance Criteria
+
+- Every hero visibly exposes the four-slot combat bar.
+- Ability 1 / Ability 2 can be changed in place.
+- Picker contents come from the selected hero's learned ability set.
+- No ability picker uses hardcoded class-specific HTML.
+- No ability change requires opening the standalone Talent screen.
+- npm test passes.
+
+---
+
+### WOWUI-058 — Talent Dataset Repair: 2 / 2 / 1
+
+Status: planned
+
+Depends on: WOWUI-056
+
+#### Objective
+
+Repair the current talent data so every specialization has the same small prototype structure.
+
+#### Work
+
+- Audit every class specialization JSON under data/heroes/classes/*/specs/.
+- Give every specialization exactly:
+  - two Tier 1 talents
+  - two Tier 2 talents
+  - one capstone
+- Preserve canonical class/spec identity, icon metadata, and source metadata.
+- Keep the talent model intentionally small; do not introduce larger Classic trees yet.
+- Update talent normalization and validation so malformed 1/1/1 or other incomplete shapes fail acceptance.
+- Update combat talent-hook enumeration so all five authored talent records are discoverable.
+- Keep tier terminology local to talents; do not reuse item/building tier assumptions.
+- Synchronize the matching docs/data mirrors where the repository requires authored documentation parity.
+
+#### Acceptance Criteria
+
+- Every specialization has an exact 2 / 2 / 1 talent shape.
+- No specialization silently drops the second talent in either normal tier.
+- Shared talent tooling can enumerate all five entries.
+- Missing or duplicate talent identities fail automated validation.
+- npm test passes.
+
+---
+
+### WOWUI-059 — Hero Talent Popout and Capstone Ultimate Contract
+
+Status: planned
+
+Depends on: WOWUI-057, WOWUI-058
+
+#### Objective
+
+Keep talent management inside hero management and make the selected capstone the hero's Ultimate.
+
+#### Work
+
+- Replace player-facing direct navigation to Talent Calculator with a hero-scoped Talents control.
+- Clicking Talents opens one reusable popout/dialog over the Heroes workspace.
+- The popout renders the exact 2 / 2 / 1 structure from WOWUI-058.
+- Persist selected talent choices through the selected hero's authoritative talent build.
+- Make the hero's selected capstone define the Ultimate shown in the personal combat loadout.
+- Add or normalize the authored mapping required for each capstone to resolve to a real deterministic combat action.
+- The Ultimate slot must not independently select an unrelated generic class ultimate once the capstone contract is active.
+- Clicking the Ultimate slot may focus/open the Talents popout on the capstone rather than navigating to another page.
+- Preserve keyboard close, Escape, focus restoration, and shared tooltip behavior.
+
+#### Acceptance Criteria
+
+- Talents open as a popout from hero management.
+- No player-facing Talents action leaves the Roster screen.
+- The popout shows two Tier 1, two Tier 2, and one capstone entry.
+- The selected capstone and the hero's Ultimate are the same gameplay choice.
+- Combat receives the resolved capstone Ultimate action.
+- npm test passes.
+
+---
+
+### WOWUI-060 — Gear and Talent Navigation Cleanup
+
+Status: planned
+
+Depends on: WOWUI-059
+
+#### Objective
+
+Remove obsolete player navigation now that gear, abilities, and talents live in their owning contexts.
+
+#### Work
+
+- Remove the Gear tab/link from player-facing shared navigation.
+- Remove the Talents top-level/direct player navigation path.
+- Keep hero equipment management in the Heroes/Roster workflow.
+- Keep talent management in the hero popout.
+- Remove or demote standalone gear.html / talent-calculator.html launcher entries if they are no longer required outside developer inspection.
+- Remove stale shared-navigation destination definitions and hidden-nav compatibility code once no production surface depends on them.
+- Ensure Armory work in later tasks becomes the player-facing owned-gear browser rather than restoring Gear as a top-level tab.
+
+#### Acceptance Criteria
+
+- No player-facing Gear tab exists.
+- No player-facing Talents tab navigates to a standalone page.
+- Hero gear remains editable from hero management.
+- Hero talents remain editable from the hero popout.
+- Shared navigation contains no dead Gear/Talents player routes.
+- npm test passes.
+
+---
+
+### WOWUI-061 — Storehouse, Bank, and Armory Ownership Model
+
+Status: planned
+
+Depends on: WOWUI-060
+
+#### Objective
+
+Split persistent item ownership into clear Base buildings instead of treating Storehouse as a generic Inventory redirect.
+
+#### Work
+
+- Storehouse owns reagent items only.
+- Add a Bank core building for:
+  - meta-progression items
+  - currency/economy balances
+  - persistent account/faction progression items
+- Add an Armory core building for owned gear/equipment items.
+- Reuse the existing item taxonomy under:
+  - data/items/reagents/
+  - data/items/economy/
+  - data/items/equipment/
+- Define the minimum authored runtime JSON needed to enumerate reagent and meta/currency holdings without parsing Markdown.
+- Keep equipment ownership derived from the authoritative shared equipment/item state.
+- Add Bank and Armory to data/base/buildings.json.
+- Add Alliance and Horde hotspot positions for both new buildings.
+- Give Bank and Armory normal five-level Base progression and Keep-gated upgrades unless a specific later mechanic overrides it.
+- Add shared semantic building icons for Bank and Armory.
+
+#### Acceptance Criteria
+
+- Storehouse contains no gear/equipment list.
+- Storehouse contains no meta/currency list.
+- Bank contains meta-progression/currency/economy items.
+- Armory contains owned gear/equipment.
+- Both factions expose Storehouse, Bank, and Armory hotspots.
+- New buildings use the same authored Base progression system.
+- Runtime item data comes from authored JSON.
+- npm test passes.
+
+---
+
+### WOWUI-062 — In-Sidecar Storehouse, Bank, and Armory Browsers
+
+Status: planned
+
+Depends on: WOWUI-061
+
+#### Objective
+
+Make the three storage buildings functional in place instead of using redirect links.
+
+#### Work
+
+- Remove Storehouse's direct Open Inventory redirect action.
+- Clicking Storehouse opens its reagent browser inside the shared Base sidecar.
+- Clicking Bank opens meta-progression/currency holdings inside the shared Base sidecar.
+- Clicking Armory opens owned gear inside the shared Base sidecar.
+- Reuse shared item icons, rarity presentation, quantities, and tooltips.
+- Keep the three categories visually and logically separate.
+- Do not create separate full-page redirect destinations for these building actions.
+- Keep actual hero equip/unequip operations hero-scoped unless explicitly changed later.
+- Ensure building content can be closed/reopened without mutating ownership state.
+
+#### Acceptance Criteria
+
+- Storehouse, Bank, and Armory are usable without leaving Base.
+- None of the three primary building actions is an href redirect.
+- Storehouse renders only reagents.
+- Bank renders only meta/currency/economy holdings.
+- Armory renders only equipment.
+- Browsing these buildings is read-only unless a specific item action is authored.
+- npm test passes.
+
+---
+
+### WOWUI-063 — Base Building Banner Upgrade Control
+
+Status: planned
+
+Depends on: WOWUI-062
+
+#### Objective
+
+Move upgrades out of the building menu list and into the selected building banner/header.
+
+#### Work
+
+- Remove Upgrade as a normal sidecar menu row for core buildings.
+- Put one compact Upgrade control in the selected core building's sidecar banner/header.
+- Keep upgrade state tooltip-driven.
+- Preserve:
+  - next-level costs
+  - insufficient-resource blocking
+  - Keep gating
+  - maximum-level state
+- Remove redundant "level required" / "current level" comparison text from upgrade presentation.
+- Keep blocked Keep feedback concise, e.g. "Upgrade Keep first", without displaying a required/current-level sentence.
+- Do not duplicate the building's level in multiple banner/menu text blocks.
+- Keep successful upgrades refreshing map, banner, resources, and open building content in place.
+
+#### Acceptance Criteria
+
+- Core building menus no longer contain an Upgrade row.
+- Core building banner/header owns the Upgrade control.
+- Upgrade tooltips do not show "required level / current level" prose.
+- Upgrade costs and blocking rules remain accurate.
+- Max-level state remains visible without extra explanatory panels.
+- npm test passes.
+
+---
+
+### WOWUI-064 — Automatic Quest Board Round Progression
+
+Status: planned
+
+Depends on: WOWUI-063
+
+#### Objective
+
+Remove manual Quest Board round advancement and make offer rotation a gameplay-state transition.
+
+#### Work
+
+- Remove the Advance Round button from the Quest Board.
+- Remove its event handler and manual-reroll UI state.
+- Keep deterministic round/seed-based offer generation.
+- Advance to the next round automatically when the current offer set has no unresolved assignments remaining.
+- Preserve retryable defeated encounters as unresolved so a defeat does not silently reroll the board.
+- Generate the next deterministic offer set only after the round transition condition is satisfied.
+- Keep Quest Journal history independent from the current offer set.
+
+#### Acceptance Criteria
+
+- Quest Board has no Advance Round control.
+- Players cannot manually reroll offers.
+- Reloading does not reroll the current unresolved round.
+- Completing the current round advances to a new deterministic offer set automatically.
+- Defeated retryable quests remain available in the same round.
+- npm test passes.
+
+---
+
+### WOWUI-065 — Battle Health Bar Repair
+
+Status: planned
+
+Depends on: WOWUI-056
+
+#### Objective
+
+Make Battle health bars accurately reflect deterministic combat state at all times.
+
+#### Work
+
+- Audit normal and condensed/raid Battle card health rendering.
+- Bind fill width directly to current HP / max HP snapshots.
+- Ensure the bar updates after every damage/heal event and every rendered runtime step.
+- Clamp at 0–100%.
+- Set dead actors to zero health visually.
+- Restore full health correctly on reset/replay.
+- Verify aggregate raid HP remains consistent with individual actor HP.
+- Remove CSS or DOM assumptions that prevent the fill element from visibly resizing.
+
+#### Acceptance Criteria
+
+- Health bars visibly decrease when damage occurs.
+- Healing visibly increases the bar without exceeding 100%.
+- Dead units show zero health.
+- Reset restores correct full-health bars.
+- 1-, 3-, 5-, 10-, and 20-hero layouts all show correct health state.
+- Automated tests cover HP-to-width state calculations.
+- npm test passes.
+
+---
+
+### WOWUI-066 — Battle Hero Action Strip
+
+Status: planned
+
+Depends on: WOWUI-057, WOWUI-059, WOWUI-065
+
+#### Objective
+
+Show each hero's actual combat loadout directly in Battle.
+
+#### Work
+
+- Render the hero's four combat actions:
+  - Auto Attack
+  - Ability 1
+  - Ability 2
+  - capstone Ultimate
+- Use the authoritative hero loadout selected in Roster.
+- Use authored ability icons and shared tooltips.
+- Show meaningful live state for normal abilities:
+  - ready
+  - cooling down
+  - resource-blocked where applicable
+- Show Ultimate charge/readiness from deterministic combat state.
+- Keep the action strip readable in 1/3/5-player layouts.
+- Use a condensed action treatment in 10/20-player layouts without hiding the fact that each hero still owns the same four actions.
+- Do not duplicate combat rules in presentation code.
+
+#### Acceptance Criteria
+
+- Battle shows Auto Attack, Ability 1, Ability 2, and Ultimate for every hero.
+- The displayed abilities match that hero's Roster loadout.
+- Ultimate display matches the selected capstone.
+- Cooldown/readiness state updates during combat.
+- Large-party layouts remain usable.
+- npm test passes.
+
+---
+
+### WOWUI-067 — Auto Attack Swing Timer
+
+Status: planned
+
+Depends on: WOWUI-066
+
+#### Objective
+
+Expose the deterministic Auto Attack cadence as a real Battle swing timer.
+
+#### Work
+
+- Add an Auto Attack swing-timer bar to hero combat presentation.
+- Drive the timer from the combat engine's real Auto Attack progress state rather than a CSS-only animation or wall-clock timer.
+- Fill/reset the bar on the same tick progression that fires Auto Attack.
+- Reflect Haste/talent modifications to Auto Attack timing.
+- Pause the timer when Battle is paused.
+- Reset it correctly on encounter reset.
+- Preserve usable condensed swing-timer visibility in 10/20-player layouts.
+
+#### Acceptance Criteria
+
+- Swing progress visibly advances between Auto Attacks.
+- The bar resets when the Auto Attack fires.
+- Pausing Battle freezes swing progress.
+- Reset returns the swing timer to the initial state.
+- Haste changes alter swing progression consistently with combat output.
+- All player heroes expose swing timing, including condensed large-party layouts.
+- npm test passes.
+
+---
+
+### WOWUI-068 — Phase Cleanup and Regression Coverage
+
+Status: planned
+
+Depends on: WOWUI-064, WOWUI-067
+
+#### Objective
+
+Finish the phase by deleting superseded UI/runtime paths and locking the new contracts into CI.
+
+#### Work
+
+- Remove the old hero-level Party Loadouts panel and handlers.
+- Remove stale direct Talent and Gear player links.
+- Remove the Storehouse Inventory redirect.
+- Remove the Quest Board Advance Round control and styles.
+- Remove obsolete sidecar Upgrade-row CSS/handlers after banner migration.
+- Remove stale "level required / current level" upgrade copy.
+- Remove old ability-selection fallbacks that conflict with authoritative hero combat loadouts.
+- Add acceptance coverage for:
+  - roster-level saved parties
+  - hero Auto Attack + Ability 1 + Ability 2 + Ultimate contract
+  - gear-like ability picker behavior
+  - exact 2 / 2 / 1 talent data for every specialization
+  - capstone-to-Ultimate mapping
+  - Storehouse / Bank / Armory item separation
+  - in-sidecar building browsing
+  - banner-owned upgrades
+  - automatic Quest Board rounds
+  - Battle health bars
+  - Battle action strips
+  - deterministic swing timers
+- Update mockup/README.md and any affected system docs.
+- Correct stale item documentation that still describes the pre-Trinket six-slot equipment model.
+- Ensure authored JSON remains the runtime source.
+- Run the complete integration and combat suite in CI.
+
+#### Acceptance Criteria
+
+- No superseded hero-party, Gear-tab, Talent-link, Storehouse-redirect, manual-round, or menu-row-upgrade path remains.
+- All specialization talent shapes validate as 2 / 2 / 1.
+- Storage categories are separated by building.
+- Battle exposes correct HP, selected actions, Ultimate, and swing timing.
+- Both factions retain a complete Base → Quest/Dungeon → Battle → result loop.
+- npm test passes cleanly in CI.
 
