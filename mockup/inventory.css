@@ -1,0 +1,296 @@
+.inventory-page {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 50% -18%, rgba(183,139,59,.08), transparent 28%),
+    var(--wow-bg-canvas);
+  color: var(--wow-text);
+  font-family: var(--wow-font-ui);
+}
+
+.inventory-shell {
+  width: min(1180px, calc(100% - 24px));
+  margin: 0 auto;
+  padding: 22px 0 48px;
+}
+
+.inventory-frame {
+  overflow: hidden;
+}
+
+.inventory-header {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px 16px;
+}
+
+.inventory-header__identity {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inventory-header__icon {
+  --wow-icon-size: 58px;
+  flex: 0 0 auto;
+}
+
+.inventory-header h1 {
+  margin: 2px 0 3px;
+  color: var(--wow-gold-pale);
+  font: 700 24px var(--wow-font-display);
+}
+
+.inventory-header p {
+  margin: 0;
+  color: var(--wow-text-muted);
+  font-size: 9px;
+}
+
+.inventory-header__count {
+  flex: 0 0 auto;
+  display: grid;
+  justify-items: center;
+  min-width: 74px;
+  padding: 7px 10px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface-inset);
+}
+
+.inventory-header__count strong {
+  color: var(--wow-gold-pale);
+  font-size: 18px;
+}
+
+.inventory-header__count small {
+  color: var(--wow-text-dim);
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.inventory-toolbar {
+  display: grid;
+  grid-template-columns: 150px 140px minmax(180px,1fr) auto;
+  align-items: end;
+  gap: 8px;
+  padding: 9px 10px;
+  border-top: var(--wow-border-thin) solid var(--wow-inset-line);
+  border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
+  background: var(--wow-surface-inset);
+}
+
+.inventory-toolbar label:not(.inventory-checkbox) {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.inventory-search .wow-input,
+.inventory-toolbar .wow-select {
+  width: 100%;
+}
+
+.inventory-checkbox {
+  min-height: 32px;
+  align-self: end;
+}
+
+.inventory-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  background: #0b0e10;
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  gap: 6px;
+  padding: 10px;
+  background: linear-gradient(180deg, var(--wow-surface), var(--wow-surface-inset));
+}
+
+.inventory-item {
+  min-width: 0;
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: 48px minmax(0,1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 2px 8px;
+  padding: 7px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: rgba(0,0,0,.2);
+  color: var(--wow-text);
+  text-align: left;
+  cursor: help;
+}
+
+.inventory-item:hover,
+.inventory-item:focus-visible {
+  border-color: var(--wow-gold-muted);
+  outline: none;
+  background: rgba(183,139,59,.07);
+}
+
+.inventory-item.is-equipped {
+  box-shadow: inset 2px 0 0 var(--wow-gold-muted);
+}
+
+.inventory-item__icon {
+  --wow-icon-size: 44px;
+  grid-row: 1 / span 2;
+  position: relative;
+}
+
+.inventory-item__tier {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  min-width: 18px;
+  padding: 1px 2px;
+  border: 1px solid #08090a;
+  background: #111519;
+  color: var(--wow-gold-pale);
+  font-size: 6px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.inventory-item__copy,
+.inventory-item__state {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.inventory-item__copy strong {
+  overflow: hidden;
+  font: 700 10px var(--wow-font-display);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inventory-item__copy small,
+.inventory-item__state small {
+  overflow: hidden;
+  color: var(--wow-text-dim);
+  font-size: 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.inventory-item__state {
+  grid-column: 2;
+  align-self: end;
+}
+
+.inventory-item__state strong {
+  color: var(--wow-text-muted);
+  font-size: 7px;
+  text-transform: uppercase;
+}
+
+.inventory-item.is-equipped .inventory-item__state strong {
+  color: var(--wow-gold-pale);
+}
+
+.inventory-empty {
+  min-height: 160px;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  padding: 16px;
+  background: var(--wow-surface-inset);
+  color: var(--wow-text-dim);
+  text-align: center;
+}
+
+.inventory-empty:not([hidden]) {
+  display: grid;
+}
+
+.inventory-empty p {
+  margin: 0;
+  font-size: 8px;
+}
+
+.inventory__base-link {
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .inventory-toolbar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .inventory-search {
+    grid-column: 1 / -1;
+  }
+
+  .inventory-checkbox {
+    grid-column: 1 / -1;
+  }
+
+  .inventory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .inventory-shell {
+    width: 100%;
+    padding: 0 0 32px;
+  }
+
+  .inventory-frame {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .inventory-header {
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .inventory-header__icon {
+    --wow-icon-size: 46px;
+  }
+
+  .inventory-header h1 {
+    font-size: 19px;
+  }
+
+  .inventory-header p,
+  .inventory__base-link {
+    display: none;
+  }
+
+  .inventory-grid {
+    grid-template-columns: 1fr 1fr;
+    padding: 6px;
+  }
+
+  .inventory-item {
+    grid-template-columns: 42px minmax(0,1fr);
+    padding: 6px;
+  }
+
+  .inventory-item__icon {
+    --wow-icon-size: 38px;
+  }
+}
