@@ -90,7 +90,7 @@ function bodyTooltipModel(body) {
   };
 }
 
-function classTooltipModel(classMeta, faction, available) {
+function classTooltipModel(classMeta, faction, race, available) {
   const classId = classMeta.id;
   const factionRestriction = classMeta.faction || "";
   const requirements = [];
@@ -103,7 +103,7 @@ function classTooltipModel(classMeta, faction, available) {
   if (!available) {
     locked.push(factionRestriction
       ? classMeta.label + " is unavailable to " + faction.label + "."
-      : classMeta.label + " is unavailable under the current faction rules.");
+      : classMeta.label + " is unavailable to " + race.label + ".");
   }
 
   return {
@@ -113,7 +113,7 @@ function classTooltipModel(classMeta, faction, available) {
     classId:classId,
     icon:{category:"class", key:classId, classId:classId},
     description:available
-      ? "Available to the selected " + faction.label + " race under the current prototype rules."
+      ? "Available to " + race.label + " under the canonical Classic race/class rules."
       : "Visible for comparison, but not selectable under the current prototype rules.",
     requirements:requirements,
     locked:locked,
@@ -227,7 +227,8 @@ function renderRaceList() {
 
 function renderClasses() {
   const faction = currentFaction();
-  const available = new Set(faction.available_classes);
+  const race = currentRaceMeta();
+  const available = new Set(race.available_classes);
   const root = $("classGrid");
   root.innerHTML = "";
 
@@ -246,13 +247,13 @@ function renderClasses() {
 
     button.querySelectorAll("img").forEach(Icons.bindFallback);
     Tooltips.attach(button, function() {
-      return classTooltipModel(classMeta, faction, isAvailable);
+      return classTooltipModel(classMeta, faction, race, isAvailable);
     }, {anchor:"target"});
     root.appendChild(button);
   });
 
-  $("classSummary").textContent = faction.available_classes.length + " available · " +
-    (state.classIndex.classes.length - faction.available_classes.length) + " locked";
+  $("classSummary").textContent = race.available_classes.length + " available · " +
+    (state.classIndex.classes.length - race.available_classes.length) + " locked";
 }
 
 function renderStage(data) {
