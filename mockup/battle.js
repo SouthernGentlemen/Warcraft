@@ -47,8 +47,11 @@ function fallbackEncounter() {
 function selectedEncounter() {
   const params=new URLSearchParams(location.search);
   const pending=Roster&&typeof Roster.getPendingEncounter==="function"?Roster.getPendingEncounter():null;
-  if(params.get("encounter")==="dungeon"&&pending&&pending.kind==="dungeon"){
-    if(!params.get("dungeon")||params.get("dungeon")===pending.dungeonId)return pending;
+  const requested=params.get("encounter");
+  if(pending&&requested===pending.kind){
+    if(requested==="dungeon"&&params.get("dungeon")&&params.get("dungeon")!==pending.dungeonId)return fallbackEncounter();
+    if(requested==="quest"&&params.get("quest")&&params.get("quest")!==pending.questAssignmentId)return fallbackEncounter();
+    return pending;
   }
   return fallbackEncounter();
 }
@@ -178,12 +181,12 @@ function applyEncounterLabels() {
   if(playerLabel)playerLabel.textContent=state.playerSide.toUpperCase();
   if(playerName)playerName.textContent="Quest Board Party";
   if(enemyLabel)enemyLabel.textContent="NPC ENEMIES";
-  if(enemyName)enemyName.textContent=encounter.dungeonName||"Dungeon Encounter";
-  $(state.playerSide+"Team").setAttribute("aria-label",encounter.partySize+" player heroes");
-  $(state.enemySide+"Team").setAttribute("aria-label",(encounter.dungeonName||"Dungeon")+" NPC enemies");
-  $("battleEncounterType").textContent="DUNGEON";
-  $("battleEncounterName").textContent=encounter.dungeonName||encounter.dungeonId||"Encounter";
-  $("battleEncounterParty").textContent=encounter.partySize+" heroes · seed "+encounter.seed;
+  if(enemyName)enemyName.textContent=encounter.dungeonName||"NPC Encounter";
+  $(state.playerSide+"Team").setAttribute("aria-label",encounter.partySize+" player hero"+(encounter.partySize===1?"":"es"));
+  $(state.enemySide+"Team").setAttribute("aria-label",(encounter.dungeonName||"Encounter")+" NPC enemies");
+  $("battleEncounterType").textContent=encounter.kind==="quest"?"QUEST":"DUNGEON";
+  $("battleEncounterName").textContent=encounter.encounterName||encounter.dungeonName||encounter.dungeonId||"Encounter";
+  $("battleEncounterParty").textContent=encounter.partySize+" hero"+(encounter.partySize===1?"":"es")+" · seed "+encounter.seed;
   const frame=document.querySelector(".battle-frame");
   const field=document.querySelector(".battlefield");
   if(frame)frame.dataset.partySize=String(encounter.partySize);
@@ -270,10 +273,18 @@ function completionHook(result) {
   state.completion=result;
   clearTimeout(state.timer);
   const heroesWin=result.winnerTeam===0;
+  const resolved=Roster&&typeof Roster.resolvePendingEncounterResult==="function"
+    ? Roster.resolvePendingEncounterResult(result)
+    : null;
   const banner=$("resultBanner");
-  banner.innerHTML='<span>'+(heroesWin?"VICTORY":"DEFEAT")+'</span><strong>'+(heroesWin?"Heroes":"NPC Enemies")+'</strong><small>Reward hook ready · reset to replay the same seed</small>';
+  const questResult=state.encounter&&state.encounter.kind==="quest";
+  const detail=questResult
+    ? (heroesWin?"Quest completed · hero returned to available status":"Quest failed · hero released and offer can be retried")
+    : "Encounter result saved · reset to replay the same seed";
+  banner.innerHTML='<span>'+(heroesWin?"VICTORY":"DEFEAT")+'</span><strong>'+(heroesWin?"Heroes":"NPC Enemies")+'</strong><small>'+detail+'</small>';
   banner.hidden=false;
   $("battleStatus").textContent="Encounter complete";
+  if(resolved&&resolved.result)$("battleEvent").textContent=(heroesWin?"Victory":"Defeat")+" recorded for "+(state.encounter.encounterName||state.encounter.dungeonName||"encounter")+".";
   document.querySelector(".status-dot")?.classList.add("stopped");
 }
 
