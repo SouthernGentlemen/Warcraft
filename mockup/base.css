@@ -636,6 +636,105 @@
   cursor: not-allowed;
 }
 
+/* Storehouse / Bank / Armory browsers */
+
+.base-sidecar__storage {
+  margin-top: 7px;
+}
+
+.base-sidecar__storage-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+.base-sidecar__storage-head h3 {
+  margin: 2px 0 0;
+  color: var(--wow-gold-pale);
+  font: 700 12px var(--wow-font-display);
+}
+
+.base-sidecar__storage-head > small {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  text-transform: uppercase;
+}
+
+.base-sidecar__storage-grid {
+  display: grid;
+  gap: 5px;
+}
+
+.base-sidecar__storage-item {
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
+  display: grid;
+  grid-template-columns: 36px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 6px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  border-radius: var(--wow-radius-tight);
+  background: rgba(0,0,0,.18);
+  color: var(--wow-text);
+  text-align: left;
+  cursor: help;
+}
+
+.base-sidecar__storage-item:hover,
+.base-sidecar__storage-item:focus-visible {
+  border-color: var(--wow-gold-muted);
+  outline: none;
+  background: rgba(183,139,59,.07);
+}
+
+.base-sidecar__storage-item.is-equipment {
+  box-shadow: inset 2px 0 0 currentColor;
+}
+
+.base-sidecar__storage-icon {
+  --wow-icon-size: 32px;
+}
+
+.base-sidecar__storage-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.base-sidecar__storage-copy strong,
+.base-sidecar__storage-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.base-sidecar__storage-copy strong {
+  font: 700 9px var(--wow-font-display);
+}
+
+.base-sidecar__storage-copy small {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+}
+
+.base-sidecar__storage-count,
+.base-sidecar__storage-state {
+  color: var(--wow-gold-pale);
+  font-size: 8px;
+  font-weight: 800;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.base-sidecar__storage-state {
+  color: var(--wow-text-muted);
+  text-transform: uppercase;
+}
+
 /* Recruitment Hall workflow */
 
 .base-sidecar__recruitment {
