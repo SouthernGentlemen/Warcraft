@@ -259,7 +259,7 @@
       "category": "core",
       "level": 1,
       "max_level": 5,
-      "description": "Adds recruitment capacity and improves hero discovery.",
+      "description": "Improves faction-valid hero discovery. Roster capacity comes from Base Level.",
       "progression": [
         {
           "level": 1,

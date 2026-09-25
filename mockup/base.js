@@ -454,7 +454,7 @@ function renderRecruitmentWorkflow(building) {
 
   root.innerHTML =
     '<div class="base-sidecar__recruitment-head">' +
-      '<span><strong>' + roster.length + ' / ' + capacity + '</strong><small>Faction roster · Base ' + baseLevel + '</small></span>' +
+      '<span><strong>' + roster.length + ' / ' + capacity + '</strong><small>Roster · Base Level ' + baseLevel + ' cap</small></span>' +
       '<span><strong>' + candidates.length + '</strong><small>Discovered</small></span>' +
     '</div>' +
     '<div id="recruitmentStatus" class="base-sidecar__recruitment-status" role="status" aria-live="polite">' +

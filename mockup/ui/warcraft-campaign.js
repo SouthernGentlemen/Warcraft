@@ -22,15 +22,16 @@ function uniqueFactionHeroes(heroes,faction){
   });
 }
 function sanitizeHeroIdArray(values,ownedIds){return (Array.isArray(values)?values:[]).map(String).filter(id=>ownedIds.has(id));}
-function sanitizeReferenceValue(value,ownedIds,key){
+function sanitizeReferenceValue(value,ownedIds,key,options){
+  const allowSlots=Boolean(options&&options.allowSlots);
   if(Array.isArray(value)){
     if(key==="heroIds")return sanitizeHeroIdArray(value,ownedIds);
-    if(key==="slots")return value.map(entry=>{
+    if(key==="slots"&&allowSlots)return value.map(entry=>{
       if(entry==null)return entry;
       if(typeof entry==="string")return ownedIds.has(entry)?entry:null;
-      return sanitizeReferenceValue(entry,ownedIds,"slot");
+      return sanitizeReferenceValue(entry,ownedIds,"slot",options);
     });
-    return value.map(entry=>sanitizeReferenceValue(entry,ownedIds,""));
+    return value.map(entry=>sanitizeReferenceValue(entry,ownedIds,"",options));
   }
   if(!value||typeof value!=="object")return value;
   const next={};
@@ -40,7 +41,7 @@ function sanitizeReferenceValue(value,ownedIds,key){
       next[childKey]=id&&ownedIds.has(id)?id:null;
       return;
     }
-    next[childKey]=sanitizeReferenceValue(childValue,ownedIds,childKey);
+    next[childKey]=sanitizeReferenceValue(childValue,ownedIds,childKey,options);
   });
   return next;
 }
@@ -48,11 +49,12 @@ function sanitizeFactionReferencesRecord(campaign){
   const ownedIds=new Set((campaign.heroes||[]).map(hero=>String(hero.id)));
   campaign.formations.party=(campaign.formations.party||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"formation"));
   campaign.formations.raid=(campaign.formations.raid||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"formation"));
-  campaign.formations.siege=(campaign.formations.siege||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"formation"));
+  campaign.formations.siege=(campaign.formations.siege||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"formation",{allowSlots:true}));
   campaign.quests=(campaign.quests||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"quest"));
   if(campaign.pendingEncounter){
-    const pending=sanitizeReferenceValue(campaign.pendingEncounter,ownedIds,"encounter");
-    const expected=Math.max(0,Number(pending.partySize)||0);
+    const source=campaign.pendingEncounter;
+    const expected=Math.max(0,Number(source.partySize)||((Array.isArray(source.heroIds)?source.heroIds.length:0)));
+    const pending=sanitizeReferenceValue(source,ownedIds,"encounter");
     campaign.pendingEncounter=pending.heroIds&&pending.heroIds.length===expected?pending:null;
   }
   campaign.dungeonRuns=(campaign.dungeonRuns||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"run"));
@@ -62,20 +64,37 @@ function sanitizeFactionReferencesRecord(campaign){
   campaign.professionSelections=Object.fromEntries(Object.entries(selections).filter(([heroId])=>ownedIds.has(String(heroId))));
   return campaign;
 }
-function collectReferencedHeroIds(value,key,output){
+function collectReferencedHeroIds(value,key,output,options){
   const out=output||[];
+  const allowSlots=Boolean(options&&options.allowSlots);
   if(Array.isArray(value)){
     if(key==="heroIds"){value.forEach(id=>out.push(String(id)));return out;}
-    if(key==="slots"){value.forEach(entry=>{if(typeof entry==="string")out.push(entry);else collectReferencedHeroIds(entry,"slot",out);});return out;}
-    value.forEach(entry=>collectReferencedHeroIds(entry,"",out));
+    if(key==="slots"&&allowSlots){value.forEach(entry=>{if(typeof entry==="string")out.push(entry);else collectReferencedHeroIds(entry,"slot",out,options);});return out;}
+    value.forEach(entry=>collectReferencedHeroIds(entry,"",out,options));
     return out;
   }
   if(!value||typeof value!=="object")return out;
   Object.entries(value).forEach(([childKey,childValue])=>{
     if(childKey==="heroId"&&childValue!=null)out.push(String(childValue));
-    else collectReferencedHeroIds(childValue,childKey,out);
+    else collectReferencedHeroIds(childValue,childKey,out,options);
   });
   return out;
+}
+function enforceFactionHeroOwnership(state){
+  const preferred=state.migration&&state.migration.completed&&state.migration.targetFaction?state.migration.targetFaction:state.activeFaction;
+  const order=[preferred,...FACTIONS.filter(faction=>faction!==preferred)];
+  const seen=new Set();
+  order.forEach(faction=>{
+    const campaign=state.campaigns[faction];
+    campaign.heroes=(campaign.heroes||[]).filter(hero=>{
+      const id=String(hero.id);
+      if(seen.has(id))return false;
+      seen.add(id);
+      return true;
+    });
+    sanitizeFactionReferencesRecord(campaign);
+  });
+  return state;
 }
 function defaultQuestBoard(){return {round:1,seed:"questboard-v1",offerIds:[]};}
 function defaultClock(){return {day:1,phase:"day",phaseAdvances:0};}
@@ -188,7 +207,7 @@ function normalizeState(raw){
     source:migration.source?String(migration.source):null,
     targetFaction:migration.targetFaction?factionId(migration.targetFaction):null
   };
-  return base;
+  return enforceFactionHeroOwnership(base);
 }
 function migrateLegacy(){
   const legacyRoster=readStorage(LEGACY_ROSTER_KEY);
@@ -344,10 +363,10 @@ function getFormations(kind,faction){
   return getCampaign(faction||state.activeFaction).formations[key];
 }
 function getProfessionSelections(faction){return getCampaign(faction||state.activeFaction).professionSelections;}
-function setProfessionSelection(heroId,selection){validateHeroIds([heroId]);getActiveCampaign().professionSelections[String(heroId)]=clone(selection);commit("profession-selection");return getActiveCampaign().professionSelections[String(heroId)];}
+function setProfessionSelection(heroId,selection){const next=clone(selection);validateHeroIds([heroId,...collectReferencedHeroIds(next)]);getActiveCampaign().professionSelections[String(heroId)]=next;commit("profession-selection");return getActiveCampaign().professionSelections[String(heroId)];}
 function getBuildingAssignments(faction){return getCampaign(faction||state.activeFaction).buildingAssignments;}
 function setBuildingAssignment(buildingId,assignment){const next=clone(assignment);validateHeroIds(collectReferencedHeroIds(next));getActiveCampaign().buildingAssignments[String(buildingId)]=next;commit("building-assignment");return next;}
-function setFormation(kind,index,formation){const key=["party","raid","siege"].includes(kind)?kind:null;if(!key)throw new Error("Formation kind must be party, raid, or siege.");const next=clone(formation);validateHeroIds(collectReferencedHeroIds(next));const list=getActiveCampaign().formations[key];const slot=Math.max(0,Number(index)||0);list[slot]=next;commit("formation");return next;}
+function setFormation(kind,index,formation){const key=["party","raid","siege"].includes(kind)?kind:null;if(!key)throw new Error("Formation kind must be party, raid, or siege.");const next=clone(formation);validateHeroIds(collectReferencedHeroIds(next,"",[],{allowSlots:key==="siege"}));const list=getActiveCampaign().formations[key];const slot=Math.max(0,Number(index)||0);list[slot]=next;commit("formation");return next;}
 function getClock(faction){return getCampaign(faction||state.activeFaction).clock;}
 function advanceClock(){
   const clock=getActiveCampaign().clock;
