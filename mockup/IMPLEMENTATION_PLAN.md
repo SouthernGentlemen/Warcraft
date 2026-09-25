@@ -1326,7 +1326,7 @@ Make the hero's personal loadout bar the primary place to inspect and equip comb
 
 ### WOWUI-058 — Talent Dataset Repair: 2 / 2 / 1
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-056
 
