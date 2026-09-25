@@ -96,6 +96,103 @@ function portraitMarkup(def) {
     '</span>';
 }
 
+function actionIconUrl(action,slot) {
+  if(action&&action.icon_slug)return Icons.iconUrl(action.icon_slug);
+  if(slot==="auto")return Icons.resolve("ability","attack");
+  if(slot==="ultimate")return Icons.resolve("ability","ultimate");
+  if(action&&action.kind==="heal")return Icons.resolve("ability","heal");
+  if(action&&(action.kind==="shield"||action.kind==="buff"))return Icons.resolve("ability","defensive");
+  return Icons.resolve("ability","damage");
+}
+
+function cooldownText(ticks) {
+  const seconds=Math.max(0,Number(ticks)||0)/60;
+  if(seconds<=0)return "Ready";
+  return (seconds<10?seconds.toFixed(1):Math.ceil(seconds))+"s";
+}
+
+function heroActionEntries(actor) {
+  const def=actor.definition;
+  return [
+    {slot:"auto",label:"Auto",action:def.auto,state:actor.actionState&&actor.actionState.auto},
+    {slot:"ability1",label:"A1",action:def.cooldowns[0],state:actor.actionState&&actor.actionState.cooldowns[0]},
+    {slot:"ability2",label:"A2",action:def.cooldowns[1],state:actor.actionState&&actor.actionState.cooldowns[1]},
+    {slot:"ultimate",label:"Ult",action:def.ultimate,state:actor.actionState&&actor.actionState.ultimate}
+  ];
+}
+
+function heroActionLive(entry,actor) {
+  if(!actor.state.alive)return {text:"Down",state:"dead"};
+  if(entry.slot==="auto")return {text:"Auto",state:"ready"};
+  if(entry.slot==="ultimate"){
+    if(!entry.state)return {text:"—",state:"blocked"};
+    if(entry.state.ready)return {text:"Ready",state:"ready"};
+    const pct=entry.state.max?Math.max(0,Math.min(100,Math.floor(entry.state.charge/entry.state.max*100))):0;
+    return {text:pct+"%",state:"charging"};
+  }
+  if(!entry.state)return {text:"—",state:"blocked"};
+  if(entry.state.remaining>0)return {text:cooldownText(entry.state.remaining),state:"cooling"};
+  if(entry.state.resourceBlocked)return {text:"Resource",state:"blocked"};
+  return {text:"Ready",state:"ready"};
+}
+
+function heroActionTooltip(actor,slot) {
+  const entry=heroActionEntries(actor).find(item=>item.slot===slot);
+  if(!entry||!entry.action)return {variant:"ability",title:"Unknown action",type:"Combat action"};
+  const action=entry.action,live=heroActionLive(entry,actor);
+  const stats=[];
+  if(slot==="ultimate"){
+    stats.push({label:"Charge",value:(entry.state?formatNumber(entry.state.charge):"0")+" / "+(entry.state?formatNumber(entry.state.max):"10,000")});
+  }else if(slot!=="auto"){
+    stats.push({label:"Cooldown",value:entry.state&&entry.state.remaining>0?cooldownText(entry.state.remaining):"Ready"});
+    stats.push({label:"Resource / cost",value:action.resource==="none"?"None":String(action.resource).replace(/^./,c=>c.toUpperCase())+" · "+formatNumber(entry.state?entry.state.effectiveCost:action.cost)});
+  }
+  stats.push({label:"Target",value:String(action.target||"enemy")});
+  if(action.effect&&action.effect!=="none")stats.push({label:"Effect",value:String(action.effect)});
+  return {
+    variant:"ability",
+    title:action.name,
+    type:slot==="auto"?"Auto Attack":slot==="ultimate"?"Capstone Ultimate":entry.label==="A1"?"Ability 1":"Ability 2",
+    icon:action.icon_slug?{slug:action.icon_slug}:{category:"ability",key:slot==="auto"?"attack":slot==="ultimate"?"ultimate":"damage"},
+    description:live.state==="blocked"?"Resource blocked.":live.state==="cooling"?"Cooling down.":live.state==="charging"?"Ultimate is charging.":live.state==="dead"?"Hero is defeated.":"Ready.",
+    stats,
+    meta:[{label:"Live state",value:live.text},{label:"Action ID",value:action.id}]
+  };
+}
+
+function heroActionStripMarkup(actor) {
+  return '<div class="hero-combat-actions" aria-label="Combat actions">'+heroActionEntries(actor).map(entry=>{
+    const live=heroActionLive(entry,actor);
+    return '<button class="hero-combat-action is-'+live.state+'" type="button" data-combat-action-slot="'+entry.slot+'" data-action-id="'+entry.action.id+'">'+
+      '<span class="hero-combat-action__icon wow-icon-frame wow-icon-frame--sm"><img src="'+actionIconUrl(entry.action,entry.slot)+'" alt=""></span>'+
+      '<span class="hero-combat-action__copy"><small>'+entry.label+'</small><strong>'+entry.action.name+'</strong></span>'+
+      '<span class="hero-combat-action__state">'+live.text+'</span>'+
+    '</button>';
+  }).join('')+'</div>';
+}
+
+function hydrateHeroActionStrip(card,actor) {
+  if(actor.definition.kind!=="hero")return;
+  card.querySelectorAll("[data-combat-action-slot]").forEach(button=>{
+    const slot=button.dataset.combatActionSlot;
+    Tooltips.attach(button,()=>heroActionTooltip(state.runtime.snapshot().actors[actor.index],slot),{anchor:"target"});
+  });
+}
+
+function updateHeroActionStrip(card,actor) {
+  if(actor.definition.kind!=="hero")return;
+  for(const entry of heroActionEntries(actor)){
+    const button=card.querySelector('[data-combat-action-slot="'+entry.slot+'"]');
+    if(!button)continue;
+    const live=heroActionLive(entry,actor);
+    button.classList.remove("is-ready","is-cooling","is-blocked","is-charging","is-dead");
+    button.classList.add("is-"+live.state);
+    const stateLabel=button.querySelector(".hero-combat-action__state");
+    if(stateLabel)stateLabel.textContent=live.text;
+    button.setAttribute("aria-label",entry.label+" "+entry.action.name+" · "+live.text);
+  }
+}
+
 function actorCard(actor) {
   const def=actor.definition;
   const live=actor.state;
@@ -120,9 +217,11 @@ function actorCard(actor) {
       '</div>'+
       '<div class="unit-bar hp-stat"><span class="unit-bar-label">Health</span><span class="mini-fill"></span><b></b></div>'+
       (def.maxResource?'<div class="unit-bar resource-stat" tabindex="0"><span class="unit-bar-label">'+def.resourceType+'</span><span class="mini-fill"></span><b></b></div>':'')+
+      (def.kind==="hero"?heroActionStripMarkup(actor):'')+
       '<div class="unit-status-row" aria-label="Combat status"><div class="unit-status-hooks buff-hooks"><span class="unit-status-slot" data-status-slot="buff-1"></span></div><div class="unit-status-hooks debuff-hooks"><span class="unit-status-slot" data-status-slot="debuff-1"></span></div></div>'+
     '</div>';
   article.querySelectorAll("img").forEach(Icons.bindFallback);
+  hydrateHeroActionStrip(article,actor);
   Tooltips.attach(article,()=>actorTooltipModel(state.runtime.snapshot().actors[actor.index]),{anchor:"target"});
   return article;
 }
@@ -157,6 +256,7 @@ function updateActor(actor) {
   const resourceText=card.querySelector(".resource-stat b");
   if(resourceFill&&def.maxResource)resourceFill.style.width=Math.max(0,Math.min(100,live.resource/def.maxResource*100))+"%";
   if(resourceText)resourceText.textContent=formatNumber(live.resource)+" / "+formatNumber(def.maxResource);
+  updateHeroActionStrip(card,actor);
 }
 
 function updateSideSummary(side,totals) {
