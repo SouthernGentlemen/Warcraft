@@ -1,9 +1,9 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source_path": "docs/heroes/classes/rogue/specs/assassination.md",
   "kind": "specialization",
   "title": "Rogue — Assassination",
-  "source_markdown": "# Rogue — Assassination\n\n## Identity\n\n- Role: Sustained melee damage\n- Resource: Energy\n- Primary stat: Agility\n- Auto-attack: Poisoned Strike — melee weapon damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Assassination** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Deadly Poison** | Auto-attacks apply poison dealing 12% of the hit's damage over 5 seconds; refreshes duration. |\n| **Cut to the Quick** | Auto-attack bar fills 10% faster. |\n| **Cheap Toxins** | Energy costs of equipped cooldown abilities are reduced by 10%. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Envenom** | Equipped cooldown abilities deal 15% more damage to poisoned targets. |\n| **Venom Rush** | Poison ticks have a 20% chance to restore 2 Energy. |\n| **Hemorrhage** | Critical auto-attacks extend the active poison by 2 seconds and increase its remaining damage by 10%. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Master Poisoner** | Deadly Poison can stack up to 3 times; stacks after the first deal 50% of normal poison damage. |\n| **Executioner** | Deal 25% more damage to targets below 30% health. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "source_markdown": "# Rogue — Assassination\n\n## Talent Prototype\n\nTwo normal talent tiers plus one capstone. Canonical Classic identities/icons come from the Assassination tree. Unlocks use only the structured tier thresholds; there are no per-node prerequisite chains.\n",
   "class": "Rogue",
   "specialization": "Assassination",
   "identity": {
@@ -15,41 +15,38 @@
   "talents": {
     "tier_1": [
       {
-        "name": "Deadly Poison",
-        "effect": "Auto-attacks apply poison dealing 12% of the hit's damage over 5 seconds; refreshes duration."
-      },
-      {
-        "name": "Cut to the Quick",
-        "effect": "Auto-attack bar fills 10% faster."
-      },
-      {
-        "name": "Cheap Toxins",
-        "effect": "Energy costs of equipped cooldown abilities are reduced by 10%."
+        "name": "Improved Eviscerate",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "ability_rogue_eviscerate",
+        "canonical_tree": "Assassination",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Rogue/data.ts"
       }
     ],
     "tier_2": [
       {
-        "name": "Envenom",
-        "effect": "Equipped cooldown abilities deal 15% more damage to poisoned targets."
-      },
-      {
-        "name": "Venom Rush",
-        "effect": "Poison ticks have a 20% chance to restore 2 Energy."
-      },
-      {
-        "name": "Hemorrhage",
-        "effect": "Critical auto-attacks extend the active poison by 2 seconds and increase its remaining damage by 10%."
+        "name": "Relentless Strikes",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "ability_warrior_decisivestrike",
+        "canonical_tree": "Assassination",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Rogue/data.ts"
       }
     ],
     "capstones": [
       {
-        "name": "Master Poisoner",
-        "effect": "Deadly Poison can stack up to 3 times; stacks after the first deal 50% of normal poison damage."
-      },
-      {
-        "name": "Executioner",
-        "effect": "Deal 25% more damage to targets below 30% health."
+        "name": "Vigor",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_nature_earthbindtotem",
+        "canonical_tree": "Assassination",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Rogue/data.ts"
       }
     ]
+  },
+  "talent_model": {
+    "kind": "two-tier-plus-capstone",
+    "tier_semantics": "Talent tiers are prototype talent progression only and are unrelated to item/building T1–T5 progression.",
+    "tier_1_unlock_points": 0,
+    "tier_2_unlock_points": 1,
+    "capstone_unlock_points": 2,
+    "dependency_rule": "tier-only; no per-node prerequisites"
   }
 }
