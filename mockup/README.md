@@ -226,6 +226,12 @@ Quest Board now switches between randomized quest offers and a data-driven Azero
 
 Dungeon enemies now come from `data/npcs/catalog.json`, governed by `data/npcs/schema.json`. NPC records own stable identity, family/type, level/tier, integer combat stats, auto attack, optional abilities, dungeon membership, and pool membership. `data/npcs/dungeon-pools.json` contains only ordered NPC IDs and resolves through the authoritative catalog. `mockup/combat/engine/npc-factory.js` converts those records into the fixed-tick combat definition shape, and repeated combat with the same actor set/seed is regression-tested for identical final-state and combat-log hashes. Battle uses that same catalog/pool contract so combat cards and log entries name authored dungeon NPCs.
 
+### Battle hero action strips
+
+Every hero Battle card renders the same four authoritative combat actions owned by the roster/runtime contract: **Auto Attack**, **Ability 1**, **Ability 2**, and the specialization-capstone **Ultimate**. The resolved hero definition preserves the roster-selected cooldown ordering and capstone Ultimate ID, and authored class ability records carry the icon slugs used by Battle. Shared ability tooltips expose action identity, target, cost/cooldown details, and current live state.
+
+Readiness is not reimplemented in the Battle presentation. `CombatSimulation.actionState()` owns effective resource cost, cooldown remaining, resource blocking, and Ultimate charge/readiness; `BattleEncounterRuntime.snapshot()` exposes that canonical state alongside each actor. Battle only formats those values as **Ready**, cooldown time, **Resource**, Ultimate percentage, or **Down**. Normal 1/3/5-player cards show icon, slot label, action name, and live state; 10/20-player layouts retain all four slots as a condensed icon/state strip rather than hiding the loadout.
+
 ### Battle health rendering
 
 Battle health presentation is normalized through `mockup/battle/health-bars.js`. Individual cards clamp snapshot HP to `0..maxHealth`, force dead actors to visual zero, and derive their fill width from that normalized percentage. Team/raid summaries sum those same normalized actor values, so aggregate health cannot drift from the visible unit cards.
