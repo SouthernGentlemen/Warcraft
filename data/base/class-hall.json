@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "class_hall",
+  "owner_building": "classhall",
+  "assignment_slots": 3,
+  "training_duration": {
+    "days": 1,
+    "campaign_phases": 2
+  },
+  "trainers": [
+    {
+      "id": "trainer-druid",
+      "class_id": "druid",
+      "label": "Druid Trainer",
+      "factions": [
+        "alliance",
+        "horde"
+      ]
+    },
+    {
+      "id": "trainer-hunter",
+      "class_id": "hunter",
+      "label": "Hunter Trainer",
+      "factions": [
+        "alliance",
+        "horde"
+      ]
+    },
+    {
+      "id": "trainer-mage",
+      "class_id": "mage",
+      "label": "Mage Trainer",
+      "factions": [
+        "alliance",
+        "horde"
+      ]
+    },
+    {
+      "id": "trainer-paladin",
+      "class_id": "paladin",
+      "label": "Paladin Trainer",
+      "factions": [
+        "alliance"
+      ]
+    },
+    {
+      "id": "trainer-priest",
+      "class_id": "priest",
+      "label": "Priest Trainer",
+      "factions": [
+        "alliance",
+        "horde"
+      ]
+    },
+    {
+      "id": "trainer-rogue",
+      "class_id": "rogue",
+      "label": "Rogue Trainer",
+      "factions": [
+        "alliance",
+        "horde"
+      ]
+    },
+    {
+      "id": "trainer-shaman",
+      "class_id": "shaman",
+      "label": "Shaman Trainer",
+      "factions": [
+        "horde"
+      ]
+    },
+    {
+      "id": "trainer-warlock",
+      "class_id": "warlock",
+      "label": "Warlock Trainer",
+      "factions": [
+        "alliance",
+        "horde"
+      ]
+    },
+    {
+      "id": "trainer-warrior",
+      "class_id": "warrior",
+      "label": "Warrior Trainer",
+      "factions": [
+        "alliance",
+        "horde"
+      ]
+    }
+  ],
+  "rules": {
+    "faction_filter": "A trainer is shown only when its class is valid for at least one race in the active faction.",
+    "level_up": "A hero may start level training only at 20 / 20 XP when the next hero level does not exceed the active faction Base Level.",
+    "talents": "Assigned heroes open the shared Roster Talents tab; Class Hall does not own a second talent editor."
+  }
+}
