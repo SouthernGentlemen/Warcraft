@@ -87,3 +87,12 @@ npm run simulation:test
 ```
 
 The smoke test runs the 1-person and 3-person scenarios twice with the same seed and fails if either the final state hash or full combat-log hash differs.
+
+
+## Shared WoW UI architecture
+
+All mockup screens now use the shared UI layer under `mockup/ui/` as the visual and interaction contract. `wow-ui.css` owns tokens, frames, inset surfaces, buttons, tabs, form controls, status bars, icon frames, focus states, and tooltip presentation. `wow-icons.js` is the single semantic icon resolver and fallback path. `wow-tooltips.js` is the single tooltip implementation and supports both pointer hover and keyboard focus. `wow-nav.js` hydrates the persistent game navigation and its shared icon language.
+
+Screen CSS files remain responsible only for screen-specific layout and presentation. Interactive game concepts should use semantic icon frames plus visible text or an accessible label; emoji and Unicode symbols must not be used as game-icon substitutes. Locked, disabled, quality, error, and completion states must include text or accessibility metadata rather than relying on color alone. Custom focusable surfaces use the shared `:focus-visible` contract.
+
+Responsive layouts are maintained in each screen stylesheet for desktop, tablet, and mobile widths. When adding controls, prefer `.wow-button`, `.wow-tab`, `.wow-input`, `.wow-select`, `.wow-checkbox`, `.wow-range`, and `.wow-icon-button` instead of browser-default controls. Run `npm run simulation:test` after shared UI changes that touch the simulation surface, and use `npm run dev` for the normal rebuild-and-open development flow.
