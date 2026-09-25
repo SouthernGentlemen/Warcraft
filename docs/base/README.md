@@ -36,7 +36,11 @@ Faction presentation may differ between Alliance and Horde.
 
 ### Training
 
-Supports hero leveling and may control the current hero level cap.
+Training Grounds remains a general training-support building. Hero level-up authority belongs to the Class Hall.
+
+### Class Hall
+
+Houses faction-valid class trainers and owns hero level training. The Class Hall exposes three hero assignment slots. A hero at 20 / 20 XP may begin one full campaign day of level training only when the next hero level does not exceed the active faction Base Level. Successful completion increases the hero by one level and resets next-level XP to 0. Assigned heroes open the shared Roster Talents view rather than a separate talent interface.
 
 ### Recruitment
 
