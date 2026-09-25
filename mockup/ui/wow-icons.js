@@ -196,6 +196,8 @@
       "recruitment-hall":"achievement_guildperk_everybodysfriend",
       "training-grounds":"ability_dualwield",
       storehouse:"inv_crate_03",
+      bank:"inv_misc_coin_02",
+      armory:"inv_chest_plate04",
       "artisans-guild":"trade_engineering"
     },
     quest: {
