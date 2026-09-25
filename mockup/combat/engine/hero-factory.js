@@ -180,7 +180,7 @@ export function createHeroDefinition({
     maxResource,
     resourceRegenPerSecond,
     auto: autoAction(specData),
-    resolvedCooldowns,
+    cooldowns: resolvedCooldowns,
     ultimate,
     combatLoadout: {
       autoAttackId: "auto",
