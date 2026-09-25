@@ -266,6 +266,11 @@
         "gold": 1000,
         "meta_currency": "quest_marks",
         "meta_amount": 4
+      },
+      "encounter": {
+        "kind": "npc",
+        "pool_rule": "faction-starter",
+        "enemy_count": 10
       }
     },
     {
@@ -279,6 +284,11 @@
         "gold": 1000,
         "meta_currency": "quest_marks",
         "meta_amount": 4
+      },
+      "encounter": {
+        "kind": "npc",
+        "pool_rule": "faction-starter",
+        "enemy_count": 10
       }
     },
     {
@@ -292,6 +302,11 @@
         "gold": 1000,
         "meta_currency": "quest_marks",
         "meta_amount": 4
+      },
+      "encounter": {
+        "kind": "npc",
+        "pool_rule": "faction-starter",
+        "enemy_count": 10
       }
     },
     {
@@ -305,6 +320,11 @@
         "gold": 1000,
         "meta_currency": "quest_marks",
         "meta_amount": 4
+      },
+      "encounter": {
+        "kind": "npc",
+        "pool_rule": "faction-starter",
+        "enemy_count": 10
       }
     },
     {
@@ -318,6 +338,11 @@
         "gold": 1000,
         "meta_currency": "quest_marks",
         "meta_amount": 4
+      },
+      "encounter": {
+        "kind": "npc",
+        "pool_rule": "faction-starter",
+        "enemy_count": 10
       }
     },
     {
