@@ -204,7 +204,7 @@ Create the reusable right-side sidecar interaction model before moving any build
 
 ### WOWUI-025 — Building Management in the Sidecar
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-024
 
