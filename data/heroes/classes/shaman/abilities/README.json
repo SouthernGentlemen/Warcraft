@@ -17,7 +17,8 @@
       "cooldown_ticks": 420,
       "resource": "mana",
       "cost": 105,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_shaman_lavaburst"
     },
     {
       "id": "stormstrike",
@@ -30,7 +31,8 @@
       "cooldown_ticks": 360,
       "resource": "mana",
       "cost": 95,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_sealofmight"
     },
     {
       "id": "riptide",
@@ -43,7 +45,8 @@
       "cooldown_ticks": 360,
       "resource": "mana",
       "cost": 95,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_nature_riptide"
     },
     {
       "id": "chain-lightning",
@@ -56,7 +59,8 @@
       "cooldown_ticks": 480,
       "resource": "mana",
       "cost": 110,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_nature_chainlightning"
     }
   ],
   "ultimates": [
@@ -73,7 +77,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_nature_wispheal"
     },
     {
       "id": "capstone-stormstrike",
@@ -88,7 +93,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_holy_sealofmight"
     },
     {
       "id": "capstone-mana-tide-totem",
@@ -103,7 +109,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "haste_bp:+1800@480"
+      "effect": "haste_bp:+1800@480",
+      "icon_slug": "spell_frost_summonwaterelemental"
     }
   ],
   "ultimate_model": "specialization-capstone"
