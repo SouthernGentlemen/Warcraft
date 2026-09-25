@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "kind": "dungeon_npc_pools",
+  "status": "identity_seed_only",
+  "notes": [
+    "Pools provide stable dungeon-to-NPC identity references for encounter work.",
+    "Combat stats, encounter composition, and deterministic spawn rules are intentionally deferred."
+  ],
+  "pools": [
+    {
+      "id": "dungeon-ragefire-chasm",
+      "dungeon_id": "ragefire-chasm",
+      "npcs": [
+        {
+          "id": "adarogg",
+          "name": "Adarogg",
+          "role": "boss"
+        },
+        {
+          "id": "dark-shaman-koranthal",
+          "name": "Dark Shaman Koranthal",
+          "role": "boss"
+        },
+        {
+          "id": "slagmaw",
+          "name": "Slagmaw",
+          "role": "boss"
+        },
+        {
+          "id": "lava-guard-gordoth",
+          "name": "Lava Guard Gordoth",
+          "role": "boss"
+        }
+      ]
+    },
+    {
+      "id": "dungeon-the-stockade",
+      "dungeon_id": "the-stockade",
+      "npcs": [
+        {
+          "id": "randolph-moloch",
+          "name": "Randolph Moloch",
+          "role": "boss"
+        },
+        {
+          "id": "lord-overheat",
+          "name": "Lord Overheat",
+          "role": "boss"
+        },
+        {
+          "id": "hogger",
+          "name": "Hogger",
+          "role": "boss"
+        }
+      ]
+    },
+    {
+      "id": "dungeon-scarlet-monastery",
+      "dungeon_id": "scarlet-monastery",
+      "npcs": [
+        {
+          "id": "thalnos-the-soulrender",
+          "name": "Thalnos the Soulrender",
+          "role": "boss"
+        },
+        {
+          "id": "brother-korloff",
+          "name": "Brother Korloff",
+          "role": "boss"
+        },
+        {
+          "id": "high-inquisitor-whitemane",
+          "name": "High Inquisitor Whitemane",
+          "role": "boss"
+        }
+      ]
+    },
+    {
+      "id": "dungeon-zul-farrak",
+      "dungeon_id": "zul-farrak",
+      "npcs": [
+        {
+          "id": "antusul",
+          "name": "Antu'sul",
+          "role": "boss"
+        },
+        {
+          "id": "witch-doctor-zumrah",
+          "name": "Witch Doctor Zum'rah",
+          "role": "boss"
+        },
+        {
+          "id": "gahzrilla",
+          "name": "Gahz'rilla",
+          "role": "boss"
+        },
+        {
+          "id": "chief-ukorz-sandscalp",
+          "name": "Chief Ukorz Sandscalp",
+          "role": "boss"
+        }
+      ]
+    }
+  ]
+}
