@@ -111,3 +111,7 @@ The Base landing screen now uses only the shared top navigation, persistent reso
 ### Map-first Base landing
 
 The Base landing screen now keeps only Gold, Lumber, and Stone in its persistent HUD. The stronghold map consumes the remaining viewport, building labels are limited to name and level, no building is selected by default, and no detail area reserves layout space before a building interaction. Building-specific management remains intentionally deferred to the sidecar tasks.
+
+### Base building sidecar
+
+Base building details now use one reusable sidecar that is hidden on initial load and overlays the map only after a building is selected. Selecting another building replaces the sidecar identity in place; close, Escape, and empty-map dismissal clear selection, and explicit close restores focus to the originating building. Building management content remains intentionally deferred to WOWUI-025.
