@@ -114,7 +114,7 @@ function emptyCampaign(faction){
     pendingEncounter:null,
     dungeonRuns:[],
     embark:{active:null,history:[]},
-    profession:{guildLevel:1,activeProfession:null},
+    profession:{guildLevel:1,activeTrack:"artisan",activeProfession:null},
     professionSelections:{},
     buildingAssignments:{},
     clock:defaultClock()
@@ -183,6 +183,7 @@ function normalizeCampaign(raw,faction){
     },
     profession:{
       guildLevel:clampLevel(professionSource.guildLevel),
+      activeTrack:["artisan","gathering","survival"].includes(String(professionSource.activeTrack||"artisan"))?String(professionSource.activeTrack||"artisan"):"artisan",
       activeProfession:professionSource.activeProfession?String(professionSource.activeProfession):null
     },
     professionSelections:source.professionSelections&&typeof source.professionSelections==="object"?clone(source.professionSelections):{},
@@ -354,6 +355,7 @@ function setProfessionState(patch){
   const current=getActiveCampaign().profession;
   const next=patch&&typeof patch==="object"?patch:{};
   if(next.guildLevel!=null)current.guildLevel=clampLevel(next.guildLevel);
+  if(Object.prototype.hasOwnProperty.call(next,"activeTrack")){const track=String(next.activeTrack||"artisan");current.activeTrack=["artisan","gathering","survival"].includes(track)?track:"artisan";}
   if(Object.prototype.hasOwnProperty.call(next,"activeProfession"))current.activeProfession=next.activeProfession?String(next.activeProfession):null;
   commit("profession");
   return current;
