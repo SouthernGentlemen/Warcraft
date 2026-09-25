@@ -431,9 +431,10 @@ function completionHook(result) {
   const rewardCopy=heroesWin&&reward
     ? " · Reward: "+formatNumber(reward.gold)+" gold · "+formatNumber(reward.meta_amount)+" quest mark"+(Number(reward.meta_amount)===1?"":"s")
     : "";
+  const xpEvents=resolved&&resolved.result&&Array.isArray(resolved.result.heroXpEvents)?resolved.result.heroXpEvents:[],xpGains=xpEvents.filter(event=>Number(event.amount)>0),xpValues=[...new Set(xpGains.map(event=>Number(event.amount)))],xpCopy=heroesWin&&xpGains.length?" · Hero XP: "+(xpValues.length===1?("+"+xpValues[0]+" each"):(xpGains.map(event=>event.heroName+" +"+event.amount).join(", "))):"";
   const detail=questResult
-    ? (heroesWin?"Quest completed · heroes returned to available status"+rewardCopy:"Quest failed · heroes released and offer can be retried")
-    : "Encounter result saved · reset to replay the same seed";
+    ? (heroesWin?"Quest completed · heroes returned to available status"+rewardCopy+xpCopy:"Quest failed · heroes released and offer can be retried")
+    : (heroesWin?"Encounter result saved"+xpCopy+" · reset to replay the same seed":"Encounter result saved · reset to replay the same seed");
   const returnMode=questResult?"offers":"dungeons";
   banner.innerHTML='<span>'+(heroesWin?"VICTORY":"DEFEAT")+'</span><strong>'+(heroesWin?"Heroes":"NPC Enemies")+'</strong><small>'+detail+'</small>'+
     '<div class="result-banner__actions"><a class="wow-button wow-button--primary" href="./base.html?building=questboard&mode='+returnMode+'">Return to Quest Board</a><a class="wow-button" href="./base.html">Return to Base</a></div>';
