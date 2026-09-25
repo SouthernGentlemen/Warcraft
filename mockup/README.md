@@ -12,7 +12,7 @@ Static review screens backed directly by authored runtime JSON under the root-le
 - `ui/index.html` — static component reference demonstrating the shared primitives and interaction states without a framework or build step.
 - Current mockup pages import the shared foundation before their existing stylesheet so later tasks can migrate incrementally without changing prototype mechanics.
 
-The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif display text, normal `.wow-ui` / `.wow-ui-text` styling for compact controls and descriptions, and `.wow-tech` only for technical values such as simulation ticks and hashes.
+The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif display text, normal `.wow-ui` / `.wow-ui-text` styling for compact controls and descriptions, and `.wow-tech` only for technical values such as combat ticks and hashes.
 
 ### Shared Icon System
 
@@ -32,7 +32,7 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 ### Shared Navigation
 
 - `ui/wow-nav.js` enhances the common `.wow-game-shell` / `.wow-game-nav` markup with semantic game icons, shared destination tooltips, and active-screen state while leaving every destination as a normal static HTML `href`.
-- Every primary mockup screen exposes the same top-level destinations: Heroes, Talents, Gear, Battle, Base, and Simulation. The shared Warcraft brand/home action returns to `base.html`.
+- Player-facing navigation no longer exposes the retired Simulation lab. The shared Warcraft brand/home action returns to `base.html`, while hero-specific Gear and Talents remain managed from the roster flow.
 - Use `data-wow-nav-active` on the shell and `data-wow-nav-key` on destination links. Keep the active link's `is-active` class and `aria-current="page"` in static markup so the selected screen is visible before enhancement.
 - The shared game bar is sticky and horizontally scrollable at narrow widths. Page-specific actions such as Gear/Battle reset controls live in `.wow-game-shell__action` rather than creating a second website-style navbar.
 
@@ -51,8 +51,7 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 - `race-selector.html` — faction, body type, race, class availability, and racial review
 - `talent-calculator.html` — class/spec browser and five-point talent calculator
 - `gear.html` — interactive roster equipment screen with one hero per class, six fixed slots, class armor eligibility, and sample Tier 1–5 gear
-- `simulation/` — deterministic 60 Hz combat lab for 1-person and 3-person battles with full frame reports
-- `battle.html` — interactive six-on-six battleground combat mockup with team HP, combat FX, pause, reset, and 1×/2×/4× speed controls
+- `battle.html` — player-facing deterministic encounter surface for 1-, 3-, 5-, 10-, and 20-hero parties with NPC opponents, combat log, pause/reset, and speed controls
 - `base.html` — player-facing map-first stronghold landing screen with compact resources, clickable core/profession buildings, shared building sidecar, Quest Board dispatch, upgrades, and attention states
 - `quest-journal.html` — read-only player Quest Journal mirroring available, active, and completed Quest Board assignments from authoritative roster state
 - `inventory.html` — global owned-item inventory with compact bag/grid browsing, filters, rarity frames, shared item tooltips, and derived equipped-by state
@@ -83,15 +82,15 @@ Once the server is listening, `/mockup/` is opened automatically in your default
 
 `HOST` and `PORT` can still be supplied when needed, but occupied ports are handled automatically. Set `NO_OPEN=1` only when you intentionally want to suppress automatic browser launch.
 
-## Simulation Smoke Test
+## Combat Smoke Test
 
 Run:
 
 ```bash
-npm run simulation:test
+npm run combat:test
 ```
 
-The smoke test runs the 1-person and 3-person scenarios twice with the same seed and fails if either the final state hash or full combat-log hash differs.
+The smoke test runs deterministic hero-versus-NPC combat scenarios twice with the same seed and fails if either the final state hash or full combat-log hash differs.
 
 
 ## Shared WoW UI architecture
@@ -100,7 +99,7 @@ All mockup screens now use the shared UI layer under `mockup/ui/` as the visual 
 
 Screen CSS files remain responsible only for screen-specific layout and presentation. Interactive game concepts should use semantic icon frames plus visible text or an accessible label; emoji and Unicode symbols must not be used as game-icon substitutes. Locked, disabled, quality, error, and completion states must include text or accessibility metadata rather than relying on color alone. Custom focusable surfaces use the shared `:focus-visible` contract.
 
-Responsive layouts are maintained in each screen stylesheet for desktop, tablet, and mobile widths. When adding controls, prefer `.wow-button`, `.wow-tab`, `.wow-input`, `.wow-select`, `.wow-checkbox`, `.wow-range`, and `.wow-icon-button` instead of browser-default controls. Run `npm run simulation:test` after shared UI changes that touch the simulation surface, and use `npm run dev` for the normal restart-and-open development flow.
+Responsive layouts are maintained in each screen stylesheet for desktop, tablet, and mobile widths. When adding controls, prefer `.wow-button`, `.wow-tab`, `.wow-input`, `.wow-select`, `.wow-checkbox`, `.wow-range`, and `.wow-icon-button` instead of browser-default controls. Run `npm run combat:test` after changes that touch the shared combat runtime, and use `npm run dev` for the normal restart-and-open development flow.
 
 
 ### Shared roster state
