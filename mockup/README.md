@@ -54,6 +54,7 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 - `simulation/` — deterministic 60 Hz combat lab for 1-person and 3-person battles with full frame reports
 - `battle.html` — interactive six-on-six battleground combat mockup with team HP, combat FX, pause, reset, and 1×/2×/4× speed controls
 - `base.html` — player-facing map-first stronghold landing screen with compact resources, clickable core/profession buildings, shared building sidecar, Quest Board dispatch, upgrades, and attention states
+- `quest-journal.html` — read-only player Quest Journal mirroring available, active, and completed Quest Board assignments from authoritative roster state
 
 ## Development
 
@@ -119,3 +120,7 @@ Responsive behavior remains map-first: desktop and tablet use an overlay sidecar
 ### Faction-aware Base presentation
 
 Base presentation is driven by the persisted player faction in `WarcraftRoster`. Race Selector writes that faction state, while `data/base/presentation.json` defines Alliance/Horde stronghold identity, crest, Keep art, terrain theme, and desktop/mobile hotspot coordinates. Building IDs, levels, upgrade rules, resources, quests, and sidecar logic remain shared between factions.
+
+### Quest Journal
+
+`quest-journal.html` is a read-only projection of `WarcraftRoster.getState().quests`. It groups current assignments into Available/Accepted, Active, and Completed sections, shows party/reward context with shared icons and tooltips, updates on `warcraft:roster-changed`, and never dispatches/completes/rerolls quests itself. Dungeon and world-map selection remain Quest Board responsibilities.
