@@ -145,3 +145,7 @@ Command Hall has been removed from authored Base building data, Alliance/Horde h
 ### Keep upgrade authority
 
 Keep level is now the single structural upgrade ceiling for every other Base building: a non-Keep building may only advance to a level that the Keep has already reached. This rule lives in the centralized Base `keepUpgradeGate()` calculation instead of repeated per-building prerequisite data. Resource affordability remains a separate gate. The old Requirements block and prerequisite prose styles are removed; blocked upgrade controls remain focusable and explain the Keep/resource gate through the shared tooltip system.
+
+### Compact building menus
+
+Base building sidecars now contain only building identity in the header, one or more functional menu actions, a compact level indicator, and one shared Upgrade control. Upgrade cost, Keep gate, resource shortages, next level, and max-level state live in the Upgrade tooltip instead of permanent prose blocks. Quest Board keeps its dispatch workflow beneath the compact menu. Recruitment/Keep route to Roster, Training routes to Talents, Storehouse and current profession hotspots route to Inventory, and Quest Board links to Quest Journal. Profession placeholders have been removed; Artisans Guild will replace the temporary profession entry points in WOWUI-041/042.
