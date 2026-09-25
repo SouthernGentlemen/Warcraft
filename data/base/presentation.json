@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "default_faction": "alliance",
+  "variants": {
+    "alliance": {
+      "label": "Alliance",
+      "map_name": "Stormvale Stronghold",
+      "subtitle": "Alliance stronghold · Tier II",
+      "map_class": "is-alliance",
+      "crest": {
+        "category": "faction",
+        "key": "alliance"
+      },
+      "keep_icon_key": "keep-alliance",
+      "positions": {
+        "keep": {
+          "x": 50,
+          "y": 23
+        },
+        "command": {
+          "x": 24,
+          "y": 28
+        },
+        "recruitment": {
+          "x": 76,
+          "y": 28
+        },
+        "barracks": {
+          "x": 20,
+          "y": 48
+        },
+        "training": {
+          "x": 48,
+          "y": 51
+        },
+        "questboard": {
+          "x": 35,
+          "y": 49
+        },
+        "storehouse": {
+          "x": 78,
+          "y": 48
+        },
+        "blacksmith": {
+          "x": 18,
+          "y": 69
+        },
+        "alchemy": {
+          "x": 38,
+          "y": 72
+        },
+        "enchanter": {
+          "x": 56,
+          "y": 72
+        },
+        "tailor": {
+          "x": 72,
+          "y": 66
+        },
+        "leather": {
+          "x": 69,
+          "y": 82
+        },
+        "engineer": {
+          "x": 86,
+          "y": 68
+        }
+      }
+    },
+    "horde": {
+      "label": "Horde",
+      "map_name": "Durotar Warcamp",
+      "subtitle": "Horde stronghold · Tier II",
+      "map_class": "is-horde",
+      "crest": {
+        "category": "faction",
+        "key": "horde"
+      },
+      "keep_icon_key": "keep-horde",
+      "positions": {
+        "keep": {
+          "x": 50,
+          "y": 20
+        },
+        "command": {
+          "x": 72,
+          "y": 30
+        },
+        "recruitment": {
+          "x": 27,
+          "y": 31
+        },
+        "barracks": {
+          "x": 78,
+          "y": 49
+        },
+        "training": {
+          "x": 53,
+          "y": 48
+        },
+        "questboard": {
+          "x": 36,
+          "y": 46
+        },
+        "storehouse": {
+          "x": 18,
+          "y": 50
+        },
+        "blacksmith": {
+          "x": 83,
+          "y": 69
+        },
+        "alchemy": {
+          "x": 63,
+          "y": 72
+        },
+        "enchanter": {
+          "x": 45,
+          "y": 71
+        },
+        "tailor": {
+          "x": 28,
+          "y": 66
+        },
+        "leather": {
+          "x": 31,
+          "y": 82
+        },
+        "engineer": {
+          "x": 13,
+          "y": 69
+        }
+      }
+    }
+  }
+}
