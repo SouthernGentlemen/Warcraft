@@ -1084,3 +1084,5 @@
     animation: none;
   }
 }
+
+.battle-combat-log{margin-top:6px;padding:6px;max-height:190px}.battle-log-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.battle-log-head small{color:var(--wow-text-dim);font-size:8px}.battle-log-scroll{max-height:145px;overflow:auto}.battle-combat-log table{width:100%;border-collapse:collapse;font-size:8px}.battle-combat-log th,.battle-combat-log td{padding:3px 5px;border-bottom:1px solid var(--wow-frame-edge);text-align:left}.battle-combat-log th{position:sticky;top:0;background:var(--wow-surface);color:var(--wow-gold-pale)}.battle-combat-log .event-damage{color:var(--wow-error)}.battle-combat-log .event-critical{color:var(--wow-warning)}.battle-combat-log .event-heal{color:var(--wow-success)}.battle-combat-log .event-death{color:var(--wow-text-dim)}
