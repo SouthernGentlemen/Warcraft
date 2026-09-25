@@ -3,7 +3,7 @@
   "source_path": "docs/heroes/classes/warrior/specs/protection.md",
   "kind": "specialization",
   "title": "Warrior — Protection",
-  "source_markdown": "# Warrior — Protection\n\n## Identity\n\n- Role: Tank / defense\n- Resource: Rage\n- Primary stat: Strength\n- Auto-attack: Guarded Strike — defensive melee weapon damage\n\n## Talent Prototype\n\nThis compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Protection** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.\n\n### Tier 1\n\nChoose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Shield Specialization** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Anticipation** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Tier 2\n\nRequires a Tier 1 choice. Choose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Last Stand** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Improved Shield Block** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Capstone\n\nRequires a Tier 2 choice. Choose the single capstone.\n\n| Capstone | Prototype effect |\n| --- | --- |\n| **Shield Slam** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\nCanonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts\n\n## Combat Loadout\n\nThis specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "source_markdown": "# Warrior — Protection\n\n## Identity\n\n- Role: Tank / defense\n- Resource: Rage\n- Primary stat: Strength\n- Auto-attack: Guarded Strike — defensive melee weapon damage\n\n## Talent Prototype\n\nThis compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Protection** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.\n\nThe single capstone is the active specialization's Ultimate and resolves through its authored `ultimate_id`.\n\n### Tier 1\n\nChoose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Shield Specialization** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Anticipation** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Tier 2\n\nRequires a Tier 1 choice. Choose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Last Stand** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Improved Shield Block** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Capstone\n\nRequires a Tier 2 choice. Choose the single capstone.\n\n| Capstone | Prototype effect |\n| --- | --- |\n| **Shield Slam** | Defines the hero Ultimate action `capstone-shield-slam`. |\n\nCanonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts\n\n## Combat Loadout\n\nThis specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
   "class": "Warrior",
   "specialization": "Protection",
   "identity": {
@@ -51,7 +51,8 @@
         "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
         "icon_slug": "inv_shield_05",
         "canonical_tree": "Protection",
-        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts"
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warrior/data.ts",
+        "ultimate_id": "capstone-shield-slam"
       }
     ]
   },
@@ -66,6 +67,7 @@
       "tier_1": 2,
       "tier_2": 2,
       "capstones": 1
-    }
+    },
+    "capstone_contract": "active specialization capstone defines hero Ultimate"
   }
 }

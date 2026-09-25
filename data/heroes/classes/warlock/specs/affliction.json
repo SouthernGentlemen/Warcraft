@@ -3,7 +3,7 @@
   "source_path": "docs/heroes/classes/warlock/specs/affliction.md",
   "kind": "specialization",
   "title": "Warlock — Affliction",
-  "source_markdown": "# Warlock — Affliction\n\n## Identity\n\n- Role: Damage-over-time spell damage / sustain\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Shadow Bolt — ranged Shadow damage\n\n## Talent Prototype\n\nThis compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Affliction** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.\n\n### Tier 1\n\nChoose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Suppression** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Improved Corruption** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Tier 2\n\nRequires a Tier 1 choice. Choose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Improved Curse of Agony** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Fel Concentration** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Capstone\n\nRequires a Tier 2 choice. Choose the single capstone.\n\n| Capstone | Prototype effect |\n| --- | --- |\n| **Dark Pact** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\nCanonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warlock/data.ts\n\n## Combat Loadout\n\nThis specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "source_markdown": "# Warlock — Affliction\n\n## Identity\n\n- Role: Damage-over-time spell damage / sustain\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Shadow Bolt — ranged Shadow damage\n\n## Talent Prototype\n\nThis compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Affliction** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.\n\nThe single capstone is the active specialization's Ultimate and resolves through its authored `ultimate_id`.\n\n### Tier 1\n\nChoose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Suppression** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Improved Corruption** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Tier 2\n\nRequires a Tier 1 choice. Choose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Improved Curse of Agony** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Fel Concentration** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Capstone\n\nRequires a Tier 2 choice. Choose the single capstone.\n\n| Capstone | Prototype effect |\n| --- | --- |\n| **Dark Pact** | Defines the hero Ultimate action `capstone-dark-pact`. |\n\nCanonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warlock/data.ts\n\n## Combat Loadout\n\nThis specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
   "class": "Warlock",
   "specialization": "Affliction",
   "identity": {
@@ -51,7 +51,8 @@
         "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
         "icon_slug": "spell_shadow_darkritual",
         "canonical_tree": "Affliction",
-        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warlock/data.ts"
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Warlock/data.ts",
+        "ultimate_id": "capstone-dark-pact"
       }
     ]
   },
@@ -66,6 +67,7 @@
       "tier_1": 2,
       "tier_2": 2,
       "capstones": 1
-    }
+    },
+    "capstone_contract": "active specialization capstone defines hero Ultimate"
   }
 }
