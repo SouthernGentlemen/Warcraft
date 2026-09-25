@@ -128,21 +128,21 @@ The specialization's documented auto-attack name, role, primary stat, and resour
 
 Auto-attacks are independent of cooldown readiness.
 
+`CombatSimulation.actionState().auto` exposes the authoritative swing `progress`, `threshold`, basis-point percentage, per-tick increment, and remaining ticks. Battle renders those values directly; it does not maintain a second timer. Pausing the encounter runtime stops simulation steps, so swing progress freezes automatically.
+
 ## Cooldowns
 
 Each class documents four initial cooldown choices in:
 
 `docs/heroes/classes/<class>/abilities/README.md`
 
-A hero equips exactly two.
+A hero equips exactly two explicit learned/compatible ability IDs. Actor creation rejects missing, duplicate, unknown, or incompatible selections rather than silently taking the first two compatible actions.
 
 The runtime currently uses one ready cooldown per actor per tick, in equipped priority order.
 
 ## Ultimates
 
-Each class documents two initial ultimate choices.
-
-A hero equips exactly one.
+Class ability data may contain multiple authored Ultimate actions, but the active specialization capstone selects exactly one through its `ultimate_id`. Actor creation requires that explicit resolved Ultimate ID and rejects missing or unknown selections rather than taking the first class Ultimate.
 
 Ultimate bar:
 
