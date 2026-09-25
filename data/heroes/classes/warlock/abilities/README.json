@@ -17,7 +17,8 @@
       "cooldown_ticks": 420,
       "resource": "mana",
       "cost": 110,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "ability_warlock_haunt"
     },
     {
       "id": "hand-of-guldan",
@@ -30,7 +31,8 @@
       "cooldown_ticks": 480,
       "resource": "mana",
       "cost": 130,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_shadow_shadowfury"
     },
     {
       "id": "conflagrate",
@@ -43,7 +45,8 @@
       "cooldown_ticks": 360,
       "resource": "mana",
       "cost": 120,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_fire_fireball"
     },
     {
       "id": "drain-life",
@@ -56,7 +59,8 @@
       "cooldown_ticks": 480,
       "resource": "mana",
       "cost": 100,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_shadow_lifedrain02"
     }
   ],
   "ultimates": [
@@ -73,7 +77,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_shadow_darkritual"
     },
     {
       "id": "capstone-improved-spellstone",
@@ -88,7 +93,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "inv_misc_gem_sapphire_01"
     },
     {
       "id": "capstone-conflagrate",
@@ -103,7 +109,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_fire_fireball"
     }
   ],
   "ultimate_model": "specialization-capstone"
