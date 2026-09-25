@@ -2,7 +2,9 @@ const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
+const BASE_PRESENTATION_ROOT = "../data/base/presentation.json";
 let buildings = [];
+let basePresentation = null;
 let sidecarOrigin = null;
 
 function normalizeBuilding(raw) {
@@ -122,8 +124,24 @@ function iconMarkup(category, key, size, extraClass) {
   '</span>';
 }
 
+function currentFactionId() {
+  const faction = Roster && typeof Roster.getFaction === 'function' ? Roster.getFaction() : Roster?.getState?.().faction;
+  return faction === 'horde' ? 'horde' : 'alliance';
+}
+
+function currentBaseVariant() {
+  if (!basePresentation || !basePresentation.variants) return null;
+  return basePresentation.variants[currentFactionId()] || basePresentation.variants[basePresentation.default_faction] || null;
+}
+
+function buildingIconSpec(building) {
+  const variant = currentBaseVariant();
+  if (building && building.id === 'keep' && variant && variant.keep_icon_key) return ['building', variant.keep_icon_key];
+  return buildingIconKeys[building.id] || ['building','keep'];
+}
+
 function buildingIconMarkup(building, size, extraClass) {
-  const icon = buildingIconKeys[building.id] || ['building','keep'];
+  const icon = buildingIconSpec(building);
   return iconMarkup(icon[0], icon[1], size, extraClass || '');
 }
 
@@ -168,7 +186,7 @@ function bindResolvedIcons(root) {
 }
 
 function buildingTooltipModel(building) {
-  const icon = buildingIconKeys[building.id] || ['building','keep'];
+  const icon = buildingIconSpec(building);
   const current = currentProgression(building);
   const upgrade = upgradeState(building);
   const attention = buildingAttentionState(building);
@@ -222,6 +240,60 @@ function syncBuildingAttention(plot, building) {
     bindResolvedIcons(plot);
   }
   return attention;
+}
+
+function validateBasePresentation(payload) {
+  if (!payload || !payload.variants || !payload.variants.alliance || !payload.variants.horde) throw new Error('Base presentation requires Alliance and Horde variants');
+  const requiredIds = all('.base-plot[data-building]').map(plot => plot.dataset.building).sort();
+  ['alliance','horde'].forEach(faction => {
+    const variant = payload.variants[faction];
+    const ids = Object.keys(variant.positions || {}).sort();
+    if (JSON.stringify(ids) !== JSON.stringify(requiredIds)) throw new Error('Base presentation hotspots do not match map buildings for ' + faction);
+  });
+  return payload;
+}
+
+function applyBasePresentation() {
+  const map = $('#baseMap');
+  const variant = currentBaseVariant();
+  if (!map || !variant) return;
+
+  const faction = currentFactionId();
+  const mapClasses = Object.values(basePresentation.variants).map(entry => entry.map_class).filter(Boolean);
+  map.classList.remove(...mapClasses);
+  if (variant.map_class) map.classList.add(variant.map_class);
+  map.dataset.faction = faction;
+  document.body.dataset.faction = faction;
+  map.setAttribute('aria-label', variant.label + ' base map');
+
+  const crestFrame = document.querySelector('.base-map-caption__crest');
+  const crestImage = $('#baseFactionCrest');
+  if (crestFrame) crestFrame.className = 'base-map-caption__crest wow-faction-crest wow-faction-crest--' + faction;
+  if (crestImage) {
+    crestImage.src = Icons.resolve(variant.crest.category, variant.crest.key);
+    crestImage.alt = variant.label + ' crest';
+    Icons.bindFallback(crestImage);
+  }
+
+  $('#baseStrongholdName').textContent = variant.map_name;
+  $('#baseStrongholdSubtitle').textContent = variant.subtitle;
+
+  Object.entries(variant.positions || {}).forEach(([id, position]) => {
+    const plot = document.querySelector('[data-building="' + id + '"]');
+    if (!plot) return;
+    plot.style.setProperty('--x', Number(position.x) + '%');
+    plot.style.setProperty('--y', Number(position.y) + '%');
+  });
+
+  const keepImage = document.querySelector('[data-building="keep"] .plot-art img');
+  if (keepImage && variant.keep_icon_key) {
+    keepImage.dataset.wowIcon = 'building';
+    keepImage.dataset.wowKey = variant.keep_icon_key;
+    keepImage.src = Icons.resolve('building', variant.keep_icon_key);
+    Icons.bindFallback(keepImage);
+  }
+
+  syncMapBuildings();
 }
 
 function syncMapBuildings() {
@@ -483,18 +555,23 @@ document.addEventListener('keydown', event => {
 });
 
 window.addEventListener('warcraft:roster-changed', () => {
-  syncMapBuildings();
-  if (state.selected === 'questboard' && !$('#baseSidecar').hidden) renderSidecar();
+  applyBasePresentation();
+  if (state.selected && !$('#baseSidecar').hidden) renderSidecar();
 });
 
 async function initBase() {
   try {
-    const response=await fetch(BUILDING_DATA_ROOT); if(!response.ok) throw new Error('Could not load '+BUILDING_DATA_ROOT);
-    const payload=await response.json(); buildings=payload.buildings.map(normalizeBuilding);
+    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT)]);
+    if(!responses[0].ok) throw new Error('Could not load '+BUILDING_DATA_ROOT);
+    if(!responses[1].ok) throw new Error('Could not load '+BASE_PRESENTATION_ROOT);
+    const payload=await responses[0].json();
+    buildings=payload.buildings.map(normalizeBuilding);
+    basePresentation=validateBasePresentation(await responses[1].json());
     Icons.hydrate(document); Tooltips.hydrate(document); bindResolvedIcons(document);
+    applyBasePresentation();
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
     all('[data-resource]').forEach(element=>Tooltips.attach(element,()=>resourceTooltipModel(element.dataset.resource,element),{anchor:'target'}));
-    syncResourceBar(); syncMapBuildings(); $('#baseSidecar').hidden = true;
+    syncResourceBar(); applyBasePresentation(); $('#baseSidecar').hidden = true;
   } catch(error) { toast(error.message); }
 }
 initBase();
