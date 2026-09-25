@@ -112,7 +112,7 @@ Runtime gameplay inputs remain authored JSON under `/data/`. Documentation under
 
 ### Shared roster state
 
-`ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved party loadouts. Hero-management surfaces should store only hero IDs in party templates and read current identity, availability, equipment, and talent-build data from this shared layer. Party templates support only 3, 5, 10, or 20 heroes; ready-state validation requires the exact selected size with no duplicate hero IDs. A saved template may contain a hero who later becomes unavailable, but launch-time validation must re-check current availability.
+`ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved party loadouts. The Heroes/Roster workspace owns a dedicated roster-level Party Loadouts manager beside the hero list; individual hero detail no longer edits party membership. Party templates store only hero IDs and read current identity and availability from the shared roster. Templates support only 3, 5, 10, or 20 heroes, and ready-state composition validation requires the exact selected size with no duplicate hero IDs. A saved template may contain a hero who later becomes unavailable without losing membership or ready state; Quest Board and dungeon launch-time validation re-check current availability before the party can enter an encounter.
 
 ### Map-first Base architecture
 
