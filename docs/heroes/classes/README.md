@@ -36,6 +36,10 @@ Every hero level grants one talent point.
 | 4 | One additional legal talent point; off-spec trees begin at Tier 1. |
 | 5 | One additional legal talent point; normal tree prerequisites apply. |
 
+## Ability Icon Contract
+
+Every authored hero combat action carries a specific World of Warcraft icon mapping in runtime data. Normal abilities and Ultimates own `icon_slug` plus Wowhead-CDN source metadata in each class ability JSON. Each specialization's Auto Attack icon is authored on its class-index specialization record. Roster, Talent UI, and Battle resolve these authored slugs through the shared `WowUIIcons` layer; generic ability art is only a fallback for genuinely unknown/unauthored actions.
+
 ## Resources
 
 - Mana — Mage, Warlock, Priest, Hunter, Paladin, Shaman

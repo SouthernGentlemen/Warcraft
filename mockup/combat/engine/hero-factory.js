@@ -31,6 +31,8 @@ function copyAction(action) {
     cost: Math.trunc(action.cost || 0),
     effect: action.effect || "none",
     icon_slug: action.icon_slug || "",
+    icon_source: action.icon_source || "",
+    icon_source_url: action.icon_source_url || "",
     canCrit: action.kind === "damage" || action.kind === "heal",
     canMiss: action.kind === "damage"
   };
@@ -102,8 +104,12 @@ function buildDerived(stats, hooks) {
   };
 }
 
-function autoAction(specData) {
+function autoAction(specData,classMeta) {
   const text = String(specData.identity?.auto_attack || "Auto Attack");
+  const specLabel=String(specData.specialization||"").toLowerCase();
+  const specMeta=(classMeta.specs||[]).find(spec=>spec.id===specLabel||String(spec.label||"").toLowerCase()===specLabel);
+  const iconSlug=String(specMeta?.auto_attack_icon_slug||specData.identity?.auto_attack_icon_slug||"");
+  if(!iconSlug)throw new Error("Missing authored Auto Attack icon for "+classMeta.id+"/"+String(specMeta?.id||specData.specialization||"unknown")+".");
   const name = text.split(" — ")[0].trim() || "Auto Attack";
   const healing = /heal/i.test(text);
   const primary = primaryKey(specData);
@@ -121,7 +127,9 @@ function autoAction(specData) {
     resource: "none",
     cost: 0,
     effect: "none",
-    icon_slug: specData.identity?.auto_attack_icon_slug || "",
+    icon_slug: iconSlug,
+    icon_source: specMeta?.auto_attack_icon_source || "Wowhead CDN",
+    icon_source_url: specMeta?.auto_attack_icon_source_url || ("https://wow.zamimg.com/images/wow/icons/large/"+iconSlug+".jpg"),
     canCrit: true,
     canMiss: !healing
   };
@@ -188,7 +196,7 @@ export function createHeroDefinition({
     resourceType,
     maxResource,
     resourceRegenPerSecond,
-    auto: autoAction(specData),
+    auto: autoAction(specData,classMeta),
     cooldowns: resolvedCooldowns,
     ultimate,
     combatLoadout: {

@@ -18,7 +18,9 @@
       "resource": "mana",
       "cost": 105,
       "effect": "none",
-      "icon_slug": "spell_shaman_lavaburst"
+      "icon_slug": "spell_shaman_lavaburst",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shaman_lavaburst.jpg"
     },
     {
       "id": "stormstrike",
@@ -32,7 +34,9 @@
       "resource": "mana",
       "cost": 95,
       "effect": "none",
-      "icon_slug": "spell_holy_sealofmight"
+      "icon_slug": "spell_holy_sealofmight",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_sealofmight.jpg"
     },
     {
       "id": "riptide",
@@ -46,7 +50,9 @@
       "resource": "mana",
       "cost": 95,
       "effect": "none",
-      "icon_slug": "spell_nature_riptide"
+      "icon_slug": "spell_nature_riptide",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_riptide.jpg"
     },
     {
       "id": "chain-lightning",
@@ -60,7 +66,9 @@
       "resource": "mana",
       "cost": 110,
       "effect": "none",
-      "icon_slug": "spell_nature_chainlightning"
+      "icon_slug": "spell_nature_chainlightning",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_chainlightning.jpg"
     }
   ],
   "ultimates": [
@@ -78,7 +86,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_nature_wispheal"
+      "icon_slug": "spell_nature_wispheal",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_wispheal.jpg"
     },
     {
       "id": "capstone-stormstrike",
@@ -94,7 +104,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_holy_sealofmight"
+      "icon_slug": "spell_holy_sealofmight",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_sealofmight.jpg"
     },
     {
       "id": "capstone-mana-tide-totem",
@@ -110,8 +122,11 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "haste_bp:+1800@480",
-      "icon_slug": "spell_frost_summonwaterelemental"
+      "icon_slug": "spell_frost_summonwaterelemental",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_frost_summonwaterelemental.jpg"
     }
   ],
-  "ultimate_model": "specialization-capstone"
+  "ultimate_model": "specialization-capstone",
+  "icon_contract": "Every authored combat action owns a canonical WoW icon slug and Wowhead CDN source metadata."
 }

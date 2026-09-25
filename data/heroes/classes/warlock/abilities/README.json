@@ -18,7 +18,9 @@
       "resource": "mana",
       "cost": 110,
       "effect": "none",
-      "icon_slug": "ability_warlock_haunt"
+      "icon_slug": "ability_warlock_haunt",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_warlock_haunt.jpg"
     },
     {
       "id": "hand-of-guldan",
@@ -32,7 +34,9 @@
       "resource": "mana",
       "cost": 130,
       "effect": "none",
-      "icon_slug": "spell_shadow_shadowfury"
+      "icon_slug": "ability_warlock_handofguldan",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_warlock_handofguldan.jpg"
     },
     {
       "id": "conflagrate",
@@ -46,7 +50,9 @@
       "resource": "mana",
       "cost": 120,
       "effect": "none",
-      "icon_slug": "spell_fire_fireball"
+      "icon_slug": "spell_fire_fireball",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_fire_fireball.jpg"
     },
     {
       "id": "drain-life",
@@ -60,7 +66,9 @@
       "resource": "mana",
       "cost": 100,
       "effect": "none",
-      "icon_slug": "spell_shadow_lifedrain02"
+      "icon_slug": "spell_shadow_lifedrain02",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_lifedrain02.jpg"
     }
   ],
   "ultimates": [
@@ -78,7 +86,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_shadow_darkritual"
+      "icon_slug": "spell_shadow_darkritual",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_darkritual.jpg"
     },
     {
       "id": "capstone-improved-spellstone",
@@ -94,7 +104,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "inv_misc_gem_sapphire_01"
+      "icon_slug": "inv_misc_gem_sapphire_01",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/inv_misc_gem_sapphire_01.jpg"
     },
     {
       "id": "capstone-conflagrate",
@@ -110,8 +122,11 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_fire_fireball"
+      "icon_slug": "spell_fire_fireball",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_fire_fireball.jpg"
     }
   ],
-  "ultimate_model": "specialization-capstone"
+  "ultimate_model": "specialization-capstone",
+  "icon_contract": "Every authored combat action owns a canonical WoW icon slug and Wowhead CDN source metadata."
 }

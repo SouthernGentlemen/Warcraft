@@ -18,7 +18,9 @@
       "resource": "energy",
       "cost": 35,
       "effect": "none",
-      "icon_slug": "ability_rogue_disembowel"
+      "icon_slug": "ability_rogue_shadowstrikes",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_rogue_shadowstrikes.jpg"
     },
     {
       "id": "sinister-strike",
@@ -32,7 +34,9 @@
       "resource": "energy",
       "cost": 30,
       "effect": "none",
-      "icon_slug": "spell_shadow_ritualofsacrifice"
+      "icon_slug": "spell_shadow_ritualofsacrifice",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_ritualofsacrifice.jpg"
     },
     {
       "id": "backstab",
@@ -46,7 +50,9 @@
       "resource": "energy",
       "cost": 40,
       "effect": "none",
-      "icon_slug": "ability_backstab"
+      "icon_slug": "ability_backstab",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_backstab.jpg"
     },
     {
       "id": "evasion",
@@ -60,7 +66,9 @@
       "resource": "energy",
       "cost": 25,
       "effect": "damage_reduction_bp:+3000@300",
-      "icon_slug": "spell_shadow_shadowward"
+      "icon_slug": "spell_shadow_shadowward",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowward.jpg"
     }
   ],
   "ultimates": [
@@ -78,7 +86,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "haste_bp:+2500@480",
-      "icon_slug": "spell_nature_earthbindtotem"
+      "icon_slug": "spell_nature_earthbindtotem",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_earthbindtotem.jpg"
     },
     {
       "id": "capstone-adrenaline-rush",
@@ -94,7 +104,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "haste_bp:+3500@480",
-      "icon_slug": "spell_shadow_shadowworddominate"
+      "icon_slug": "spell_shadow_shadowworddominate",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowworddominate.jpg"
     },
     {
       "id": "capstone-premeditation",
@@ -110,8 +122,11 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_shadow_possession"
+      "icon_slug": "spell_shadow_possession",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_possession.jpg"
     }
   ],
-  "ultimate_model": "specialization-capstone"
+  "ultimate_model": "specialization-capstone",
+  "icon_contract": "Every authored combat action owns a canonical WoW icon slug and Wowhead CDN source metadata."
 }

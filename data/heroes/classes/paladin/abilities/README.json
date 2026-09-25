@@ -18,7 +18,9 @@
       "resource": "mana",
       "cost": 95,
       "effect": "none",
-      "icon_slug": "spell_holy_searinglight"
+      "icon_slug": "spell_holy_searinglight",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_searinglight.jpg"
     },
     {
       "id": "shield-of-the-righteous",
@@ -32,7 +34,9 @@
       "resource": "mana",
       "cost": 90,
       "effect": "none",
-      "icon_slug": "ability_paladin_shieldofvengeance"
+      "icon_slug": "ability_paladin_shieldofvengeance",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_paladin_shieldofvengeance.jpg"
     },
     {
       "id": "templars-verdict",
@@ -46,7 +50,9 @@
       "resource": "mana",
       "cost": 110,
       "effect": "none",
-      "icon_slug": "spell_holy_retributionaura"
+      "icon_slug": "spell_paladin_templarsverdict",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_paladin_templarsverdict.jpg"
     },
     {
       "id": "consecration",
@@ -60,7 +66,9 @@
       "resource": "mana",
       "cost": 105,
       "effect": "none",
-      "icon_slug": "spell_holy_innerfire"
+      "icon_slug": "spell_holy_innerfire",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_innerfire.jpg"
     }
   ],
   "ultimates": [
@@ -78,7 +86,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_holy_searinglight"
+      "icon_slug": "spell_holy_searinglight",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_searinglight.jpg"
     },
     {
       "id": "capstone-holy-shield",
@@ -94,7 +104,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "classic_spell_holy_blessingofprotection"
+      "icon_slug": "classic_spell_holy_blessingofprotection",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/classic_spell_holy_blessingofprotection.jpg"
     },
     {
       "id": "capstone-repentence",
@@ -110,8 +122,11 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_holy_prayerofhealing"
+      "icon_slug": "spell_holy_prayerofhealing",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_prayerofhealing.jpg"
     }
   ],
-  "ultimate_model": "specialization-capstone"
+  "ultimate_model": "specialization-capstone",
+  "icon_contract": "Every authored combat action owns a canonical WoW icon slug and Wowhead CDN source metadata."
 }

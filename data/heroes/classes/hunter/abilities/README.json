@@ -18,7 +18,9 @@
       "resource": "mana",
       "cost": 90,
       "effect": "none",
-      "icon_slug": "ability_hunter_killcommand"
+      "icon_slug": "ability_hunter_killcommand",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_killcommand.jpg"
     },
     {
       "id": "aimed-shot",
@@ -32,7 +34,9 @@
       "resource": "mana",
       "cost": 110,
       "effect": "none",
-      "icon_slug": "ability_hunter_aimedshot"
+      "icon_slug": "ability_hunter_aimedshot",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_aimedshot.jpg"
     },
     {
       "id": "explosive-trap",
@@ -46,7 +50,9 @@
       "resource": "mana",
       "cost": 105,
       "effect": "none",
-      "icon_slug": "spell_fire_selfdestruct"
+      "icon_slug": "spell_fire_selfdestruct",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_fire_selfdestruct.jpg"
     },
     {
       "id": "survival-instinct",
@@ -60,7 +66,9 @@
       "resource": "mana",
       "cost": 80,
       "effect": "damage_reduction_bp:+2500@300",
-      "icon_slug": "ability_hunter_survivalinstincts"
+      "icon_slug": "ability_hunter_survivalinstincts",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_survivalinstincts.jpg"
     }
   ],
   "ultimates": [
@@ -78,7 +86,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "physical_power_bp:+3000@480",
-      "icon_slug": "ability_druid_ferociousbite"
+      "icon_slug": "ability_druid_ferociousbite",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_druid_ferociousbite.jpg"
     },
     {
       "id": "capstone-trueshot-aura",
@@ -94,7 +104,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "all_power_bp:+1800@480",
-      "icon_slug": "ability_trueshot"
+      "icon_slug": "ability_trueshot",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_trueshot.jpg"
     },
     {
       "id": "capstone-wyvern-sting",
@@ -110,8 +122,11 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "inv_spear_02"
+      "icon_slug": "inv_spear_02",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/inv_spear_02.jpg"
     }
   ],
-  "ultimate_model": "specialization-capstone"
+  "ultimate_model": "specialization-capstone",
+  "icon_contract": "Every authored combat action owns a canonical WoW icon slug and Wowhead CDN source metadata."
 }

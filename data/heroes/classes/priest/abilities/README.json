@@ -18,7 +18,9 @@
       "resource": "mana",
       "cost": 100,
       "effect": "none",
-      "icon_slug": "spell_holy_penance"
+      "icon_slug": "spell_holy_penance",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_penance.jpg"
     },
     {
       "id": "flash-heal",
@@ -32,7 +34,9 @@
       "resource": "mana",
       "cost": 130,
       "effect": "none",
-      "icon_slug": "spell_holy_flashheal"
+      "icon_slug": "spell_holy_flashheal",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_flashheal.jpg"
     },
     {
       "id": "mind-blast",
@@ -46,7 +50,9 @@
       "resource": "mana",
       "cost": 100,
       "effect": "none",
-      "icon_slug": "spell_shadow_unholyfrenzy"
+      "icon_slug": "spell_shadow_unholyfrenzy",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_unholyfrenzy.jpg"
     },
     {
       "id": "power-word-shield",
@@ -60,7 +66,9 @@
       "resource": "mana",
       "cost": 120,
       "effect": "none",
-      "icon_slug": "spell_holy_powerwordshield"
+      "icon_slug": "spell_holy_powerwordshield",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_powerwordshield.jpg"
     }
   ],
   "ultimates": [
@@ -78,7 +86,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "all_power_bp:+2000@480",
-      "icon_slug": "spell_holy_powerinfusion"
+      "icon_slug": "spell_holy_powerinfusion",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_powerinfusion.jpg"
     },
     {
       "id": "capstone-lightwell",
@@ -94,7 +104,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_holy_summonlightwell"
+      "icon_slug": "spell_holy_summonlightwell",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_summonlightwell.jpg"
     },
     {
       "id": "capstone-shadowform",
@@ -110,8 +122,11 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_shadow_shadowform"
+      "icon_slug": "spell_shadow_shadowform",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowform.jpg"
     }
   ],
-  "ultimate_model": "specialization-capstone"
+  "ultimate_model": "specialization-capstone",
+  "icon_contract": "Every authored combat action owns a canonical WoW icon slug and Wowhead CDN source metadata."
 }

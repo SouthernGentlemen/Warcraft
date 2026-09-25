@@ -18,7 +18,9 @@
       "resource": "mana",
       "cost": 110,
       "effect": "none",
-      "icon_slug": "spell_arcane_starfire"
+      "icon_slug": "spell_arcane_starfire",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_arcane_starfire.jpg"
     },
     {
       "id": "shred",
@@ -32,7 +34,9 @@
       "resource": "energy",
       "cost": 35,
       "effect": "none",
-      "icon_slug": "spell_shadow_vampiricaura"
+      "icon_slug": "spell_shadow_vampiricaura",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_vampiricaura.jpg"
     },
     {
       "id": "regrowth",
@@ -46,7 +50,9 @@
       "resource": "mana",
       "cost": 115,
       "effect": "none",
-      "icon_slug": "spell_nature_resistnature"
+      "icon_slug": "spell_nature_resistnature",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_resistnature.jpg"
     },
     {
       "id": "mangle",
@@ -60,7 +66,9 @@
       "resource": "energy",
       "cost": 25,
       "effect": "none",
-      "icon_slug": "ability_druid_mangle2"
+      "icon_slug": "ability_druid_mangle2",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_druid_mangle2.jpg"
     }
   ],
   "ultimates": [
@@ -78,7 +86,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "all_power_bp:+2500@480",
-      "icon_slug": "spell_nature_forceofnature"
+      "icon_slug": "spell_nature_forceofnature",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_forceofnature.jpg"
     },
     {
       "id": "capstone-leader-of-the-pack",
@@ -94,7 +104,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "haste_bp:+1800@480",
-      "icon_slug": "spell_nature_unyeildingstamina"
+      "icon_slug": "spell_nature_unyeildingstamina",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_unyeildingstamina.jpg"
     },
     {
       "id": "capstone-swiftmend",
@@ -110,8 +122,11 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "inv_relics_idolofrejuvenation"
+      "icon_slug": "inv_relics_idolofrejuvenation",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/inv_relics_idolofrejuvenation.jpg"
     }
   ],
-  "ultimate_model": "specialization-capstone"
+  "ultimate_model": "specialization-capstone",
+  "icon_contract": "Every authored combat action owns a canonical WoW icon slug and Wowhead CDN source metadata."
 }

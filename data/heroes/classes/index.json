@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "classes": [
     {
       "id": "druid",
@@ -10,17 +10,26 @@
         {
           "id": "balance",
           "label": "Balance",
-          "data_path": "./druid/specs/balance.json"
+          "data_path": "./druid/specs/balance.json",
+          "auto_attack_icon_slug": "spell_nature_abolishmagic",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_abolishmagic.jpg"
         },
         {
           "id": "feral",
           "label": "Feral",
-          "data_path": "./druid/specs/feral.json"
+          "data_path": "./druid/specs/feral.json",
+          "auto_attack_icon_slug": "ability_druid_rake",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_druid_rake.jpg"
         },
         {
           "id": "restoration",
           "label": "Restoration",
-          "data_path": "./druid/specs/restoration.json"
+          "data_path": "./druid/specs/restoration.json",
+          "auto_attack_icon_slug": "spell_nature_healingtouch",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_healingtouch.jpg"
         }
       ],
       "base_stats": {
@@ -70,17 +79,26 @@
         {
           "id": "beast-mastery",
           "label": "Beast Mastery",
-          "data_path": "./hunter/specs/beast-mastery.json"
+          "data_path": "./hunter/specs/beast-mastery.json",
+          "auto_attack_icon_slug": "ability_hunter_cobrashot",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_cobrashot.jpg"
         },
         {
           "id": "marksmanship",
           "label": "Marksmanship",
-          "data_path": "./hunter/specs/marksmanship.json"
+          "data_path": "./hunter/specs/marksmanship.json",
+          "auto_attack_icon_slug": "ability_hunter_aimedshot",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_aimedshot.jpg"
         },
         {
           "id": "survival",
           "label": "Survival",
-          "data_path": "./hunter/specs/survival.json"
+          "data_path": "./hunter/specs/survival.json",
+          "auto_attack_icon_slug": "ability_hunter_explosiveshot",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_hunter_explosiveshot.jpg"
         }
       ],
       "base_stats": {
@@ -130,17 +148,26 @@
         {
           "id": "arcane",
           "label": "Arcane",
-          "data_path": "./mage/specs/arcane.json"
+          "data_path": "./mage/specs/arcane.json",
+          "auto_attack_icon_slug": "spell_arcane_blast",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_arcane_blast.jpg"
         },
         {
           "id": "fire",
           "label": "Fire",
-          "data_path": "./mage/specs/fire.json"
+          "data_path": "./mage/specs/fire.json",
+          "auto_attack_icon_slug": "spell_fire_flamebolt",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_fire_flamebolt.jpg"
         },
         {
           "id": "frost",
           "label": "Frost",
-          "data_path": "./mage/specs/frost.json"
+          "data_path": "./mage/specs/frost.json",
+          "auto_attack_icon_slug": "spell_frost_frostbolt02",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_frost_frostbolt02.jpg"
         }
       ],
       "base_stats": {
@@ -191,17 +218,26 @@
         {
           "id": "holy",
           "label": "Holy",
-          "data_path": "./paladin/specs/holy.json"
+          "data_path": "./paladin/specs/holy.json",
+          "auto_attack_icon_slug": "spell_holy_holybolt",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holybolt.jpg"
         },
         {
           "id": "protection",
           "label": "Protection",
-          "data_path": "./paladin/specs/protection.json"
+          "data_path": "./paladin/specs/protection.json",
+          "auto_attack_icon_slug": "ability_paladin_shieldofvengeance",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_paladin_shieldofvengeance.jpg"
         },
         {
           "id": "retribution",
           "label": "Retribution",
-          "data_path": "./paladin/specs/retribution.json"
+          "data_path": "./paladin/specs/retribution.json",
+          "auto_attack_icon_slug": "spell_holy_crusaderstrike",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_crusaderstrike.jpg"
         }
       ],
       "base_stats": {
@@ -251,17 +287,26 @@
         {
           "id": "discipline",
           "label": "Discipline",
-          "data_path": "./priest/specs/discipline.json"
+          "data_path": "./priest/specs/discipline.json",
+          "auto_attack_icon_slug": "spell_holy_holysmite",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_holysmite.jpg"
         },
         {
           "id": "holy",
           "label": "Holy",
-          "data_path": "./priest/specs/holy.json"
+          "data_path": "./priest/specs/holy.json",
+          "auto_attack_icon_slug": "spell_holy_heal",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_heal.jpg"
         },
         {
           "id": "shadow",
           "label": "Shadow",
-          "data_path": "./priest/specs/shadow.json"
+          "data_path": "./priest/specs/shadow.json",
+          "auto_attack_icon_slug": "spell_shadow_shadowbolt",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowbolt.jpg"
         }
       ],
       "base_stats": {
@@ -311,17 +356,26 @@
         {
           "id": "assassination",
           "label": "Assassination",
-          "data_path": "./rogue/specs/assassination.json"
+          "data_path": "./rogue/specs/assassination.json",
+          "auto_attack_icon_slug": "ability_rogue_disembowel",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_rogue_disembowel.jpg"
         },
         {
           "id": "combat",
           "label": "Combat",
-          "data_path": "./rogue/specs/combat.json"
+          "data_path": "./rogue/specs/combat.json",
+          "auto_attack_icon_slug": "ability_meleedamage",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_meleedamage.jpg"
         },
         {
           "id": "subtlety",
           "label": "Subtlety",
-          "data_path": "./rogue/specs/subtlety.json"
+          "data_path": "./rogue/specs/subtlety.json",
+          "auto_attack_icon_slug": "ability_backstab",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_backstab.jpg"
         }
       ],
       "base_stats": {
@@ -372,17 +426,26 @@
         {
           "id": "elemental",
           "label": "Elemental",
-          "data_path": "./shaman/specs/elemental.json"
+          "data_path": "./shaman/specs/elemental.json",
+          "auto_attack_icon_slug": "spell_nature_lightning",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_lightning.jpg"
         },
         {
           "id": "enhancement",
           "label": "Enhancement",
-          "data_path": "./shaman/specs/enhancement.json"
+          "data_path": "./shaman/specs/enhancement.json",
+          "auto_attack_icon_slug": "spell_holy_sealofmight",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_holy_sealofmight.jpg"
         },
         {
           "id": "restoration",
           "label": "Restoration",
-          "data_path": "./shaman/specs/restoration.json"
+          "data_path": "./shaman/specs/restoration.json",
+          "auto_attack_icon_slug": "spell_nature_healingwavegreater",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_healingwavegreater.jpg"
         }
       ],
       "base_stats": {
@@ -432,17 +495,26 @@
         {
           "id": "affliction",
           "label": "Affliction",
-          "data_path": "./warlock/specs/affliction.json"
+          "data_path": "./warlock/specs/affliction.json",
+          "auto_attack_icon_slug": "spell_shadow_shadowbolt",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_shadow_shadowbolt.jpg"
         },
         {
           "id": "demonology",
           "label": "Demonology",
-          "data_path": "./warlock/specs/demonology.json"
+          "data_path": "./warlock/specs/demonology.json",
+          "auto_attack_icon_slug": "spell_fire_felfire",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_fire_felfire.jpg"
         },
         {
           "id": "destruction",
           "label": "Destruction",
-          "data_path": "./warlock/specs/destruction.json"
+          "data_path": "./warlock/specs/destruction.json",
+          "auto_attack_icon_slug": "ability_warlock_chaosbolt",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_warlock_chaosbolt.jpg"
         }
       ],
       "base_stats": {
@@ -492,17 +564,26 @@
         {
           "id": "arms",
           "label": "Arms",
-          "data_path": "./warrior/specs/arms.json"
+          "data_path": "./warrior/specs/arms.json",
+          "auto_attack_icon_slug": "ability_warrior_savageblow",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_savageblow.jpg"
         },
         {
           "id": "fury",
           "label": "Fury",
-          "data_path": "./warrior/specs/fury.json"
+          "data_path": "./warrior/specs/fury.json",
+          "auto_attack_icon_slug": "spell_nature_bloodlust",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_bloodlust.jpg"
         },
         {
           "id": "protection",
           "label": "Protection",
-          "data_path": "./warrior/specs/protection.json"
+          "data_path": "./warrior/specs/protection.json",
+          "auto_attack_icon_slug": "inv_shield_05",
+          "auto_attack_icon_source": "Wowhead CDN",
+          "auto_attack_icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/inv_shield_05.jpg"
         }
       ],
       "base_stats": {
@@ -560,5 +641,10 @@
       "spirit"
     ],
     "rule": "Each class owns one authored base-stat row per hero level. Specializations, equipment, talents, and temporary effects do not rewrite these base rows."
+  },
+  "ability_icon_model": {
+    "source": "Wowhead CDN",
+    "url_template": "https://wow.zamimg.com/images/wow/icons/large/{icon_slug}.jpg",
+    "rule": "Authored Auto Attack, cooldown, and Ultimate actions must resolve a non-fallback WoW icon from data. UI surfaces consume the authored slug through WowUIIcons."
   }
 }

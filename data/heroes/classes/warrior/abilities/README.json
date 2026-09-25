@@ -18,7 +18,9 @@
       "resource": "rage",
       "cost": 25,
       "effect": "none",
-      "icon_slug": "ability_warrior_savageblow"
+      "icon_slug": "ability_warrior_savageblow",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_savageblow.jpg"
     },
     {
       "id": "bloodthirst",
@@ -32,7 +34,9 @@
       "resource": "rage",
       "cost": 25,
       "effect": "none",
-      "icon_slug": "spell_nature_bloodlust"
+      "icon_slug": "spell_nature_bloodlust",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_bloodlust.jpg"
     },
     {
       "id": "shield-slam",
@@ -46,7 +50,9 @@
       "resource": "rage",
       "cost": 20,
       "effect": "none",
-      "icon_slug": "inv_shield_05"
+      "icon_slug": "inv_shield_05",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/inv_shield_05.jpg"
     },
     {
       "id": "thunder-clap",
@@ -60,7 +66,9 @@
       "resource": "rage",
       "cost": 20,
       "effect": "none",
-      "icon_slug": "spell_nature_thunderclap"
+      "icon_slug": "spell_nature_thunderclap",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_thunderclap.jpg"
     }
   ],
   "ultimates": [
@@ -78,7 +86,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "ability_warrior_savageblow"
+      "icon_slug": "ability_warrior_savageblow",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/ability_warrior_savageblow.jpg"
     },
     {
       "id": "capstone-bloodthirst",
@@ -94,7 +104,9 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "spell_nature_bloodlust"
+      "icon_slug": "spell_nature_bloodlust",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/spell_nature_bloodlust.jpg"
     },
     {
       "id": "capstone-shield-slam",
@@ -110,8 +122,11 @@
       "resource": "ultimate",
       "cost": 10000,
       "effect": "none",
-      "icon_slug": "inv_shield_05"
+      "icon_slug": "inv_shield_05",
+      "icon_source": "Wowhead CDN",
+      "icon_source_url": "https://wow.zamimg.com/images/wow/icons/large/inv_shield_05.jpg"
     }
   ],
-  "ultimate_model": "specialization-capstone"
+  "ultimate_model": "specialization-capstone",
+  "icon_contract": "Every authored combat action owns a canonical WoW icon slug and Wowhead CDN source metadata."
 }
