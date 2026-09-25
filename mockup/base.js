@@ -318,26 +318,9 @@ function validateProfessionData(payload) {
   const ids = payload.professions.map(entry => entry.id);
   if (new Set(ids).size !== ids.length) throw new Error('Profession IDs must be unique.');
   payload.professions.forEach(entry => {
-    if (!entry.label || !entry.icon_key || !Number.isInteger(Number(entry.unlock_level)) || Number(entry.unlock_level) < 1 || Number(entry.unlock_level) > 5) {
-      throw new Error('Invalid profession unlock metadata for ' + entry.id);
-    }
+    if (!entry.label || !entry.icon_key || !entry.definition_path || !entry.progression_id) throw new Error('Invalid profession metadata for ' + entry.id);
   });
   return payload;
-}
-
-function professionUnlockTooltip(definition) {
-  return {
-    variant:'control',
-    title:definition.label,
-    type:'Locked profession',
-    icon:{category:'profession', key:definition.icon_key},
-    description:'Requires Artisans Guild Level ' + definition.unlock_level + '.',
-    stats:[
-      {label:'Required Guild level', value:String(definition.unlock_level)},
-      {label:'Current Guild level', value:String(Professions.getGuildLevel())}
-    ],
-    locked:['Requires Artisans Guild Level ' + definition.unlock_level + '.']
-  };
 }
 
 function renderArtisansWorkflow(building) {
@@ -349,29 +332,19 @@ function renderArtisansWorkflow(building) {
   root.innerHTML =
     '<div class="base-sidecar__artisan-head">' +
       '<span class="wow-kicker">PROFESSIONS</span>' +
-      '<small>Guild Level ' + Professions.getGuildLevel() + '</small>' +
+      '<small>All professions · Level ' + building.level + '</small>' +
     '</div>' +
     '<div class="base-sidecar__profession-list"></div>';
 
   const list = root.querySelector('.base-sidecar__profession-list');
   professionData.professions.forEach(definition => {
-    const unlocked = Professions.isUnlocked(definition.unlock_level);
-    const item = document.createElement(unlocked ? 'a' : 'button');
-    item.className = 'base-sidecar__profession-entry' + (unlocked ? '' : ' is-locked');
-    if (unlocked) {
-      item.href = './profession.html?profession=' + encodeURIComponent(definition.id);
-      item.setAttribute('aria-label', 'Open ' + definition.label);
-    } else {
-      item.type = 'button';
-      item.setAttribute('aria-disabled','true');
-      item.setAttribute('aria-label', definition.label + ', locked, requires Artisans Guild Level ' + definition.unlock_level);
-    }
+    const item = document.createElement('a');
+    item.className = 'base-sidecar__profession-entry';
+    item.href = './profession.html?profession=' + encodeURIComponent(definition.id);
+    item.setAttribute('aria-label', 'Open ' + definition.label + ', level ' + building.level);
     item.innerHTML =
       iconMarkup('profession', definition.icon_key, 'sm', 'base-sidecar__profession-icon') +
-      '<span class="base-sidecar__profession-copy"><strong>' + definition.label + '</strong><small>' +
-        (unlocked ? 'Open profession' : 'Requires Guild Level ' + definition.unlock_level) +
-      '</small></span>';
-    if (!unlocked) Tooltips.attach(item, () => professionUnlockTooltip(definition), {anchor:'target'});
+      '<span class="base-sidecar__profession-copy"><strong>' + definition.label + '</strong><small>Level ' + building.level + ' · Open profession</small></span>';
     list.appendChild(item);
   });
   bindResolvedIcons(root);
