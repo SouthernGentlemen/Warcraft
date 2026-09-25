@@ -151,8 +151,23 @@ function syncResourceBar() {
   $('#manaValue').textContent = fmt(state.resources.mana);
 }
 
+function syncMapBuildings() {
+  all('.base-plot[data-building]').forEach(plot => {
+    const building = buildings.find(entry => entry.id === plot.dataset.building);
+    if (!building) return;
+    const selected = state.selected === building.id;
+    plot.classList.toggle('selected', selected);
+    plot.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    const level = plot.querySelector('.plot-label b');
+    if (level) level.textContent = building.level;
+  });
+}
+
 function renderBuildings() {
-  const list=$('#buildingList'); const filtered=buildings.filter(b=>state.filter==='all'||b.category===state.filter);
+  syncMapBuildings();
+  const list=$('#buildingList');
+  if (!list) return;
+  const filtered=buildings.filter(b=>state.filter==='all'||b.category===state.filter);
   list.innerHTML=filtered.map(b=>{ const up=upgradeState(b); const next=up.next; return `
     <article class="building-row ${state.selected===b.id?'selected':''}" data-building-row="${b.id}">
       <button class="building-thumb" type="button" data-select-building="${b.id}" aria-label="Select ${b.name}">${buildingIconMarkup(b,'lg','building-thumb-icon')}</button>
@@ -165,18 +180,25 @@ function renderBuildings() {
 }
 
 function renderSelection() {
-  const b=buildings.find(item=>item.id===state.selected)||buildings[0]; const current=currentProgression(b); const up=upgradeState(b);
-  $('#selectionDetail').innerHTML=`
+  syncMapBuildings();
+  const detail = $('#selectionDetail');
+  if (!detail) return;
+  const b=buildings.find(item=>item.id===state.selected)||buildings[0];
+  if (!b) return;
+  const current=currentProgression(b); const up=upgradeState(b);
+  detail.innerHTML=`
     <span class="wow-kicker">SELECTED BUILDING</span><div class="selection-title">${buildingIconMarkup(b,'md','selection-building-icon')}<div><strong>${b.name}</strong><small>Level ${b.level} / 5 · Tier ${b.level}</small></div></div>
     <p>${b.description}</p><div class="selection-progress wow-statusbar wow-statusbar--success"><span class="wow-statusbar__fill" style="--wow-value:${b.level*20}%"></span><span class="wow-statusbar__text">Level ${b.level} / 5</span></div>
     <div class="selection-upgrade"><strong>${up.next?'Next: Level '+up.next.level+' · Tier '+up.next.tier:'Maximum level reached'}</strong><small>Unlocked: ${(current.capabilities||[]).join(', ')}</small>${up.reason&&up.next?'<small class="building-requirement">'+up.reason+'</small>':''}</div>`;
-  bindResolvedIcons($('#selectionDetail')); all('.base-plot').forEach(plot=>{ plot.classList.toggle('selected',plot.dataset.building===b.id); plot.setAttribute('aria-pressed',plot.dataset.building===b.id?'true':'false'); const level=plot.querySelector('.plot-label b'); const item=buildings.find(entry=>entry.id===plot.dataset.building); if(level&&item) level.textContent=item.level; });
+  bindResolvedIcons(detail);
 }
 
 function questBoardBuilding(){return buildings.find(b=>b.id==="questboard");}
 function compatibleLoadouts(size){return Roster.getState().loadouts.filter(l=>l.size===size&&Roster.validateLoadout(l,true).valid);}
 function renderQuestBoard(){
-  const board=questBoardBuilding();if(!board)return;$('#questBoardLevel').textContent='Level '+board.level+' / 5';const root=$('#questTierList');root.innerHTML='';
+  const board=questBoardBuilding(), levelNode=$('#questBoardLevel'), root=$('#questTierList');
+  if(!board||!levelNode||!root)return;
+  levelNode.textContent='Level '+board.level+' / 5';root.innerHTML='';
   Roster.getState().quests.forEach(quest=>{const unlocked=board.level>=quest.tier,active=quest.status==='active',card=document.createElement('article');card.className='quest-tier-card'+(!unlocked?' is-locked':'')+(active?' is-active':'')+(quest.status==='completed'?' is-completed':'');
     const loadouts=quest.tier>1?compatibleLoadouts(quest.requiredHeroes):[];const available=Roster.getState().heroes.filter(h=>h.availability==='available');
     card.innerHTML='<div class="quest-tier-head"><strong>Tier '+quest.tier+'</strong><span>'+quest.requiredHeroes+' hero'+(quest.requiredHeroes===1?'':'es')+'</span><em>'+(!unlocked?'LOCKED · Quest Board level '+quest.tier:active?'ACTIVE':quest.status==='completed'?'COMPLETED · Ready again':'AVAILABLE')+'</em></div><div class="quest-selection"></div><small class="quest-reward">Reward hook · '+quest.reward.gold+' gold · '+quest.reward.amount+' quest mark'+(quest.reward.amount===1?'':'s')+'</small>';
@@ -213,63 +235,9 @@ function upgradeBuilding(id) {
   b.level=up.next.level; state.selected=id; syncResourceBar(); renderBuildings(); renderQuestBoard(); toast(b.name+' upgraded to level '+b.level+' (Tier '+b.level+').');
 }
 
-$('#buildingFilter').addEventListener('change', event => {
-  state.filter = event.target.value;
-  renderBuildings();
-});
-
-$('.building-tabs').addEventListener('click', event => {
-  const button = event.target.closest('[data-building-tab]');
-  if (!button) return;
-  state.tab = button.dataset.buildingTab;
-  all('.building-tabs button').forEach(node => {
-    const selected = node === button;
-    node.classList.toggle('is-selected', selected);
-    node.setAttribute('aria-selected', selected ? 'true' : 'false');
-  });
-  toast(state.tab === 'upgrades' ? 'Upgrade queue mockup selected.' : 'Building list selected.');
-});
-
-$('#buildingList').addEventListener('click', event => {
-  const upgrade = event.target.closest('[data-upgrade]');
-  if (upgrade) {
-    upgradeBuilding(upgrade.dataset.upgrade);
-    return;
-  }
-  const select = event.target.closest('[data-building-row], [data-select-building]');
-  if (select) selectBuilding(select.dataset.buildingRow || select.dataset.selectBuilding);
-});
-
 $('#baseMap').addEventListener('click', event => {
   const plot = event.target.closest('[data-building]');
   if (plot) selectBuilding(plot.dataset.building);
-});
-
-$('.base-action-bar').addEventListener('click', event => {
-  const button = event.target.closest('[data-action]');
-  if (!button) return;
-  const labels = {
-    keep: 'Keep selected for upgrade review.',
-    train: 'Training flow hook ready for hero progression.',
-    recruit: 'Recruitment flow hook ready for roster expansion.',
-    mission: 'Mission launch hook ready for content selection.'
-  };
-  if (button.dataset.action === 'keep') selectBuilding('keep');
-  if (button.dataset.action === 'mission') { state.selected='questboard'; renderBuildings(); document.querySelector('.quest-board').scrollIntoView({block:'nearest'}); }
-  toast(labels[button.dataset.action]);
-});
-
-$('.base-game-nav').addEventListener('click', event => {
-  const button = event.target.closest('[data-panel]');
-  if (!button) return;
-  all('.base-game-nav [data-panel]').forEach(node => {
-    const selected = node === button;
-    node.classList.toggle('is-selected', selected);
-    node.setAttribute('aria-pressed', selected ? 'true' : 'false');
-  });
-  if (button.dataset.panel === 'base') return;
-  const label = button.querySelector('.base-rail-label');
-  toast(`${label ? label.textContent : button.dataset.panel} is a navigation hook in this base mockup.`);
 });
 
 async function initBase() {
