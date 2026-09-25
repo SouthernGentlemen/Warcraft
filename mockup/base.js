@@ -35,7 +35,7 @@ function upgradeState(building) {
 
 
 const state = {
-  selected: 'keep',
+  selected: null,
   filter: 'all',
   tab: 'buildings',
   resources: { gold: 25430, lumber: 12680, stone: 8440, mana: 2350 }
@@ -148,7 +148,6 @@ function syncResourceBar() {
   $('#goldValue').textContent = fmt(state.resources.gold);
   $('#lumberValue').textContent = fmt(state.resources.lumber);
   $('#stoneValue').textContent = fmt(state.resources.stone);
-  $('#manaValue').textContent = fmt(state.resources.mana);
 }
 
 function syncMapBuildings() {
@@ -158,6 +157,7 @@ function syncMapBuildings() {
     const selected = state.selected === building.id;
     plot.classList.toggle('selected', selected);
     plot.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    plot.setAttribute('aria-label', building.name + ', level ' + building.level);
     const level = plot.querySelector('.plot-label b');
     if (level) level.textContent = building.level;
   });
