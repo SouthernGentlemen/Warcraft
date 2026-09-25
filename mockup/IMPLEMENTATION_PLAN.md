@@ -1772,7 +1772,7 @@ Core contracts for this phase:
 
 ### WOWUI-069 — Faction-Scoped Campaign State
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-068
 
