@@ -133,3 +133,7 @@ Base presentation is driven by the persisted player faction in `WarcraftRoster`.
 ### Base player action dock
 
 Base now overlays a compact three-action player dock on the map with exactly Quest Journal, Roster, and Inventory. The dock uses shared semantic icons/tooltips and ordinary links to the functional destinations created in WOWUI-032/033. It does not consume layout width or reintroduce the old multi-system rail; narrow screens collapse it into a three-item bottom dock.
+
+### Barracks removal
+
+Barracks has been removed from authored Base building data, Alliance/Horde presentation data, map markup, runtime bindings, and shared icon mappings. Its `military_tier_*` progression had no downstream consumers or prerequisites, so no mechanic required migration.
