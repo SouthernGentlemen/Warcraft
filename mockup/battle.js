@@ -281,8 +281,12 @@ function completionHook(result) {
     : null;
   const banner=$("resultBanner");
   const questResult=state.encounter&&state.encounter.kind==="quest";
+  const reward=questResult&&state.encounter&&state.encounter.reward||null;
+  const rewardCopy=heroesWin&&reward
+    ? " · Reward: "+formatNumber(reward.gold)+" gold · "+formatNumber(reward.meta_amount)+" quest mark"+(Number(reward.meta_amount)===1?"":"s")
+    : "";
   const detail=questResult
-    ? (heroesWin?"Quest completed · hero returned to available status":"Quest failed · hero released and offer can be retried")
+    ? (heroesWin?"Quest completed · heroes returned to available status"+rewardCopy:"Quest failed · heroes released and offer can be retried")
     : "Encounter result saved · reset to replay the same seed";
   const returnMode=questResult?"offers":"dungeons";
   banner.innerHTML='<span>'+(heroesWin?"VICTORY":"DEFEAT")+'</span><strong>'+(heroesWin?"Heroes":"NPC Enemies")+'</strong><small>'+detail+'</small>'+
