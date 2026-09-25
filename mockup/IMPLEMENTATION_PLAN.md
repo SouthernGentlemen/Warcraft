@@ -349,7 +349,7 @@ Let the default closed-sidecar Base view communicate actionable state without re
 
 ### WOWUI-028 — Base Responsive Behavior and Interaction Polish
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-027
 
