@@ -972,12 +972,17 @@
   opacity: .58;
 }
 
-.quest-offer-card.is-active {
+.quest-offer-card.is-active,
+.quest-offer-card.is-retry {
   border-color: var(--wow-warning);
 }
 
 .quest-offer-card.is-completed {
   border-color: var(--wow-success);
+}
+
+.quest-offer-card.is-retry .quest-offer-head em {
+  color: var(--wow-warning);
 }
 
 .quest-offer-head {
@@ -1016,11 +1021,6 @@
   color: var(--wow-text-muted);
   font-size: 7px;
   line-height: 1.35;
-}
-
-.base-sidecar__quest-advance {
-  width: 100%;
-  margin-top: 7px;
 }
 
 .quest-selection {
