@@ -174,3 +174,7 @@ Quest Board no longer owns one permanent quest per tier. `data/base/quest-offers
 ### Canonical dungeon catalog
 
 `data/dungeons/catalog.json` is the authored Quest Board dungeon catalog. Each dungeon has a stable ID, canonical display/location metadata, normalized Azeroth/continent map coordinates, faction starter/presentation rules, canonical party-size metadata, and an `npc_pool_id` resolving into `data/npcs/dungeon-pools.json`. The initial catalog contains Ragefire Chasm, The Stockade, Scarlet Monastery, and Zul'Farrak. Ragefire Chasm is marked as the Horde starter and The Stockade as the Alliance starter. NPC pools currently contain identity-only boss seeds; combat stats and encounter composition remain future work.
+
+### Quest Board Azeroth dungeon map
+
+Quest Board now switches between randomized quest offers and a data-driven Azeroth dungeon map. Dungeon hotspots are created from `data/dungeons/catalog.json` coordinates, not hardcoded map markup. The active faction's starter dungeon is selected/emphasized first (Ragefire Chasm for Horde, The Stockade for Alliance), while Scarlet Monastery and Zul'Farrak remain visible at their authored world positions. Selecting a dungeon opens an exact five-hero party picker using saved or ad-hoc roster selection; Launch Battle persists a `pendingEncounter` with dungeon ID, NPC-pool ID, party size, hero IDs, faction, and source before routing to `battle.html`. The current Battle prototype only surfaces that handoff context; NPC encounter execution is owned by WOWUI-046–052.
