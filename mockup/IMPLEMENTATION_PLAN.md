@@ -2023,7 +2023,7 @@ Restore the stronger old Talent mockup visual identity while keeping the new aut
 
 ### WOWUI-076 — Twenty-Point Hero XP and Base-Level Cap
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-069, WOWUI-071
 
