@@ -53,10 +53,19 @@ function renderHeroSlots() {
 
   for (let i = 0; i < 3; i += 1) {
     const wrap = document.createElement("div");
-    wrap.className = "hero-slot" + (i >= count ? " hidden" : "");
+    wrap.className = "hero-slot wow-inset" + (i >= count ? " hidden" : "");
+    const icon = document.createElement("span");
+    icon.className = "wow-icon-frame wow-icon-frame--md";
+    const iconImg = document.createElement("img");
+    iconImg.alt = "";
+    icon.appendChild(iconImg);
+    const copy = document.createElement("div");
+    copy.className = "hero-slot__copy";
     const label = document.createElement("label");
+    label.className = "wow-label";
     label.textContent = "Hero " + (i + 1);
     const select = document.createElement("select");
+    select.className = "wow-select";
 
     for (const option of options) {
       const node = document.createElement("option");
@@ -66,11 +75,19 @@ function renderHeroSlots() {
     }
 
     select.value = state.slotValues[i] || options[i]?.value || "";
+    const syncIcon = () => {
+      const [classId] = select.value.split("/");
+      icon.className = "wow-icon-frame wow-icon-frame--md wow-icon-frame--class-" + classId;
+      iconImg.src = window.WowUIIcons.resolve("class", classId);
+      window.WowUIIcons.bindFallback(iconImg);
+    };
     select.addEventListener("change", () => {
       state.slotValues[i] = select.value;
+      syncIcon();
     });
-
-    wrap.append(label, select);
+    syncIcon();
+    copy.append(label, select);
+    wrap.append(icon, copy);
     $("heroSlots").appendChild(wrap);
   }
 }
@@ -158,20 +175,37 @@ function statCell(label, value) {
   return '<div class="stat"><span>' + label + '</span><strong>' + value + '</strong></div>';
 }
 
+function iconMarkup(category, key, className = "") {
+  const url = window.WowUIIcons.resolve(category, key);
+  return '<span class="wow-icon-frame wow-icon-frame--sm ' + className + '"><img src="' + url + '" alt=""></span>';
+}
+
+function resourceBarClass(resourceType) {
+  return ["mana","rage","energy"].includes(resourceType) ? "wow-statusbar--" + resourceType : "";
+}
+
 function renderActors() {
   $("actorCards").innerHTML = "";
 
   state.lastActors.forEach((actor, index) => {
     const card = document.createElement("article");
-    card.className = "actor-card" + (actor.kind === "enemy" ? " enemy" : "");
+    const classKey = actor.kind === "hero" ? actor.classId : "";
+    card.className = "actor-card wow-frame" + (actor.kind === "enemy" ? " enemy" : "");
     const hooks = actor.talentHooks || { implemented:[], unimplemented:[] };
+    const portrait = actor.kind === "hero"
+      ? iconMarkup("class", actor.classId, "wow-icon-frame--class-" + actor.classId)
+      : iconMarkup("battle", "combat");
+    const resource = actor.maxResource
+      ? '<div class="wow-statusbar ' + resourceBarClass(actor.resourceType) + '"><span class="wow-statusbar__fill" style="--wow-value:100%"></span><span class="wow-statusbar__text">' + actor.resourceType + ' ' + actor.maxResource + '</span></div>'
+      : "";
 
     card.innerHTML = `
-      <h3>${actor.name}</h3>
-      <div class="actor-sub">#${index} · Team ${actor.team} · ${actor.kind === "hero" ? "Level " + actor.level : actor.specName}</div>
+      <div class="actor-head">${portrait}<div><h3 class="${classKey ? "wow-class--" + classKey : ""}">${actor.name}</h3><div class="actor-sub">#${index} · Team ${actor.team} · ${actor.kind === "hero" ? "Level " + actor.level + " · " + actor.specName : actor.specName}</div></div></div>
+      <div class="actor-bars">
+        <div class="wow-statusbar wow-statusbar--health"><span class="wow-statusbar__fill" style="--wow-value:100%"></span><span class="wow-statusbar__text">${actor.derived.maxHealth} HP</span></div>
+        ${resource}
+      </div>
       <div class="stat-grid">
-        ${statCell("HP", actor.derived.maxHealth)}
-        ${statCell("Resource", actor.resourceType + " " + actor.maxResource)}
         ${statCell("Physical", actor.derived.physicalPower)}
         ${statCell("Spell", actor.derived.spellPower)}
         ${statCell("Healing", actor.derived.healingPower)}
@@ -179,6 +213,8 @@ function renderActors() {
         ${statCell("Hit BP", actor.derived.hitBp)}
         ${statCell("Haste BP", actor.derived.hasteBp)}
         ${statCell("Mastery BP", actor.derived.masteryBp)}
+        ${statCell("Regen/s", actor.resourceRegenPerSecond)}
+        ${statCell("Auto ticks", actor.auto.base_ticks)}
       </div>
       <div class="actor-actions">
         <p><b>Auto:</b> ${actor.auto.name} · ${actor.auto.kind} · ${actor.auto.base_ticks} ticks</p>
@@ -189,6 +225,7 @@ function renderActors() {
       </div>
     `;
 
+    card.querySelectorAll("img").forEach(img => window.WowUIIcons.bindFallback(img));
     $("actorCards").appendChild(card);
   });
 
@@ -227,6 +264,28 @@ function eventAmount(event) {
   return "";
 }
 
+function actionIconKey(event) {
+  if (event.type === "heal") return "heal";
+  if (event.type === "death") return "death";
+  if (event.type === "critical") return "critical";
+  if (event.type === "damage") return "damage";
+  if (event.type === "action_start") return "combat";
+  return "";
+}
+
+function actorCell(index) {
+  if (index === undefined) return "—";
+  const actor = state.lastActors?.[index];
+  const className = actor?.kind === "hero" ? " wow-class--" + actor.classId : "";
+  return '<span class="log-actor' + className + '">' + actorName(index) + '</span>';
+}
+
+function detailCell(event) {
+  const key = actionIconKey(event);
+  if (!key) return eventDetail(event);
+  return '<span class="log-action">' + iconMarkup("battle", key) + '<span>' + eventDetail(event) + '</span></span>';
+}
+
 function renderLog() {
   const filter = $("eventFilter").value;
   const showEmpty = $("showEmptyTicks").checked;
@@ -242,12 +301,7 @@ function renderLog() {
 
     if (!events.length && showEmpty) {
       const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${frame.frame}</td>
-        <td>${(frame.frame / FPS).toFixed(3)}</td>
-        <td>—</td><td>tick</td><td>no events</td><td>—</td><td>—</td>
-        <td>${hexHash(frame.stateHash)}</td>
-      `;
+      row.innerHTML = `<td>${frame.frame}</td><td>${(frame.frame / FPS).toFixed(3)}</td><td>—</td><td class="event-system">tick</td><td>no events</td><td>—</td><td>—</td><td>${hexHash(frame.stateHash)}</td>`;
       fragment.appendChild(row);
       continue;
     }
@@ -258,22 +312,20 @@ function renderLog() {
       row.innerHTML = `
         <td>${frame.frame}</td>
         <td>${(frame.frame / FPS).toFixed(3)}</td>
-        <td>${event.actor === undefined ? "—" : actorName(event.actor)}</td>
+        <td>${actorCell(event.actor)}</td>
         <td class="event-${event.type}">${event.type}</td>
-        <td>${eventDetail(event)}</td>
-        <td>${event.target === undefined ? "—" : actorName(event.target)}</td>
+        <td>${detailCell(event)}</td>
+        <td>${actorCell(event.target)}</td>
         <td>${eventAmount(event)}</td>
         <td>${hexHash(frame.stateHash)}</td>
       `;
+      row.querySelectorAll("img").forEach(img => window.WowUIIcons.bindFallback(img));
       fragment.appendChild(row);
     }
   }
 
   body.appendChild(fragment);
-  $("logMeta").textContent =
-    state.lastResult.frames.length + " frame reports · " +
-    totalEvents + " total events · " +
-    visibleEvents + " visible events · full JSON retained in memory";
+  $("logMeta").textContent = state.lastResult.frames.length + " frame reports · " + totalEvents + " total events · " + visibleEvents + " visible events · full JSON retained in memory";
   $("logSection").hidden = false;
 }
 
