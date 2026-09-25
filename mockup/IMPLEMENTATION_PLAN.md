@@ -773,7 +773,7 @@ Make Storehouse a direct Base entry point into global Inventory.
 
 ### WOWUI-041 — Artisans Guild Base Hotspot
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-038
 
