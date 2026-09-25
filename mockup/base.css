@@ -840,48 +840,48 @@
   line-height: 1.35;
 }
 
-.quest-tier-list {
+.quest-offer-list {
   display: grid;
   gap: 6px;
 }
 
-.quest-tier-card {
+.quest-offer-card {
   margin: 0;
   padding: 7px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
   background: var(--wow-surface-inset);
 }
 
-.quest-tier-card.is-locked {
+.quest-offer-card.is-locked {
   opacity: .58;
 }
 
-.quest-tier-card.is-active {
+.quest-offer-card.is-active {
   border-color: var(--wow-warning);
 }
 
-.quest-tier-card.is-completed {
+.quest-offer-card.is-completed {
   border-color: var(--wow-success);
 }
 
-.quest-tier-head {
+.quest-offer-head {
   display: grid;
   grid-template-columns: auto auto minmax(0,1fr);
   align-items: center;
   gap: 7px;
 }
 
-.quest-tier-head strong {
+.quest-offer-head strong {
   color: var(--wow-gold-pale);
   font-size: 11px;
 }
 
-.quest-tier-head span {
+.quest-offer-head span {
   color: var(--wow-text-muted);
   font-size: 8px;
 }
 
-.quest-tier-head em {
+.quest-offer-head em {
   overflow: hidden;
   color: var(--wow-text-dim);
   font-size: 7px;
@@ -891,8 +891,20 @@
   white-space: nowrap;
 }
 
-.quest-tier-card.is-active .quest-tier-head em {
+.quest-offer-card.is-active .quest-offer-head em {
   color: var(--wow-warning);
+}
+
+.quest-offer-description {
+  margin: 5px 0 0;
+  color: var(--wow-text-muted);
+  font-size: 7px;
+  line-height: 1.35;
+}
+
+.base-sidecar__quest-advance {
+  width: 100%;
+  margin-top: 7px;
 }
 
 .quest-selection {
