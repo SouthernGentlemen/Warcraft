@@ -86,11 +86,6 @@ const buildingIconKeys = {
   questboard:['building','quest-board']
 };
 
-const costIconKeys = {
-  gold:['currency','gold'],
-  lumber:['resource','lumber'],
-  stone:['resource','stone']
-};
 
 const attentionIcons = {
   'quest-complete':['status','victory'],
@@ -174,20 +169,66 @@ function labelize(value) {
     .replace(/\b\w/g, char => char.toUpperCase());
 }
 
-function costMarkup(key, value) {
-  const icon = costIconKeys[key];
-  const affordable = (state.resources[key] || 0) >= value;
-  return '<span class="building-cost ' + (affordable ? 'is-affordable' : 'is-short') + '" data-cost="' + key + '">' +
-    iconMarkup(icon[0], icon[1], 'xs', 'building-cost-icon') +
-    '<span><small>' + labelize(key) + '</small><b>' + fmt(value) + '</b></span>' +
-  '</span>';
+
+const BUILDING_ACTIONS = Object.freeze({
+  keep:Object.freeze([
+    Object.freeze({label:'Open Roster', href:'./heroes.html', icon:['resource','population'], description:'Manage heroes, equipment, talents, and saved parties.'})
+  ]),
+  recruitment:Object.freeze([
+    Object.freeze({label:'Manage Roster', href:'./heroes.html', icon:['resource','population'], description:'Review and manage the current hero roster.'})
+  ]),
+  training:Object.freeze([
+    Object.freeze({label:'Open Talents', href:'./talent-calculator.html', icon:['talent','active'], description:'Open the talent workspace for hero build planning.'})
+  ]),
+  storehouse:Object.freeze([
+    Object.freeze({label:'Open Inventory', href:'./inventory.html', icon:['equipment-slot','chest'], description:'Browse owned equipment across the roster.'})
+  ]),
+  questboard:Object.freeze([
+    Object.freeze({label:'Open Quest Journal', href:'./quest-journal.html', icon:['quest','journal'], description:'Review available, active, and completed quests.'})
+  ]),
+  blacksmith:Object.freeze([
+    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','blacksmithing'], description:'Review owned equipment while profession workflows are consolidated into Artisans Guild.'})
+  ]),
+  alchemy:Object.freeze([
+    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','alchemy'], description:'Review owned items while profession workflows are consolidated into Artisans Guild.'})
+  ]),
+  enchanter:Object.freeze([
+    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','enchanting'], description:'Review owned equipment while profession workflows are consolidated into Artisans Guild.'})
+  ]),
+  tailor:Object.freeze([
+    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','tailoring'], description:'Review owned equipment while profession workflows are consolidated into Artisans Guild.'})
+  ]),
+  leather:Object.freeze([
+    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','leatherworking'], description:'Review owned equipment while profession workflows are consolidated into Artisans Guild.'})
+  ]),
+  engineer:Object.freeze([
+    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['profession','engineering'], description:'Review owned items while profession workflows are consolidated into Artisans Guild.'})
+  ])
+});
+
+function buildingActions(building) {
+  return BUILDING_ACTIONS[building.id] || [];
 }
 
-function capabilityMarkup(capabilities) {
-  const rows = Array.isArray(capabilities) ? capabilities : [];
-  return rows.length
-    ? '<ul class="base-sidecar__capabilities">' + rows.map(value => '<li>' + labelize(value) + '</li>').join('') + '</ul>'
-    : '<p class="base-sidecar__empty">No additional capability.</p>';
+function buildingActionMarkup(action) {
+  return '<a class="base-sidecar__menu-item base-sidecar__action" href="' + action.href + '" ' +
+    'data-wow-tooltip="' + action.label + '" data-wow-tooltip-type="Building Action" ' +
+    'data-wow-tooltip-description="' + action.description + '" data-wow-tooltip-variant="control">' +
+      iconMarkup(action.icon[0], action.icon[1], 'sm', 'base-sidecar__menu-icon') +
+      '<span class="base-sidecar__menu-copy"><strong>' + action.label + '</strong><small>Open</small></span>' +
+    '</a>';
+}
+
+function upgradeControlMarkup(building, upgrade) {
+  const next = upgrade.next;
+  const label = next ? 'Upgrade to Level ' + next.level : 'Max Level';
+  const stateLabel = next ? (upgrade.canUpgrade ? 'Ready' : 'Blocked') : 'Complete';
+  return '<button id="baseSidecarUpgrade" class="base-sidecar__menu-item base-sidecar__upgrade-control' +
+    (upgrade.canUpgrade ? '' : ' is-disabled') + '" type="button" aria-disabled="' +
+    (upgrade.canUpgrade ? 'false' : 'true') + '">' +
+      iconMarkup('building','upgrade','sm','base-sidecar__menu-icon') +
+      '<span class="base-sidecar__menu-copy"><strong>' + label + '</strong><small>' + stateLabel + '</small></span>' +
+    '</button>';
 }
 
 function bindResolvedIcons(root) {
@@ -455,70 +496,32 @@ function renderSidecar() {
 
   const current = currentProgression(building);
   const upgrade = upgradeState(building);
-  const next = upgrade.next;
+  const actions = buildingActions(building);
 
   $('#baseSidecarIcon').innerHTML = buildingIconMarkup(building, 'lg', 'base-sidecar__building-icon');
   $('#baseSidecarCategory').textContent = building.category === 'profession' ? 'PROFESSION BUILDING' : 'CORE BUILDING';
   $('#baseSidecarTitle').textContent = building.name;
   $('#baseSidecarLevel').textContent = 'Level ' + building.level + ' / ' + building.max + ' · Tier ' + current.tier;
 
-  const identitySection =
-    '<section class="base-sidecar__section base-sidecar__summary">' +
-      '<p>' + building.description + '</p>' +
-    '</section>';
-
-  if (!next) {
-    body.innerHTML =
-      identitySection +
-      '<section class="base-sidecar__section">' +
-        '<span class="wow-label">Current Capability</span>' +
-        capabilityMarkup(current.capabilities) +
-      '</section>' +
-      '<section class="base-sidecar__section base-sidecar__upgrade">' +
-        '<span class="wow-kicker">MAXIMUM LEVEL</span>' +
-        '<h3>Level ' + building.level + ' / ' + building.max + '</h3>' +
-        '<p>This building has reached its current progression cap.</p>' +
-        '<button id="baseSidecarUpgrade" class="wow-button wow-button--primary is-disabled" type="button" aria-disabled="true">MAX LEVEL</button>' +
-      '</section>' +
-      (building.category === 'profession'
-        ? '<section class="base-sidecar__section"><span class="wow-label">Profession</span><button class="wow-button base-sidecar__profession-action" type="button" disabled>Profession actions coming later</button></section>'
-        : '');
-  } else {
-    body.innerHTML =
-      identitySection +
-      '<section class="base-sidecar__section">' +
-        '<span class="wow-label">Current Capability</span>' +
-        capabilityMarkup(current.capabilities) +
-      '</section>' +
-      '<section class="base-sidecar__section">' +
-        '<span class="wow-label">Next Level · ' + next.level + ' / ' + building.max + '</span>' +
-        capabilityMarkup(next.capabilities) +
-      '</section>' +
-      '<section class="base-sidecar__section">' +
-        '<span class="wow-label">Upgrade Cost</span>' +
-        '<div class="base-sidecar__costs">' + Object.entries(next.cost).map(([key,value]) => costMarkup(key,value)).join('') + '</div>' +
-      '</section>' +
-      '<section class="base-sidecar__section base-sidecar__upgrade ' + (upgrade.canUpgrade ? 'is-ready' : 'is-blocked') + '">' +
-        '<span class="wow-kicker">' + (upgrade.canUpgrade ? 'READY TO UPGRADE' : 'UPGRADE BLOCKED') + '</span>' +
-        '<h3>Level ' + building.level + ' → ' + next.level + '</h3>' +
-        '<button id="baseSidecarUpgrade" class="wow-button wow-button--primary' + (upgrade.canUpgrade ? '' : ' is-disabled') + '" type="button" aria-disabled="' + (upgrade.canUpgrade ? 'false' : 'true') + '">Upgrade to Level ' + next.level + '</button>' +
-      '</section>' +
-      (building.category === 'profession'
-        ? '<section class="base-sidecar__section"><span class="wow-label">Profession</span><button class="wow-button base-sidecar__profession-action" type="button" disabled>Profession actions coming later</button></section>'
-        : '');
-  }
+  body.innerHTML =
+    '<div class="base-sidecar__menu" aria-label="' + building.name + ' actions">' +
+      actions.map(buildingActionMarkup).join('') +
+      upgradeControlMarkup(building, upgrade) +
+    '</div>';
 
   if (building.id === 'questboard') {
     body.insertAdjacentHTML('beforeend',
       '<section class="base-sidecar__section base-sidecar__quests">'+
         '<div class="base-sidecar__quest-head"><div><span class="wow-kicker">HERO DISPATCH</span><h3>Quest Board</h3></div><small>Tier 1–'+building.level+' unlocked</small></div>'+
-        '<p id="questBoardStatus" class="base-sidecar__quest-status" role="status" aria-live="polite"></p>'+
+        '<div id="questBoardStatus" class="base-sidecar__quest-status" role="status" aria-live="polite"></div>'+
         '<div id="questTierList" class="quest-tier-list"></div>'+
       '</section>');
   }
 
   bindResolvedIcons(sidecar);
+  Tooltips.hydrate(sidecar);
   if (building.id === 'questboard') renderQuestBoard();
+
   const upgradeButton = $('#baseSidecarUpgrade');
   if (upgradeButton) {
     Tooltips.attach(upgradeButton, () => upgradeTooltipModel(building), {anchor:'target'});
