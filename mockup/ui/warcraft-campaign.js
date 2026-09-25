@@ -161,7 +161,6 @@ function emit(reason){
   global.dispatchEvent(new global.CustomEvent("warcraft:campaign-changed",{detail:detail(reason)}));
 }
 function commit(reason){
-  state=normalizeState(state);
   persist();
   emit(reason||"campaign");
   return getActiveCampaign();
