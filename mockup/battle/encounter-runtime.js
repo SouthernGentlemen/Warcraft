@@ -68,7 +68,7 @@ async function heroDefinition(hero,classIndex,team=0){
   });
 }
 
-function expandNpcGroup(poolEnemies,count){
+export function expandNpcGroup(poolEnemies,count){
   if(!poolEnemies.length)return [];
   const total=Math.max(1,integer(count,poolEnemies.length));
   return Array.from({length:total},(_,index)=>{
