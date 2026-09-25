@@ -23,3 +23,16 @@
 .hero-roster-capacity{margin-left:auto;padding:3px 6px;border:1px solid var(--wow-frame-edge);background:var(--wow-surface-inset);color:var(--wow-gold-pale);font-size:9px;font-weight:800;white-space:nowrap}
 
 @media(max-width:620px){.hero-racial{grid-template-columns:1fr}.hero-stat-row{grid-template-columns:minmax(74px,1fr) repeat(4,minmax(40px,.6fr));font-size:7px}}
+
+.hero-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:2px;padding:5px 7px 0;background:var(--wow-surface-inset);border-bottom:1px solid var(--wow-frame-edge)}
+.hero-tab{min-height:34px;padding:6px 8px;border:1px solid var(--wow-frame-edge);border-bottom:0;background:var(--wow-surface);color:var(--wow-text-dim);font:inherit;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+.hero-tab:hover,.hero-tab:focus-visible{color:var(--wow-text);border-color:var(--wow-gold-muted);outline:none}
+.hero-tab.is-active{background:var(--wow-surface-raised,var(--wow-surface));color:var(--wow-gold-pale);border-color:var(--wow-gold);box-shadow:inset 0 2px 0 rgba(214,182,95,.28)}
+.hero-tab-panels{padding:7px}
+.hero-tab-panel[hidden]{display:none}
+.hero-tab-panel>.hero-combat-loadout,.hero-tab-panel>.hero-panel,.hero-tab-panel>.hero-racial{margin:0}
+.hero-tab-panel>.hero-racial+.hero-panel{margin-top:7px}
+.hero-talents-panel__head{align-items:end}
+.hero-talents-panel__head h2{margin:2px 0 0;color:var(--wow-gold-pale);font-size:13px}
+.hero-talents-panel__spec{min-width:190px}
+@media(max-width:620px){.hero-tabs{grid-template-columns:repeat(2,minmax(0,1fr));padding:5px}.hero-tab{border-bottom:1px solid var(--wow-frame-edge)}.hero-talents-panel__head{align-items:stretch;flex-direction:column}.hero-talents-panel__spec{width:100%;min-width:0}}

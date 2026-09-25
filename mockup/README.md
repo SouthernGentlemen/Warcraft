@@ -116,6 +116,8 @@ Runtime gameplay inputs remain authored JSON under `/data/`. Documentation under
 
 Keep level is the canonical Base Level for each faction and is the only source of roster capacity: Base Levels 1–5 allow exactly **10 / 20 / 30 / 40 / 50** heroes. Recruitment Hall controls candidate discovery only; it does not own or override roster capacity. Alliance/Horde roster membership and all hero-bearing references are faction-isolated across Party/Raid/Siege formations, Quest/Embark state, building/profession assignments, dungeon records, and Battle handoffs. Runtime mutation APIs reject opposite-faction hero IDs, while normalization removes stale persisted references without rewriting unrelated non-hero fields.
 
+Roster hero detail uses one four-tab character workspace: **Abilities / Gear / Stats / Talents**. Hero identity remains visible while switching tabs; Party/Raid/Siege management stays outside hero detail. Direct links use `heroes.html?hero=<hero-id>&tab=<abilities|gear|stats|talents>`, which is the stable entry contract for the later Class Hall implementation.
+
 `WarcraftRoster` and `WarcraftProfessions` are compatibility-facing adapters over the active campaign rather than separate global save files. Switching faction changes the records returned by those APIs without copying or mutating the inactive campaign. Fresh state seeds the existing sample heroes into their authored faction only. A legacy `warcraft.mockup.roster.v1` / `warcraft.mockup.professions.v1` save migrates once into its previously active faction; the opposite campaign is left independent and legacy hero IDs are never cloned into both campaigns.
 
 ### Shared roster state
