@@ -1,662 +1,374 @@
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
-const NPC_CATALOG_ROOT = "../data/npcs/catalog.json";
-const NPC_POOLS_ROOT = "../data/npcs/dungeon-pools.json";
-
-const BASE_TEAMS = {
-  alliance: [
-    { id:"a-paladin", name:"Mira", race:"Human", className:"Paladin", level:5, icon:"spell_holy_holybolt", hp:760, resource:210, role:"healer", power:72 },
-    { id:"a-warrior", name:"Brom", race:"Dwarf", className:"Warrior", level:5, icon:"ability_warrior_defensivestance", hp:980, resource:100, role:"tank", power:68 },
-    { id:"a-mage", name:"Fizzik", race:"Gnome", className:"Mage", level:4, icon:"spell_fire_fireball02", hp:610, resource:330, role:"damage", power:88 },
-    { id:"a-priest", name:"Selene", race:"Human", className:"Priest", level:4, icon:"spell_holy_powerwordshield", hp:650, resource:360, role:"healer", power:64 },
-    { id:"a-rogue", name:"Pip", race:"Gnome", className:"Rogue", level:4, icon:"ability_rogue_ambush", hp:680, resource:120, role:"damage", power:84 },
-    { id:"a-druid", name:"Thalara", race:"Night Elf", className:"Druid", level:3, icon:"ability_druid_catform", hp:720, resource:300, role:"damage", power:80 }
-  ],
-  horde: [
-    { id:"h-warrior", name:"Korga", race:"Orc", className:"Warrior", level:5, icon:"ability_warrior_savageblow", hp:1020, resource:100, role:"tank", power:74 },
-    { id:"h-shaman", name:"Zula", race:"Troll", className:"Shaman", level:5, icon:"spell_nature_lightning", hp:740, resource:310, role:"healer", power:70 },
-    { id:"h-warlock", name:"Morrow", race:"Undead", className:"Warlock", level:4, icon:"spell_shadow_summonvoidwalker", hp:720, resource:320, role:"damage", power:82 },
-    { id:"h-rogue", name:"Rikk", race:"Troll", className:"Rogue", level:4, icon:"ability_backstab", hp:670, resource:120, role:"damage", power:88 },
-    { id:"h-priest", name:"Vex", race:"Undead", className:"Priest", level:4, icon:"spell_shadow_shadowwordpain", hp:660, resource:350, role:"healer", power:66 },
-    { id:"h-shaman2", name:"Grash", race:"Tauren", className:"Shaman", level:3, icon:"ability_shaman_stormstrike", hp:760, resource:250, role:"damage", power:78 }
-  ]
-};
 
 const state = {
-  teams: null,
-  paused: false,
-  speed: 1,
-  timer: null,
-  turn: 0,
-  finished: false,
-  log: [],
-  dungeonEncounter: null,
-  dungeonNpcTeam: null,
-  dungeonEnemyFaction: null
+  runtime:null,
+  resolved:null,
+  encounter:null,
+  playerSide:"alliance",
+  enemySide:"horde",
+  paused:false,
+  speed:1,
+  timer:null,
+  log:[],
+  completion:null
 };
 
 const $ = id => document.getElementById(id);
 
-function cloneTeams() {
-  const teams = {
-    alliance: BASE_TEAMS.alliance.map(unit => ({...unit, currentHp:unit.hp, currentResource:unit.resource})),
-    horde: BASE_TEAMS.horde.map(unit => ({...unit, currentHp:unit.hp, currentResource:unit.resource}))
+function sideOpposite(side){return side==="alliance"?"horde":"alliance";}
+function slug(value){return String(value||"").toLowerCase().replace(/[^a-z0-9]+/g,"-");}
+function actorName(index){return state.resolved&&state.resolved.actors[index]?state.resolved.actors[index].name:"—";}
+function actorSide(definition){return definition.team===0?state.playerSide:state.enemySide;}
+function formatNumber(value){return Number(value||0).toLocaleString("en-US");}
+
+function fallbackEncounter() {
+  const faction=Roster.getFaction();
+  const available=Roster.getState().heroes.filter(hero=>
+    String(hero.faction||"").toLowerCase()===faction && hero.availability==="available"
+  );
+  if(!available.length)throw new Error("No available heroes can enter Battle.");
+  const partySize=available.length>=3?3:1;
+  const horde=faction==="horde";
+  return {
+    kind:"dungeon",
+    dungeonId:horde?"ragefire-chasm":"the-stockade",
+    dungeonName:horde?"Ragefire Chasm":"The Stockade",
+    npcPoolId:horde?"dungeon-ragefire-chasm":"dungeon-the-stockade",
+    partySize,
+    heroIds:available.slice(0,partySize).map(hero=>hero.id),
+    faction,
+    seed:0x470047,
+    source:"battle-direct"
   };
-  if (state.dungeonNpcTeam && state.dungeonEnemyFaction) {
-    teams[state.dungeonEnemyFaction] = state.dungeonNpcTeam.map(unit => ({...unit, currentHp:unit.hp, currentResource:unit.resource}));
+}
+
+function selectedEncounter() {
+  const params=new URLSearchParams(location.search);
+  const pending=Roster&&typeof Roster.getPendingEncounter==="function"?Roster.getPendingEncounter():null;
+  if(params.get("encounter")==="dungeon"&&pending&&pending.kind==="dungeon"){
+    if(!params.get("dungeon")||params.get("dungeon")===pending.dungeonId)return pending;
   }
-  return teams;
+  return fallbackEncounter();
 }
 
-function slug(value) {
-  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-");
-}
-
-function resourceLabel(unit) {
-  if (unit.kind === "npc") return "Threat";
-  if (unit.className === "Warrior") return "Rage";
-  if (unit.className === "Rogue") return "Energy";
-  return "Mana";
-}
-
-function unitTooltipModel(unit, faction) {
-  const resource = resourceLabel(unit);
+function actorTooltipModel(actor) {
+  const def=actor.definition;
+  const live=actor.state;
+  const hero=def.kind==="hero";
   return {
     variant:"unit",
-    title:unit.name,
-    type:unit.kind === "npc" ? unit.family + " " + unit.npcType : unit.race + " " + unit.className,
-    classId:slug(unit.className),
-    icon:{slug:unit.icon, classId:slug(unit.className)},
-    description:unit.kind === "npc" ? "Dungeon NPC from " + (unit.poolId || "encounter pool") + "." : unit.role.charAt(0).toUpperCase() + unit.role.slice(1) + " combatant.",
+    title:def.name,
+    type:hero ? ((def.race||"Hero")+" "+def.className) : ((def.family||"NPC")+" "+(def.npcType||"enemy")),
+    classId:hero?def.classId:"",
+    icon:hero?{category:"class",key:def.classId}:{category:"battle",key:"combat"},
+    description:hero
+      ? "Roster hero · "+def.specName+"."
+      : "Authored dungeon NPC · "+(def.poolIds&&def.poolIds[0]||state.encounter.npcPoolId)+".",
     stats:[
-      {label:"Health", value:unit.currentHp + " / " + unit.hp},
-      {label:resource, value:unit.currentResource + " / " + unit.resource},
-      {label:"Power", value:String(unit.power)}
-    ],
+      {label:"Health",value:formatNumber(live.hp)+" / "+formatNumber(def.derived.maxHealth)},
+      {label:"Level",value:String(def.level)},
+      {label:"Auto",value:def.auto.name}
+    ].concat(def.maxResource?[{label:def.resourceType,value:formatNumber(live.resource)+" / "+formatNumber(def.maxResource)}]:[]),
     meta:[
-      {label:"Faction", value:unit.kind === "npc" ? "Dungeon NPC" : (faction === "alliance" ? "Alliance" : "Horde")},
-      {label:"Level", value:String(unit.level)}
+      {label:"Source",value:hero?"WarcraftRoster":"NPC Catalog"},
+      {label:"Team",value:hero?"Player":"Enemy"}
     ],
-    locked:unit.currentHp <= 0 ? ["Defeated"] : []
+    locked:live.alive?[]:["Defeated"]
   };
 }
 
-function resourceTooltipModel(unit) {
-  const resource = resourceLabel(unit);
-  return {
-    variant:"resource",
-    title:resource,
-    type:"Combat resource",
-    icon:{category:"resource", key:resource},
-    description:resource === "Rage"
-      ? "Generated and spent through combat actions."
-      : resource === "Energy"
-        ? "Fast-regenerating combat resource."
-        : "Spellcasting resource used by this unit.",
-    stats:[
-      {label:"Current", value:String(unit.currentResource)},
-      {label:"Maximum", value:String(unit.resource)}
-    ],
-    meta:{label:"Owner", value:unit.name}
-  };
+function portraitMarkup(def) {
+  if(def.kind==="hero"){
+    return '<img src="'+Icons.resolve("race",def.race||"Human")+'" alt="" loading="lazy">'+
+      '<span class="unit-class-icon wow-icon-frame wow-icon-frame--xs wow-icon-frame--class-'+def.classId+'">'+
+        '<img src="'+Icons.resolve("class",def.classId)+'" alt="" loading="lazy">'+
+      '</span>';
+  }
+  return '<img src="'+Icons.resolve("battle","combat")+'" alt="" loading="lazy">'+
+    '<span class="unit-class-icon wow-icon-frame wow-icon-frame--xs">'+
+      '<img src="'+Icons.resolve("battle","combat")+'" alt="" loading="lazy">'+
+    '</span>';
 }
 
-function unitMarkup(unit, faction) {
-  const classId = slug(unit.className);
-  const resource = resourceLabel(unit);
-  const article = document.createElement("article");
-  article.className = "combatant unit-frame wow-class--" + classId + " " + faction + "-combatant";
-  article.dataset.unit = unit.id;
-  article.innerHTML =
-    '<div class="unit-portrait wow-icon-frame">' +
-      '<img src="' + Icons.resolve("race", unit.race) + '" alt="" loading="lazy">' +
-      '<span class="unit-class-icon wow-icon-frame wow-icon-frame--xs wow-icon-frame--class-' + classId + '">' +
-        '<img src="' + Icons.resolve("class", classId) + '" alt="" loading="lazy">' +
-      '</span>' +
-      '<span class="unit-level">' + unit.level + '</span>' +
-    '</div>' +
-    '<div class="unit-frame-body">' +
-      '<div class="unit-heading">' +
-        '<div class="unit-identity">' +
-          '<strong class="combatant-name">' + unit.name + '</strong>' +
-          '<span class="combatant-meta">' + unit.className + ' · ' + unit.role.toUpperCase() + '</span>' +
-        '</div>' +
-        '<div class="unit-action" data-action-kind="ready">' +
-          '<span class="unit-action-icon wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-' + classId + '">' +
-            '<img src="' + Icons.iconUrl(unit.icon) + '" alt="" loading="lazy">' +
-          '</span>' +
-          '<span class="unit-action-copy"><small>ACTION</small><strong>Ready</strong></span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="unit-bar hp-stat">' +
-        '<span class="unit-bar-label">Health</span>' +
-        '<span class="mini-fill"></span>' +
-        '<b>' + unit.currentHp + ' / ' + unit.hp + '</b>' +
-      '</div>' +
-      '<div class="unit-bar resource-stat" tabindex="0">' +
-        '<span class="unit-bar-label">' + resource + '</span>' +
-        '<span class="mini-fill"></span>' +
-        '<b>' + unit.currentResource + ' / ' + unit.resource + '</b>' +
-      '</div>' +
-      '<div class="unit-status-row" aria-label="Buff and debuff hooks">' +
-        '<div class="unit-status-hooks buff-hooks" aria-label="Buffs">' +
-          '<span class="unit-status-slot" data-status-slot="buff-1"></span>' +
-          '<span class="unit-status-slot" data-status-slot="buff-2"></span>' +
-        '</div>' +
-        '<div class="unit-status-hooks debuff-hooks" aria-label="Debuffs">' +
-          '<span class="unit-status-slot" data-status-slot="debuff-1"></span>' +
-          '<span class="unit-status-slot" data-status-slot="debuff-2"></span>' +
-        '</div>' +
-      '</div>' +
+function actorCard(actor) {
+  const def=actor.definition;
+  const live=actor.state;
+  const side=actorSide(def);
+  const classId=def.kind==="hero"?def.classId:"npc";
+  const article=document.createElement("article");
+  article.className="combatant unit-frame "+side+"-combatant "+(def.kind==="hero"?"wow-class--"+def.classId:"npc-combatant");
+  article.dataset.actorIndex=String(actor.index);
+  article.dataset.actorKind=def.kind;
+  article.innerHTML=
+    '<div class="unit-portrait wow-icon-frame">'+portraitMarkup(def)+'<span class="unit-level">'+def.level+'</span></div>'+
+    '<div class="unit-frame-body">'+
+      '<div class="unit-heading">'+
+        '<div class="unit-identity"><strong class="combatant-name">'+def.name+'</strong>'+
+          '<span class="combatant-meta">'+(def.kind==="hero"?(def.className+" · "+def.specName):(def.family+" · "+def.npcType).toUpperCase())+'</span></div>'+
+        '<div class="unit-action" data-action-kind="ready">'+
+          '<span class="unit-action-icon wow-icon-frame wow-icon-frame--sm '+(def.kind==="hero"?"wow-icon-frame--class-"+classId:"")+'">'+
+            '<img src="'+(def.kind==="hero"?Icons.resolve("class",def.classId):Icons.resolve("battle","combat"))+'" alt="" loading="lazy">'+
+          '</span>'+
+          '<span class="unit-action-copy"><small>ACTION</small><strong>'+def.auto.name+'</strong></span>'+
+        '</div>'+
+      '</div>'+
+      '<div class="unit-bar hp-stat"><span class="unit-bar-label">Health</span><span class="mini-fill"></span><b></b></div>'+
+      (def.maxResource?'<div class="unit-bar resource-stat" tabindex="0"><span class="unit-bar-label">'+def.resourceType+'</span><span class="mini-fill"></span><b></b></div>':'')+
+      '<div class="unit-status-row" aria-label="Combat status"><div class="unit-status-hooks buff-hooks"><span class="unit-status-slot" data-status-slot="buff-1"></span></div><div class="unit-status-hooks debuff-hooks"><span class="unit-status-slot" data-status-slot="debuff-1"></span></div></div>'+
     '</div>';
-
   article.querySelectorAll("img").forEach(Icons.bindFallback);
-  const portrait = article.querySelector(".unit-portrait");
-  portrait.tabIndex = 0;
-  Tooltips.attach(portrait, function() { return unitTooltipModel(unit, faction); }, {anchor:"target"});
-  Tooltips.attach(article.querySelector(".resource-stat"), function() { return resourceTooltipModel(unit); }, {anchor:"target"});
-
+  Tooltips.attach(article,()=>actorTooltipModel(state.runtime.snapshot().actors[actor.index]),{anchor:"target"});
   return article;
 }
 
-function renderTeam(faction) {
-  const root = $(faction + "Team");
-  root.innerHTML = "";
-  state.teams[faction].forEach(unit => root.appendChild(unitMarkup(unit, faction)));
+function renderTeams(snapshot) {
+  const roots={alliance:$("allianceTeam"),horde:$("hordeTeam")};
+  roots.alliance.innerHTML="";
+  roots.horde.innerHTML="";
+  snapshot.actors.forEach(actor=>roots[actorSide(actor.definition)].appendChild(actorCard(actor)));
+  updateSnapshot(snapshot);
 }
 
-function teamTotals(faction) {
-  const units = state.teams[faction];
-  return {
-    current: units.reduce((sum, unit) => sum + unit.currentHp, 0),
-    max: units.reduce((sum, unit) => sum + unit.hp, 0)
+function updateActor(actor) {
+  const card=document.querySelector('[data-actor-index="'+actor.index+'"]');
+  if(!card)return;
+  const def=actor.definition,live=actor.state;
+  card.classList.toggle("defeated",!live.alive);
+  const hpFill=card.querySelector(".hp-stat .mini-fill");
+  const hpText=card.querySelector(".hp-stat b");
+  const hpPct=def.derived.maxHealth?Math.max(0,Math.min(100,live.hp/def.derived.maxHealth*100)):0;
+  if(hpFill)hpFill.style.width=hpPct+"%";
+  if(hpText)hpText.textContent=formatNumber(live.hp)+" / "+formatNumber(def.derived.maxHealth);
+  const resourceFill=card.querySelector(".resource-stat .mini-fill");
+  const resourceText=card.querySelector(".resource-stat b");
+  if(resourceFill&&def.maxResource)resourceFill.style.width=Math.max(0,Math.min(100,live.resource/def.maxResource*100))+"%";
+  if(resourceText)resourceText.textContent=formatNumber(live.resource)+" / "+formatNumber(def.maxResource);
+}
+
+function teamTotals(snapshot,team) {
+  return snapshot.actors.filter(actor=>actor.definition.team===team).reduce((sum,actor)=>{
+    sum.current+=actor.state.hp;
+    sum.max+=actor.definition.derived.maxHealth;
+    return sum;
+  },{current:0,max:0});
+}
+
+function updateSideSummary(side,totals) {
+  const text=$(side+"HpText"),fill=$(side+"HpFill");
+  if(text)text.textContent=formatNumber(totals.current)+" / "+formatNumber(totals.max);
+  if(fill)fill.style.width=(totals.max?Math.max(0,Math.min(100,totals.current/totals.max*100)):0)+"%";
+}
+
+function updateSnapshot(snapshot) {
+  snapshot.actors.forEach(updateActor);
+  updateSideSummary(state.playerSide,teamTotals(snapshot,0));
+  updateSideSummary(state.enemySide,teamTotals(snapshot,1));
+}
+
+function applyEncounterLabels() {
+  const encounter=state.encounter;
+  state.playerSide=encounter.faction==="horde"?"horde":"alliance";
+  state.enemySide=sideOpposite(state.playerSide);
+  const playerLabel=$(state.playerSide+"TeamLabel");
+  const playerName=$(state.playerSide+"TeamName");
+  const enemyLabel=$(state.enemySide+"TeamLabel");
+  const enemyName=$(state.enemySide+"TeamName");
+  if(playerLabel)playerLabel.textContent=state.playerSide.toUpperCase();
+  if(playerName)playerName.textContent="Quest Board Party";
+  if(enemyLabel)enemyLabel.textContent="NPC ENEMIES";
+  if(enemyName)enemyName.textContent=encounter.dungeonName||"Dungeon Encounter";
+  $(state.playerSide+"Team").setAttribute("aria-label",encounter.partySize+" player heroes");
+  $(state.enemySide+"Team").setAttribute("aria-label",(encounter.dungeonName||"Dungeon")+" NPC enemies");
+  $("battleEncounterType").textContent="DUNGEON";
+  $("battleEncounterName").textContent=encounter.dungeonName||encounter.dungeonId||"Encounter";
+  $("battleEncounterParty").textContent=encounter.partySize+" heroes · seed "+encounter.seed;
+  const frame=document.querySelector(".battle-frame");
+  const field=document.querySelector(".battlefield");
+  if(frame)frame.dataset.partySize=String(encounter.partySize);
+  if(field)field.dataset.partySize=String(encounter.partySize);
+}
+
+function eventDetail(event) {
+  if(event.type==="action_start")return event.action+" · "+event.source;
+  if(event.type==="damage")return event.action+(event.critical?" · CRIT":"")+(event.absorbed?" · absorbed "+event.absorbed:"");
+  if(event.type==="heal")return event.action+(event.critical?" · CRIT":"");
+  if(event.type==="shield")return event.action+" · shield";
+  if(event.type==="death")return "Defeated by "+actorName(event.sourceActor)+" · "+event.action;
+  if(event.type==="round_end")return "Winner: "+(event.winnerTeam===0?"Heroes":"NPCs");
+  if(event.type==="resource_spend"||event.type==="resource_gain"||event.type==="resource_regen")return event.resource+" → "+event.value;
+  if(event.type==="cooldown_start")return event.action+" · "+event.ticks+" ticks";
+  if(event.type==="cooldown_ready")return event.action;
+  if(event.type==="ultimate_gain"||event.type==="ultimate_spend")return event.action||event.reason||"Ultimate";
+  if(event.type==="critical")return event.action+" · critical";
+  return event.action||event.reason||"";
+}
+
+function eventAmount(event) {
+  if(event.type==="damage")return "−"+event.amount;
+  if(event.type==="heal"||event.type==="shield")return "+"+event.amount;
+  if(event.amount!=null&&["resource_spend","resource_gain","resource_regen","ultimate_gain","ultimate_spend"].includes(event.type))return String(event.amount);
+  return "";
+}
+
+function appendLogEvent(event) {
+  const entry={
+    frame:event.frame,
+    actor:actorName(event.actor),
+    type:event.type,
+    detail:eventDetail(event),
+    target:actorName(event.target),
+    amount:eventAmount(event)
   };
-}
-
-function updateHud() {
-  ["alliance","horde"].forEach(faction => {
-    const totals = teamTotals(faction);
-    const percent = totals.max ? Math.max(0, totals.current / totals.max * 100) : 0;
-    $(faction + "HpText").textContent = totals.current.toLocaleString() + " / " + totals.max.toLocaleString();
-    $(faction + "HpFill").style.width = percent + "%";
+  state.log.push(entry);
+  const row=document.createElement("tr");
+  [entry.frame,entry.actor,entry.type,entry.detail,entry.target,entry.amount].forEach((value,index)=>{
+    const cell=document.createElement("td");
+    cell.textContent=value==null?"":String(value);
+    if(index===2)cell.className="event-"+entry.type;
+    row.appendChild(cell);
   });
-}
-
-function updateUnit(unit, faction) {
-  const el = document.querySelector('[data-unit="' + unit.id + '"]');
-  if (!el) return;
-
-  const hpPercent = Math.max(0, unit.currentHp / unit.hp * 100);
-  const resourcePercent = Math.max(0, unit.currentResource / unit.resource * 100);
-
-  const hp = el.querySelector(".hp-stat");
-  const resource = el.querySelector(".resource-stat");
-  hp.querySelector(".mini-fill").style.width = hpPercent + "%";
-  hp.querySelector("b").textContent = unit.currentHp + " / " + unit.hp;
-  resource.querySelector(".mini-fill").style.width = resourcePercent + "%";
-  resource.querySelector("b").textContent = unit.currentResource + " / " + unit.resource;
-
-  el.classList.toggle("low-health", hpPercent > 0 && hpPercent <= 30);
-  el.classList.toggle("defeated", unit.currentHp <= 0);
-  if (unit.currentHp <= 0) {
-    const action = el.querySelector(".unit-action");
-    if (action) {
-      action.dataset.actionKind = "death";
-      action.classList.remove("is-active");
-      action.querySelector("strong").textContent = "Defeated";
-    }
-  }
-}
-
-function randomLiving(faction) {
-  const living = state.teams[faction].filter(unit => unit.currentHp > 0);
-  return living[Math.floor(Math.random() * living.length)] || null;
-}
-
-function randomInjured(faction) {
-  const injured = state.teams[faction].filter(unit => unit.currentHp > 0 && unit.currentHp < unit.hp * .88);
-  return injured[Math.floor(Math.random() * injured.length)] || null;
-}
-
-function healCapable(unit) {
-  return unit.role === "healer";
-}
-
-function eventText(text) {
-  $("battleEvent").textContent = text;
-}
-function logEvent(type, actor, target, detail, amount) {
-  state.log.push({turn:state.turn,type,actor:actor?.name||"—",target:target?.name||"—",detail:detail||"",amount:amount==null?"":amount});
-  if(state.log.length>160) state.log.shift();
-  const body=$("combatLogBody"); if(!body)return;
-  body.innerHTML=state.log.slice().reverse().map(e=>"<tr><td>"+e.turn+"</td><td>"+e.actor+"</td><td class=\"event-"+e.type+"\">"+e.type+"</td><td>"+e.detail+"</td><td>"+e.target+"</td><td>"+e.amount+"</td></tr>").join("");
+  const body=$("combatLogBody");
+  if(body)body.prepend(row);
   $("combatLogMeta").textContent=state.log.length+" events";
 }
 
-function abilityLabel(unit, mode) {
-  if (unit.kind === "npc") return unit.autoAttackName || "NPC Auto Attack";
-  if (mode === "heal") {
-    if (unit.className === "Paladin") return "Holy Light";
-    if (unit.className === "Priest") return "Flash Heal";
-    if (unit.className === "Shaman") return "Healing Wave";
+function showActionEvent(event) {
+  if(event.actor==null)return;
+  const card=document.querySelector('[data-actor-index="'+event.actor+'"]');
+  if(!card)return;
+  const action=card.querySelector(".unit-action");
+  const label=action&&action.querySelector("strong");
+  if(action){
+    action.dataset.actionKind=event.source||event.type;
+    action.classList.add("is-active");
   }
-
-  const names = {
-    Warrior:"Weapon Strike",
-    Paladin:"Holy Strike",
-    Mage:"Fireball",
-    Priest:"Smite",
-    Rogue:"Ambush",
-    Warlock:"Shadow Bolt",
-    Shaman:"Stormstrike"
-  };
-  return names[unit.className] || unit.className + " Ability";
+  if(label&&event.action)label.textContent=event.action;
 }
 
-function actionEventKind() {
-  if (state.turn > 0 && state.turn % 10 === 0) return "ultimate";
-  if (state.turn > 0 && state.turn % 5 === 0) return "cooldown";
-  return "ability";
-}
-
-function showAction(unit, mode) {
-  const el = document.querySelector('[data-unit="' + unit.id + '"]');
-  if (!el) return;
-
-  const kind = actionEventKind();
-  const action = el.querySelector(".unit-action");
-  const label = abilityLabel(unit, mode);
-  action.dataset.actionKind = kind;
-  action.classList.remove("is-active");
-  void action.offsetWidth;
-  action.classList.add("is-active");
-  action.querySelector("strong").textContent =
-    kind === "ultimate" ? "Ultimate · " + label :
-    kind === "cooldown" ? "Cooldown · " + label :
-    label;
-
-  if (kind === "ultimate" || kind === "cooldown") {
-    spawnEventTag(unit.id, kind === "ultimate" ? "ULTIMATE" : "COOLDOWN", kind);
-  }
-
-  clearTimeout(el._actionTimer);
-  el._actionTimer = setTimeout(function() {
-    if (!el.isConnected || el.classList.contains("defeated")) return;
-    action.dataset.actionKind = "ready";
-    action.classList.remove("is-active");
-    action.querySelector("strong").textContent = "Ready";
-  }, Math.max(240, 720 / state.speed));
-}
-
-function pulseStatus(unitId, type) {
-  const el = document.querySelector('[data-unit="' + unitId + '"]');
-  if (!el) return;
-  const slot = el.querySelector(type === "buff" ? '[data-status-slot="buff-1"]' : '[data-status-slot="debuff-1"]');
-  if (!slot) return;
-  slot.classList.remove("is-active");
-  slot.dataset.state = type;
-  void slot.offsetWidth;
-  slot.classList.add("is-active");
-  clearTimeout(slot._statusTimer);
-  slot._statusTimer = setTimeout(function() {
-    slot.classList.remove("is-active");
-    delete slot.dataset.state;
-  }, Math.max(260, 780 / state.speed));
-}
-
-function spawnEventTag(targetId, text, type) {
-  const arena = document.querySelector(".battle-arena");
-  const target = document.querySelector('[data-unit="' + targetId + '"]');
-  if (!arena || !target) return;
-
-  const a = arena.getBoundingClientRect();
-  const t = target.getBoundingClientRect();
-  const fx = document.createElement("span");
-  fx.className = "combat-event-tag " + type;
-  fx.textContent = text;
-  fx.style.left = (t.left - a.left + t.width * .5) + "px";
-  fx.style.top = (t.top - a.top + 10) + "px";
-  $("fxLayer").appendChild(fx);
-  setTimeout(function() { fx.remove(); }, 760);
-}
-
-function spawnMissFeedback(targetId) {
-  spawnEventTag(targetId, "MISS", "miss");
-}
-
-function spawnFloat(targetId, amount, type) {
-  const arena = document.querySelector(".battle-arena");
-  const target = document.querySelector('[data-unit="' + targetId + '"]');
-  if (!arena || !target) return;
-
-  const a = arena.getBoundingClientRect();
-  const t = target.getBoundingClientRect();
-  const fx = document.createElement("span");
-  fx.className = "floating-number " + type;
-  fx.textContent = type === "miss" ? "MISS" : (type === "heal" ? "+" : "−") + Math.abs(amount);
-  fx.style.left = (t.left - a.left + t.width * .5) + "px";
-  fx.style.top = (t.top - a.top + 32) + "px";
-  $("fxLayer").appendChild(fx);
-  setTimeout(() => fx.remove(), 900);
-}
-
-function spawnStreak(attackerId, targetId, kind) {
-  const arena = document.querySelector(".battle-arena");
-  const attacker = document.querySelector('[data-unit="' + attackerId + '"]');
-  const target = document.querySelector('[data-unit="' + targetId + '"]');
-  if (!arena || !attacker || !target) return;
-
-  const a = arena.getBoundingClientRect();
-  const from = attacker.getBoundingClientRect();
-  const to = target.getBoundingClientRect();
-  const x1 = from.left - a.left + from.width / 2;
-  const y1 = from.top - a.top + from.height / 2;
-  const x2 = to.left - a.left + to.width / 2;
-  const y2 = to.top - a.top + to.height / 2;
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const length = Math.sqrt(dx * dx + dy * dy);
-  const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-  const streak = document.createElement("span");
-  streak.className = "attack-streak " + kind;
-  streak.style.left = x1 + "px";
-  streak.style.top = y1 + "px";
-  streak.style.width = length + "px";
-  streak.style.transform = "rotate(" + angle + "deg)";
-  $("fxLayer").appendChild(streak);
-  setTimeout(() => streak.remove(), 430);
-}
-
-function flashUnit(id, className) {
-  const el = document.querySelector('[data-unit="' + id + '"]');
-  if (!el) return;
-  el.classList.remove(className);
-  void el.offsetWidth;
-  el.classList.add(className);
-  setTimeout(() => el.classList.remove(className), 420);
-}
-
-function spendResource(unit) {
-  if (unit.resource <= 120) {
-    unit.currentResource = Math.min(unit.resource, unit.currentResource + 12);
-  } else {
-    unit.currentResource = Math.max(0, unit.currentResource - (10 + Math.floor(Math.random() * 18)));
-  }
-}
-
-function recoverResources() {
-  ["alliance","horde"].forEach(faction => {
-    state.teams[faction].forEach(unit => {
-      if (unit.currentHp <= 0) return;
-      const gain = unit.resource <= 120 ? 8 : 12;
-      unit.currentResource = Math.min(unit.resource, unit.currentResource + gain);
-      updateUnit(unit, faction);
-    });
+function processEvents(events) {
+  events.forEach(event=>{
+    appendLogEvent(event);
+    if(event.type==="action_start")showActionEvent(event);
+    if(event.type==="death"){
+      const card=document.querySelector('[data-actor-index="'+event.actor+'"]');
+      if(card)card.classList.add("defeated");
+    }
   });
+  const notable=[...events].reverse().find(event=>["damage","heal","death","round_end","miss","critical"].includes(event.type));
+  if(notable){
+    if(notable.type==="damage")$("battleEvent").textContent=actorName(notable.actor)+" hits "+actorName(notable.target)+" for "+notable.amount+".";
+    else if(notable.type==="heal")$("battleEvent").textContent=actorName(notable.actor)+" heals "+actorName(notable.target)+" for "+notable.amount+".";
+    else if(notable.type==="death")$("battleEvent").textContent=actorName(notable.actor)+" is defeated.";
+    else if(notable.type==="round_end")$("battleEvent").textContent=(notable.winnerTeam===0?"Heroes":"NPC enemies")+" win the encounter.";
+    else $("battleEvent").textContent=actorName(notable.actor)+" · "+notable.type+".";
+  }
 }
 
-function attack(attackingFaction, defendingFaction) {
-  const attacker = randomLiving(attackingFaction);
-  if (!attacker) return;
-
-  const healTarget = healCapable(attacker) && Math.random() < .25 ? randomInjured(attackingFaction) : null;
-
-  if (healTarget) {
-    const heal = Math.min(
-      healTarget.hp - healTarget.currentHp,
-      Math.round(42 + attacker.power * (.45 + Math.random() * .3))
-    );
-    healTarget.currentHp += heal;
-    spendResource(attacker);
-    updateUnit(healTarget, attackingFaction);
-    updateUnit(attacker, attackingFaction);
-    showAction(attacker, "heal");
-    pulseStatus(healTarget.id, "buff");
-    spawnFloat(healTarget.id, heal, "heal");
-    spawnStreak(attacker.id, healTarget.id, "heal-streak");
-    flashUnit(healTarget.id, "healed");
-    logEvent("heal",attacker,healTarget,abilityLabel(attacker,"heal"),"+"+heal);
-    eventText(attacker.name + " restores " + heal + " health to " + healTarget.name + ".");
-    return;
-  }
-
-  const target = randomLiving(defendingFaction);
-  if (!target) return;
-
-  const mitigation = target.role === "tank" ? .78 : 1;
-  const crit = Math.random() < .14;
-  const amount = Math.max(18, Math.round(attacker.power * (.72 + Math.random() * .55) * mitigation * (crit ? 1.55 : 1)));
-  const wasAlive = target.currentHp > 0;
-  target.currentHp = Math.max(0, target.currentHp - amount);
-  spendResource(attacker);
-
-  updateUnit(target, defendingFaction);
-  updateUnit(attacker, attackingFaction);
-  showAction(attacker, "attack");
-  pulseStatus(target.id, "debuff");
-  spawnFloat(target.id, amount, crit ? "crit" : "damage");
-  spawnStreak(attacker.id, target.id, "damage-streak");
-  flashUnit(target.id, "hit");
-  if (crit) {
-    flashUnit(attacker.id, "critical");
-    spawnEventTag(attacker.id, "CRIT", "crit");
-  }
-  if (wasAlive && target.currentHp <= 0) {
-    spawnEventTag(target.id, "DEFEATED", "death");
-    flashUnit(target.id, "death");
-  }
-
-  logEvent(crit ? "critical" : "damage",attacker,target,abilityLabel(attacker,"attack"),"-"+amount);
-  if(wasAlive && target.currentHp <= 0) logEvent("death",target,target,"killed by "+attacker.name+" · "+abilityLabel(attacker,"attack"),"");
-  eventText(
-    attacker.name + " hits " + target.name + " for " + amount +
-    (crit ? " critical damage." : " damage.")
-  );
-}
-
-function finishIfNeeded() {
-  const alliance = teamTotals("alliance").current;
-  const horde = teamTotals("horde").current;
-  if (alliance > 0 && horde > 0) return false;
-
-  state.finished = true;
+function completionHook(result) {
+  state.completion=result;
   clearTimeout(state.timer);
-  const winner = alliance > 0 ? "Alliance" : "Horde";
-  const banner = $("resultBanner");
-  banner.innerHTML = '<span>VICTORY</span><strong>' + winner + '</strong><small>Reset fight to replay the encounter</small>';
-  banner.hidden = false;
-  $("battleStatus").textContent = winner + " wins";
-  document.querySelector(".status-dot").classList.add("stopped");
-  return true;
+  const heroesWin=result.winnerTeam===0;
+  const banner=$("resultBanner");
+  banner.innerHTML='<span>'+(heroesWin?"VICTORY":"DEFEAT")+'</span><strong>'+(heroesWin?"Heroes":"NPC Enemies")+'</strong><small>Reward hook ready · reset to replay the same seed</small>';
+  banner.hidden=false;
+  $("battleStatus").textContent="Encounter complete";
+  document.querySelector(".status-dot")?.classList.add("stopped");
 }
 
-function battleStep() {
-  if (state.paused || state.finished) return;
-
-  state.turn += 1;
-  const allianceAttacks = state.turn % 2 === 1;
-  attack(allianceAttacks ? "alliance" : "horde", allianceAttacks ? "horde" : "alliance");
-
-  if (state.turn % 4 === 0) recoverResources();
-  updateHud();
-
-  if (!finishIfNeeded()) scheduleNext();
-}
-
-function scheduleNext() {
+function ticksPerPulse(){return Math.max(1,state.speed*6);}
+function scheduleNext(){
   clearTimeout(state.timer);
-  if (state.paused || state.finished) return;
-  state.timer = setTimeout(battleStep, Math.max(170, 880 / state.speed));
+  if(state.paused||!state.runtime||state.runtime.completed)return;
+  state.timer=setTimeout(runPulse,100);
 }
 
-function setPaused(paused) {
-  state.paused = paused;
-  $("pauseBattle").textContent = paused ? "▶" : "Ⅱ";
-  $("pauseBattle").classList.toggle("is-selected", paused);
-  $("pauseBattle").setAttribute("aria-pressed", paused ? "true" : "false");
-  $("pauseBattle").setAttribute("aria-label", paused ? "Resume battle" : "Pause battle");
-  $("battleStatus").textContent = paused ? "Battle paused" : "Auto battle running";
-  document.querySelector(".status-dot").classList.toggle("stopped", paused);
-  if (paused) clearTimeout(state.timer);
-  else scheduleNext();
+function runPulse(){
+  if(state.paused||!state.runtime||state.runtime.completed)return;
+  const report=state.runtime.step(ticksPerPulse());
+  processEvents(report.events);
+  updateSnapshot(report.snapshot);
+  if(!report.completed)scheduleNext();
 }
 
-function setSpeed(speed) {
-  state.speed = speed;
-  document.querySelectorAll("#speedButtons button").forEach(button => {
-    const active = Number(button.dataset.speed) === speed;
-    button.classList.toggle("is-selected", active);
-    button.setAttribute("aria-pressed", active ? "true" : "false");
+function setPaused(paused){
+  state.paused=Boolean(paused);
+  state.runtime&&state.runtime.setPaused(state.paused);
+  $("pauseBattle").textContent=state.paused?"▶":"Ⅱ";
+  $("pauseBattle").classList.toggle("is-selected",state.paused);
+  $("pauseBattle").setAttribute("aria-pressed",state.paused?"true":"false");
+  $("pauseBattle").setAttribute("aria-label",state.paused?"Resume battle":"Pause battle");
+  $("battleStatus").textContent=state.paused?"Battle paused":"Auto battle running";
+  document.querySelector(".status-dot")?.classList.toggle("stopped",state.paused);
+  if(state.paused)clearTimeout(state.timer);else scheduleNext();
+}
+
+function setSpeed(speed){
+  state.speed=Number(speed)||1;
+  document.querySelectorAll("#speedButtons button").forEach(button=>{
+    const active=Number(button.dataset.speed)===state.speed;
+    button.classList.toggle("is-selected",active);
+    button.setAttribute("aria-pressed",active?"true":"false");
   });
-  $("fastForward").classList.toggle("is-selected", speed > 1);
-  if (!state.paused) scheduleNext();
+  $("fastForward").classList.toggle("is-selected",state.speed>1);
 }
 
-function nextSpeed() {
-  const speeds = [1,2,4];
-  const index = speeds.indexOf(state.speed);
-  setSpeed(speeds[(index + 1) % speeds.length]);
+function nextSpeed(){
+  const speeds=[1,2,4];
+  const index=speeds.indexOf(state.speed);
+  setSpeed(speeds[(index+1)%speeds.length]);
 }
 
-function resetBattle() {
+function resetBattle(){
   clearTimeout(state.timer);
-  state.teams = cloneTeams();
-  state.turn = 0;
-  state.finished = false;
-  state.paused = false;
-  state.speed = 1;
-  state.log = [];
-  if($("combatLogBody")) $("combatLogBody").innerHTML="";
-  if($("combatLogMeta")) $("combatLogMeta").textContent="0 events";
-
-  renderTeam("alliance");
-  renderTeam("horde");
-  state.teams.alliance.forEach(unit => updateUnit(unit, "alliance"));
-  state.teams.horde.forEach(unit => updateUnit(unit, "horde"));
-  updateHud();
-
-  $("resultBanner").hidden = true;
-  $("resultBanner").innerHTML = "";
-  $("pauseBattle").textContent = "Ⅱ";
-  $("pauseBattle").classList.remove("is-selected");
-  $("pauseBattle").setAttribute("aria-pressed", "false");
-  $("battleStatus").textContent = "Auto battle running";
-  $("battleEvent").textContent = "Alliance and Horde are engaging.";
-  document.querySelector(".status-dot").classList.remove("stopped");
+  state.runtime.reset();
+  state.paused=false;
+  state.speed=1;
+  state.log=[];
+  state.completion=null;
+  $("combatLogBody").innerHTML="";
+  $("combatLogMeta").textContent="0 events";
+  $("resultBanner").hidden=true;
+  $("resultBanner").innerHTML="";
+  $("battleStatus").textContent="Auto battle running";
+  $("battleEvent").textContent="Deterministic encounter started.";
+  document.querySelector(".status-dot")?.classList.remove("stopped");
   setSpeed(1);
+  renderTeams(state.runtime.snapshot());
   scheduleNext();
 }
 
-function npcDisplayUnit(record, poolId) {
-  const combat=record.combat || {};
-  const auto=record.auto_attack || {};
-  return {
-    id:"npc-"+record.id,
-    npcId:record.id,
-    kind:"npc",
-    name:record.name,
-    family:record.family || "Unknown",
-    npcType:record.type || "enemy",
-    race:record.family || "Unknown",
-    className:"NPC",
-    level:Number(record.level)||1,
-    icon:"ability_warrior_savageblow",
-    hp:Number(combat.max_health)||1,
-    resource:0,
-    role:record.type || "enemy",
-    power:Math.max(Number(combat.physical_power)||0,Number(combat.spell_power)||0,1),
-    autoAttackName:auto.name || "NPC Auto Attack",
-    poolId
-  };
-}
-
-async function loadPendingDungeonNpcTeam() {
-  if (!Roster || typeof Roster.getPendingEncounter !== "function") return null;
-  const params=new URLSearchParams(location.search);
-  if(params.get("encounter")!=="dungeon") return null;
-  const encounter=Roster.getPendingEncounter();
-  if(!encounter||encounter.kind!=="dungeon"||!encounter.npcPoolId) return null;
-  if(params.get("dungeon")&&params.get("dungeon")!==encounter.dungeonId) return null;
-
-  const responses=await Promise.all([fetch(NPC_CATALOG_ROOT),fetch(NPC_POOLS_ROOT)]);
-  if(!responses[0].ok) throw new Error("Could not load "+NPC_CATALOG_ROOT);
-  if(!responses[1].ok) throw new Error("Could not load "+NPC_POOLS_ROOT);
-  const catalog=await responses[0].json();
-  const pools=await responses[1].json();
-  const pool=pools.pools.find(entry=>entry.id===encounter.npcPoolId);
-  if(!pool) throw new Error("Unknown dungeon NPC pool: "+encounter.npcPoolId);
-  const byId=new Map(catalog.npcs.map(record=>[record.id,record]));
-  const records=(pool.npc_ids||[]).map(id=>{
-    const record=byId.get(id);
-    if(!record) throw new Error("Dungeon NPC pool references unknown NPC: "+id);
-    return record;
-  });
-  if(!records.length) throw new Error("Dungeon NPC pool is empty: "+encounter.npcPoolId);
-
-  state.dungeonEncounter=encounter;
-  state.dungeonEnemyFaction=encounter.faction==="horde"?"alliance":"horde";
-  state.dungeonNpcTeam=records.map(record=>npcDisplayUnit(record,pool.id));
-  return state.dungeonNpcTeam;
-}
-
-function applyDungeonTeamLabels() {
-  if(!state.dungeonEncounter||!state.dungeonEnemyFaction)return;
-  const enemy=state.dungeonEnemyFaction;
-  const player=enemy==="alliance"?"horde":"alliance";
-  const enemyLabel=$(enemy+"TeamLabel");
-  const enemyName=$(enemy+"TeamName");
-  const playerLabel=$(player+"TeamLabel");
-  const playerName=$(player+"TeamName");
-  const enemyRoot=$(enemy+"Team");
-  if(enemyLabel)enemyLabel.textContent="NPC ENEMIES";
-  if(enemyName)enemyName.textContent=state.dungeonEncounter.dungeonName||"Dungeon Encounter";
-  if(playerLabel)playerLabel.textContent=player.toUpperCase();
-  if(playerName)playerName.textContent="Quest Board Party";
-  if(enemyRoot)enemyRoot.setAttribute("aria-label",(state.dungeonEncounter.dungeonName||"Dungeon")+" NPC enemies");
-}
-
-function applyPendingEncounterContext() {
-  if (!Roster || typeof Roster.getPendingEncounter !== 'function') return;
-  const params = new URLSearchParams(location.search);
-  if (params.get('encounter') !== 'dungeon') return;
-  const encounter = Roster.getPendingEncounter();
-  if (!encounter || encounter.kind !== 'dungeon') return;
-  if (params.get('dungeon') && params.get('dungeon') !== encounter.dungeonId) return;
-
-  const type = $("battleEncounterType");
-  const name = $("battleEncounterName");
-  const party = $("battleEncounterParty");
-  if (type) type.textContent = "DUNGEON";
-  if (name) name.textContent = encounter.dungeonName || encounter.dungeonId;
-  if (party) party.textContent = encounter.partySize + " heroes · " + encounter.npcPoolId;
-
-  const event = $("battleEvent");
-  if (event) event.textContent = state.dungeonNpcTeam && state.dungeonNpcTeam.length
-    ? "Encounter loaded: " + state.dungeonNpcTeam.map(unit => unit.name).join(", ") + "."
-    : "Dungeon party prepared from Quest Board.";
-  applyDungeonTeamLabels();
-}
-
-async function init() {
+async function init(){
   Icons.hydrate(document);
   Tooltips.hydrate(document);
-  $("pauseBattle").addEventListener("click", () => setPaused(!state.paused));
-  $("fastForward").addEventListener("click", nextSpeed);
-  $("resetBattle").addEventListener("click", resetBattle);
-  document.querySelectorAll("#speedButtons button").forEach(button => {
-    button.addEventListener("click", () => setSpeed(Number(button.dataset.speed)));
-  });
-
-  try { await loadPendingDungeonNpcTeam(); }
-  catch (error) {
-    const event=$("battleEvent");
-    if(event)event.textContent=error.message;
+  $("battleStatus").textContent="Loading encounter…";
+  try{
+    const module=await import("./battle/encounter-runtime.js");
+    state.encounter=selectedEncounter();
+    state.resolved=await module.resolveEncounter({encounter:state.encounter,roster:Roster});
+    state.encounter=state.resolved.config;
+    state.runtime=new module.BattleEncounterRuntime({
+      actors:state.resolved.actors,
+      config:state.resolved.config,
+      onComplete:completionHook
+    });
+    applyEncounterLabels();
+    renderTeams(state.runtime.snapshot());
+    $("battleStatus").textContent="Auto battle running";
+    $("battleEvent").textContent="Heroes engage "+state.resolved.enemies.map(enemy=>enemy.name).join(", ")+".";
+  }catch(error){
+    $("battleStatus").textContent="Encounter unavailable";
+    $("battleEvent").textContent=error.message;
+    console.error(error);
+    return;
   }
-  applyPendingEncounterContext();
-  resetBattle();
-  applyPendingEncounterContext();
+
+  $("pauseBattle").addEventListener("click",()=>setPaused(!state.paused));
+  $("fastForward").addEventListener("click",nextSpeed);
+  $("resetBattle").addEventListener("click",resetBattle);
+  document.querySelectorAll("#speedButtons button").forEach(button=>button.addEventListener("click",()=>setSpeed(Number(button.dataset.speed))));
+  scheduleNext();
 }
 
 init();
