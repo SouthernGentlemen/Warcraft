@@ -39,16 +39,10 @@ function nextProgression(building) {
 
 function keepUpgradeGate(building, next) {
   const keep = buildings.find(entry => entry.id === 'keep') || null;
-  if (!next || building.id === 'keep') {
-    return {blocked:false, currentLevel:keep ? keep.level : 0, requiredLevel:null, reason:''};
-  }
-  const requiredLevel = next.level;
-  const currentLevel = keep ? keep.level : 0;
-  const blocked = !keep || currentLevel < requiredLevel;
+  if (!next || building.id === 'keep') return {blocked:false, reason:''};
+  const blocked = !keep || keep.level < next.level;
   return {
     blocked,
-    currentLevel,
-    requiredLevel,
     reason:blocked ? 'Upgrade Keep first.' : ''
   };
 }
@@ -336,9 +330,7 @@ const BUILDING_ACTIONS = Object.freeze({
   recruitment:Object.freeze([
     Object.freeze({label:'Recruit Heroes', action:'recruitment', icon:['resource','population'], description:'Discover and recruit heroes allowed by the current Recruitment Hall level.'})
   ]),
-  training:Object.freeze([
-    Object.freeze({label:'Open Talents', href:'./talent-calculator.html', icon:['talent','active'], description:'Open the talent workspace for hero build planning.'})
-  ]),
+  training:Object.freeze([]),
   storehouse:Object.freeze([]),
   bank:Object.freeze([]),
   armory:Object.freeze([]),
