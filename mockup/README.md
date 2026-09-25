@@ -141,3 +141,7 @@ Barracks has been removed from authored Base building data, Alliance/Horde prese
 ### Command Hall removal
 
 Command Hall has been removed from authored Base building data, Alliance/Horde hotspot layouts, map markup, runtime bindings, and shared icon mappings. Its former `missions_tier_1–5` progression now lives on the matching Keep levels, so Keep owns the surviving headquarters/mission progression responsibility. Quest Board now uses its own dedicated building icon rather than Command Hall art.
+
+### Keep upgrade authority
+
+Keep level is now the single structural upgrade ceiling for every other Base building: a non-Keep building may only advance to a level that the Keep has already reached. This rule lives in the centralized Base `keepUpgradeGate()` calculation instead of repeated per-building prerequisite data. Resource affordability remains a separate gate. The old Requirements block and prerequisite prose styles are removed; blocked upgrade controls remain focusable and explain the Keep/resource gate through the shared tooltip system.
