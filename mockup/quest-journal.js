@@ -12,7 +12,7 @@ const $ = id => document.getElementById(id);
 const fmt = value => Number(value || 0).toLocaleString("en-US");
 
 function questTitle(quest) {
-  return "Quest Board Assignment · Tier " + quest.tier;
+  return quest.title || ("Quest Board Assignment · Difficulty " + (quest.difficulty || quest.tier || 1));
 }
 
 function rewardText(quest) {
@@ -43,11 +43,12 @@ function questTooltipModel(quest) {
         : "This assignment is currently available from the Quest Board.",
     stats:[
       {label:"Party size", value:String(quest.requiredHeroes)},
+      {label:"Round", value:String(quest.round || "Legacy")},
       {label:"Reward", value:rewardText(quest)}
     ].concat(heroes.length ? [{label:"Heroes", value:heroes.join(", ")}] : []),
     meta:quest.status === "completed"
       ? [{label:"Completions", value:String(quest.completedCount || 1)}]
-      : [{label:"Tier", value:String(quest.tier)}]
+      : [{label:"Difficulty", value:String(quest.difficulty || quest.tier || 1)}]
   };
 }
 
@@ -105,7 +106,7 @@ function renderGroup(group, quests) {
     root.innerHTML = emptyState(group.status);
     return;
   }
-  matching.sort((a,b) => a.tier - b.tier).forEach(quest => root.appendChild(questRow(quest)));
+  matching.sort((a,b) => (b.round || 0) - (a.round || 0) || (a.difficulty || a.tier || 1) - (b.difficulty || b.tier || 1)).forEach(quest => root.appendChild(questRow(quest)));
 }
 
 function renderJournal() {
