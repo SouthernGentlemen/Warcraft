@@ -140,6 +140,7 @@ function migrateLegacy(){
   if(legacyProfessions&&typeof legacyProfessions==="object"){
     campaign.profession.guildLevel=clampLevel(legacyProfessions.guildLevel);
     campaign.profession.activeProfession=legacyProfessions.activeProfession?String(legacyProfessions.activeProfession):null;
+    campaign.base.buildingLevels.artisans=campaign.profession.guildLevel;
   }
   next.migration={completed:true,source:legacyRoster?LEGACY_ROSTER_KEY:LEGACY_PROFESSIONS_KEY,targetFaction:target};
   return normalizeState(next);
