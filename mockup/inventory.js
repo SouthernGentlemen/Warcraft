@@ -128,7 +128,7 @@ function bindControls() {
 }
 
 function initInventory() {
-  state.items = Equipment.build();
+  state.items = Equipment.owned();
   populateSlotFilter();
   Icons.hydrate(document);
   Tooltips.hydrate(document);
