@@ -1,6 +1,6 @@
-import { CombatSimulation } from "../simulation/engine/combat-sim.js";
-import { createHeroDefinition } from "../simulation/engine/hero-factory.js";
-import { resolveNpcPoolDefinitions } from "../simulation/engine/npc-factory.js";
+import { CombatSimulation } from "../combat/engine/combat-sim.js";
+import { createHeroDefinition } from "../combat/engine/hero-factory.js";
+import { resolveNpcPoolDefinitions } from "../combat/engine/npc-factory.js";
 
 export const SUPPORTED_PARTY_SIZES = Object.freeze([1,3,5,10,20]);
 const CLASS_DATA_ROOT = "../../data/heroes/classes/";
@@ -26,8 +26,9 @@ export function validatePartySize(size){
 
 export function validateEncounterHandoff(encounter,roster){
   if(!encounter||typeof encounter!=="object")throw new Error("Battle encounter configuration is required.");
-  const partySize=validatePartySize(encounter.partySize);
-  const heroIds=uniqueIds(encounter.heroIds);
+  const loadout=encounter.loadoutId&&roster.getState().loadouts.find(entry=>entry.id===encounter.loadoutId);
+  const heroIds=uniqueIds(encounter.heroIds&&encounter.heroIds.length?encounter.heroIds:(loadout?loadout.heroIds:[]));
+  const partySize=validatePartySize(encounter.partySize||(loadout&&loadout.size)||heroIds.length);
   if(heroIds.length!==partySize)throw new Error("Encounter requires exactly "+partySize+" unique heroes.");
   const heroes=heroIds.map(id=>roster.hero(id));
   if(heroes.some(hero=>!hero))throw new Error("Encounter references an unknown roster hero.");
@@ -48,7 +49,7 @@ async function heroDefinition(hero,classIndex,team=0){
     fetchJson(CLASS_DATA_ROOT+(classMeta.abilities_path||("./"+classMeta.id+"/abilities/README.json")).replace("./",""))
   ]);
 
-  return createHeroDefinition({
+  return Object.assign(createHeroDefinition({
     id:hero.id,
     name:hero.name,
     classMeta,
@@ -57,6 +58,10 @@ async function heroDefinition(hero,classIndex,team=0){
     level:Math.max(1,integer(hero.level,1)),
     selectedTalentNames:Array.isArray(hero.talentBuild&&hero.talentBuild.picks)?hero.talentBuild.picks:null,
     team
+  }),{
+    race:hero.race,
+    faction:hero.faction,
+    availability:hero.availability
   });
 }
 
