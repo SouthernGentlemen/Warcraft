@@ -107,11 +107,53 @@
     }
   }
 
+  function ensureFactionSelector(shell) {
+    const Campaign = global.WarcraftCampaign;
+    if (!Campaign) return;
+    let action = shell.querySelector(".wow-game-shell__action");
+    if (!action) {
+      action = document.createElement("div");
+      action.className = "wow-game-shell__action";
+      shell.appendChild(action);
+    }
+    let selector = action.querySelector(".wow-faction-switcher");
+    if (!selector) {
+      selector = document.createElement("div");
+      selector.className = "wow-faction-switcher";
+      selector.setAttribute("role", "group");
+      selector.setAttribute("aria-label", "Active campaign faction");
+      Campaign.FACTIONS.forEach(function(faction) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "wow-faction-switcher__button";
+        button.dataset.faction = faction;
+        button.setAttribute("aria-label", "Switch to " + (faction === "horde" ? "Horde" : "Alliance") + " campaign");
+        const icon = global.WowUIIcons
+          ? '<span class="wow-faction-switcher__crest wow-icon-frame wow-icon-frame--xs"><img src="' + global.WowUIIcons.resolve("faction", faction) + '" alt=""></span>'
+          : "";
+        button.innerHTML = icon + '<span class="wow-faction-switcher__label">' + (faction === "horde" ? "Horde" : "Alliance") + "</span>";
+        const image = button.querySelector("img");
+        if (image && global.WowUIIcons) global.WowUIIcons.bindFallback(image);
+        button.addEventListener("click", function() { Campaign.setActiveFaction(faction); });
+        selector.appendChild(button);
+      });
+      action.prepend(selector);
+    }
+    const active = Campaign.getActiveFaction();
+    selector.querySelectorAll("[data-faction]").forEach(function(button) {
+      const selected = button.dataset.faction === active;
+      button.classList.toggle("is-active", selected);
+      button.setAttribute("aria-pressed", selected ? "true" : "false");
+    });
+    shell.dataset.activeFaction = active;
+  }
+
   function hydrate(root) {
     const scope = root || document;
 
     scope.querySelectorAll(".wow-game-shell").forEach(function(shell) {
       const activeKey = shell.dataset.wowNavActive || "";
+      ensureFactionSelector(shell);
       const brand = shell.querySelector(".wow-game-shell__brand");
       if (brand) {
         const activeHome = activeKey === "menu";
@@ -139,6 +181,12 @@
     destinations:DESTINATIONS,
     hydrate:hydrate
   });
+
+  if (typeof global.addEventListener === "function") {
+    global.addEventListener("warcraft:campaign-changed", function(event) {
+      if (event && event.detail && event.detail.reason === "faction") hydrate(document);
+    });
+  }
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function() { hydrate(document); }, {once:true});
