@@ -17,7 +17,8 @@
       "cooldown_ticks": 360,
       "resource": "mana",
       "cost": 100,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_arcane_blast"
     },
     {
       "id": "fire-blast",
@@ -30,7 +31,8 @@
       "cooldown_ticks": 480,
       "resource": "mana",
       "cost": 120,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_fire_fireball"
     },
     {
       "id": "frost-nova",
@@ -43,7 +45,8 @@
       "cooldown_ticks": 600,
       "resource": "mana",
       "cost": 130,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_frost_frostnova"
     },
     {
       "id": "ice-barrier",
@@ -56,7 +59,8 @@
       "cooldown_ticks": 720,
       "resource": "mana",
       "cost": 140,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_ice_lament"
     }
   ],
   "ultimates": [
@@ -73,7 +77,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "spell_power_bp:+3000@480"
+      "effect": "spell_power_bp:+3000@480",
+      "icon_slug": "spell_nature_lightning"
     },
     {
       "id": "capstone-combustion",
@@ -88,7 +93,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_fire_sealoffire"
     },
     {
       "id": "capstone-ice-barrier",
@@ -103,7 +109,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_ice_lament"
     }
   ],
   "ultimate_model": "specialization-capstone"
