@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "source_path": "docs/base/profession-buildings/fishing/README.md",
+  "kind": "profession",
+  "title": "Fishing",
+  "track": "survival",
+  "owner_building": "Survival Lodge",
+  "source_markdown": "# Fishing\n\n## Purpose\n\nCatch fish and aquatic materials through survival activities.\n\n## Track\n\n- Track: **Survival**\n- Owning building: **Survival Lodge**\n- Hero rule: one Survival profession per hero\n- Change rule: learning another Survival profession replaces only the Survival choice\n\n## Progression\n\nFishing has authored levels 1–5 in `data/base/profession-buildings/progression.json`. Its effective level mirrors the owning Survival Lodge level.\n\nAssignment timing and drag/drop training are supplied by the shared building-assignment framework in WOWUI-079.\n"
+}
