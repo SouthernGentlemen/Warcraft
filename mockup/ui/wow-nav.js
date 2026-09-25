@@ -26,6 +26,12 @@
       description:"Manage the hero roster, inspect equipment slots, and compare item loadouts.",
       icon:Object.freeze({category:"equipment-slot", key:"chest"})
     }),
+    profession:Object.freeze({
+      label:"Professions",
+      title:"Artisans Guild Professions",
+      description:"Open any profession; every profession mirrors the shared Artisans Guild level.",
+      icon:Object.freeze({category:"building", key:"artisans-guild"})
+    }),
     inventory:Object.freeze({
       label:"Inventory",
       title:"Global Inventory",
