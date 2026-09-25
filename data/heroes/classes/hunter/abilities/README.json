@@ -17,7 +17,8 @@
       "cooldown_ticks": 300,
       "resource": "mana",
       "cost": 90,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "ability_hunter_killcommand"
     },
     {
       "id": "aimed-shot",
@@ -30,7 +31,8 @@
       "cooldown_ticks": 420,
       "resource": "mana",
       "cost": 110,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "ability_hunter_aimedshot"
     },
     {
       "id": "explosive-trap",
@@ -43,7 +45,8 @@
       "cooldown_ticks": 480,
       "resource": "mana",
       "cost": 105,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_fire_selfdestruct"
     },
     {
       "id": "survival-instinct",
@@ -56,7 +59,8 @@
       "cooldown_ticks": 600,
       "resource": "mana",
       "cost": 80,
-      "effect": "damage_reduction_bp:+2500@300"
+      "effect": "damage_reduction_bp:+2500@300",
+      "icon_slug": "ability_hunter_survivalinstincts"
     }
   ],
   "ultimates": [
@@ -73,7 +77,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "physical_power_bp:+3000@480"
+      "effect": "physical_power_bp:+3000@480",
+      "icon_slug": "ability_druid_ferociousbite"
     },
     {
       "id": "capstone-trueshot-aura",
@@ -88,7 +93,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "all_power_bp:+1800@480"
+      "effect": "all_power_bp:+1800@480",
+      "icon_slug": "ability_trueshot"
     },
     {
       "id": "capstone-wyvern-sting",
@@ -103,7 +109,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "inv_spear_02"
     }
   ],
   "ultimate_model": "specialization-capstone"
