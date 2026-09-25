@@ -1,29 +1,34 @@
-name: Simulation Smoke Test
+name: Warcraft Mockup Acceptance
 
 on:
   push:
     paths:
-      - "mockup/simulation/**"
-      - "docs/**"
+      - "mockup/**/*.js"
+      - "mockup/**/*.html"
+      - "mockup/**/*.css"
       - "data/**"
+      - "scripts/integration-acceptance.mjs"
       - "package.json"
       - "dev-server.mjs"
       - ".github/workflows/simulation.yml"
   pull_request:
     paths:
-      - "mockup/simulation/**"
-      - "docs/**"
+      - "mockup/**/*.js"
+      - "mockup/**/*.html"
+      - "mockup/**/*.css"
       - "data/**"
+      - "scripts/integration-acceptance.mjs"
       - "package.json"
       - "dev-server.mjs"
+      - ".github/workflows/simulation.yml"
 
 jobs:
-  deterministic-combat:
+  acceptance:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Run deterministic combat smoke test
-        run: npm run simulation:test
+      - name: Run integration and simulation acceptance
+        run: npm test
