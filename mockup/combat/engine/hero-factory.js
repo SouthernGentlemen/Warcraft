@@ -29,6 +29,7 @@ function copyAction(action) {
     resource: action.resource || "none",
     cost: Math.trunc(action.cost || 0),
     effect: action.effect || "none",
+    icon_slug: action.icon_slug || "",
     canCrit: action.kind === "damage" || action.kind === "heal",
     canMiss: action.kind === "damage"
   };
@@ -112,6 +113,7 @@ function autoAction(specData) {
     resource: "none",
     cost: 0,
     effect: "none",
+    icon_slug: specData.identity?.auto_attack_icon_slug || "",
     canCrit: true,
     canMiss: !healing
   };
