@@ -10,7 +10,7 @@ on:
       - "scripts/integration-acceptance.mjs"
       - "package.json"
       - "dev-server.mjs"
-      - ".github/workflows/acceptance.yml"
+      - ".github/workflows/**"
   pull_request:
     paths:
       - "mockup/**/*.js"
@@ -20,7 +20,7 @@ on:
       - "scripts/integration-acceptance.mjs"
       - "package.json"
       - "dev-server.mjs"
-      - ".github/workflows/acceptance.yml"
+      - ".github/workflows/**"
 
 jobs:
   acceptance:
