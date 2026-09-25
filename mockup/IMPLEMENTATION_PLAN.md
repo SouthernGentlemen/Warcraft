@@ -464,7 +464,7 @@ Give Lumber a clear dedicated Warcraft-style resource icon everywhere it appears
 
 ### WOWUI-031 — Alliance and Horde Base Variants
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-030
 
