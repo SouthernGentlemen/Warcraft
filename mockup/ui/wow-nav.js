@@ -5,26 +5,12 @@
  */
 (function(global) {
   "use strict";
-  document.querySelectorAll('[data-wow-nav-key="talents"],[data-wow-nav-key="gear"]').forEach(function(node){ node.hidden = true; node.setAttribute("aria-hidden","true"); });
-
   const DESTINATIONS = Object.freeze({
     heroes:Object.freeze({
       label:"Heroes",
       title:"Heroes / Race Selector",
       description:"Review factions, races, body presentation, racial talents, and class availability.",
       icon:Object.freeze({category:"race", key:"human"})
-    }),
-    talents:Object.freeze({
-      label:"Talents",
-      title:"Talent Calculator",
-      description:"Review class specializations and the Level 1–5 talent progression prototype.",
-      icon:Object.freeze({category:"talent", key:"capstone"})
-    }),
-    gear:Object.freeze({
-      label:"Gear",
-      title:"Gear & Equipment",
-      description:"Manage the hero roster, inspect equipment slots, and compare item loadouts.",
-      icon:Object.freeze({category:"equipment-slot", key:"chest"})
     }),
     profession:Object.freeze({
       label:"Professions",
