@@ -2,10 +2,8 @@ import { createServer } from "node:http";
 import { spawn } from "node:child_process";
 import { createServer as createNetServer } from "node:net";
 import {
-  readFile,
-  readdir,
+  readFile
   rm,
-  mkdir,
   writeFile,
   stat
 } from "node:fs/promises";
@@ -20,8 +18,6 @@ import {
 } from "node:path";
 
 const ROOT = process.cwd();
-const DOCS_ROOT = join(ROOT, "docs");
-const DATA_ROOT = join(ROOT, "data");
 const STATE_FILE = join(ROOT, ".warcraft-dev.json");
 const HOST = process.env.HOST || "127.0.0.1";
 const BASE_PORT = Number(process.env.PORT || 5173);
@@ -40,10 +36,6 @@ const MIME = {
   ".ico": "image/x-icon"
 };
 
-const RACE_FACTIONS = {
-  alliance: ["human", "gnome", "dwarf"],
-  horde: ["orc", "undead", "troll"]
-};
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -104,264 +96,6 @@ async function teardownPreviousServer() {
     // Process already exited.
   }
   await rm(STATE_FILE, { force: true });
-}
-
-async function walkMarkdown(dir) {
-  const entries = await readdir(dir, { withFileTypes: true });
-  const out = [];
-
-  for (const entry of entries) {
-    const full = join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...await walkMarkdown(full));
-    else if (entry.isFile() && entry.name.endsWith(".md")) out.push(full);
-  }
-
-  return out.sort();
-}
-
-function heading(md) {
-  return md.match(/^#\s+(.+)$/m)?.[1]?.trim() || "";
-}
-
-function section(md, name) {
-  const marker = `## ${name}`;
-  const startMarker = md.indexOf(marker);
-  if (startMarker < 0) return "";
-
-  const start = md.indexOf("\n", startMarker);
-  if (start < 0) return "";
-
-  const end = md.indexOf("\n## ", start + 1);
-  return md.slice(start + 1, end < 0 ? md.length : end).trim();
-}
-
-function markdownTable(block) {
-  return block
-    .split("\n")
-    .filter(line => line.startsWith("|") && !/^\|\s*---/.test(line))
-    .slice(1)
-    .map(line => line.split("|").slice(1, -1).map(cell => cell.trim().replace(/\*\*/g, "")))
-    .filter(row => row.length >= 2);
-}
-
-function talentTier(md, startMarker, endMarker) {
-  const start = md.indexOf(startMarker);
-  if (start < 0) return [];
-
-  const end = endMarker
-    ? md.indexOf(endMarker, start + startMarker.length)
-    : md.indexOf("## Combat Loadout", start + startMarker.length);
-
-  return markdownTable(md.slice(start, end < 0 ? md.length : end))
-    .map(([name, effect]) => ({ name, effect }));
-}
-
-function actionTable(block) {
-  return markdownTable(block).map(row => ({
-    id: row[0] || "",
-    name: row[1] || "",
-    kind: row[2] || "",
-    school: row[3] || "",
-    target: row[4] || "",
-    power: Number(row[5] || 0),
-    coefficient_bp: Number(row[6] || 0),
-    cooldown_ticks: Number(row[7] || 0),
-    resource: row[8] || "none",
-    cost: Number(row[9] || 0),
-    effect: row[10] || "none"
-  }));
-}
-
-function toPosix(path) {
-  return path.split(sep).join("/");
-}
-
-function mirrorObject(sourcePath, md) {
-  const posixPath = toPosix(sourcePath);
-  const base = {
-    schema_version: 1,
-    source_path: posixPath,
-    kind: "document",
-    title: heading(md),
-    source_markdown: md
-  };
-
-  if (/^docs\/heroes\/races\/[^/]+\/README\.md$/.test(posixPath)) {
-    const racialMatch = md.match(/^## Racial Bonus — (.+)$/m);
-    return {
-      ...base,
-      kind: "race",
-      race: heading(md),
-      racial: {
-        name: racialMatch?.[1]?.trim() || "",
-        mechanic: racialMatch
-          ? md.slice(md.indexOf(racialMatch[0]) + racialMatch[0].length)
-              .split(/^## Balance Role/m)[0]
-              .trim()
-          : ""
-      },
-      balance_role: section(md, "Balance Role")
-    };
-  }
-
-  if (/^docs\/heroes\/classes\/[^/]+\/abilities\/README\.md$/.test(posixPath)) {
-    return {
-      ...base,
-      kind: "abilities",
-      class: heading(md).replace(/ Abilities$/, ""),
-      cooldowns: actionTable(section(md, "Cooldowns")),
-      ultimates: actionTable(section(md, "Ultimates"))
-    };
-  }
-
-  if (/^docs\/heroes\/classes\/[^/]+\/specs\/[^/]+\.md$/.test(posixPath)) {
-    const [className = "", specialization = ""] = heading(md).split(" — ");
-    const identity = section(md, "Identity");
-    const getIdentity = label =>
-      identity.match(new RegExp(`^- ${label}:\\s*(.+)$`, "m"))?.[1]?.trim() || "";
-
-    return {
-      ...base,
-      kind: "specialization",
-      class: className,
-      specialization,
-      identity: {
-        role: getIdentity("Role"),
-        resource: getIdentity("Resource"),
-        primary_stat: getIdentity("Primary stat"),
-        auto_attack: getIdentity("Auto-attack")
-      },
-      talents: {
-        tier_1: talentTier(md, "### Tier 1", "### Tier 2"),
-        tier_2: talentTier(md, "### Tier 2", "### Tier 3"),
-        capstones: talentTier(md, "### Tier 3", null)
-      }
-    };
-  }
-
-  if (/^docs\/heroes\/classes\/[^/]+\/README\.md$/.test(posixPath)) {
-    const equipment = section(md, "Equipment");
-    const faction = section(md, "Faction").split("\n")[0].trim();
-
-    const result = {
-      ...base,
-      kind: "class",
-      class: heading(md),
-      resource: section(md, "Resource").split("\n")[0].trim(),
-      equipment: {
-        armor: equipment.match(/^- Armor access:\s*(.+)$/m)?.[1]?.trim() || "",
-        primary_stat: equipment.match(/^- Primary stat:\s*(.+)$/m)?.[1]?.trim() || ""
-      },
-      specializations: markdownTable(section(md, "Specializations")).map(row => ({
-        name: row[0].match(/\[([^\]]+)\]/)?.[1] || row[0],
-        role: row[1] || "",
-        auto_attack: row[2] || ""
-      }))
-    };
-
-    if (faction) result.faction = faction;
-    return result;
-  }
-
-  return base;
-}
-
-async function writeJson(path, value) {
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, JSON.stringify(value, null, 2) + "\n", "utf8");
-}
-
-function slugify(value) {
-  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
-
-async function rebuildData() {
-  console.log("[rebuild] resetting /data");
-  await rm(DATA_ROOT, { recursive: true, force: true });
-  await mkdir(DATA_ROOT, { recursive: true });
-
-  const docs = await walkMarkdown(DOCS_ROOT);
-  const generated = [];
-
-  for (const fullPath of docs) {
-    const rel = toPosix(relative(ROOT, fullPath));
-    const md = await readFile(fullPath, "utf8");
-    const jsonRel = rel.replace(/^docs\//, "data/").replace(/\.md$/, ".json");
-    const outPath = join(ROOT, ...jsonRel.split("/"));
-    const value = mirrorObject(rel, md);
-    await writeJson(outPath, value);
-    generated.push({ rel: jsonRel, value });
-  }
-
-  const classRecords = generated
-    .filter(entry => entry.value.kind === "class")
-    .map(entry => entry.value)
-    .sort((a, b) => a.class.localeCompare(b.class));
-
-  const classIndex = {
-    schema_version: 1,
-    classes: classRecords.map(record => {
-      const id = slugify(record.class);
-      const out = {
-        id,
-        label: record.class,
-        resource: record.resource,
-        abilities_path: `./${id}/abilities/README.json`,
-        specs: record.specializations.map(spec => {
-          const specId = slugify(spec.name);
-          return {
-            id: specId,
-            label: spec.name,
-            data_path: `./${id}/specs/${specId}.json`
-          };
-        })
-      };
-
-      if (record.faction) out.faction = record.faction.replace(/ only$/i, "");
-      return out;
-    })
-  };
-
-  await writeJson(join(DATA_ROOT, "heroes", "classes", "index.json"), classIndex);
-
-  const classNames = classIndex.classes;
-  const sharedClasses = classNames.filter(c => !c.faction).map(c => c.label);
-  const allianceExclusive = classNames.find(c => c.faction === "Alliance")?.label || "Paladin";
-  const hordeExclusive = classNames.find(c => c.faction === "Horde")?.label || "Shaman";
-
-  const raceIndex = {
-    schema_version: 1,
-    availability_rule: "Until race-specific class restrictions are defined, each race can use every shared class plus its faction-exclusive class.",
-    body_types: [
-      { id: "body-1", label: "Body 1", presentation: "Male" },
-      { id: "body-2", label: "Body 2", presentation: "Female" }
-    ],
-    factions: {
-      alliance: {
-        label: "Alliance",
-        exclusive_class: allianceExclusive,
-        races: RACE_FACTIONS.alliance.map(id => ({
-          id,
-          label: id[0].toUpperCase() + id.slice(1),
-          data_path: `./${id}/README.json`
-        })),
-        available_classes: [...sharedClasses, allianceExclusive]
-      },
-      horde: {
-        label: "Horde",
-        exclusive_class: hordeExclusive,
-        races: RACE_FACTIONS.horde.map(id => ({
-          id,
-          label: id[0].toUpperCase() + id.slice(1),
-          data_path: `./${id}/README.json`
-        })),
-        available_classes: [...sharedClasses, hordeExclusive]
-      }
-    }
-  };
-
-  await writeJson(join(DATA_ROOT, "heroes", "races", "index.json"), raceIndex);
-  console.log(`[rebuild] generated ${docs.length} mirrored JSON files + 2 indexes`);
 }
 
 async function portAvailable(port) {
@@ -510,8 +244,6 @@ async function main() {
   console.log("Warcraft prototype dev reset");
 
   await teardownPreviousServer();
-  await rebuildData();
-
   const port = await choosePort();
   const server = buildHttpServer();
 
@@ -545,7 +277,7 @@ async function main() {
     console.log(`  Data:    http://${HOST}:${port}/data/`);
     openBrowser(url);
     console.log("");
-    console.log("Run npm run dev again at any time; it will tear this instance down and rebuild.");
+    console.log("Run npm run dev again at any time; it will tear this instance down and restart.");
     console.log("Press Ctrl+C to stop.");
   });
 }
