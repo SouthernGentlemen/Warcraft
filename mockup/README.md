@@ -1,6 +1,6 @@
 # Mockups
 
-Static review screens backed by the root-level `/data/` JSON mirror.
+Static review screens backed directly by authored runtime JSON under the root-level `/data/` directory. `/docs/` is design documentation only; development does not generate or rewrite runtime data from Markdown.
 
 ## Implementation Plan
 
@@ -64,17 +64,18 @@ npm run dev
 
 No package installation is required.
 
-Every run performs a full local prototype reset:
+Every run performs a local server restart only:
 
 1. tears down the previously recorded Warcraft dev server, if one is still running
-2. deletes and rebuilds `/data/` directly from `/docs/`
-3. regenerates the race and class prototype indexes
-4. starts the static server
-5. uses port 5173 when available, otherwise automatically selects the next available port
+2. starts the static server against the repository exactly as it exists on disk
+3. uses port 5173 when available, otherwise automatically selects the next available port
+4. opens the mockup in the default browser
+
+`npm run dev` does **not** generate, delete, normalize, or rewrite `/data/`. Runtime JSON is ordinary authored source data and changes only when explicitly edited.
 
 You do not need to find or kill ports manually. Running `npm run dev` again replaces the previous Warcraft dev instance.
 
-Once the rebuilt server is listening, the selected `/mockup/` URL is opened automatically in your default browser. The active URL is also printed in the terminal, and the root URL redirects to `/mockup/`.
+Once the server is listening, the selected `/mockup/` URL is opened automatically in your default browser. The active URL is also printed in the terminal, and the root URL redirects to `/mockup/`.
 
 `HOST` and `PORT` can still be supplied when needed, but occupied ports are handled automatically. Set `NO_OPEN=1` only when you intentionally want to suppress automatic browser launch.
 
@@ -95,7 +96,7 @@ All mockup screens now use the shared UI layer under `mockup/ui/` as the visual 
 
 Screen CSS files remain responsible only for screen-specific layout and presentation. Interactive game concepts should use semantic icon frames plus visible text or an accessible label; emoji and Unicode symbols must not be used as game-icon substitutes. Locked, disabled, quality, error, and completion states must include text or accessibility metadata rather than relying on color alone. Custom focusable surfaces use the shared `:focus-visible` contract.
 
-Responsive layouts are maintained in each screen stylesheet for desktop, tablet, and mobile widths. When adding controls, prefer `.wow-button`, `.wow-tab`, `.wow-input`, `.wow-select`, `.wow-checkbox`, `.wow-range`, and `.wow-icon-button` instead of browser-default controls. Run `npm run simulation:test` after shared UI changes that touch the simulation surface, and use `npm run dev` for the normal rebuild-and-open development flow.
+Responsive layouts are maintained in each screen stylesheet for desktop, tablet, and mobile widths. When adding controls, prefer `.wow-button`, `.wow-tab`, `.wow-input`, `.wow-select`, `.wow-checkbox`, `.wow-range`, and `.wow-icon-button` instead of browser-default controls. Run `npm run simulation:test` after shared UI changes that touch the simulation surface, and use `npm run dev` for the normal restart-and-open development flow.
 
 
 ### Shared roster state
