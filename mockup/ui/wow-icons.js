@@ -195,7 +195,8 @@
       upgrade:"inv_misc_wrench_01",
       "recruitment-hall":"achievement_guildperk_everybodysfriend",
       "training-grounds":"ability_dualwield",
-      storehouse:"inv_crate_03"
+      storehouse:"inv_crate_03",
+      "artisans-guild":"trade_engineering"
     },
     quest: {
       journal:"inv_misc_note_01",
