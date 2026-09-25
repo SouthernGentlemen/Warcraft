@@ -65,14 +65,16 @@ See [Classes](./classes/README.md).
 
 A hero's build is defined by:
 
-- gear choices
-- talent choices
-- 2 selected cooldown abilities
-- 1 selected ultimate ability
+- seven equipment slots
+- one compact 2 / 2 / 1 specialization talent build
+- fixed Auto Attack
+- selected Ability 1
+- selected Ability 2
+- the specialization-capstone Ultimate
 
-The hero's specialization determines its auto-attack.
+Auto Attack identity comes from the active specialization. Ability 1 and Ability 2 must be distinct learned abilities compatible with that specialization. The capstone defines the hero's Ultimate; Ultimate is not an independent generic class selection.
 
-The first talent point chooses the specialization. The other two talent trees remain locked until the hero completes the chosen tree's Level 3 capstone.
+Saved party loadouts are roster-level records, not hero-level configuration. They store authoritative hero IDs and are validated for current availability when content launches.
 
 ## Hero Roles
 
@@ -117,8 +119,8 @@ The following require later specification:
 
 - exact XP curves
 - exact class talent nodes
-- class cooldown pools
-- class ultimate pools
+- authored ability-pool expansion
+- capstone and Ultimate tuning
 - exact racial bonuses
 - recruitment generation
 - roster capacity
