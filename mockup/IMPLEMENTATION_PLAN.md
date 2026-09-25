@@ -668,6 +668,8 @@ Give every building one consistent five-level progression contract tied directly
 
 ## WOWUI-016 — Roster Management And Five Saved Party Loadouts
 
+**Status:** Complete — 2026-09-24
+
 ### Objective
 
 Turn the roster into the authoritative hero-management source and let players save reusable parties for group content.
