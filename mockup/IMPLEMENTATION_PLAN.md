@@ -493,7 +493,7 @@ Make Base presentation faction-aware so Alliance and Horde have distinct strongh
 
 ### WOWUI-032 — Quest Journal Player Surface
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-031
 
