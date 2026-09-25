@@ -1139,6 +1139,37 @@
   white-space: nowrap;
 }
 
+.dungeon-selection__result {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 7px;
+  padding: 5px 7px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: rgba(0,0,0,.16);
+}
+
+.dungeon-selection__result strong {
+  color: var(--wow-text);
+  font: 700 8px var(--wow-font-display);
+  text-transform: uppercase;
+}
+
+.dungeon-selection__result small {
+  color: var(--wow-text-dim);
+  font-size: 6px;
+  text-align: right;
+}
+
+.dungeon-selection__result.is-victory {
+  border-color: var(--wow-success);
+}
+
+.dungeon-selection__result.is-defeat {
+  border-color: var(--wow-error);
+}
+
 .dungeon-party-picker {
   display: grid;
   grid-template-columns: minmax(0,1fr) auto;
