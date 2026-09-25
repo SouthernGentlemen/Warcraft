@@ -98,6 +98,24 @@
   white-space: nowrap;
 }
 
+.team-summary-status {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+}
+
+.team-line.reverse .team-summary-status {
+  justify-items: start;
+}
+
+.team-alive-text {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .team-hp-text {
   color: var(--wow-text-muted);
   font-size: 9px;
@@ -1137,8 +1155,8 @@
 }
 
 .battle-frame[data-party-size="20"] .combat-team {
-  grid-template-columns: repeat(4, minmax(118px, 1fr));
-  gap: 5px;
+  grid-template-columns: repeat(5, minmax(92px, 1fr));
+  gap: 4px;
 }
 
 .battle-frame[data-party-size="10"] .battle-log-scroll {
@@ -1205,6 +1223,61 @@
 .battle-frame[data-party-size="20"] .combatant-meta,
 .battle-frame[data-party-size="20"] .unit-action-copy small {
   display: none;
+}
+
+.battle-frame[data-party-size="20"] .unit-frame {
+  min-height: 62px;
+  grid-template-columns: 34px minmax(0,1fr);
+  gap: 4px;
+  padding: 4px;
+}
+
+.battle-frame[data-party-size="20"] .unit-portrait {
+  --wow-icon-size: 31px;
+}
+
+.battle-frame[data-party-size="20"] .unit-class-icon {
+  --wow-icon-size: 13px;
+}
+
+.battle-frame[data-party-size="20"] .unit-heading {
+  display: block;
+}
+
+.battle-frame[data-party-size="20"] .unit-action,
+.battle-frame[data-party-size="20"] .resource-stat,
+.battle-frame[data-party-size="20"] .unit-status-row {
+  display: none;
+}
+
+.battle-frame[data-party-size="20"] .hp-stat {
+  height: 15px;
+  margin-top: 4px;
+}
+
+.battle-frame[data-party-size="20"] .hp-stat .unit-bar-label {
+  display: none;
+}
+
+.battle-frame[data-party-size="20"] .hp-stat b {
+  font-size: 6px;
+}
+
+.battle-frame[data-party-size="20"] .combatant-name {
+  font-size: 9px;
+}
+
+.battle-frame[data-party-size="20"] .battle-log-scroll {
+  max-height: 250px;
+}
+
+.battle-frame[data-party-size="20"] .battle-combat-log table {
+  min-width: 820px;
+}
+
+.battle-frame[data-party-size="20"] .battle-combat-log th,
+.battle-frame[data-party-size="20"] .battle-combat-log td {
+  white-space: nowrap;
 }
 
 .battle-frame[data-party-size="20"] .combatant-name {
