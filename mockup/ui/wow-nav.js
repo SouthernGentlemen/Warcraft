@@ -5,6 +5,7 @@
  */
 (function(global) {
   "use strict";
+  document.querySelectorAll('[data-wow-nav-key="talents"],[data-wow-nav-key="gear"],[data-wow-nav-key="simulation"]').forEach(function(node){ node.hidden = true; node.setAttribute("aria-hidden","true"); });
 
   const DESTINATIONS = Object.freeze({
     heroes:Object.freeze({
