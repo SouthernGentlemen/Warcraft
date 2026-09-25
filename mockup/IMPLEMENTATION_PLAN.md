@@ -525,7 +525,7 @@ Create a real player-facing Quest Journal destination for active, available/acce
 
 ### WOWUI-033 — Global Inventory Player Surface
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-031
 
