@@ -616,7 +616,7 @@ function renderQuestBoard() {
       '<div class="quest-offer-head"><strong>'+offer.title+'</strong><span>'+offer.party_size+' hero'+(offer.party_size===1?'':'es')+'</span><em>'+
       (active?'ACTIVE':completed?'COMPLETED':'AVAILABLE')+
       '</em></div>'+
-      '<p class="quest-offer-description">'+offer.description+'</p>'+
+      '<div class="quest-offer-description">'+offer.description+'</div>'+
       '<div class="quest-selection"></div>'+
       '<small class="quest-reward">Reward · '+fmt(offer.reward.gold)+' gold · '+offer.reward.meta_amount+' quest mark'+(offer.reward.meta_amount===1?'':'s')+'</small>';
 
