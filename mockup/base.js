@@ -799,6 +799,7 @@ function renderDungeonSelection(dungeon) {
         partySize:size,
         heroIds:ids,
         faction:currentFactionId(),
+        seed:questSeedHash(dungeon.id+':'+ids.join(',')),
         source:'questboard'
       });
       window.location.href='./battle.html?encounter=dungeon&dungeon='+encodeURIComponent(dungeon.id);
