@@ -784,11 +784,13 @@ function renderDungeonSelection(dungeon) {
   const size = Number(dungeon.party.canonical_size) || 5;
   const loadouts = compatibleLoadouts(size);
   const available = Roster.getState().heroes.filter(hero => hero.availability === 'available');
+  const latestRun=Roster.getLatestDungeonRun(dungeon.id);
   root.innerHTML =
     '<div class="dungeon-selection__head">' +
       '<div><span class="wow-kicker">SELECTED DUNGEON</span><h4>' + dungeon.display_name + '</h4><small>' + dungeon.continent + ' · ' + dungeon.zone + ' · ' + size + ' players</small></div>' +
       '<span class="dungeon-selection__pool">' + dungeon.npc_pool_id + '</span>' +
     '</div>' +
+    (latestRun?'<div class="dungeon-selection__result is-'+(latestRun.victory?'victory':'defeat')+'"><strong>Last Run · '+(latestRun.victory?'Victory':'Defeat')+'</strong><small>Attempt '+latestRun.attempt+' · '+latestRun.partySize+' heroes · '+latestRun.frame+' ticks</small></div>':'')+
     '<div id="dungeonPartyPicker" class="dungeon-party-picker"></div>';
 
   const picker = $('#dungeonPartyPicker');
@@ -811,15 +813,18 @@ function renderDungeonSelection(dungeon) {
   picker.appendChild(launch);
 
   let ids=[];
+  let selectedLoadoutId=null;
   function sync(){
     launch.disabled=ids.length!==size||ids.some(id=>{const hero=Roster.hero(id);return !hero||hero.availability!=='available';});
   }
 
   select.addEventListener('change',()=>{
     ids=[];
+    selectedLoadoutId=null;
     adhoc.innerHTML='';
     if(select.value.startsWith('loadout:')){
-      const loadout=Roster.getState().loadouts.find(entry=>entry.id===select.value.slice(8));
+      selectedLoadoutId=select.value.slice(8);
+      const loadout=Roster.getState().loadouts.find(entry=>entry.id===selectedLoadoutId);
       ids=loadout?loadout.heroIds.slice():[];
     } else if(select.value==='adhoc'){
       available.forEach(hero=>{
@@ -846,6 +851,7 @@ function renderDungeonSelection(dungeon) {
         npcPoolId:dungeon.npc_pool_id,
         partySize:size,
         heroIds:ids,
+        loadoutId:selectedLoadoutId,
         faction:currentFactionId(),
         seed:questSeedHash(dungeon.id+':'+ids.join(',')),
         source:'questboard'
