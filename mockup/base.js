@@ -4,9 +4,12 @@ const Roster = window.WarcraftRoster;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 const BASE_PRESENTATION_ROOT = "../data/base/presentation.json";
 const RECRUITMENT_DATA_ROOT = "../data/base/recruitment.json";
+const PROFESSION_DATA_ROOT = "../data/base/profession-buildings/index.json";
+const Professions = window.WarcraftProfessions;
 let buildings = [];
 let basePresentation = null;
 let recruitmentData = null;
+let professionData = null;
 let sidecarOrigin = null;
 
 function normalizeBuilding(raw) {
@@ -69,6 +72,7 @@ const state = {
   questMessage: "",
   recruitmentOpen: false,
   recruitmentMessage: "",
+  artisansOpen: false,
   resources: { gold: 25430, lumber: 12680, stone: 8440 }
 };
 
@@ -186,7 +190,7 @@ const BUILDING_ACTIONS = Object.freeze({
     Object.freeze({label:'Open Quest Journal', href:'./quest-journal.html', icon:['quest','journal'], description:'Review available, active, and completed quests.'})
   ]),
   artisans:Object.freeze([
-    Object.freeze({label:'Browse Inventory', href:'./inventory.html', icon:['building','artisans-guild'], description:'Review owned equipment and materials managed through the Artisans Guild.'})
+    Object.freeze({label:'Open Professions', action:'artisans', icon:['building','artisans-guild'], description:'Open the Artisans Guild profession roster.'})
   ])
 });
 
@@ -305,6 +309,70 @@ function renderRecruitmentWorkflow(building) {
       }
     });
     list.appendChild(row);
+  });
+  bindResolvedIcons(root);
+}
+
+function validateProfessionData(payload) {
+  if (!payload || !Array.isArray(payload.professions) || payload.professions.length !== 6) throw new Error('Profession index requires six professions.');
+  const ids = payload.professions.map(entry => entry.id);
+  if (new Set(ids).size !== ids.length) throw new Error('Profession IDs must be unique.');
+  payload.professions.forEach(entry => {
+    if (!entry.label || !entry.icon_key || !Number.isInteger(Number(entry.unlock_level)) || Number(entry.unlock_level) < 1 || Number(entry.unlock_level) > 5) {
+      throw new Error('Invalid profession unlock metadata for ' + entry.id);
+    }
+  });
+  return payload;
+}
+
+function professionUnlockTooltip(definition) {
+  return {
+    variant:'control',
+    title:definition.label,
+    type:'Locked profession',
+    icon:{category:'profession', key:definition.icon_key},
+    description:'Requires Artisans Guild Level ' + definition.unlock_level + '.',
+    stats:[
+      {label:'Required Guild level', value:String(definition.unlock_level)},
+      {label:'Current Guild level', value:String(Professions.getGuildLevel())}
+    ],
+    locked:['Requires Artisans Guild Level ' + definition.unlock_level + '.']
+  };
+}
+
+function renderArtisansWorkflow(building) {
+  const root = $('#artisansWorkflow');
+  if (!root || !building || !professionData) return;
+  root.hidden = !state.artisansOpen;
+  if (!state.artisansOpen) return;
+
+  root.innerHTML =
+    '<div class="base-sidecar__artisan-head">' +
+      '<span class="wow-kicker">PROFESSIONS</span>' +
+      '<small>Guild Level ' + Professions.getGuildLevel() + '</small>' +
+    '</div>' +
+    '<div class="base-sidecar__profession-list"></div>';
+
+  const list = root.querySelector('.base-sidecar__profession-list');
+  professionData.professions.forEach(definition => {
+    const unlocked = Professions.isUnlocked(definition.unlock_level);
+    const item = document.createElement(unlocked ? 'a' : 'button');
+    item.className = 'base-sidecar__profession-entry' + (unlocked ? '' : ' is-locked');
+    if (unlocked) {
+      item.href = './profession.html?profession=' + encodeURIComponent(definition.id);
+      item.setAttribute('aria-label', 'Open ' + definition.label);
+    } else {
+      item.type = 'button';
+      item.setAttribute('aria-disabled','true');
+      item.setAttribute('aria-label', definition.label + ', locked, requires Artisans Guild Level ' + definition.unlock_level);
+    }
+    item.innerHTML =
+      iconMarkup('profession', definition.icon_key, 'sm', 'base-sidecar__profession-icon') +
+      '<span class="base-sidecar__profession-copy"><strong>' + definition.label + '</strong><small>' +
+        (unlocked ? 'Open profession' : 'Requires Guild Level ' + definition.unlock_level) +
+      '</small></span>';
+    if (!unlocked) Tooltips.attach(item, () => professionUnlockTooltip(definition), {anchor:'target'});
+    list.appendChild(item);
   });
   bindResolvedIcons(root);
 }
@@ -592,6 +660,11 @@ function renderSidecar() {
       '<section id="recruitmentWorkflow" class="base-sidecar__section base-sidecar__recruitment" hidden></section>');
   }
 
+  if (building.id === 'artisans') {
+    body.insertAdjacentHTML('beforeend',
+      '<section id="artisansWorkflow" class="base-sidecar__section base-sidecar__artisans" hidden></section>');
+  }
+
   if (building.id === 'questboard') {
     body.insertAdjacentHTML('beforeend',
       '<section class="base-sidecar__section base-sidecar__quests">'+
@@ -613,6 +686,14 @@ function renderSidecar() {
       renderSidecar();
     });
   }
+  if (building.id === 'artisans') {
+    renderArtisansWorkflow(building);
+    const artisansAction = sidecar.querySelector('[data-building-action="artisans"]');
+    if (artisansAction) artisansAction.addEventListener('click', () => {
+      state.artisansOpen = true;
+      renderSidecar();
+    });
+  }
 
   const upgradeButton = $('#baseSidecarUpgrade');
   if (upgradeButton) {
@@ -629,6 +710,7 @@ function openSidecar(id, origin) {
   if (state.selected !== id) {
     state.recruitmentOpen = false;
     state.recruitmentMessage = '';
+    state.artisansOpen = false;
   }
   state.selected = id;
   sidecarOrigin = origin || sidecarOrigin;
@@ -667,6 +749,7 @@ function upgradeBuilding(id) {
   if(up.next.level!==b.level+1||up.next.level>b.max) throw new Error('Invalid building level transition');
 
   b.level=up.next.level;
+  if (b.id === 'artisans') Professions.setGuildLevel(b.level);
   syncResourceBar();
   syncMapBuildings();
   if (b.id === 'questboard') {
@@ -705,14 +788,18 @@ window.addEventListener('resize', () => {
 
 async function initBase() {
   try {
-    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT)]);
+    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT),fetch(PROFESSION_DATA_ROOT)]);
     if(!responses[0].ok) throw new Error('Could not load '+BUILDING_DATA_ROOT);
     if(!responses[1].ok) throw new Error('Could not load '+BASE_PRESENTATION_ROOT);
     if(!responses[2].ok) throw new Error('Could not load '+RECRUITMENT_DATA_ROOT);
+    if(!responses[3].ok) throw new Error('Could not load '+PROFESSION_DATA_ROOT);
     const payload=await responses[0].json();
     buildings=payload.buildings.map(normalizeBuilding);
     basePresentation=validateBasePresentation(await responses[1].json());
     recruitmentData=validateRecruitmentData(await responses[2].json());
+    professionData=validateProfessionData(await responses[3].json());
+    const artisansBuilding=buildings.find(entry=>entry.id==='artisans');
+    if (artisansBuilding) artisansBuilding.level=Math.max(artisansBuilding.level,Professions.getGuildLevel());
     Icons.hydrate(document); Tooltips.hydrate(document); bindResolvedIcons(document);
     applyBasePresentation();
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
