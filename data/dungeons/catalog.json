@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "kind": "wow_dungeon_catalog",
+  "coordinate_system": {
+    "id": "azeroth-dual-continent-v1",
+    "units": "percent",
+    "description": "Normalized presentation coordinates for the future dual-continent Azeroth Quest Board map; x/y are authored UI positions, not in-game player coordinates."
+  },
+  "npc_pool_source": "../npcs/dungeon-pools.json",
+  "dungeons": [
+    {
+      "id": "ragefire-chasm",
+      "display_name": "Ragefire Chasm",
+      "aliases": [
+        "RFC"
+      ],
+      "continent": "Kalimdor",
+      "zone": "Orgrimmar",
+      "parent_region": "Durotar",
+      "subregion": "Cleft of Shadow",
+      "map": {
+        "azeroth": {
+          "x_pct": 34,
+          "y_pct": 31
+        },
+        "continent": {
+          "x_pct": 73,
+          "y_pct": 29
+        }
+      },
+      "faction": {
+        "starter_for": [
+          "horde"
+        ],
+        "available_to": [
+          "alliance",
+          "horde"
+        ],
+        "presentation": "horde"
+      },
+      "party": {
+        "canonical_size": 5,
+        "supported_sizes": [
+          5
+        ]
+      },
+      "npc_pool_id": "dungeon-ragefire-chasm",
+      "source_note": "Ragefire Chasm is located in the Cleft of Shadow, Orgrimmar."
+    },
+    {
+      "id": "the-stockade",
+      "display_name": "The Stockade",
+      "aliases": [
+        "Stormwind Stockade",
+        "Stormwind Stockades",
+        "Stocks"
+      ],
+      "continent": "Eastern Kingdoms",
+      "zone": "Stormwind City",
+      "parent_region": "Elwynn Forest",
+      "subregion": "The Canals",
+      "map": {
+        "azeroth": {
+          "x_pct": 68,
+          "y_pct": 70
+        },
+        "continent": {
+          "x_pct": 39,
+          "y_pct": 72
+        }
+      },
+      "faction": {
+        "starter_for": [
+          "alliance"
+        ],
+        "available_to": [
+          "alliance",
+          "horde"
+        ],
+        "presentation": "alliance"
+      },
+      "party": {
+        "canonical_size": 5,
+        "supported_sizes": [
+          5
+        ]
+      },
+      "npc_pool_id": "dungeon-the-stockade",
+      "source_note": "Stormwind Stockade, also called The Stockade, is beneath the canals of Stormwind City."
+    },
+    {
+      "id": "scarlet-monastery",
+      "display_name": "Scarlet Monastery",
+      "aliases": [
+        "SM"
+      ],
+      "continent": "Eastern Kingdoms",
+      "zone": "Tirisfal Glades",
+      "parent_region": "Tirisfal Glades",
+      "subregion": "Northeastern Tirisfal Glades",
+      "map": {
+        "azeroth": {
+          "x_pct": 70,
+          "y_pct": 27
+        },
+        "continent": {
+          "x_pct": 44,
+          "y_pct": 24
+        }
+      },
+      "faction": {
+        "starter_for": [],
+        "available_to": [
+          "alliance",
+          "horde"
+        ],
+        "presentation": "neutral"
+      },
+      "party": {
+        "canonical_size": 5,
+        "supported_sizes": [
+          5
+        ]
+      },
+      "npc_pool_id": "dungeon-scarlet-monastery",
+      "source_note": "Scarlet Monastery is located in the northeast corner of Tirisfal Glades."
+    },
+    {
+      "id": "zul-farrak",
+      "display_name": "Zul'Farrak",
+      "aliases": [
+        "ZF"
+      ],
+      "continent": "Kalimdor",
+      "zone": "Tanaris",
+      "parent_region": "Tanaris",
+      "subregion": "Sandsorrow Watch",
+      "map": {
+        "azeroth": {
+          "x_pct": 31,
+          "y_pct": 69
+        },
+        "continent": {
+          "x_pct": 63,
+          "y_pct": 72
+        }
+      },
+      "faction": {
+        "starter_for": [],
+        "available_to": [
+          "alliance",
+          "horde"
+        ],
+        "presentation": "neutral"
+      },
+      "party": {
+        "canonical_size": 5,
+        "supported_sizes": [
+          5
+        ]
+      },
+      "npc_pool_id": "dungeon-zul-farrak",
+      "source_note": "Zul'Farrak is a Sandfury city in northwestern Tanaris near Sandsorrow Watch."
+    }
+  ]
+}
