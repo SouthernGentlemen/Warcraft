@@ -16,7 +16,6 @@
       ],
       "continent": "Kalimdor",
       "zone": "Orgrimmar",
-      "parent_region": "Durotar",
       "subregion": "Cleft of Shadow",
       "map": {
         "azeroth": {
@@ -57,7 +56,6 @@
       ],
       "continent": "Eastern Kingdoms",
       "zone": "Stormwind City",
-      "parent_region": "Elwynn Forest",
       "subregion": "The Canals",
       "map": {
         "azeroth": {
@@ -96,7 +94,6 @@
       ],
       "continent": "Eastern Kingdoms",
       "zone": "Tirisfal Glades",
-      "parent_region": "Tirisfal Glades",
       "subregion": "Northeastern Tirisfal Glades",
       "map": {
         "azeroth": {
@@ -133,7 +130,6 @@
       ],
       "continent": "Kalimdor",
       "zone": "Tanaris",
-      "parent_region": "Tanaris",
       "subregion": "Sandsorrow Watch",
       "map": {
         "azeroth": {
