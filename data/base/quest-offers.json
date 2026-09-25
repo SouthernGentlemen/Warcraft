@@ -1,0 +1,339 @@
+{
+  "schema_version": 1,
+  "kind": "quest_offer_pool",
+  "offer_count": 4,
+  "party_sizes": [
+    1,
+    3,
+    5,
+    10,
+    20
+  ],
+  "offers": [
+    {
+      "id": "quest-1-border-patrol",
+      "title": "Border Patrol",
+      "description": "A level 1 Quest Board assignment for 1 hero.",
+      "min_board_level": 1,
+      "difficulty": 1,
+      "party_size": 1,
+      "reward": {
+        "gold": 250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 1
+      }
+    },
+    {
+      "id": "quest-1-lost-courier",
+      "title": "Lost Courier",
+      "description": "A level 1 Quest Board assignment for 1 hero.",
+      "min_board_level": 1,
+      "difficulty": 1,
+      "party_size": 1,
+      "reward": {
+        "gold": 250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 1
+      }
+    },
+    {
+      "id": "quest-1-boar-trouble",
+      "title": "Boar Trouble",
+      "description": "A level 1 Quest Board assignment for 1 hero.",
+      "min_board_level": 1,
+      "difficulty": 1,
+      "party_size": 1,
+      "reward": {
+        "gold": 250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 1
+      }
+    },
+    {
+      "id": "quest-1-scouting-run",
+      "title": "Scouting Run",
+      "description": "A level 1 Quest Board assignment for 1 hero.",
+      "min_board_level": 1,
+      "difficulty": 1,
+      "party_size": 1,
+      "reward": {
+        "gold": 250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 1
+      }
+    },
+    {
+      "id": "quest-1-supply-recovery",
+      "title": "Supply Recovery",
+      "description": "A level 1 Quest Board assignment for 1 hero.",
+      "min_board_level": 1,
+      "difficulty": 1,
+      "party_size": 1,
+      "reward": {
+        "gold": 250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 1
+      }
+    },
+    {
+      "id": "quest-2-broken-caravan",
+      "title": "Broken Caravan",
+      "description": "A level 2 Quest Board assignment for 3 heroes.",
+      "min_board_level": 2,
+      "difficulty": 2,
+      "party_size": 3,
+      "reward": {
+        "gold": 500,
+        "meta_currency": "quest_marks",
+        "meta_amount": 2
+      }
+    },
+    {
+      "id": "quest-2-gnoll-ambush",
+      "title": "Gnoll Ambush",
+      "description": "A level 2 Quest Board assignment for 3 heroes.",
+      "min_board_level": 2,
+      "difficulty": 2,
+      "party_size": 3,
+      "reward": {
+        "gold": 500,
+        "meta_currency": "quest_marks",
+        "meta_amount": 2
+      }
+    },
+    {
+      "id": "quest-2-missing-patrol",
+      "title": "Missing Patrol",
+      "description": "A level 2 Quest Board assignment for 3 heroes.",
+      "min_board_level": 2,
+      "difficulty": 2,
+      "party_size": 3,
+      "reward": {
+        "gold": 500,
+        "meta_currency": "quest_marks",
+        "meta_amount": 2
+      }
+    },
+    {
+      "id": "quest-2-river-crossing",
+      "title": "River Crossing",
+      "description": "A level 2 Quest Board assignment for 3 heroes.",
+      "min_board_level": 2,
+      "difficulty": 2,
+      "party_size": 3,
+      "reward": {
+        "gold": 500,
+        "meta_currency": "quest_marks",
+        "meta_amount": 2
+      }
+    },
+    {
+      "id": "quest-2-bandit-camp",
+      "title": "Bandit Camp",
+      "description": "A level 2 Quest Board assignment for 3 heroes.",
+      "min_board_level": 2,
+      "difficulty": 2,
+      "party_size": 3,
+      "reward": {
+        "gold": 500,
+        "meta_currency": "quest_marks",
+        "meta_amount": 2
+      }
+    },
+    {
+      "id": "quest-3-crypt-sweep",
+      "title": "Crypt Sweep",
+      "description": "A level 3 Quest Board assignment for 5 heroes.",
+      "min_board_level": 3,
+      "difficulty": 3,
+      "party_size": 5,
+      "reward": {
+        "gold": 750,
+        "meta_currency": "quest_marks",
+        "meta_amount": 3
+      }
+    },
+    {
+      "id": "quest-3-ogre-hunters",
+      "title": "Ogre Hunters",
+      "description": "A level 3 Quest Board assignment for 5 heroes.",
+      "min_board_level": 3,
+      "difficulty": 3,
+      "party_size": 5,
+      "reward": {
+        "gold": 750,
+        "meta_currency": "quest_marks",
+        "meta_amount": 3
+      }
+    },
+    {
+      "id": "quest-3-ruined-watchtower",
+      "title": "Ruined Watchtower",
+      "description": "A level 3 Quest Board assignment for 5 heroes.",
+      "min_board_level": 3,
+      "difficulty": 3,
+      "party_size": 5,
+      "reward": {
+        "gold": 750,
+        "meta_currency": "quest_marks",
+        "meta_amount": 3
+      }
+    },
+    {
+      "id": "quest-3-cultist-cell",
+      "title": "Cultist Cell",
+      "description": "A level 3 Quest Board assignment for 5 heroes.",
+      "min_board_level": 3,
+      "difficulty": 3,
+      "party_size": 5,
+      "reward": {
+        "gold": 750,
+        "meta_currency": "quest_marks",
+        "meta_amount": 3
+      }
+    },
+    {
+      "id": "quest-3-forest-offensive",
+      "title": "Forest Offensive",
+      "description": "A level 3 Quest Board assignment for 5 heroes.",
+      "min_board_level": 3,
+      "difficulty": 3,
+      "party_size": 5,
+      "reward": {
+        "gold": 750,
+        "meta_currency": "quest_marks",
+        "meta_amount": 3
+      }
+    },
+    {
+      "id": "quest-4-siege-breakers",
+      "title": "Siege Breakers",
+      "description": "A level 4 Quest Board assignment for 10 heroes.",
+      "min_board_level": 4,
+      "difficulty": 4,
+      "party_size": 10,
+      "reward": {
+        "gold": 1000,
+        "meta_currency": "quest_marks",
+        "meta_amount": 4
+      }
+    },
+    {
+      "id": "quest-4-warband-hunt",
+      "title": "Warband Hunt",
+      "description": "A level 4 Quest Board assignment for 10 heroes.",
+      "min_board_level": 4,
+      "difficulty": 4,
+      "party_size": 10,
+      "reward": {
+        "gold": 1000,
+        "meta_currency": "quest_marks",
+        "meta_amount": 4
+      }
+    },
+    {
+      "id": "quest-4-ancient-ruins",
+      "title": "Ancient Ruins",
+      "description": "A level 4 Quest Board assignment for 10 heroes.",
+      "min_board_level": 4,
+      "difficulty": 4,
+      "party_size": 10,
+      "reward": {
+        "gold": 1000,
+        "meta_currency": "quest_marks",
+        "meta_amount": 4
+      }
+    },
+    {
+      "id": "quest-4-blackrock-push",
+      "title": "Blackrock Push",
+      "description": "A level 4 Quest Board assignment for 10 heroes.",
+      "min_board_level": 4,
+      "difficulty": 4,
+      "party_size": 10,
+      "reward": {
+        "gold": 1000,
+        "meta_currency": "quest_marks",
+        "meta_amount": 4
+      }
+    },
+    {
+      "id": "quest-4-plague-column",
+      "title": "Plague Column",
+      "description": "A level 4 Quest Board assignment for 10 heroes.",
+      "min_board_level": 4,
+      "difficulty": 4,
+      "party_size": 10,
+      "reward": {
+        "gold": 1000,
+        "meta_currency": "quest_marks",
+        "meta_amount": 4
+      }
+    },
+    {
+      "id": "quest-5-raid-vanguard",
+      "title": "Raid Vanguard",
+      "description": "A level 5 Quest Board assignment for 20 heroes.",
+      "min_board_level": 5,
+      "difficulty": 5,
+      "party_size": 20,
+      "reward": {
+        "gold": 1250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 5
+      }
+    },
+    {
+      "id": "quest-5-dragonkin-assault",
+      "title": "Dragonkin Assault",
+      "description": "A level 5 Quest Board assignment for 20 heroes.",
+      "min_board_level": 5,
+      "difficulty": 5,
+      "party_size": 20,
+      "reward": {
+        "gold": 1250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 5
+      }
+    },
+    {
+      "id": "quest-5-legion-holdout",
+      "title": "Legion Holdout",
+      "description": "A level 5 Quest Board assignment for 20 heroes.",
+      "min_board_level": 5,
+      "difficulty": 5,
+      "party_size": 20,
+      "reward": {
+        "gold": 1250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 5
+      }
+    },
+    {
+      "id": "quest-5-worldbreaker-patrol",
+      "title": "Worldbreaker Patrol",
+      "description": "A level 5 Quest Board assignment for 20 heroes.",
+      "min_board_level": 5,
+      "difficulty": 5,
+      "party_size": 20,
+      "reward": {
+        "gold": 1250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 5
+      }
+    },
+    {
+      "id": "quest-5-citadel-strike",
+      "title": "Citadel Strike",
+      "description": "A level 5 Quest Board assignment for 20 heroes.",
+      "min_board_level": 5,
+      "difficulty": 5,
+      "party_size": 20,
+      "reward": {
+        "gold": 1250,
+        "meta_currency": "quest_marks",
+        "meta_amount": 5
+      }
+    }
+  ]
+}
