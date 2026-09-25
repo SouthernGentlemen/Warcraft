@@ -148,7 +148,7 @@ Keep level is now the single structural upgrade ceiling for every other Base bui
 
 ### Compact building menus
 
-Base building sidecars now contain only building identity in the header, one or more functional menu actions, a compact level indicator, and one shared Upgrade control. Upgrade cost, Keep gate, resource shortages, next level, and max-level state live in the Upgrade tooltip instead of permanent prose blocks. Quest Board keeps its dispatch workflow beneath the compact menu. Recruitment/Keep route to Roster, Training routes to Talents, Storehouse and current profession hotspots route to Inventory, and Quest Board links to Quest Journal. Profession placeholders have been removed; Artisans Guild will replace the temporary profession entry points in WOWUI-041/042.
+Base building sidecars now contain only building identity in the header, one or more functional menu actions, a compact level indicator, and one shared Upgrade control. Upgrade cost, Keep gate, resource shortages, next level, and max-level state live in the Upgrade tooltip instead of permanent prose blocks. Quest Board keeps its dispatch workflow beneath the compact menu. Recruitment/Keep route to Roster, Training routes to Talents, Storehouse routes to Inventory, Quest Board links to Quest Journal, and the single Artisans Guild is now the only Base profession entry point.
 
 ### Recruitment Hall
 
@@ -157,3 +157,7 @@ Recruitment Hall now opens a real in-sidecar discovery workflow. Level progressi
 ### Storehouse Inventory link
 
 Storehouse is a direct Base entry point into global Inventory. Its compact sidecar contains exactly one primary building action, `Open Inventory`, plus the shared Upgrade control. It has no Storehouse-only informational workflow or selection-detail panel. Inventory remains read-only on navigation/load, so opening Storehouse → Inventory does not mutate roster or ownership state.
+
+### Artisans Guild Base hotspot
+
+The six standalone profession hotspots have been consolidated into one `Artisans Guild` Base building. Alliance and Horde each position the Guild from shared faction presentation data, and the Guild participates in the normal five-level Keep-gated upgrade system. The original Blacksmith, Alchemy, Enchanting, Tailoring, Leatherworking, and Engineering definitions and their former five-tier progression records are preserved under `data/base/profession-buildings/`; only their standalone Base building entries/routes were removed. WOWUI-042 owns the Guild's profession selection and lock/unlock menu.
