@@ -1466,7 +1466,7 @@ Split persistent item ownership into clear Base buildings instead of treating St
 
 ### WOWUI-062 — In-Sidecar Storehouse, Bank, and Armory Browsers
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-061
 
