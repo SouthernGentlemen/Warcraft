@@ -1119,7 +1119,7 @@ Deliver a functional 10-hero encounter mode.
 
 ### WOWUI-052 — Twenty-Hero Battle Mode
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-051
 
