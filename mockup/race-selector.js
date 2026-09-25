@@ -228,7 +228,8 @@ function renderRaceList() {
 function renderClasses() {
   const faction = currentFaction();
   const race = currentRaceMeta();
-  const available = new Set(race.available_classes);
+  const availableClasses = race && Array.isArray(race.available_classes) ? race.available_classes : [];
+  const available = new Set(availableClasses);
   const root = $("classGrid");
   root.innerHTML = "";
 
@@ -252,8 +253,8 @@ function renderClasses() {
     root.appendChild(button);
   });
 
-  $("classSummary").textContent = race.available_classes.length + " available · " +
-    (state.classIndex.classes.length - race.available_classes.length) + " locked";
+  $("classSummary").textContent = availableClasses.length + " available · " +
+    (state.classIndex.classes.length - availableClasses.length) + " locked";
 }
 
 function renderStage(data) {
