@@ -8,7 +8,7 @@ const BASE_TEAMS = {
     { id:"a-mage", name:"Fizzik", race:"Gnome", className:"Mage", level:4, icon:"spell_fire_fireball02", hp:610, resource:330, role:"damage", power:88 },
     { id:"a-priest", name:"Selene", race:"Human", className:"Priest", level:4, icon:"spell_holy_powerwordshield", hp:650, resource:360, role:"healer", power:64 },
     { id:"a-rogue", name:"Pip", race:"Gnome", className:"Rogue", level:4, icon:"ability_rogue_ambush", hp:680, resource:120, role:"damage", power:84 },
-    { id:"a-warlock", name:"Thrain", race:"Dwarf", className:"Warlock", level:3, icon:"spell_shadow_shadowbolt", hp:720, resource:300, role:"damage", power:80 }
+    { id:"a-druid", name:"Thalara", race:"Night Elf", className:"Druid", level:3, icon:"ability_druid_catform", hp:720, resource:300, role:"damage", power:80 }
   ],
   horde: [
     { id:"h-warrior", name:"Korga", race:"Orc", className:"Warrior", level:5, icon:"ability_warrior_savageblow", hp:1020, resource:100, role:"tank", power:74 },
@@ -16,7 +16,7 @@ const BASE_TEAMS = {
     { id:"h-warlock", name:"Morrow", race:"Undead", className:"Warlock", level:4, icon:"spell_shadow_summonvoidwalker", hp:720, resource:320, role:"damage", power:82 },
     { id:"h-rogue", name:"Rikk", race:"Troll", className:"Rogue", level:4, icon:"ability_backstab", hp:670, resource:120, role:"damage", power:88 },
     { id:"h-priest", name:"Vex", race:"Undead", className:"Priest", level:4, icon:"spell_shadow_shadowwordpain", hp:660, resource:350, role:"healer", power:66 },
-    { id:"h-shaman2", name:"Grash", race:"Orc", className:"Shaman", level:3, icon:"ability_shaman_stormstrike", hp:760, resource:250, role:"damage", power:78 }
+    { id:"h-shaman2", name:"Grash", race:"Tauren", className:"Shaman", level:3, icon:"ability_shaman_stormstrike", hp:760, resource:250, role:"damage", power:78 }
   ]
 };
 
