@@ -41,7 +41,7 @@ The target is not a collection of separately themed mockups. The target is one r
 | WOWUI-010 | Simulation lab reskin **(Complete)** | WOWUI-001, WOWUI-002, WOWUI-003 |
 | WOWUI-011 | Cross-screen consistency and accessibility pass **(Complete)** | WOWUI-004 through WOWUI-010 |
 | WOWUI-012 | Canonical Classic race/class expansion **(Complete)** | WOWUI-011 |
-| WOWUI-013 | Simplify talents to two tiers plus one capstone | WOWUI-012 |
+| WOWUI-013 | Simplify talents to two tiers plus one capstone **(Complete)** | WOWUI-012 |
 | WOWUI-014 | Slot picker gear flow and trinket support | WOWUI-011 |
 | WOWUI-015 | Building levels 1–5 and tier mapping | WOWUI-011 |
 | WOWUI-016 | Roster management and five saved party loadouts | WOWUI-012, WOWUI-014 |
@@ -536,6 +536,8 @@ Add Night Elf and Tauren to hero creation and replace the current faction-wide p
 ---
 
 ## WOWUI-013 — Simplify Talents To Two Tiers Plus One Capstone
+
+**Status:** Complete — 2026-09-24
 
 ### Objective
 
