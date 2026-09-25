@@ -192,10 +192,6 @@ Base building sidecars now contain only building identity in the header, one or 
 
 Recruitment Hall now opens a real in-sidecar discovery workflow. Level progression carries authored `roster_capacity` and `discovery_limit` values, so higher Hall levels reveal more faction-valid candidates and support a larger faction roster. Candidates come from `data/base/recruitment.json`; recruiting writes through `WarcraftRoster.recruitHero()`, which rejects duplicates, wrong-faction candidates, and over-capacity writes. Recruited heroes persist in shared roster storage, survive normalization/reload, and appear automatically in the existing Roster workspace.
 
-### Storehouse Inventory link
-
-Storehouse is a direct Base entry point into global Inventory. Its compact sidecar contains exactly one primary building action, `Open Inventory`, plus the shared Upgrade control. It has no Storehouse-only informational workflow or selection-detail panel. Inventory remains read-only on navigation/load, so opening Storehouse → Inventory does not mutate roster or ownership state.
-
 ### Artisans Guild Base hotspot
 
 The six standalone profession hotspots have been consolidated into one `Artisans Guild` Base building. Alliance and Horde each position the Guild from shared faction presentation data, and the Guild participates in the normal five-level Keep-gated upgrade system. The original Blacksmith, Alchemy, Enchanting, Tailoring, Leatherworking, and Engineering definitions and their former five-tier progression records are preserved under `data/base/profession-buildings/`; only their standalone Base building entries/routes were removed. The Guild owns the shared profession selection menu; all six professions are available at every Guild level.
@@ -231,6 +227,12 @@ Dungeon enemies now come from `data/npcs/catalog.json`, governed by `data/npcs/s
 Every hero Battle card renders the same four authoritative combat actions owned by the roster/runtime contract: **Auto Attack**, **Ability 1**, **Ability 2**, and the specialization-capstone **Ultimate**. The resolved hero definition preserves the roster-selected cooldown ordering and capstone Ultimate ID, and authored class ability records carry the icon slugs used by Battle. Shared ability tooltips expose action identity, target, cost/cooldown details, and current live state.
 
 Readiness is not reimplemented in the Battle presentation. `CombatSimulation.actionState()` owns effective resource cost, cooldown remaining, resource blocking, and Ultimate charge/readiness; `BattleEncounterRuntime.snapshot()` exposes that canonical state alongside each actor. Battle only formats those values as **Ready**, cooldown time, **Resource**, Ultimate percentage, or **Down**. Normal 1/3/5-player cards show icon, slot label, action name, and live state; 10/20-player layouts retain all four slots as a condensed icon/state strip rather than hiding the loadout.
+
+Hero actor construction now requires the roster-selected Ability 1 / Ability 2 IDs and the specialization-capstone Ultimate ID explicitly. The combat factory has no "first two compatible cooldowns" or "first Ultimate" fallback path, so presentation and simulation cannot silently diverge from the authoritative hero loadout.
+
+### Battle Auto Attack swing timer
+
+Every player hero card includes an engine-driven Auto Attack swing timer. `CombatSimulation.actionState().auto` exposes progress against the real Auto Attack threshold, the effective per-tick increment after stat Haste and talent auto-Haste, and remaining ticks. Battle converts only that snapshot state into bar width/text. The bar therefore advances on the same fixed ticks that can fire Auto Attack, resets through the same engine spend path when the swing fires, freezes when the runtime is paused, and returns to zero after encounter reset. The 10- and 20-player card rules retain a condensed version rather than hiding swing timing.
 
 ### Battle health rendering
 
