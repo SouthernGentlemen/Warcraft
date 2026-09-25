@@ -22,39 +22,30 @@ The player's major decisions should come from:
 
 ## Auto-Attacks
 
-Each combatant has a repeating auto-attack bar.
+Each combatant has a repeating auto-attack cycle driven by deterministic fixed combat ticks.
 
-The bar fills over real time.
+Battle presents that engine-owned progress as a swing-timer bar. The bar advances only when the combat simulation advances, freezes while Battle is paused, resets through the same action-spend path that fires Auto Attack, and returns to its initial state on encounter reset.
 
-When the bar fills:
-
-1. the combatant performs an auto-attack
-2. the auto-attack resolves
-3. the bar resets
-4. the next auto-attack cycle begins
-
-Attack-bar fill speed is part of the combat timing model and may be affected by stats such as Haste.
+Swing progression is affected by the actor's live Haste plus authored auto-attack Haste talent hooks. Presentation never runs a separate CSS-only or wall-clock timer.
 
 ## Class Abilities
 
-Every class has a fixed core combat package:
+Every hero exposes the same four-slot combat package:
 
-- 2 cooldown abilities
-- 1 ultimate ability
+- Auto Attack
+- Ability 1
+- Ability 2
+- specialization-capstone Ultimate
 
-Each class defines a pool of cooldown abilities in its class `abilities/README.md`.
+Each class defines authored normal and Ultimate actions in its class `abilities/README.md`. A hero equips exactly two distinct learned normal abilities compatible with the active specialization. The combat actor factory requires those explicit selected IDs; it does not fall back to the first compatible abilities.
 
-A hero equips exactly two cooldown abilities. The deterministic simulator automatically uses the first equipped cooldown that is ready, affordable, and has a valid target.
-
-Cooldown timing is expressed in fixed 60 Hz combat ticks and advances through the same Haste accumulator used by the authoritative combat runtime.
+The deterministic simulator automatically uses the first equipped normal ability that is ready, affordable, and has a valid target. Cooldown timing is expressed in fixed 60 Hz combat ticks and advances through the same Haste accumulator used by the authoritative combat runtime.
 
 ## Ultimate
 
-Each class has one ultimate ability tied to a fillable ultimate bar.
+Each specialization's capstone maps to one authored Ultimate action through its `ultimate_id`. The hero's combat loadout must resolve to that capstone Ultimate; the combat actor factory does not select a generic fallback Ultimate.
 
-The ultimate bar builds during combat.
-
-When the bar is full, that class's ultimate becomes available.
+The ultimate bar builds during combat. When it is full, the capstone Ultimate becomes available.
 
 The prototype ultimate bar uses a 10,000-point integer scale.
 
@@ -143,7 +134,7 @@ Later combat specifications need to define:
 - final damage and healing tuning
 - defenses
 - targeting
-- base attack-bar timing
+- final auto-attack timing and tuning
 - buffs and debuffs
 - threat or tanking
 - class abilities
