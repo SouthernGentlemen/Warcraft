@@ -636,6 +636,101 @@
   cursor: not-allowed;
 }
 
+/* Recruitment Hall workflow */
+
+.base-sidecar__recruitment {
+  margin-top: 7px;
+}
+
+.base-sidecar__recruitment-head {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.base-sidecar__recruitment-head > span {
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  padding: 6px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: rgba(0,0,0,.18);
+}
+
+.base-sidecar__recruitment-head strong {
+  color: var(--wow-gold-pale);
+  font-size: 12px;
+}
+
+.base-sidecar__recruitment-head small,
+.base-sidecar__recruitment-status {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  text-transform: uppercase;
+}
+
+.base-sidecar__recruitment-status {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  padding: 5px 7px;
+  border: var(--wow-border-thin) solid var(--wow-inset-line);
+  background: rgba(0,0,0,.14);
+}
+
+.base-sidecar__candidate-list {
+  display: grid;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.base-sidecar__candidate {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 34px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 6px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface-inset);
+}
+
+.base-sidecar__candidate.is-recruited {
+  opacity: .62;
+}
+
+.base-sidecar__candidate-icon {
+  --wow-icon-size: 30px;
+}
+
+.base-sidecar__candidate-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.base-sidecar__candidate-copy strong,
+.base-sidecar__candidate-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.base-sidecar__candidate-copy strong {
+  color: var(--wow-gold-pale);
+  font: 700 10px var(--wow-font-display);
+}
+
+.base-sidecar__candidate-copy small {
+  color: var(--wow-text-muted);
+  font-size: 7px;
+}
+
+.base-sidecar__recruit-button {
+  min-width: 72px;
+}
+
 /* Quest Board content inside the same sidecar */
 
 .base-sidecar__quests {
