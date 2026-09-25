@@ -3,7 +3,7 @@
   "source_path": "docs/heroes/classes/hunter/specs/beast-mastery.md",
   "kind": "specialization",
   "title": "Hunter — Beast Mastery",
-  "source_markdown": "# Hunter — Beast Mastery\n\n## Talent Prototype\n\nThis compact prototype uses two normal talent tiers plus one capstone. Talent identity and icon slugs are sourced from the Classic tree named **Beast Mastery**. There are no per-node prerequisite chains; unlocks are controlled only by the structured tier thresholds in this JSON.\n",
+  "source_markdown": "# Hunter — Beast Mastery\n\n## Identity\n\n- Role: Ranged damage / pet support\n- Resource: Mana\n- Primary stat: Agility\n- Auto-attack: Beast Shot — ranged weapon damage; companion follows for 30% of shot damage\n\n## Talent Prototype\n\nThis compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Beast Mastery** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.\n\n### Tier 1\n\nChoose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Improved Aspect of the Hawk** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Endurance Training** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Tier 2\n\nRequires a Tier 1 choice. Choose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Pathfinding** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Bestial Swiftness** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Capstone\n\nRequires a Tier 2 choice. Choose the single capstone.\n\n| Capstone | Prototype effect |\n| --- | --- |\n| **Bestial Wrath** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\nCanonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts\n\n## Combat Loadout\n\nThis specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
   "class": "Hunter",
   "specialization": "Beast Mastery",
   "identity": {
@@ -20,6 +20,13 @@
         "icon_slug": "spell_nature_ravenform",
         "canonical_tree": "Beast Mastery",
         "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts"
+      },
+      {
+        "name": "Endurance Training",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_nature_reincarnation",
+        "canonical_tree": "Beast Mastery",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts"
       }
     ],
     "tier_2": [
@@ -27,6 +34,13 @@
         "name": "Pathfinding",
         "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
         "icon_slug": "ability_mount_jungletiger",
+        "canonical_tree": "Beast Mastery",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts"
+      },
+      {
+        "name": "Bestial Swiftness",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "ability_druid_dash",
         "canonical_tree": "Beast Mastery",
         "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts"
       }
@@ -47,6 +61,11 @@
     "tier_1_unlock_points": 0,
     "tier_2_unlock_points": 1,
     "capstone_unlock_points": 2,
-    "dependency_rule": "tier-only; no per-node prerequisites"
+    "dependency_rule": "tier-only; no per-node prerequisites",
+    "tier_counts": {
+      "tier_1": 2,
+      "tier_2": 2,
+      "capstones": 1
+    }
   }
 }

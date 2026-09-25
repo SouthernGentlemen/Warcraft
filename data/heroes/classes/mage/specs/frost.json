@@ -3,7 +3,7 @@
   "source_path": "docs/heroes/classes/mage/specs/frost.md",
   "kind": "specialization",
   "title": "Mage — Frost",
-  "source_markdown": "# Mage — Frost\n\n## Identity\n\n- Role: Ranged spell damage / control\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Frostbolt — ranged Frost damage\n\n## Talent Tree\n\nThe first talent point spent in this tree selects **Frost** as the hero's specialization.\n\nAll values below are starting implementation values and may be tuned during balance passes.\n\n### Tier 1 — Level 1\n\nChoose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Permafrost** | Frostbolt slows the target's next auto-attack bar by 8%. |\n| **Ice Shards** | Frostbolt deals 15% more damage. |\n| **Cold Efficiency** | Mana costs of equipped cooldown abilities are reduced by 10%. |\n\n### Tier 2 — Level 2\n\nRequires a Tier 1 talent in this tree. Choose 1 of 3.\n\n| Talent | Effect |\n| --- | --- |\n| **Shatter** | Gain 20% Critical Strike chance against targets currently slowed or stunned. |\n| **Frozen Armor** | After taking direct damage, gain a shield equal to 8% maximum health; 12-second internal cooldown. |\n| **Icy Precision** | Frostbolt cannot miss while the target is slowed. |\n\n### Tier 3 — Level 3 Capstone\n\nRequires a Tier 2 talent in this tree. Choose exactly 1 of 2.\n\n| Capstone | Effect |\n| --- | --- |\n| **Deep Freeze** | Every fourth Frostbolt stuns its target for 1 second. |\n| **Icy Veins** | Using the selected ultimate grants 25% Haste for 8 seconds and causes Frostbolt to always hit. |\n\nSelecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.\n\n## Combat Loadout\n\nThis specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
+  "source_markdown": "# Mage — Frost\n\n## Identity\n\n- Role: Ranged spell damage / control\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Frostbolt — ranged Frost damage\n\n## Talent Prototype\n\nThis compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Frost** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.\n\n### Tier 1\n\nChoose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Frost Warding** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Improved Frostbolt** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Tier 2\n\nRequires a Tier 1 choice. Choose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Piercing Ice** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Cold Snap** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Capstone\n\nRequires a Tier 2 choice. Choose the single capstone.\n\n| Capstone | Prototype effect |\n| --- | --- |\n| **Ice Barrier** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\nCanonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts\n\n## Combat Loadout\n\nThis specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
   "class": "Mage",
   "specialization": "Frost",
   "identity": {
@@ -15,22 +15,15 @@
   "talents": {
     "tier_1": [
       {
-        "name": "Permafrost",
-        "effect": "Frostbolt slows the target's next auto-attack bar by 8%.",
-        "icon_slug": "spell_frost_wisp",
+        "name": "Frost Warding",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_frost_frostward",
         "canonical_tree": "Frost",
         "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
       },
       {
-        "name": "Ice Shards",
-        "effect": "Frostbolt deals 15% more damage.",
-        "icon_slug": "spell_frost_iceshard",
-        "canonical_tree": "Frost",
-        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
-      },
-      {
-        "name": "Cold Efficiency",
-        "effect": "Mana costs of equipped cooldown abilities are reduced by 10%.",
+        "name": "Improved Frostbolt",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
         "icon_slug": "spell_frost_frostbolt02",
         "canonical_tree": "Frost",
         "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
@@ -38,39 +31,25 @@
     ],
     "tier_2": [
       {
-        "name": "Shatter",
-        "effect": "Gain 20% Critical Strike chance against targets currently slowed or stunned.",
-        "icon_slug": "spell_frost_frostshock",
-        "canonical_tree": "Frost",
-        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
-      },
-      {
-        "name": "Frozen Armor",
-        "effect": "After taking direct damage, gain a shield equal to 8% maximum health; 12-second internal cooldown.",
-        "icon_slug": "spell_frost_frostarmor02",
-        "canonical_tree": "Frost",
-        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
-      },
-      {
-        "name": "Icy Precision",
-        "effect": "Frostbolt cannot miss while the target is slowed.",
+        "name": "Piercing Ice",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
         "icon_slug": "spell_frost_frostbolt",
+        "canonical_tree": "Frost",
+        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
+      },
+      {
+        "name": "Cold Snap",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_frost_wizardmark",
         "canonical_tree": "Frost",
         "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
       }
     ],
     "capstones": [
       {
-        "name": "Deep Freeze",
-        "effect": "Every fourth Frostbolt stuns its target for 1 second.",
-        "icon_slug": "spell_frost_freezingbreath",
-        "canonical_tree": "Frost",
-        "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
-      },
-      {
-        "name": "Icy Veins",
-        "effect": "Using the selected ultimate grants 25% Haste for 8 seconds and causes Frostbolt to always hit.",
-        "icon_slug": "spell_frost_coldhearted",
+        "name": "Ice Barrier",
+        "effect": "Canonical Classic talent; prototype tuning is intentionally not substituted for the original talent text.",
+        "icon_slug": "spell_ice_lament",
         "canonical_tree": "Frost",
         "canonical_source": "https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Mage/data.ts"
       }
@@ -82,6 +61,11 @@
     "tier_1_unlock_points": 0,
     "tier_2_unlock_points": 1,
     "capstone_unlock_points": 2,
-    "dependency_rule": "tier-only; no per-node prerequisites"
+    "dependency_rule": "tier-only; no per-node prerequisites",
+    "tier_counts": {
+      "tier_1": 2,
+      "tier_2": 2,
+      "capstones": 1
+    }
   }
 }

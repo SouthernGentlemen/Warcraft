@@ -7,45 +7,40 @@
 - Primary stat: Agility
 - Auto-attack: Tactical Shot — ranged weapon damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Survival** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Survival** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Serpent Sting** | Tactical Shot applies poison for 10% of the hit's damage over 5 seconds. |
-| **Resourcefulness** | Mana costs of equipped cooldown abilities are reduced by 10%. |
-| **Tactical Readiness** | The first equipped cooldown used each combat has 30% reduced cooldown time. |
+| **Monster Slaying** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Humanoid Slaying** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Trap Mastery** | Crowd-control effects caused by this hero last 20% longer. |
-| **Expose Weakness** | Damaging equipped cooldowns cause the target to take 10% more damage from all sources for 4 seconds. |
-| **Survival Instinct** | When falling below 30% health, gain 20% damage reduction for 6 seconds; once per combat. |
+| **Clever Traps** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Survivalist** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Lockdown** | Using the selected ultimate stuns the primary target for 2 seconds and slows its next two auto-attack bars by 20%. |
-| **Adaptation** | Each equipped cooldown used alternates between granting 15% Attack Power and 15% auto-attack speed for 6 seconds. |
+| **Wyvern Sting** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.

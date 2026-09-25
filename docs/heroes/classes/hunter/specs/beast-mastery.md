@@ -7,45 +7,40 @@
 - Primary stat: Agility
 - Auto-attack: Beast Shot — ranged weapon damage; companion follows for 30% of shot damage
 
-## Talent Tree
+## Talent Prototype
 
-The first talent point spent in this tree selects **Beast Mastery** as the hero's specialization.
+This compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Beast Mastery** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.
 
-All values below are starting implementation values and may be tuned during balance passes.
+### Tier 1
 
-### Tier 1 — Level 1
+Choose 1 of 2.
 
-Choose 1 of 3.
-
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Ferocious Companion** | Companion follow-up attacks deal 25% more damage. |
-| **Cobra Training** | Beast Shot deals 12% more damage. |
-| **Animal Bond** | Heal for 5% of companion damage dealt. |
+| **Improved Aspect of the Hawk** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Endurance Training** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 2 — Level 2
+### Tier 2
 
-Requires a Tier 1 talent in this tree. Choose 1 of 3.
+Requires a Tier 1 choice. Choose 1 of 2.
 
-| Talent | Effect |
+| Talent | Prototype effect |
 | --- | --- |
-| **Frenzy** | Companion attacks grant 5% auto-attack speed for 4 seconds; stacks up to 3 times. |
-| **Bestial Discipline** | Using an equipped cooldown immediately triggers a companion attack for 50% normal companion damage. |
-| **Thick Hide** | Every third companion attack grants the Hunter a shield equal to 5% maximum health. |
+| **Pathfinding** | Canonical Classic talent; prototype tuning is intentionally deferred. |
+| **Bestial Swiftness** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-### Tier 3 — Level 3 Capstone
+### Capstone
 
-Requires a Tier 2 talent in this tree. Choose exactly 1 of 2.
+Requires a Tier 2 choice. Choose the single capstone.
 
-| Capstone | Effect |
+| Capstone | Prototype effect |
 | --- | --- |
-| **Bestial Wrath** | Using the selected ultimate grants the companion 50% increased damage and the Hunter 20% auto-attack speed for 8 seconds. |
-| **Pack Leader** | Every third Beast Shot triggers two companion attacks, and all companion attacks deal 20% more damage. |
+| **Bestial Wrath** | Canonical Classic talent; prototype tuning is intentionally deferred. |
 
-Selecting a capstone completes the primary specialization path and unlocks the class's other two talent trees.
+Canonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Hunter/data.ts
 
 ## Combat Loadout
 
-This specialization uses its listed auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
+This specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.
 
 Talents modify that shared combat package; they do not add extra active ability slots.
