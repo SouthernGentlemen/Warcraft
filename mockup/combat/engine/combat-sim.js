@@ -250,6 +250,26 @@ export class CombatSimulation {
     return this.state.actors[index].autoProgress >= this.autoThreshold(index);
   }
 
+  autoTiming(index) {
+    const def = this.defs[index];
+    const actor = this.state.actors[index];
+    if (!def || !actor) throw new RangeError("Unknown combat actor index.");
+
+    const threshold = Math.max(1, this.autoThreshold(index));
+    const rawProgress = Math.max(0, Math.trunc(actor.autoProgress || 0));
+    const progress = Math.min(threshold, rawProgress);
+    const increment = Math.max(1, BP + this.effectiveHasteBp(index) + def.talentHooks.autoHasteBp);
+    const remaining = Math.max(0, threshold - progress);
+
+    return {
+      progress,
+      threshold,
+      progressBp: Math.min(BP, Math.trunc(progress * BP / threshold)),
+      increment,
+      remainingTicks: Math.ceil(remaining / increment)
+    };
+  }
+
   effectiveCost(index, action) {
     if (!action || action.cost <= 0 || action.resource === "none" || action.resource === "ultimate") return 0;
     const reduction = clampInt(this.defs[index].talentHooks.resourceCostReductionBp, 0, 9_000);
@@ -286,8 +306,17 @@ export class CombatSimulation {
 
     const ultimateCost = def.ultimate ? Math.max(1, Math.trunc(def.ultimate.cost || ULTIMATE_MAX)) : ULTIMATE_MAX;
     const ultimateCharge = Math.max(0, Math.min(ultimateCost, Math.trunc(actor.ultimate || 0)));
+    const auto = this.autoTiming(index);
     return {
-      auto: { id: def.auto.id, ready: Boolean(actor.alive) },
+      auto: {
+        id: def.auto.id,
+        ready: Boolean(actor.alive) && auto.progress >= auto.threshold,
+        progress: auto.progress,
+        threshold: auto.threshold,
+        progressBp: auto.progressBp,
+        increment: auto.increment,
+        remainingTicks: auto.remainingTicks
+      },
       cooldowns,
       ultimate: def.ultimate ? {
         id: def.ultimate.id,
