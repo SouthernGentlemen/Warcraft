@@ -5,11 +5,13 @@ const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 const BASE_PRESENTATION_ROOT = "../data/base/presentation.json";
 const RECRUITMENT_DATA_ROOT = "../data/base/recruitment.json";
 const PROFESSION_DATA_ROOT = "../data/base/profession-buildings/index.json";
+const QUEST_OFFER_POOL_ROOT = "../data/base/quest-offers.json";
 const Professions = window.WarcraftProfessions;
 let buildings = [];
 let basePresentation = null;
 let recruitmentData = null;
 let professionData = null;
+let questOfferPool = null;
 let sidecarOrigin = null;
 
 function normalizeBuilding(raw) {
@@ -103,19 +105,32 @@ function professionActionAvailable(building) {
   return Boolean(building.category === 'profession' && current && current.action_available === true);
 }
 
+function currentQuestOffers() {
+  if (!questOfferPool) return [];
+  const boardState = Roster.getQuestBoardState();
+  const ids = new Set(boardState.offerIds || []);
+  return questOfferPool.offers.filter(offer => ids.has(offer.id));
+}
+
+function currentRoundQuestForOffer(offerId) {
+  const round = Roster.getQuestBoardState().round;
+  return Roster.getState().quests.find(quest => quest.round === round && quest.sourceOfferId === offerId) || null;
+}
+
 function buildingAttentionState(building) {
   if (!building) return null;
 
   if (building.id === 'questboard') {
-    const quests = Roster.getState().quests;
-    const completed = quests.some(quest => quest.status === 'completed' && quest.tier <= building.level);
-    if (completed) return {key:'quest-complete', label:'Quest complete', detail:'A completed quest is ready for review or another dispatch.'};
+    const round = Roster.getQuestBoardState().round;
+    const quests = Roster.getState().quests.filter(quest => quest.round === round);
+    if (quests.some(quest => quest.status === 'completed')) {
+      return {key:'quest-complete', label:'Quest complete', detail:'A quest from the current Quest Board round has been completed.'};
+    }
 
-    const active = quests.some(quest => quest.status === 'active' && quest.tier <= building.level);
     const availableHeroes = Roster.getState().heroes.filter(hero => hero.availability === 'available').length;
-    const ready = quests.some(quest => quest.tier <= building.level && quest.status !== 'active' && availableHeroes >= quest.requiredHeroes);
-    if (ready) return {key:'quest-ready', label:'Quest ready', detail:'An unlocked quest can be dispatched with the currently available roster.'};
-    if (active) return null;
+    const ready = currentQuestOffers().some(offer => !currentRoundQuestForOffer(offer.id) && availableHeroes >= offer.party_size);
+    if (ready) return {key:'quest-ready', label:'Quest ready', detail:'A quest offer in the current round can be dispatched with the available roster.'};
+    if (quests.some(quest => quest.status === 'active')) return null;
   }
 
   if (professionActionAvailable(building)) {
@@ -518,51 +533,109 @@ function syncMapBuildings() {
 function questBoardBuilding(){return buildings.find(b=>b.id==="questboard");}
 function compatibleLoadouts(size){return Roster.getState().loadouts.filter(l=>l.size===size&&Roster.validateLoadout(l,true).valid);}
 
-function renderQuestBoard() {
-  const board=questBoardBuilding(), root=$('#questTierList');
-  if(!board||!root)return;
-  root.innerHTML='';
-  const status=$('#questBoardStatus');
-  if(status) status.textContent=state.questMessage || 'Dispatch available heroes to unlocked quest tiers.';
+function questSeedHash(value) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
 
-  Roster.getState().quests.forEach(quest=>{
-    const unlocked=board.level>=quest.tier;
-    const active=quest.status==='active';
-    const completed=quest.status==='completed';
+function questSeededRandom(seed) {
+  let value = seed >>> 0;
+  return function() {
+    value += 0x6D2B79F5;
+    let next = value;
+    next = Math.imul(next ^ next >>> 15, next | 1);
+    next ^= next + Math.imul(next ^ next >>> 7, next | 61);
+    return ((next ^ next >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function generateQuestOfferIds(round, boardLevel) {
+  if (!questOfferPool) return [];
+  const eligible = questOfferPool.offers.filter(offer => offer.min_board_level <= boardLevel);
+  const random = questSeededRandom(questSeedHash(Roster.getQuestBoardState().seed + ':' + round + ':' + boardLevel));
+  const shuffled = eligible.slice();
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(random() * (index + 1));
+    [shuffled[index], shuffled[swap]] = [shuffled[swap], shuffled[index]];
+  }
+  return shuffled.slice(0, Math.min(questOfferPool.offer_count, shuffled.length)).map(offer => offer.id);
+}
+
+function ensureQuestRoundOffers(board) {
+  const boardState = Roster.getQuestBoardState();
+  if (boardState.offerIds.length) return boardState.offerIds;
+  const offerIds = generateQuestOfferIds(boardState.round, board.level);
+  Roster.setQuestBoardOffers(offerIds);
+  return offerIds;
+}
+
+function renderQuestBoard() {
+  const board=questBoardBuilding(), root=$('#questOfferList');
+  if(!board||!root||!questOfferPool)return;
+  ensureQuestRoundOffers(board);
+  root.innerHTML='';
+
+  const boardState=Roster.getQuestBoardState();
+  const status=$('#questBoardStatus');
+  if(status) status.textContent=state.questMessage || 'Round '+boardState.round+' · Choose an offer and dispatch the required party.';
+
+  const roundButton=$('#questBoardAdvance');
+  if(roundButton){
+    roundButton.textContent='Advance to Round '+(boardState.round+1);
+    roundButton.addEventListener('click',()=>{
+      const nextRound=boardState.round+1;
+      const nextIds=generateQuestOfferIds(nextRound,board.level);
+      Roster.advanceQuestRound(nextIds);
+      state.questMessage='Quest Board advanced to Round '+nextRound+'.';
+      renderSidecar();
+    },{once:true});
+  }
+
+  currentQuestOffers().forEach(offer=>{
+    const quest=currentRoundQuestForOffer(offer.id);
+    const active=quest&&quest.status==='active';
+    const completed=quest&&quest.status==='completed';
     const card=document.createElement('article');
-    card.className='quest-tier-card'+(!unlocked?' is-locked':'')+(active?' is-active':'')+(completed?' is-completed':'');
-    const loadouts=quest.tier>1?compatibleLoadouts(quest.requiredHeroes):[];
+    card.className='quest-offer-card'+(active?' is-active':'')+(completed?' is-completed':'');
+    const loadouts=offer.party_size>1?compatibleLoadouts(offer.party_size):[];
     const available=Roster.getState().heroes.filter(h=>h.availability==='available');
     card.innerHTML=
-      '<div class="quest-tier-head"><strong>Tier '+quest.tier+'</strong><span>'+quest.requiredHeroes+' hero'+(quest.requiredHeroes===1?'':'es')+'</span><em>'+
-      (!unlocked?'LOCKED · Quest Board level '+quest.tier:active?'ACTIVE':completed?'COMPLETED · Ready again':'AVAILABLE')+
+      '<div class="quest-offer-head"><strong>'+offer.title+'</strong><span>'+offer.party_size+' hero'+(offer.party_size===1?'':'es')+'</span><em>'+
+      (active?'ACTIVE':completed?'COMPLETED':'AVAILABLE')+
       '</em></div>'+
+      '<p class="quest-offer-description">'+offer.description+'</p>'+
       '<div class="quest-selection"></div>'+
-      '<small class="quest-reward">Reward · '+fmt(quest.reward.gold)+' gold · '+quest.reward.amount+' quest mark'+(quest.reward.amount===1?'':'s')+'</small>';
+      '<small class="quest-reward">Reward · '+fmt(offer.reward.gold)+' gold · '+offer.reward.meta_amount+' quest mark'+(offer.reward.meta_amount===1?'':'s')+'</small>';
 
     const selection=card.querySelector('.quest-selection');
     if(active){
       selection.innerHTML='<span class="quest-dispatched">Dispatched: '+quest.heroIds.map(id=>{const h=Roster.hero(id);return h?h.name:id;}).join(', ')+'</span><button class="wow-button" type="button">Complete Quest</button>';
       selection.querySelector('button').addEventListener('click',()=>{
-        const result=Roster.completeQuest(quest.tier);
-        state.questMessage=result?'Tier '+quest.tier+' completed. Heroes returned to available status.':'Quest is not active.';
+        const result=Roster.completeQuest(quest.id);
+        state.questMessage=result?offer.title+' completed. Heroes returned to available status.':'Quest is not active.';
         syncMapBuildings();
         renderSidecar();
       });
-    } else if(unlocked){
+    } else if(completed){
+      selection.innerHTML='<span class="quest-dispatched">Completed this round.</span>';
+    } else {
       const select=document.createElement('select');
       select.className='wow-select quest-source';
-      select.innerHTML='<option value="">Choose '+(quest.tier===1?'hero':'party source')+'</option>'+
-        (quest.tier===1
+      select.innerHTML='<option value="">Choose '+(offer.party_size===1?'hero':'party source')+'</option>'+
+        (offer.party_size===1
           ? available.map(h=>'<option value="hero:'+h.id+'">'+h.name+' · '+h.classLabel+'</option>').join('')
           : loadouts.map(l=>'<option value="loadout:'+l.id+'">Saved · '+l.name+'</option>').join(''))+
         '<option value="adhoc">Ad-hoc roster</option>';
-      if(quest.tier===1)select.querySelector('option[value="adhoc"]').remove();
+      if(offer.party_size===1)select.querySelector('option[value="adhoc"]').remove();
       selection.appendChild(select);
       const adhoc=document.createElement('div');adhoc.className='quest-adhoc';selection.appendChild(adhoc);
       const dispatch=document.createElement('button');dispatch.type='button';dispatch.className='wow-button wow-button--primary';dispatch.textContent='Dispatch';dispatch.disabled=true;selection.appendChild(dispatch);
       let ids=[];
-      function sync(){dispatch.disabled=ids.length!==quest.requiredHeroes||ids.some(id=>{const h=Roster.hero(id);return !h||h.availability!=='available';});}
+      function sync(){dispatch.disabled=ids.length!==offer.party_size||ids.some(id=>{const h=Roster.hero(id);return !h||h.availability!=='available';});}
       select.addEventListener('change',()=>{
         ids=[];adhoc.innerHTML='';
         if(select.value.startsWith('hero:')) ids=[select.value.slice(5)];
@@ -573,9 +646,9 @@ function renderQuestBoard() {
           available.forEach(h=>{
             const label=document.createElement('label');label.className='quest-hero-choice';
             label.innerHTML='<input type="checkbox" value="'+h.id+'"><span>'+h.name+'<small>'+h.classLabel+'</small></span>';
-            label.querySelector('input').addEventListener('change',e=>{
-              ids=e.target.checked?ids.concat(h.id):ids.filter(id=>id!==h.id);
-              if(ids.length>quest.requiredHeroes){e.target.checked=false;ids=ids.filter(id=>id!==h.id);}
+            label.querySelector('input').addEventListener('change',event=>{
+              ids=event.target.checked?ids.concat(h.id):ids.filter(id=>id!==h.id);
+              if(ids.length>offer.party_size){event.target.checked=false;ids=ids.filter(id=>id!==h.id);}
               sync();
             });
             adhoc.appendChild(label);
@@ -585,8 +658,8 @@ function renderQuestBoard() {
       });
       dispatch.addEventListener('click',()=>{
         try{
-          Roster.dispatchQuest(quest.tier,ids);
-          state.questMessage='Tier '+quest.tier+' dispatched with '+ids.length+' hero'+(ids.length===1?'':'es')+'.';
+          Roster.dispatchQuest(offer,ids);
+          state.questMessage=offer.title+' dispatched with '+ids.length+' hero'+(ids.length===1?'':'es')+'.';
           syncMapBuildings();
           renderSidecar();
         }catch(error){
@@ -641,9 +714,10 @@ function renderSidecar() {
   if (building.id === 'questboard') {
     body.insertAdjacentHTML('beforeend',
       '<section class="base-sidecar__section base-sidecar__quests">'+
-        '<div class="base-sidecar__quest-head"><div><span class="wow-kicker">HERO DISPATCH</span><h3>Quest Board</h3></div><small>Tier 1–'+building.level+' unlocked</small></div>'+
+        '<div class="base-sidecar__quest-head"><div><span class="wow-kicker">HERO DISPATCH</span><h3>Quest Board</h3></div><small>Round <span id="questBoardRound">'+Roster.getQuestBoardState().round+'</span></small></div>'+
         '<div id="questBoardStatus" class="base-sidecar__quest-status" role="status" aria-live="polite"></div>'+
-        '<div id="questTierList" class="quest-tier-list"></div>'+
+        '<div id="questOfferList" class="quest-offer-list"></div>'+
+        '<button id="questBoardAdvance" class="wow-button base-sidecar__quest-advance" type="button">Advance Round</button>'+
       '</section>');
   }
 
@@ -761,18 +835,23 @@ window.addEventListener('resize', () => {
 
 async function initBase() {
   try {
-    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT),fetch(PROFESSION_DATA_ROOT)]);
+    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT),fetch(PROFESSION_DATA_ROOT),fetch(QUEST_OFFER_POOL_ROOT)]);
     if(!responses[0].ok) throw new Error('Could not load '+BUILDING_DATA_ROOT);
     if(!responses[1].ok) throw new Error('Could not load '+BASE_PRESENTATION_ROOT);
     if(!responses[2].ok) throw new Error('Could not load '+RECRUITMENT_DATA_ROOT);
     if(!responses[3].ok) throw new Error('Could not load '+PROFESSION_DATA_ROOT);
+    if(!responses[4].ok) throw new Error('Could not load '+QUEST_OFFER_POOL_ROOT);
     const payload=await responses[0].json();
     buildings=payload.buildings.map(normalizeBuilding);
     basePresentation=validateBasePresentation(await responses[1].json());
     recruitmentData=validateRecruitmentData(await responses[2].json());
     professionData=validateProfessionData(await responses[3].json());
+    questOfferPool=await responses[4].json();
+    if(!questOfferPool||!Array.isArray(questOfferPool.offers)||!questOfferPool.offers.length) throw new Error('Quest offer pool is empty.');
     const artisansBuilding=buildings.find(entry=>entry.id==='artisans');
     if (artisansBuilding) artisansBuilding.level=Math.max(artisansBuilding.level,Professions.getGuildLevel());
+    const questBoard=buildings.find(entry=>entry.id==='questboard');
+    if (questBoard) ensureQuestRoundOffers(questBoard);
     Icons.hydrate(document); Tooltips.hydrate(document); bindResolvedIcons(document);
     applyBasePresentation();
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
