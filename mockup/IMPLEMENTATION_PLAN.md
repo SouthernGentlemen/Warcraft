@@ -838,7 +838,7 @@ Make Artisans Guild a real profession launcher/menu.
 
 ### WOWUI-043 — Randomized Quest Board Rounds
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-038
 
