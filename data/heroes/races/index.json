@@ -1,6 +1,6 @@
 {
-  "schema_version": 1,
-  "availability_rule": "Until race-specific class restrictions are defined, each race can use every shared class plus its faction-exclusive class.",
+  "schema_version": 2,
+  "availability_rule": "Class availability is authoritative per race. A hero class is valid only when it appears in that race entry's available_classes array.",
   "body_types": [
     {
       "id": "body-1",
@@ -21,28 +21,51 @@
         {
           "id": "human",
           "label": "Human",
-          "data_path": "./human/README.json"
-        },
-        {
-          "id": "gnome",
-          "label": "Gnome",
-          "data_path": "./gnome/README.json"
+          "data_path": "./human/README.json",
+          "available_classes": [
+            "Mage",
+            "Paladin",
+            "Priest",
+            "Rogue",
+            "Warlock",
+            "Warrior"
+          ]
         },
         {
           "id": "dwarf",
           "label": "Dwarf",
-          "data_path": "./dwarf/README.json"
+          "data_path": "./dwarf/README.json",
+          "available_classes": [
+            "Hunter",
+            "Paladin",
+            "Priest",
+            "Rogue",
+            "Warrior"
+          ]
+        },
+        {
+          "id": "gnome",
+          "label": "Gnome",
+          "data_path": "./gnome/README.json",
+          "available_classes": [
+            "Mage",
+            "Rogue",
+            "Warlock",
+            "Warrior"
+          ]
+        },
+        {
+          "id": "night-elf",
+          "label": "Night Elf",
+          "data_path": "./night-elf/README.json",
+          "available_classes": [
+            "Druid",
+            "Hunter",
+            "Priest",
+            "Rogue",
+            "Warrior"
+          ]
         }
-      ],
-      "available_classes": [
-        "Mage",
-        "Rogue",
-        "Warlock",
-        "Warrior",
-        "Priest",
-        "Druid",
-        "Hunter",
-        "Paladin"
       ]
     },
     "horde": {
@@ -52,28 +75,51 @@
         {
           "id": "orc",
           "label": "Orc",
-          "data_path": "./orc/README.json"
+          "data_path": "./orc/README.json",
+          "available_classes": [
+            "Hunter",
+            "Rogue",
+            "Shaman",
+            "Warlock",
+            "Warrior"
+          ]
         },
         {
           "id": "undead",
           "label": "Undead",
-          "data_path": "./undead/README.json"
+          "data_path": "./undead/README.json",
+          "available_classes": [
+            "Mage",
+            "Priest",
+            "Rogue",
+            "Warlock",
+            "Warrior"
+          ]
+        },
+        {
+          "id": "tauren",
+          "label": "Tauren",
+          "data_path": "./tauren/README.json",
+          "available_classes": [
+            "Druid",
+            "Hunter",
+            "Shaman",
+            "Warrior"
+          ]
         },
         {
           "id": "troll",
           "label": "Troll",
-          "data_path": "./troll/README.json"
+          "data_path": "./troll/README.json",
+          "available_classes": [
+            "Hunter",
+            "Mage",
+            "Priest",
+            "Rogue",
+            "Shaman",
+            "Warrior"
+          ]
         }
-      ],
-      "available_classes": [
-        "Mage",
-        "Rogue",
-        "Warlock",
-        "Warrior",
-        "Priest",
-        "Druid",
-        "Hunter",
-        "Shaman"
       ]
     }
   }
