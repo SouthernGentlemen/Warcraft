@@ -171,6 +171,26 @@ function heroActionStripMarkup(actor) {
   }).join('')+'</div>';
 }
 
+function swingTimerState(actor) {
+  const timing=actor.actionState&&actor.actionState.auto;
+  const progressBp=timing?Math.max(0,Math.min(10000,Number(timing.progressBp)||0)):0;
+  return {
+    progressBp,
+    percent:progressBp/100,
+    remainingTicks:timing?Math.max(0,Number(timing.remainingTicks)||0):0,
+    ready:Boolean(timing&&timing.ready)
+  };
+}
+
+function heroSwingTimerMarkup(actor) {
+  const swing=swingTimerState(actor);
+  const stateText=!actor.state.alive?"Down":swing.ready?"Ready":cooldownText(swing.remainingTicks);
+  return '<div class="hero-swing-timer" data-swing-timer role="progressbar" aria-label="Auto Attack swing timer" aria-valuemin="0" aria-valuemax="10000" aria-valuenow="'+swing.progressBp+'" aria-valuetext="'+Math.round(swing.percent)+'% · '+stateText+'">'+
+    '<span class="hero-swing-timer__track" aria-hidden="true"><span class="hero-swing-timer__fill" style="width:'+swing.percent+'%"></span></span>'+
+    '<span class="hero-swing-timer__copy"><small>Auto Swing</small><b>'+stateText+'</b></span>'+
+  '</div>';
+}
+
 function hydrateHeroActionStrip(card,actor) {
   if(actor.definition.kind!=="hero")return;
   card.querySelectorAll("[data-combat-action-slot]").forEach(button=>{
@@ -191,6 +211,22 @@ function updateHeroActionStrip(card,actor) {
     if(stateLabel)stateLabel.textContent=live.text;
     button.setAttribute("aria-label",entry.label+" "+entry.action.name+" · "+live.text);
   }
+}
+
+function updateHeroSwingTimer(card,actor) {
+  if(actor.definition.kind!=="hero")return;
+  const timer=card.querySelector("[data-swing-timer]");
+  if(!timer)return;
+  const swing=swingTimerState(actor);
+  const fill=timer.querySelector(".hero-swing-timer__fill");
+  const value=timer.querySelector(".hero-swing-timer__copy b");
+  const stateText=!actor.state.alive?"Down":swing.ready?"Ready":cooldownText(swing.remainingTicks);
+  if(fill)fill.style.width=swing.percent+"%";
+  if(value)value.textContent=stateText;
+  timer.classList.toggle("is-ready",swing.ready&&actor.state.alive);
+  timer.classList.toggle("is-dead",!actor.state.alive);
+  timer.setAttribute("aria-valuenow",String(swing.progressBp));
+  timer.setAttribute("aria-valuetext",Math.round(swing.percent)+"% · "+stateText);
 }
 
 function actorCard(actor) {
@@ -217,7 +253,7 @@ function actorCard(actor) {
       '</div>'+
       '<div class="unit-bar hp-stat"><span class="unit-bar-label">Health</span><span class="mini-fill"></span><b></b></div>'+
       (def.maxResource?'<div class="unit-bar resource-stat" tabindex="0"><span class="unit-bar-label">'+def.resourceType+'</span><span class="mini-fill"></span><b></b></div>':'')+
-      (def.kind==="hero"?heroActionStripMarkup(actor):'')+
+      (def.kind==="hero"?heroActionStripMarkup(actor)+heroSwingTimerMarkup(actor):'')+
       '<div class="unit-status-row" aria-label="Combat status"><div class="unit-status-hooks buff-hooks"><span class="unit-status-slot" data-status-slot="buff-1"></span></div><div class="unit-status-hooks debuff-hooks"><span class="unit-status-slot" data-status-slot="debuff-1"></span></div></div>'+
     '</div>';
   article.querySelectorAll("img").forEach(Icons.bindFallback);
@@ -257,6 +293,7 @@ function updateActor(actor) {
   if(resourceFill&&def.maxResource)resourceFill.style.width=Math.max(0,Math.min(100,live.resource/def.maxResource*100))+"%";
   if(resourceText)resourceText.textContent=formatNumber(live.resource)+" / "+formatNumber(def.maxResource);
   updateHeroActionStrip(card,actor);
+  updateHeroSwingTimer(card,actor);
 }
 
 function updateSideSummary(side,totals) {
