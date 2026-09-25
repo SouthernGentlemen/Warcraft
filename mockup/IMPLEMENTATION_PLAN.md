@@ -1249,7 +1249,7 @@ Move saved party management out of individual hero detail and make it a roster-l
 
 ### WOWUI-056 — Hero Combat Loadout State
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-055
 
