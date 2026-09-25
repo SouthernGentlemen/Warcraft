@@ -844,3 +844,16 @@
 
 /* WOWUI-017 Quest Board */
 .quest-board{margin:8px;max-height:48vh;overflow:auto}.quest-board-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}.quest-board-head h2{margin:0;color:var(--wow-gold-pale);font-size:14px}.quest-board-head>strong{color:var(--wow-gold);font-size:9px}.quest-tier-card{padding:6px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:var(--wow-surface-inset)}.quest-tier-card+.quest-tier-card{margin-top:5px}.quest-tier-card.is-locked{opacity:.58}.quest-tier-card.is-active{border-color:var(--wow-warning)}.quest-tier-card.is-completed{border-color:var(--wow-success)}.quest-tier-head{display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:7px}.quest-tier-head strong{color:var(--wow-gold-pale);font-size:11px}.quest-tier-head span{font-size:8px;color:var(--wow-text-muted)}.quest-tier-head em{text-align:right;color:var(--wow-text-dim);font-size:7px;font-style:normal}.quest-tier-card.is-active .quest-tier-head em{color:var(--wow-warning)}.quest-selection{display:flex;gap:5px;align-items:flex-start;margin-top:5px}.quest-selection>.wow-select{min-width:0;flex:1}.quest-adhoc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;flex:1;max-height:120px;overflow:auto}.quest-hero-choice{display:flex;gap:3px;align-items:center;padding:2px;background:var(--wow-surface);font-size:8px}.quest-hero-choice small{display:block;color:var(--wow-text-dim);font-size:7px}.quest-reward{display:block;margin-top:5px;color:var(--wow-text-dim);font-size:7px}
+
+
+/* WOWUI-022 — Base shell de-clutter.
+   Legacy rail/panel/action styles remain until WOWUI-029 cleanup, but no longer participate in layout. */
+.base-game-frame {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.base-main-column {
+  width: 100%;
+  grid-column: 1;
+  grid-template-rows: 52px minmax(0, 1fr);
+}
