@@ -100,6 +100,7 @@ function emptyCampaign(faction){
     buildingAssignments:{},
     clock:defaultClock()
   };
+  return campaign;
 }
 function defaults(){
   return {
@@ -135,7 +136,7 @@ function normalizeCampaign(raw,faction){
   const board=source.questBoard&&typeof source.questBoard==="object"?source.questBoard:{};
   const embark=source.embark&&typeof source.embark==="object"?source.embark:{};
   const phase=clockSource.phase==="night"?"night":"day";
-  return {
+  const campaign={
     faction,
     base:{
       level:keepLevel,
