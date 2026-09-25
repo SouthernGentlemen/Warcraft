@@ -148,6 +148,60 @@
   background: radial-gradient(ellipse at 50% 0, #263b2c 0 55%, #1b2d22 56% 100%);
 }
 
+.base-map.is-alliance {
+  background:
+    linear-gradient(180deg, rgba(63,91,118,.72) 0 20%, transparent 20%),
+    linear-gradient(180deg, #20384a 0 20%, #27412e 20% 100%);
+}
+
+.base-map.is-alliance .base-map-backdrop {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(236,225,175,.11), transparent 17%),
+    linear-gradient(145deg, transparent 0 12%, rgba(52,78,55,.38) 12% 15%, transparent 15% 34%, rgba(37,61,43,.4) 34% 38%, transparent 38% 62%, rgba(48,72,47,.34) 62% 65%, transparent 65%),
+    repeating-linear-gradient(22deg, rgba(255,255,255,.014) 0 2px, transparent 2px 18px);
+}
+
+.base-map.is-horde {
+  background:
+    linear-gradient(180deg, rgba(126,62,42,.64) 0 20%, transparent 20%),
+    linear-gradient(180deg, #4a2b27 0 20%, #4a3525 20% 100%);
+}
+
+.base-map.is-horde .base-map-backdrop {
+  background:
+    radial-gradient(circle at 78% 10%, rgba(238,167,90,.12), transparent 19%),
+    linear-gradient(145deg, transparent 0 11%, rgba(93,54,33,.36) 11% 16%, transparent 16% 36%, rgba(75,41,29,.4) 36% 41%, transparent 41% 64%, rgba(97,58,34,.34) 64% 68%, transparent 68%),
+    repeating-linear-gradient(-18deg, rgba(255,220,170,.018) 0 2px, transparent 2px 17px);
+}
+
+.base-map.is-horde::after {
+  background: radial-gradient(ellipse at 50% 0, #4f3827 0 55%, #30231c 56% 100%);
+}
+
+.base-map.is-horde .base-river {
+  background: linear-gradient(90deg, #36404a, #5f5960, #343943);
+  opacity: .42;
+}
+
+.base-map.is-horde .base-road {
+  background: #866346;
+  border-color: rgba(74,38,25,.58);
+}
+
+.base-map.is-horde .base-tree-cluster {
+  opacity: .42;
+  filter: sepia(.35) drop-shadow(0 4px 3px rgba(0,0,0,.36));
+}
+
+.base-map.is-horde .base-tree-cluster::before {
+  border-bottom-color: #38291f;
+}
+
+.base-map.is-horde .base-tree-cluster::after {
+  border-bottom-color: #4a3022;
+}
+
+
 .base-river {
   position: absolute;
   border-radius: 50%;
@@ -287,18 +341,31 @@
   z-index: 12;
   left: 14px;
   bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
   padding: 6px 9px;
   border-radius: var(--wow-radius-tight);
   background: rgba(10,12,13,.84);
 }
 
-.base-map-caption span {
-  display: block;
+.base-map-caption__crest {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
+.base-map-caption__copy {
+  min-width: 0;
+  display: grid;
+}
+
+.base-map-caption__copy strong {
   color: var(--wow-gold-pale);
   font: 700 12px var(--wow-font-display);
 }
 
-.base-map-caption small {
+.base-map-caption__copy small {
   display: block;
   margin-top: 2px;
   color: var(--wow-text-dim);
@@ -861,19 +928,6 @@
   .plot-label strong { font-size: 8px; }
   .plot-label small { font-size: 6px; }
 
-  .base-plot.keep { --x:50% !important; --y:14% !important; }
-  .base-plot.command { --x:20% !important; --y:27% !important; }
-  .base-plot.recruitment { --x:80% !important; --y:27% !important; }
-  .base-plot.barracks { --x:15% !important; --y:42% !important; }
-  .base-plot.questboard { --x:38% !important; --y:42% !important; }
-  .base-plot.training { --x:62% !important; --y:42% !important; }
-  .base-plot.storehouse { --x:85% !important; --y:42% !important; }
-  .base-plot.blacksmith { --x:16% !important; --y:60% !important; }
-  .base-plot.alchemy { --x:39% !important; --y:60% !important; }
-  .base-plot.enchanter { --x:62% !important; --y:60% !important; }
-  .base-plot.tailor { --x:84% !important; --y:60% !important; }
-  .base-plot.leather { --x:32% !important; --y:77% !important; }
-  .base-plot.engineer { --x:68% !important; --y:77% !important; }
 
   .base-map-caption {
     left: 8px;
@@ -881,8 +935,9 @@
     padding: 5px 7px;
   }
 
-  .base-map-caption span { font-size: 10px; }
-  .base-map-caption small { font-size: 6px; }
+  .base-map-caption__copy strong { font-size: 10px; }
+  .base-map-caption__copy small { font-size: 6px; }
+  .base-map-caption__crest { width: 24px; height: 24px; flex-basis: 24px; }
 
   .base-plot-attention {
     top: -1px;
@@ -963,7 +1018,7 @@
   }
 
   .plot-label strong { font-size: 7px; }
-  .base-map-caption small { display: none; }
+  .base-map-caption__copy small { display: none; }
 
   .base-sidecar { max-height: 66dvh; }
   .base-sidecar__body { max-height: calc(66dvh - 66px); }
