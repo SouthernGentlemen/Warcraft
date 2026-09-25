@@ -305,7 +305,7 @@ Treat Quest Board as a first-class map building and move the entire hero-dispatc
 
 ### WOWUI-027 — Building Attention and Landing-State Signaling
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-026
 
