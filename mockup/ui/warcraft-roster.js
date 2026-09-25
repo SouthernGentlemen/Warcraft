@@ -20,7 +20,8 @@ function normalize(raw){const base=defaults(),saved=raw&&typeof raw==="object"?r
 function load(){try{return normalize(JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"));}catch(_){return defaults();}}
 let state=load();
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch(_){} if(!save.queued){save.queued=true;queueMicrotask(()=>{save.queued=false;global.dispatchEvent(new CustomEvent("warcraft:roster-changed",{detail:getState()}));});}}
-function getState(){return state;}\nfunction validateRaceClass(raceLabel,classLabel,raceIndex){for(const faction of Object.values(raceIndex.factions||{})){const race=(faction.races||[]).find(r=>r.label===raceLabel);if(race)return race.available_classes.includes(classLabel);}return false;}
+function getState(){return state;}
+function validateRaceClass(raceLabel,classLabel,raceIndex){for(const faction of Object.values(raceIndex.factions||{})){const race=(faction.races||[]).find(r=>r.label===raceLabel);if(race)return race.available_classes.includes(classLabel);}return false;}
 function hero(id){return state.heroes.find(h=>h.id===id)||null;}
 function updateHero(id,patch,options){const h=hero(id);if(!h)return null;const next=Object.assign({},h,patch);if(options&&options.raceIndex&&!validateRaceClass(next.race,next.classLabel,options.raceIndex))throw new Error(next.race+" cannot be "+next.classLabel+".");Object.assign(h,patch);save();return h;}
 function setEquipment(id,equipment){const h=hero(id);if(!h)return;const next=Object.assign(blankEquipment(),equipment||{});if(Object.keys(next).some(k=>!Object.prototype.hasOwnProperty.call(blankEquipment(),k)))throw new Error("Unknown equipment slot.");h.equipment=next;save();}
