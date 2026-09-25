@@ -1091,7 +1091,7 @@ Deliver a functional 5-hero dungeon-party battle mode.
 
 ### WOWUI-051 — Ten-Hero Battle Mode
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-050
 
