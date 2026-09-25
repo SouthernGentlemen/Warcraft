@@ -819,18 +819,19 @@ Make Artisans Guild a real profession launcher/menu.
   - Tailor
   - Leatherworker
   - Engineer
-- Profession entries are locked/unlocked through Artisans Guild state.
-- Clicking an unlocked profession opens its actual profession surface/workflow.
-- Locked professions show the unlock condition in a tooltip.
+- All six profession entries are available from Artisans Guild.
+- Every profession level/tier mirrors the Artisans Guild level.
+- Clicking a profession opens its actual profession surface/workflow.
+- Profession-specific material or recipe requirements are deferred until authored later.
 - Do not render six nested verbose building-progression panels.
 - Remove any remaining profession placeholder actions.
 
 #### Acceptance Criteria
 
 - Every profession is reached through Artisans Guild.
-- Locked professions cannot be bypassed.
-- Unlocked profession actions are functional.
-- Profession locking is authoritative and persisted.
+- All six professions are available through the Guild.
+- Profession actions are functional.
+- Guild level is authoritative and persisted, and each profession mirrors that level.
 - `npm test` passes.
 
 ---
