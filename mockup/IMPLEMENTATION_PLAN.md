@@ -1536,7 +1536,7 @@ Move upgrades out of the building menu list and into the selected building banne
 
 ### WOWUI-064 — Automatic Quest Board Round Progression
 
-Status: planned
+Status: complete (2026-09-25)
 
 Depends on: WOWUI-063
 
