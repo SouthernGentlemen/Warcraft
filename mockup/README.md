@@ -53,7 +53,7 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 - `gear.html` — interactive roster equipment screen with one hero per class, six fixed slots, class armor eligibility, and sample Tier 1–5 gear
 - `simulation/` — deterministic 60 Hz combat lab for 1-person and 3-person battles with full frame reports
 - `battle.html` — interactive six-on-six battleground combat mockup with team HP, combat FX, pause, reset, and 1×/2×/4× speed controls
-- `base.html` — Realm-Grinder-inspired persistent base management mockup with resource bar, building map, profession buildings, filters, selection detail, and interactive upgrades
+- `base.html` — player-facing map-first stronghold landing screen with compact resources, clickable core/profession buildings, shared building sidecar, Quest Board dispatch, upgrades, and attention states
 
 ## Development
 
@@ -104,30 +104,14 @@ Responsive layouts are maintained in each screen stylesheet for desktop, tablet,
 
 `ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved party loadouts. Hero-management surfaces should store only hero IDs in party templates and read current identity, availability, equipment, and talent-build data from this shared layer. Party templates support only 3, 5, 10, or 20 heroes; ready-state validation requires the exact selected size with no duplicate hero IDs. A saved template may contain a hero who later becomes unavailable, but launch-time validation must re-check current availability.
 
-### Base landing shell
+### Map-first Base architecture
 
-The Base landing screen now uses only the shared top navigation, persistent resource bar, and stronghold map. The old internal navigation rail, permanent building/Quest panels, bottom action bar, and profile footer have been removed. Building and Quest progression logic remains in `base.js` for the upcoming sidecar migration tasks.
+Base is the player-facing landing screen. The default view intentionally contains only the shared Warcraft navigation, a compact Gold/Lumber/Stone HUD, and the full stronghold map. There is no internal navigation rail, permanent building list, Quest Board dashboard, action bar, profile footer, or reserved detail column.
 
-### Map-first Base landing
+Buildings are the Base interaction model. Every authored building, including Quest Board and the six profession buildings, is represented as a clickable map target whose displayed level comes from `data/base/buildings.json`. Clicking one opens the single shared `#baseSidecar`; selecting another replaces its contents in place, while close, Escape, or empty-map dismissal clears selection. The sidecar overlays the map rather than consuming permanent layout width.
 
-The Base landing screen now keeps only Gold, Lumber, and Stone in its persistent HUD. The stronghold map consumes the remaining viewport, building labels are limited to name and level, no building is selected by default, and no detail area reserves layout space before a building interaction. Building-specific management remains intentionally deferred to the sidecar tasks.
+Core and profession sidecars show current/next capabilities, prerequisites, Gold/Lumber/Stone costs, upgrade readiness, blocked reasons, and maximum-level state. Successful upgrades update resources, map labels, attention state, and the open sidecar without navigating away. Quest Board uses the same sidecar for Tier 1–5 dispatch, saved/ad-hoc party selection, active assignments, completion, and reward presentation through authoritative `WarcraftRoster` state.
 
-### Base building sidecar
+The closed-sidecar map communicates at most one primary attention state per building. Priority is Quest complete, Quest ready, profession action, upgrade ready, then blocked. Markers are compact, accessible through the building label/tooltips, and recalculate after resource, upgrade, roster, dispatch, and completion changes.
 
-Base building details now use one reusable sidecar that is hidden on initial load and overlays the map only after a building is selected. Selecting another building replaces the sidecar identity in place; close, Escape, and empty-map dismissal clear selection, and explicit close restores focus to the originating building. Building management content remains intentionally deferred to WOWUI-025.
-
-### Building management sidecar
-
-Core and profession buildings now manage progression directly inside the shared Base sidecar. The sidecar reads current/next capabilities, prerequisites, and resource costs from `data/base/buildings.json`; blocked and maximum-level states are explicit, successful upgrades update the resource HUD and map level in place, and the legacy building-list renderer has been removed. Quest Board management remains reserved for WOWUI-026.
-
-### Quest Board sidecar
-
-Quest Board is now a first-class building on the Base map and uses the shared building sidecar for both progression and hero dispatch. The sidecar renders Tier 1–5 quest availability, party-size requirements, available heroes/saved loadouts/ad-hoc selection, active assignments, completion, and rewards directly from authoritative roster state. Dispatch/completion state survives sidecar close/reopen, and the legacy permanent Quest Board panel dependency is gone.
-
-### Base attention signaling
-
-The closed-sidecar Base map now exposes one deterministic attention state per building. Priority is Quest complete, Quest ready, profession action, upgrade ready, then blocked. Ready/completed states use compact semantic icon markers while blocked upgrades use a deliberately subdued treatment. Building accessible labels and tooltips explain the active state, and attention recalculates after resource, upgrade, roster, dispatch, and completion changes without adding a separate overview panel.
-
-### Responsive Base interaction
-
-The map-first Base now has explicit desktop, tablet, and mobile behavior. Desktop keeps a right-side overlay sidecar, tablet uses a narrower overlay, and mobile uses a full-width bottom sheet that leaves the map partially visible. Mobile building positions are reflowed to reduce label collisions, map width no longer forces horizontal page overflow, sidecar content scrolls independently, close/tap targets are enlarged, selected/attention states remain visible, shared tooltips clamp to the viewport, and reduced-motion preferences disable unnecessary transitions.
+Responsive behavior remains map-first: desktop and tablet use an overlay sidecar, while mobile uses a full-width bottom sheet that leaves part of the map visible. Mobile building positions are reflowed to reduce collisions, controls retain usable tap targets, sidecar content scrolls independently, tooltips clamp to the viewport, and reduced-motion preferences suppress unnecessary transitions.
