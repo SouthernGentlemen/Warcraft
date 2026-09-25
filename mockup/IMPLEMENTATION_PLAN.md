@@ -579,6 +579,8 @@ Reduce every represented class talent tree to a compact prototype model while ke
 
 ## WOWUI-014 — Slot Picker Gear Flow And Trinket Support
 
+**Status:** Complete — 2026-09-24
+
 ### Objective
 
 Make equipment management slot-first and compact: clicking a paper-doll slot should immediately let the player choose among items that can legally fill that slot.
