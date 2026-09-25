@@ -1,4 +1,5 @@
 const CLASS_DATA_ROOT = "../data/heroes/classes/";
+const RACE_DATA_ROOT = "../data/heroes/races/";
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 
@@ -38,10 +39,10 @@ const HERO_BLUEPRINTS = {
   warlock: {name:"Mordren", race:"Undead", faction:"Horde", level:3, spec:"Demonology", primary:"Intellect"},
   warrior: {name:"Brom", race:"Dwarf", faction:"Alliance", level:5, spec:"Arms", primary:"Strength"},
   priest: {name:"Sister Anwen", race:"Human", faction:"Alliance", level:2, spec:"Holy", primary:"Intellect"},
-  druid: {name:"Thorn", race:"Troll", faction:"Horde", level:4, spec:"Feral", primary:"Agility"},
+  druid: {name:"Thorn", race:"Night Elf", faction:"Alliance", level:4, spec:"Feral", primary:"Agility"},
   hunter: {name:"Rifleman Keg", race:"Dwarf", faction:"Alliance", level:3, spec:"Marksmanship", primary:"Agility"},
   paladin: {name:"Arthoran", race:"Human", faction:"Alliance", level:5, spec:"Retribution", primary:"Strength"},
-  shaman: {name:"Gorak", race:"Orc", faction:"Horde", level:1, spec:"Enhancement", primary:"Agility"}
+  shaman: {name:"Gorak", race:"Tauren", faction:"Horde", level:1, spec:"Enhancement", primary:"Agility"}
 };
 
 const BASELINE = {
@@ -193,6 +194,23 @@ function itemScoreForHero(hero, item) {
   return score;
 }
 
+function raceMetaByLabel(label) {
+  for (const faction of Object.values(state.raceIndex.factions)) {
+    const race = faction.races.find(function(entry) { return entry.label === label; });
+    if (race) return {race:race, faction:faction};
+  }
+  return null;
+}
+
+function validateHeroRaceClass(hero) {
+  const meta = raceMetaByLabel(hero.race);
+  if (!meta) throw new Error("Unknown race " + hero.race);
+  if (!meta.race.available_classes.includes(hero.classLabel)) {
+    throw new Error(hero.race + " cannot be " + hero.classLabel + " under the Classic race/class rules.");
+  }
+  return meta;
+}
+
 function buildHeroes(classIndex) {
   return classIndex.classes.map(function(classMeta, index) {
     const blueprint = HERO_BLUEPRINTS[classMeta.id] || defaultBlueprint(classMeta, index);
@@ -210,6 +228,8 @@ function buildHeroes(classIndex) {
       classIcon:Icons.resolveSlug("class", classMeta.id),
       equipment:{}
     };
+
+    validateHeroRaceClass(hero);
 
     SLOT_ORDER.forEach(function(slot) {
       const candidates = state.items
@@ -573,7 +593,12 @@ async function init() {
   try {
     Tooltips.hydrate(document);
     state.items = buildArmory();
-    state.classIndex = await loadJson(CLASS_DATA_ROOT + "index.json");
+    const loaded = await Promise.all([
+      loadJson(CLASS_DATA_ROOT + "index.json"),
+      loadJson(RACE_DATA_ROOT + "index.json")
+    ]);
+    state.classIndex = loaded[0];
+    state.raceIndex = loaded[1];
     state.heroes = buildHeroes(state.classIndex);
     state.selectedHeroId = state.heroes[0] ? state.heroes[0].id : null;
 
