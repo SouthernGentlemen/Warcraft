@@ -21,7 +21,6 @@
         {
           "id": "human",
           "label": "Human",
-          "data_path": "./human/README.json",
           "available_classes": [
             "Mage",
             "Paladin",
@@ -29,42 +28,59 @@
             "Rogue",
             "Warlock",
             "Warrior"
-          ]
+          ],
+          "racial": {
+            "name": "Every Man for Himself",
+            "mechanic": "Once per combat, the first time this hero is affected by hard crowd control, there is a 35% chance to immediately break that effect.",
+            "balance_role": "Encounter utility; valuable when hard crowd control is present."
+          }
         },
         {
           "id": "dwarf",
           "label": "Dwarf",
-          "data_path": "./dwarf/README.json",
           "available_classes": [
             "Hunter",
             "Paladin",
             "Priest",
             "Rogue",
             "Warrior"
-          ]
+          ],
+          "racial": {
+            "name": "Treasure Finder",
+            "mechanic": "After a successful activity, there is a 10% chance to receive one additional roll from that activity's standard loot table. The bonus roll cannot produce access keys, progression-critical items, guaranteed first-clear rewards, or unique one-time rewards.",
+            "balance_role": "Progression and economy racial rather than a combat racial."
+          }
         },
         {
           "id": "gnome",
           "label": "Gnome",
-          "data_path": "./gnome/README.json",
           "available_classes": [
             "Mage",
             "Rogue",
             "Warlock",
             "Warrior"
-          ]
+          ],
+          "racial": {
+            "name": "Resourceful",
+            "mechanic": "Whenever this hero spends Mana, Rage, or Energy on an ability, there is a 10% chance to refund 50% of that ability's resource cost.",
+            "balance_role": "Resource-efficiency racial."
+          }
         },
         {
           "id": "night-elf",
           "label": "Night Elf",
-          "data_path": "./night-elf/README.json",
           "available_classes": [
             "Druid",
             "Hunter",
             "Priest",
             "Rogue",
             "Warrior"
-          ]
+          ],
+          "racial": {
+            "name": "Shadowmeld",
+            "mechanic": "Once per combat, briefly fade from enemy attention, providing a defensive avoidance window.",
+            "balance_role": "Avoidance and utility racial intended to reward defensive timing."
+          }
         }
       ]
     },
@@ -75,42 +91,53 @@
         {
           "id": "orc",
           "label": "Orc",
-          "data_path": "./orc/README.json",
           "available_classes": [
             "Hunter",
             "Rogue",
             "Shaman",
             "Warlock",
             "Warrior"
-          ]
+          ],
+          "racial": {
+            "name": "Blood Fury",
+            "mechanic": "Damaging attacks and abilities have a 10% chance to grant 20% increased Attack Power for 6 seconds, with a 20-second internal cooldown.",
+            "balance_role": "Burst physical-throughput racial."
+          }
         },
         {
           "id": "undead",
           "label": "Undead",
-          "data_path": "./undead/README.json",
           "available_classes": [
             "Mage",
             "Priest",
             "Rogue",
             "Warlock",
             "Warrior"
-          ]
+          ],
+          "racial": {
+            "name": "Cannibal Strike",
+            "mechanic": "This hero heals for 5% of auto-attack damage dealt. Healing occurs after the auto-attack resolves and cannot exceed maximum health.",
+            "balance_role": "Sustained self-healing racial."
+          }
         },
         {
           "id": "tauren",
           "label": "Tauren",
-          "data_path": "./tauren/README.json",
           "available_classes": [
             "Druid",
             "Hunter",
             "Shaman",
             "Warrior"
-          ]
+          ],
+          "racial": {
+            "name": "War Stomp",
+            "mechanic": "Once per combat, disrupt nearby enemies with a short control effect.",
+            "balance_role": "Durable control-oriented racial with situational encounter utility."
+          }
         },
         {
           "id": "troll",
           "label": "Troll",
-          "data_path": "./troll/README.json",
           "available_classes": [
             "Hunter",
             "Mage",
@@ -118,9 +145,15 @@
             "Rogue",
             "Shaman",
             "Warrior"
-          ]
+          ],
+          "racial": {
+            "name": "Berserking",
+            "mechanic": "Auto-attacks have a 10% chance to grant 20% increased auto-attack speed for 6 seconds, with a 20-second internal cooldown.",
+            "balance_role": "Attack-frequency racial."
+          }
         }
       ]
     }
-  }
+  },
+  "runtime_source": "authored"
 }
