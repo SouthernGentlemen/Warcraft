@@ -620,41 +620,6 @@
   font-size: 8px;
 }
 
-.base-sidecar__requirement {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin: 0;
-  padding: 6px 7px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0,0,0,.16);
-  font-size: 8px;
-}
-
-.base-sidecar__requirement + .base-sidecar__requirement {
-  margin-top: 4px;
-}
-
-.base-sidecar__requirement strong {
-  flex: 0 0 auto;
-  font-size: 7px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
-
-.base-sidecar__requirement.is-met strong {
-  color: var(--wow-success);
-}
-
-.base-sidecar__requirement.is-blocked strong {
-  color: var(--wow-warning);
-}
-
-.base-sidecar__requirement span {
-  color: var(--wow-text-muted);
-  text-align: right;
-}
 
 .base-sidecar__costs {
   display: grid;
@@ -732,9 +697,6 @@
   width: 100%;
 }
 
-.base-sidecar__blocked-copy {
-  color: var(--wow-warning) !important;
-}
 
 /* Quest Board content inside the same sidecar */
 
