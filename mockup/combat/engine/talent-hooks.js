@@ -16,6 +16,9 @@ export function validateTalentShape(specData) {
       throw new Error((specData?.specialization || "Specialization") + " talent metadata is incomplete.");
     }
   }
+  if (!talents.capstones[0].ultimate_id) {
+    throw new Error((specData?.specialization || "Specialization") + " capstone must define an Ultimate action ID.");
+  }
   return specData;
 }
 
