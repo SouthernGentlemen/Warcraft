@@ -954,6 +954,225 @@
   font-size: 7px;
 }
 
+/* Quest Board Azeroth dungeon map */
+
+.quest-board-mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 4px;
+  margin-bottom: 7px;
+}
+
+.quest-board-mode-tabs .wow-tab {
+  min-width: 0;
+}
+
+.dungeon-world-map {
+  position: relative;
+  min-height: 310px;
+  overflow: hidden;
+  isolation: isolate;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background:
+    radial-gradient(circle at 50% 48%, rgba(91,135,153,.16), transparent 34%),
+    linear-gradient(180deg, #13242d, #0b161d);
+}
+
+.dungeon-world-map::before {
+  content: "";
+  position: absolute;
+  z-index: -3;
+  inset: 0;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,.018) 0 1px, transparent 1px 16px),
+    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+  background-size: auto, 28px 100%;
+  opacity: .7;
+}
+
+.dungeon-map__continent {
+  position: absolute;
+  z-index: -1;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(149,117,64,.32);
+  background:
+    radial-gradient(circle at 45% 35%, rgba(107,108,67,.82), rgba(48,69,45,.9) 58%, rgba(38,48,35,.94));
+  box-shadow:
+    inset 0 0 18px rgba(0,0,0,.36),
+    0 8px 18px rgba(0,0,0,.24);
+  color: rgba(225,209,160,.38);
+  font: 700 9px var(--wow-font-display);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.dungeon-map__continent.is-kalimdor {
+  left: 8%;
+  top: 8%;
+  width: 35%;
+  height: 80%;
+  clip-path: polygon(34% 0,62% 6%,78% 20%,72% 34%,88% 48%,76% 62%,80% 77%,60% 100%,34% 92%,20% 73%,25% 57%,8% 40%,18% 22%);
+}
+
+.dungeon-map__continent.is-eastern-kingdoms {
+  right: 7%;
+  top: 8%;
+  width: 31%;
+  height: 81%;
+  clip-path: polygon(48% 0,74% 9%,66% 24%,83% 37%,70% 50%,87% 65%,73% 82%,52% 100%,31% 88%,36% 71%,18% 57%,30% 40%,19% 22%);
+}
+
+.dungeon-map__hotspot {
+  position: absolute;
+  z-index: 3;
+  left: var(--x);
+  top: var(--y);
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0;
+  transform: translate(-50%,-50%);
+  border: 0;
+  background: transparent;
+  color: var(--wow-text);
+  cursor: pointer;
+}
+
+.dungeon-map__marker {
+  --wow-icon-size: 25px;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 0 0 1px #060708, 0 3px 8px rgba(0,0,0,.7);
+}
+
+.dungeon-map__hotspot:hover .dungeon-map__marker,
+.dungeon-map__hotspot:focus-visible .dungeon-map__marker,
+.dungeon-map__hotspot.is-selected .dungeon-map__marker {
+  outline: 2px solid var(--wow-gold-bright);
+  outline-offset: 2px;
+}
+
+.dungeon-map__hotspot:focus-visible {
+  outline: none;
+}
+
+.dungeon-map__hotspot.is-starter .dungeon-map__marker {
+  box-shadow: 0 0 0 2px var(--wow-success), 0 0 12px rgba(89,163,74,.48);
+}
+
+.dungeon-map__hotspot.is-locked {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.dungeon-map__label {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 4px);
+  min-width: 92px;
+  max-width: 118px;
+  transform: translateX(-50%);
+  padding: 3px 4px;
+  border: 1px solid rgba(75,61,37,.68);
+  background: rgba(8,10,11,.9);
+  text-align: center;
+  pointer-events: none;
+}
+
+.dungeon-map__label strong,
+.dungeon-map__label small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dungeon-map__label strong {
+  color: var(--wow-gold-pale);
+  font: 700 8px var(--wow-font-display);
+}
+
+.dungeon-map__label small {
+  margin-top: 1px;
+  color: var(--wow-text-dim);
+  font-size: 5px;
+  text-transform: uppercase;
+}
+
+.dungeon-map__hotspot.is-starter .dungeon-map__label small {
+  color: var(--wow-success);
+}
+
+.dungeon-selection {
+  margin-top: 7px;
+  padding: 8px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface-inset);
+}
+
+.dungeon-selection__head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 7px;
+  border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
+}
+
+.dungeon-selection__head h4 {
+  margin: 2px 0 0;
+  color: var(--wow-gold-pale);
+  font: 700 13px var(--wow-font-display);
+}
+
+.dungeon-selection__head small,
+.dungeon-selection__pool {
+  color: var(--wow-text-dim);
+  font-size: 6px;
+}
+
+.dungeon-selection__pool {
+  max-width: 132px;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dungeon-party-picker {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.dungeon-party-adhoc {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 700px) {
+  .dungeon-world-map {
+    min-height: 340px;
+  }
+
+  .dungeon-map__label {
+    min-width: 76px;
+    max-width: 88px;
+  }
+
+  .dungeon-party-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .dungeon-party-picker > .wow-button {
+    width: 100%;
+  }
+
+  .dungeon-party-adhoc {
+    grid-column: auto;
+  }
+}
+
 /* Toast */
 
 .base-toast {
