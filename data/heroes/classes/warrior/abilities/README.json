@@ -17,7 +17,8 @@
       "cooldown_ticks": 360,
       "resource": "rage",
       "cost": 25,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "ability_warrior_savageblow"
     },
     {
       "id": "bloodthirst",
@@ -30,7 +31,8 @@
       "cooldown_ticks": 300,
       "resource": "rage",
       "cost": 25,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_nature_bloodlust"
     },
     {
       "id": "shield-slam",
@@ -43,7 +45,8 @@
       "cooldown_ticks": 360,
       "resource": "rage",
       "cost": 20,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "inv_shield_05"
     },
     {
       "id": "thunder-clap",
@@ -56,7 +59,8 @@
       "cooldown_ticks": 480,
       "resource": "rage",
       "cost": 20,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_nature_thunderclap"
     }
   ],
   "ultimates": [
@@ -73,7 +77,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "ability_warrior_savageblow"
     },
     {
       "id": "capstone-bloodthirst",
@@ -88,7 +93,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "spell_nature_bloodlust"
     },
     {
       "id": "capstone-shield-slam",
@@ -103,7 +109,8 @@
       "cooldown_ticks": 0,
       "resource": "ultimate",
       "cost": 10000,
-      "effect": "none"
+      "effect": "none",
+      "icon_slug": "inv_shield_05"
     }
   ],
   "ultimate_model": "specialization-capstone"
