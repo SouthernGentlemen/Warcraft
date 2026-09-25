@@ -127,3 +127,7 @@ Quest Board is now a first-class building on the Base map and uses the shared bu
 ### Base attention signaling
 
 The closed-sidecar Base map now exposes one deterministic attention state per building. Priority is Quest complete, Quest ready, profession action, upgrade ready, then blocked. Ready/completed states use compact semantic icon markers while blocked upgrades use a deliberately subdued treatment. Building accessible labels and tooltips explain the active state, and attention recalculates after resource, upgrade, roster, dispatch, and completion changes without adding a separate overview panel.
+
+### Responsive Base interaction
+
+The map-first Base now has explicit desktop, tablet, and mobile behavior. Desktop keeps a right-side overlay sidecar, tablet uses a narrower overlay, and mobile uses a full-width bottom sheet that leaves the map partially visible. Mobile building positions are reflowed to reduce label collisions, map width no longer forces horizontal page overflow, sidecar content scrolls independently, close/tap targets are enlarged, selected/attention states remain visible, shared tooltips clamp to the viewport, and reduced-motion preferences disable unnecessary transitions.
