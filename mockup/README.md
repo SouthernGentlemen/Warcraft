@@ -166,3 +166,7 @@ The six standalone profession hotspots have been consolidated into one `Artisans
 ### Artisans Guild profession workspace
 
 Artisans Guild now exposes Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, and Engineer through one compact profession menu. All six professions are always available; there is no per-profession unlock ladder. `WarcraftProfessions` persists the shared Artisans Guild level and selected profession, and every profession reads that same level as its current tier. `profession.html` is the shared profession workspace and renders the preserved profession progression data for the selected profession. Profession-specific material and recipe requirements are intentionally deferred until they are authored later.
+
+### Randomized Quest Board rounds
+
+Quest Board no longer owns one permanent quest per tier. `data/base/quest-offers.json` is an authored offer pool covering 1, 3, 5, 10, and 20 hero assignments, while `WarcraftRoster.questBoard` persists the current round, seed, and selected offer IDs. Base generates a bounded set of offers deterministically from that stored round state, so reloads do not reroll. Advancing the round selects a new offer set without mutating accepted/active/completed quest-log records. Dispatching an offer creates a stable quest-log assignment in `WarcraftRoster.quests`, and Quest Journal remains a read-only projection of that quest history.
