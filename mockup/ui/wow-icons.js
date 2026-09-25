@@ -197,6 +197,13 @@
       "training-grounds":"ability_dualwield",
       storehouse:"inv_crate_03"
     },
+    quest: {
+      journal:"inv_misc_note_01",
+      available:"inv_misc_note_01",
+      active:"inv_misc_map_01",
+      completed:"achievement_quests_completed_08",
+      marks:"inv_misc_rune_01"
+    },
     currency: {
       gold:"inv_misc_coin_01",
       renown:"achievement_reputation_01",
@@ -244,6 +251,7 @@
     professions:"profession",
     buildings:"building",
     currencies:"currency",
+    quests:"quest",
     resources:"resource",
     controls:"battle",
     status:"battle"
