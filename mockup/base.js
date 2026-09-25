@@ -153,7 +153,7 @@ function renderBuildings() {
           ${costMarkup('stone', b.costs[2])}
         </div>
       </div>
-      <button class="building-upgrade wow-button wow-button--primary" type="button" data-upgrade="${b.id}" ${b.level >= b.max ? 'disabled' : ''}>${b.level >= b.max ? 'Max' : 'Upgrade'}</button>
+      <button class="building-upgrade wow-button wow-button--primary" type="button" data-upgrade="${b.id}" ${b.level >= b.max ? 'disabled aria-label="Maximum level reached"' : ''}>${b.level >= b.max ? 'MAX LEVEL' : 'Upgrade'}</button>
     </article>`).join('');
 
   bindResolvedIcons(list);
