@@ -264,6 +264,40 @@ export class CombatSimulation {
     return this.state.actors[index].resource >= this.effectiveCost(index, action);
   }
 
+  actionState(index) {
+    const def = this.defs[index];
+    const actor = this.state.actors[index];
+    if (!def || !actor) throw new RangeError("Unknown combat actor index.");
+
+    const cooldowns = def.cooldowns.map((action, slot) => {
+      const cooldown = actor.cooldowns[slot] || { remaining: 0 };
+      const remaining = Math.max(0, Math.trunc(cooldown.remaining || 0));
+      const effectiveCost = this.effectiveCost(index, action);
+      const resourceBlocked = remaining === 0 && !this.canAfford(index, action);
+      return {
+        id: action.id,
+        slot,
+        remaining,
+        effectiveCost,
+        resourceBlocked,
+        ready: Boolean(actor.alive) && remaining === 0 && !resourceBlocked
+      };
+    });
+
+    const ultimateCost = def.ultimate ? Math.max(1, Math.trunc(def.ultimate.cost || ULTIMATE_MAX)) : ULTIMATE_MAX;
+    const ultimateCharge = Math.max(0, Math.min(ultimateCost, Math.trunc(actor.ultimate || 0)));
+    return {
+      auto: { id: def.auto.id, ready: Boolean(actor.alive) },
+      cooldowns,
+      ultimate: def.ultimate ? {
+        id: def.ultimate.id,
+        charge: ultimateCharge,
+        max: ultimateCost,
+        ready: Boolean(actor.alive) && ultimateCharge >= ultimateCost
+      } : null
+    };
+  }
+
   firstReadyCooldown(index) {
     const def = this.defs[index];
     const actor = this.state.actors[index];
