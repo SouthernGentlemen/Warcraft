@@ -3,8 +3,10 @@ const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 const BASE_PRESENTATION_ROOT = "../data/base/presentation.json";
+const RECRUITMENT_DATA_ROOT = "../data/base/recruitment.json";
 let buildings = [];
 let basePresentation = null;
+let recruitmentData = null;
 let sidecarOrigin = null;
 
 function normalizeBuilding(raw) {
@@ -65,6 +67,8 @@ function upgradeState(building) {
 const state = {
   selected: null,
   questMessage: "",
+  recruitmentOpen: false,
+  recruitmentMessage: "",
   resources: { gold: 25430, lumber: 12680, stone: 8440 }
 };
 
@@ -175,7 +179,7 @@ const BUILDING_ACTIONS = Object.freeze({
     Object.freeze({label:'Open Roster', href:'./heroes.html', icon:['resource','population'], description:'Manage heroes, equipment, talents, and saved parties.'})
   ]),
   recruitment:Object.freeze([
-    Object.freeze({label:'Manage Roster', href:'./heroes.html', icon:['resource','population'], description:'Review and manage the current hero roster.'})
+    Object.freeze({label:'Recruit Heroes', action:'recruitment', icon:['resource','population'], description:'Discover and recruit heroes allowed by the current Recruitment Hall level.'})
   ]),
   training:Object.freeze([
     Object.freeze({label:'Open Talents', href:'./talent-calculator.html', icon:['talent','active'], description:'Open the talent workspace for hero build planning.'})
@@ -211,12 +215,14 @@ function buildingActions(building) {
 }
 
 function buildingActionMarkup(action) {
-  return '<a class="base-sidecar__menu-item base-sidecar__action" href="' + action.href + '" ' +
-    'data-wow-tooltip="' + action.label + '" data-wow-tooltip-type="Building Action" ' +
-    'data-wow-tooltip-description="' + action.description + '" data-wow-tooltip-variant="control">' +
-      iconMarkup(action.icon[0], action.icon[1], 'sm', 'base-sidecar__menu-icon') +
-      '<span class="base-sidecar__menu-copy"><strong>' + action.label + '</strong><small>Open</small></span>' +
-    '</a>';
+  const content =
+    iconMarkup(action.icon[0], action.icon[1], 'sm', 'base-sidecar__menu-icon') +
+    '<span class="base-sidecar__menu-copy"><strong>' + action.label + '</strong><small>Open</small></span>';
+  const tooltip =
+    ' data-wow-tooltip="' + action.label + '" data-wow-tooltip-type="Building Action"' +
+    ' data-wow-tooltip-description="' + action.description + '" data-wow-tooltip-variant="control"';
+  if (action.href) return '<a class="base-sidecar__menu-item base-sidecar__action" href="' + action.href + '"' + tooltip + '>' + content + '</a>';
+  return '<button class="base-sidecar__menu-item base-sidecar__action" type="button" data-building-action="' + action.action + '"' + tooltip + '>' + content + '</button>';
 }
 
 function upgradeControlMarkup(building, upgrade) {
@@ -229,6 +235,98 @@ function upgradeControlMarkup(building, upgrade) {
       iconMarkup('building','upgrade','sm','base-sidecar__menu-icon') +
       '<span class="base-sidecar__menu-copy"><strong>' + label + '</strong><small>' + stateLabel + '</small></span>' +
     '</button>';
+}
+
+function validateRecruitmentData(payload) {
+  if (!payload || !payload.factions || !Array.isArray(payload.factions.alliance) || !Array.isArray(payload.factions.horde)) throw new Error('Recruitment data requires Alliance and Horde candidate pools.');
+  const ids = Object.values(payload.factions).flat().map(candidate => candidate.id);
+  if (new Set(ids).size !== ids.length) throw new Error('Recruitment candidate IDs must be unique.');
+  return payload;
+}
+
+function recruitmentConfig(building) {
+  const progression = currentProgression(building);
+  return progression && progression.recruitment ? progression.recruitment : {roster_capacity:0, discovery_limit:0};
+}
+
+function currentFactionRoster() {
+  const faction = currentFactionId();
+  return Roster.getState().heroes.filter(hero => String(hero.faction || '').toLowerCase() === faction);
+}
+
+function discoveredRecruitmentCandidates(building) {
+  const config = recruitmentConfig(building);
+  const faction = currentFactionId();
+  const pool = recruitmentData && recruitmentData.factions ? recruitmentData.factions[faction] || [] : [];
+  return pool.slice(0, config.discovery_limit);
+}
+
+function recruitmentCandidateTooltip(candidate) {
+  return {
+    variant:'control',
+    title:candidate.name,
+    type:candidate.race + ' ' + candidate.classLabel,
+    icon:{category:'race', key:candidate.race},
+    description:'Recruitable ' + candidate.spec + ' ' + candidate.classLabel + '.',
+    stats:[
+      {label:'Starting level', value:'1'},
+      {label:'Primary stat', value:candidate.primary}
+    ]
+  };
+}
+
+function renderRecruitmentWorkflow(building) {
+  const root = $('#recruitmentWorkflow');
+  if (!root || !building) return;
+  const config = recruitmentConfig(building);
+  const faction = currentFactionId();
+  const roster = currentFactionRoster();
+  const candidates = discoveredRecruitmentCandidates(building);
+  const full = roster.length >= config.roster_capacity;
+
+  root.hidden = !state.recruitmentOpen;
+  if (!state.recruitmentOpen) return;
+
+  root.innerHTML =
+    '<div class="base-sidecar__recruitment-head">' +
+      '<span><strong>' + roster.length + ' / ' + config.roster_capacity + '</strong><small>Faction roster</small></span>' +
+      '<span><strong>' + candidates.length + '</strong><small>Discovered</small></span>' +
+    '</div>' +
+    '<div id="recruitmentStatus" class="base-sidecar__recruitment-status" role="status" aria-live="polite">' +
+      (state.recruitmentMessage || (full ? 'Recruitment capacity reached.' : 'Choose a discovered hero to recruit.')) +
+    '</div>' +
+    '<div class="base-sidecar__candidate-list"></div>';
+
+  const list = root.querySelector('.base-sidecar__candidate-list');
+  candidates.forEach(candidate => {
+    const existing = Roster.hero(candidate.id);
+    const row = document.createElement('article');
+    row.className = 'base-sidecar__candidate' + (existing ? ' is-recruited' : '');
+    row.innerHTML =
+      iconMarkup('race', candidate.race, 'sm', 'base-sidecar__candidate-icon') +
+      '<span class="base-sidecar__candidate-copy"><strong>' + candidate.name + '</strong><small>' + candidate.race + ' · ' + candidate.classLabel + ' · ' + candidate.spec + '</small></span>' +
+      '<button class="wow-button base-sidecar__recruit-button' + ((full || existing) ? ' is-disabled' : '') + '" type="button" aria-disabled="' + ((full || existing) ? 'true' : 'false') + '">' +
+        (existing ? 'Recruited' : 'Recruit') +
+      '</button>';
+    const button = row.querySelector('.base-sidecar__recruit-button');
+    Tooltips.attach(row, () => recruitmentCandidateTooltip(candidate), {anchor:'target'});
+    button.addEventListener('click', () => {
+      if (button.getAttribute('aria-disabled') === 'true') return;
+      try {
+        const factionLabel = faction === 'horde' ? 'Horde' : 'Alliance';
+        Roster.recruitHero(Object.assign({}, candidate, {faction:factionLabel, level:1}));
+        state.recruitmentMessage = candidate.name + ' joined the roster.';
+        state.recruitmentOpen = true;
+        renderSidecar();
+      } catch (error) {
+        state.recruitmentMessage = error.message;
+        state.recruitmentOpen = true;
+        renderSidecar();
+      }
+    });
+    list.appendChild(row);
+  });
+  bindResolvedIcons(root);
 }
 
 function bindResolvedIcons(root) {
@@ -509,6 +607,11 @@ function renderSidecar() {
       upgradeControlMarkup(building, upgrade) +
     '</div>';
 
+  if (building.id === 'recruitment') {
+    body.insertAdjacentHTML('beforeend',
+      '<section id="recruitmentWorkflow" class="base-sidecar__section base-sidecar__recruitment" hidden></section>');
+  }
+
   if (building.id === 'questboard') {
     body.insertAdjacentHTML('beforeend',
       '<section class="base-sidecar__section base-sidecar__quests">'+
@@ -521,6 +624,15 @@ function renderSidecar() {
   bindResolvedIcons(sidecar);
   Tooltips.hydrate(sidecar);
   if (building.id === 'questboard') renderQuestBoard();
+  if (building.id === 'recruitment') {
+    renderRecruitmentWorkflow(building);
+    const recruitmentAction = sidecar.querySelector('[data-building-action="recruitment"]');
+    if (recruitmentAction) recruitmentAction.addEventListener('click', () => {
+      state.recruitmentOpen = true;
+      state.recruitmentMessage = '';
+      renderSidecar();
+    });
+  }
 
   const upgradeButton = $('#baseSidecarUpgrade');
   if (upgradeButton) {
@@ -534,6 +646,10 @@ function openSidecar(id, origin) {
   const sidecar = $('#baseSidecar');
   if (!building || !sidecar) return;
 
+  if (state.selected !== id) {
+    state.recruitmentOpen = false;
+    state.recruitmentMessage = '';
+  }
   state.selected = id;
   sidecarOrigin = origin || sidecarOrigin;
   syncMapBuildings();
@@ -609,12 +725,14 @@ window.addEventListener('resize', () => {
 
 async function initBase() {
   try {
-    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT)]);
+    const responses=await Promise.all([fetch(BUILDING_DATA_ROOT),fetch(BASE_PRESENTATION_ROOT),fetch(RECRUITMENT_DATA_ROOT)]);
     if(!responses[0].ok) throw new Error('Could not load '+BUILDING_DATA_ROOT);
     if(!responses[1].ok) throw new Error('Could not load '+BASE_PRESENTATION_ROOT);
+    if(!responses[2].ok) throw new Error('Could not load '+RECRUITMENT_DATA_ROOT);
     const payload=await responses[0].json();
     buildings=payload.buildings.map(normalizeBuilding);
     basePresentation=validateBasePresentation(await responses[1].json());
+    recruitmentData=validateRecruitmentData(await responses[2].json());
     Icons.hydrate(document); Tooltips.hydrate(document); bindResolvedIcons(document);
     applyBasePresentation();
     all('[data-building]').forEach(plot=>{ const building=buildings.find(entry=>entry.id===plot.dataset.building); if(building) Tooltips.attach(plot,()=>buildingTooltipModel(building)); });
