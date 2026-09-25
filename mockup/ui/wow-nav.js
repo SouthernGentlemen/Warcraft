@@ -5,7 +5,7 @@
  */
 (function(global) {
   "use strict";
-  document.querySelectorAll('[data-wow-nav-key="talents"],[data-wow-nav-key="gear"],[data-wow-nav-key="simulation"]').forEach(function(node){ node.hidden = true; node.setAttribute("aria-hidden","true"); });
+  document.querySelectorAll('[data-wow-nav-key="talents"],[data-wow-nav-key="gear"]').forEach(function(node){ node.hidden = true; node.setAttribute("aria-hidden","true"); });
 
   const DESTINATIONS = Object.freeze({
     heroes:Object.freeze({
@@ -55,12 +55,6 @@
       title:"Base Management",
       description:"Review the persistent stronghold, buildings, professions, resources, and upgrade hooks.",
       icon:Object.freeze({category:"building", key:"keep"})
-    }),
-    simulation:Object.freeze({
-      label:"Simulation",
-      title:"Combat Simulation Lab",
-      description:"Run deterministic combat scenarios and inspect authoritative tick-by-tick reports.",
-      icon:Object.freeze({category:"battle", key:"critical"})
     })
   });
 
