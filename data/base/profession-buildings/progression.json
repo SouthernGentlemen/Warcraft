@@ -1,6 +1,6 @@
 {
-  "schema_version": 1,
-  "source": "migrated from Base building progression during WOWUI-041",
+  "schema_version": 2,
+  "source": "Artisan progression preserved; Gathering and Survival progression authored during WOWUI-078. Track profession level mirrors its owning Base building level.",
   "professions": [
     {
       "id": "blacksmith",
@@ -76,7 +76,8 @@
             "blacksmithing_tier_5"
           ]
         }
-      ]
+      ],
+      "track": "artisan"
     },
     {
       "id": "alchemy",
@@ -152,7 +153,8 @@
             "alchemy_tier_5"
           ]
         }
-      ]
+      ],
+      "track": "artisan"
     },
     {
       "id": "enchanter",
@@ -228,7 +230,8 @@
             "enchanting_tier_5"
           ]
         }
-      ]
+      ],
+      "track": "artisan"
     },
     {
       "id": "tailor",
@@ -304,7 +307,8 @@
             "tailoring_tier_5"
           ]
         }
-      ]
+      ],
+      "track": "artisan"
     },
     {
       "id": "leather",
@@ -380,7 +384,8 @@
             "leatherworking_tier_5"
           ]
         }
-      ]
+      ],
+      "track": "artisan"
     },
     {
       "id": "engineer",
@@ -454,6 +459,469 @@
           "requirements": [],
           "capabilities": [
             "engineering_tier_5"
+          ]
+        }
+      ],
+      "track": "artisan"
+    },
+    {
+      "id": "mining",
+      "name": "Mining",
+      "short": "Mining",
+      "category": "profession",
+      "track": "gathering",
+      "level": 1,
+      "max_level": 5,
+      "description": "Extracts ore and stone reagents used by crafting professions.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "mining_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "mining_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "mining_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "mining_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "mining_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "skinning",
+      "name": "Skinning",
+      "short": "Skinning",
+      "category": "profession",
+      "track": "gathering",
+      "level": 1,
+      "max_level": 5,
+      "description": "Harvests hides and leather reagents from defeated beasts.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "skinning_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "skinning_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "skinning_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "skinning_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "skinning_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "herbalism",
+      "name": "Herbalism",
+      "short": "Herbalism",
+      "category": "profession",
+      "track": "gathering",
+      "level": 1,
+      "max_level": 5,
+      "description": "Collects herbs and botanical reagents for alchemy and other crafts.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "herbalism_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "herbalism_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "herbalism_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "herbalism_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "herbalism_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fishing",
+      "name": "Fishing",
+      "short": "Fishing",
+      "category": "profession",
+      "track": "survival",
+      "level": 1,
+      "max_level": 5,
+      "description": "Catches fish and aquatic materials through survival activities.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "fishing_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "fishing_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "fishing_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "fishing_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "fishing_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "first-aid",
+      "name": "First Aid",
+      "short": "First Aid",
+      "category": "profession",
+      "track": "survival",
+      "level": 1,
+      "max_level": 5,
+      "description": "Prepares bandages and field-care supplies from gathered materials.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "first_aid_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "first_aid_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "first_aid_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "first_aid_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "first_aid_tier_5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cooking",
+      "name": "Cooking",
+      "short": "Cooking",
+      "category": "profession",
+      "track": "survival",
+      "level": 1,
+      "max_level": 5,
+      "description": "Prepares food and camp provisions from gathered ingredients.",
+      "progression": [
+        {
+          "level": 1,
+          "tier": 1,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "cooking_tier_1"
+          ]
+        },
+        {
+          "level": 2,
+          "tier": 2,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "cooking_tier_2"
+          ]
+        },
+        {
+          "level": 3,
+          "tier": 3,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "cooking_tier_3"
+          ]
+        },
+        {
+          "level": 4,
+          "tier": 4,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "cooking_tier_4"
+          ]
+        },
+        {
+          "level": 5,
+          "tier": 5,
+          "cost": {
+            "gold": 0,
+            "lumber": 0,
+            "stone": 0
+          },
+          "requirements": [],
+          "capabilities": [
+            "cooking_tier_5"
           ]
         }
       ]

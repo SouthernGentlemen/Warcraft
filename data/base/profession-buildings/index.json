@@ -1,47 +1,161 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "track_rule": "Each faction hero may own exactly one profession choice in each independent track. Learning another profession in the same track replaces only that track.",
+  "tracks": [
+    {
+      "id": "artisan",
+      "label": "Artisan",
+      "building_id": "artisans",
+      "building_label": "Artisans Guild",
+      "building_icon_key": "artisans-guild",
+      "assignment_slots": 3,
+      "training_rule": "replace_same_track",
+      "professions": [
+        "blacksmith",
+        "alchemy",
+        "enchanter",
+        "tailor",
+        "leather",
+        "engineer"
+      ]
+    },
+    {
+      "id": "gathering",
+      "label": "Gathering",
+      "building_id": "gathering-camp",
+      "building_label": "Gathering Camp",
+      "building_icon_key": "gathering-camp",
+      "assignment_slots": 3,
+      "training_rule": "replace_same_track",
+      "professions": [
+        "mining",
+        "skinning",
+        "herbalism"
+      ]
+    },
+    {
+      "id": "survival",
+      "label": "Survival",
+      "building_id": "survival-lodge",
+      "building_label": "Survival Lodge",
+      "building_icon_key": "survival-lodge",
+      "assignment_slots": 3,
+      "training_rule": "replace_same_track",
+      "professions": [
+        "fishing",
+        "first-aid",
+        "cooking"
+      ]
+    }
+  ],
   "professions": [
     {
       "id": "blacksmith",
       "label": "Blacksmith",
       "icon_key": "blacksmithing",
       "definition_path": "blacksmith/README.json",
-      "progression_id": "blacksmith"
+      "progression_id": "blacksmith",
+      "track": "artisan",
+      "owner_building": "artisans"
     },
     {
       "id": "alchemy",
       "label": "Alchemist",
       "icon_key": "alchemy",
       "definition_path": "alchemist/README.json",
-      "progression_id": "alchemy"
+      "progression_id": "alchemy",
+      "track": "artisan",
+      "owner_building": "artisans"
     },
     {
       "id": "enchanter",
       "label": "Enchanter",
       "icon_key": "enchanting",
       "definition_path": "enchanter/README.json",
-      "progression_id": "enchanter"
+      "progression_id": "enchanter",
+      "track": "artisan",
+      "owner_building": "artisans"
     },
     {
       "id": "tailor",
       "label": "Tailor",
       "icon_key": "tailoring",
       "definition_path": "tailor/README.json",
-      "progression_id": "tailor"
+      "progression_id": "tailor",
+      "track": "artisan",
+      "owner_building": "artisans"
     },
     {
       "id": "leather",
       "label": "Leatherworker",
       "icon_key": "leatherworking",
       "definition_path": "leatherworker/README.json",
-      "progression_id": "leather"
+      "progression_id": "leather",
+      "track": "artisan",
+      "owner_building": "artisans"
     },
     {
       "id": "engineer",
       "label": "Engineer",
       "icon_key": "engineering",
       "definition_path": "engineer/README.json",
-      "progression_id": "engineer"
+      "progression_id": "engineer",
+      "track": "artisan",
+      "owner_building": "artisans"
+    },
+    {
+      "id": "mining",
+      "label": "Mining",
+      "icon_key": "mining",
+      "definition_path": "mining/README.json",
+      "progression_id": "mining",
+      "track": "gathering",
+      "owner_building": "gathering-camp"
+    },
+    {
+      "id": "skinning",
+      "label": "Skinning",
+      "icon_key": "skinning",
+      "definition_path": "skinning/README.json",
+      "progression_id": "skinning",
+      "track": "gathering",
+      "owner_building": "gathering-camp"
+    },
+    {
+      "id": "herbalism",
+      "label": "Herbalism",
+      "icon_key": "herbalism",
+      "definition_path": "herbalism/README.json",
+      "progression_id": "herbalism",
+      "track": "gathering",
+      "owner_building": "gathering-camp"
+    },
+    {
+      "id": "fishing",
+      "label": "Fishing",
+      "icon_key": "fishing",
+      "definition_path": "fishing/README.json",
+      "progression_id": "fishing",
+      "track": "survival",
+      "owner_building": "survival-lodge"
+    },
+    {
+      "id": "first-aid",
+      "label": "First Aid",
+      "icon_key": "first-aid",
+      "definition_path": "first-aid/README.json",
+      "progression_id": "first-aid",
+      "track": "survival",
+      "owner_building": "survival-lodge"
+    },
+    {
+      "id": "cooking",
+      "label": "Cooking",
+      "icon_key": "cooking",
+      "definition_path": "cooking/README.json",
+      "progression_id": "cooking",
+      "track": "survival",
+      "owner_building": "survival-lodge"
     }
   ]
 }
