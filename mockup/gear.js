@@ -316,7 +316,7 @@ function renderRoster() {
         '<small>' + escapeHtml(hero.race) + ' · ' + escapeHtml(hero.faction) + '</small>' +
         '<em class="wow-class--' + hero.classId + '">' + escapeHtml(hero.classLabel) + ' · ' + escapeHtml(hero.spec) + ' · ' + equipped + '/6</em>' +
       '</span>' +
-      '<span class="roster-arrow">›</span>';
+      '<span class="roster-arrow" aria-hidden="true"></span>';
     button.querySelectorAll("img").forEach(Icons.bindFallback);
     button.addEventListener("click", function() {
       state.selectedHeroId = hero.id;
@@ -340,7 +340,7 @@ function slotMarkup(hero, slot) {
       '<img src="' + Icons.iconUrl(item.icon) + '" alt="">' +
       '<span class="wow-icon-tier">T' + item.tier + '</span>' +
     '</span>' +
-    '<span class="gear-slot-remove" aria-hidden="true">×</span>';
+    '<span class="gear-slot-remove" aria-hidden="true">Unequip</span>';
 }
 
 function renderSlots() {
