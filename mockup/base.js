@@ -4,6 +4,7 @@ const Roster = window.WarcraftRoster;
 const Campaign = window.WarcraftCampaign;
 const Equipment = window.WarcraftEquipment;
 const ClassHall = window.WarcraftClassHall;
+const Assignments = window.WarcraftAssignmentSlots;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 const BASE_PRESENTATION_ROOT = "../data/base/presentation.json";
 const RECRUITMENT_DATA_ROOT = "../data/base/recruitment.json";
@@ -84,7 +85,8 @@ const state = {
   questBoardMode: "offers",
   selectedDungeonId: null,
   dungeonMessage: "",
-  classHallMessage: ""
+  classHallMessage: "",
+  professionAssignmentMessage: ""
 };
 
 function campaignResources() { return Campaign.getResources(); }
@@ -530,19 +532,39 @@ function professionTrackForBuilding(buildingId) {
   return professionData && professionData.tracks ? professionData.tracks.find(track => track.building_id === buildingId) || null : null;
 }
 
+function assignmentHeroMarkup(hero, occupied) {
+  const status = occupied ? ('Assigned · ' + labelize(occupied.buildingId)) : (hero.availability === 'available' ? 'Available' : labelize(hero.availability));
+  return iconMarkup('class', hero.classId, 'sm', 'assignment-hero__icon wow-icon-frame--class-' + hero.classId) +
+    '<span><strong>' + escapeHtml(hero.name) + '</strong><small>' + escapeHtml(hero.classLabel + ' · Lv ' + hero.level + ' · ' + status) + '</small></span>';
+}
+
+function professionAssignmentData(track, hero) {
+  const choices = track.professions.map(id => professionData.professions.find(definition => definition.id === id)).filter(Boolean);
+  const current = Professions.getHeroProfessions(hero.id)[track.id];
+  const selected = choices.find(choice => choice.id === current) || choices[0];
+  if (!selected) throw new Error('No profession is authored for ' + track.label + '.');
+  return {selectedAction:'learn-profession', selectedProfessionId:selected.id, trackId:track.id};
+}
+
 function renderProfessionBuildingWorkflow(building) {
   const root = $('#professionWorkflow');
-  if (!root || !building || !professionData) return;
+  if (!root || !building || !professionData || !Assignments) return;
   const track = professionTrackForBuilding(building.id);
   root.hidden = state.professionOpen !== building.id;
   if (root.hidden || !track) return;
+
+  const completions = Professions.processAssignments(building.id);
+  if (completions.length) state.professionAssignmentMessage = completions.map(event => event.heroName + ' learned ' + (Professions.profession(event.professionId)?.label || event.professionId) + '.').join(' ');
 
   root.innerHTML =
     '<div class="base-sidecar__artisan-head">' +
       '<span class="wow-kicker">' + escapeHtml(track.label.toUpperCase()) + ' PROFESSIONS</span>' +
       '<small>' + track.professions.length + ' professions · Level ' + building.level + '</small>' +
     '</div>' +
-    '<div class="base-sidecar__profession-list"></div>';
+    '<div class="base-sidecar__profession-list"></div>' +
+    '<div class="assignment-workflow__head"><span class="wow-kicker">HERO TRAINING</span><small>3 slots · drag hero · 1 campaign day</small></div>' +
+    '<div class="assignment-workflow__message" role="status">' + escapeHtml(state.professionAssignmentMessage || ('Drag an available hero into a slot, choose one ' + track.label + ' profession, then begin training.')) + '</div>' +
+    '<div id="professionAssignmentBoard" class="assignment-board"></div>';
 
   const list = root.querySelector('.base-sidecar__profession-list');
   track.professions.map(id => professionData.professions.find(definition => definition.id === id)).filter(Boolean).forEach(definition => {
@@ -554,6 +576,26 @@ function renderProfessionBuildingWorkflow(building) {
       iconMarkup('profession', definition.icon_key, 'sm', 'base-sidecar__profession-icon') +
       '<span class="base-sidecar__profession-copy"><strong>' + definition.label + '</strong><small>' + escapeHtml(track.label) + ' · Level ' + building.level + '</small></span>';
     list.appendChild(item);
+  });
+
+  const actionOptions = track.professions.map(id => professionData.professions.find(definition => definition.id === id)).filter(Boolean).map(definition => ({value:definition.id,label:definition.label}));
+  Assignments.mount(root.querySelector('#professionAssignmentBoard'), {
+    buildingId:building.id,
+    label:building.name,
+    heroes:currentFactionRoster(),
+    heroMarkup:assignmentHeroMarkup,
+    assignmentData:hero=>professionAssignmentData(track,hero),
+    actionOptions:()=>actionOptions,
+    selectionPatch:value=>({selectedAction:'learn-profession',selectedProfessionId:value,trackId:track.id}),
+    describe:(hero,assignment)=>{
+      const current=Professions.getHeroProfessions(hero.id)[track.id],selected=Professions.profession(assignment.selectedProfessionId);
+      return {label:selected ? ('TRAIN ' + selected.label.toUpperCase()) : 'CHOOSE PROFESSION',detail:current ? ('Current ' + track.label + ': ' + (Professions.profession(current)?.label || current)) : ('No ' + track.label + ' profession learned')};
+    },
+    canStart:(hero,assignment)=>({enabled:Boolean(assignment.selectedProfessionId)&&hero.availability==='available'}),
+    startLabel:'Begin ' + track.label + ' Training',
+    start:index=>Professions.startProfessionTraining(building.id,index),
+    onChange:()=>{state.professionAssignmentMessage='Assignment updated.';renderSidecar();},
+    onError:error=>{state.professionAssignmentMessage=error.message;renderSidecar();}
   });
   bindResolvedIcons(root);
 }
@@ -1144,26 +1186,19 @@ function classHallHeroStatus(hero) {
   return {label:progress.xp + ' / ' + progress.maxXp + ' XP', detail:'Needs 20 / 20 XP for the next level', canTrain:false};
 }
 
-function classHallSelectableHeroes(slotIndex) {
-  const hall = ClassHall.getState();
-  const used = new Set(hall.slots.filter(Boolean).filter(slot => slot.slotIndex !== slotIndex).map(slot => slot.heroId));
-  return currentFactionRoster().filter(hero => ClassHall.trainerForClass(hero.classId) && hero.availability === 'available' && !used.has(hero.id));
-}
-
 function renderClassHallWorkflow(building) {
   const root = $('#classHallWorkflow');
-  if (!root || !building || !ClassHall || !classHallData) return;
+  if (!root || !building || !ClassHall || !Assignments || !classHallData) return;
   const completions = ClassHall.processCompletions();
   if (completions.length) state.classHallMessage = completions.map(event => event.heroName + ' reached level ' + event.toLevel + '.').join(' ');
   const trainers = ClassHall.trainers(currentFactionId());
-  const hall = ClassHall.getState();
   root.hidden = false;
   root.innerHTML =
     '<div class="class-hall__head"><div><span class="wow-kicker">CLASS TRAINERS</span><h3>Class Hall</h3></div><small>3 slots · 1 day training</small></div>' +
-    '<div id="classHallMessage" class="class-hall__message" role="status">' + escapeHtml(state.classHallMessage || 'Assign a faction-valid hero for talent access or level training.') + '</div>' +
+    '<div id="classHallMessage" class="class-hall__message" role="status">' + escapeHtml(state.classHallMessage || 'Drag a faction-valid hero into a slot for talent access or level training.') + '</div>' +
     '<div class="class-hall__trainers" aria-label="Available class trainers"></div>' +
-    '<div class="class-hall__assignment-head"><span class="wow-kicker">HERO ASSIGNMENTS</span><small>Level training lasts 2 campaign phases</small></div>' +
-    '<div class="class-hall__slots" aria-label="Class Hall hero assignment slots"></div>';
+    '<div class="class-hall__assignment-head"><span class="wow-kicker">HERO ASSIGNMENTS</span><small>Drag from active-faction roster · 2 campaign phases</small></div>' +
+    '<div id="classHallAssignmentBoard" class="assignment-board"></div>';
 
   const trainerGrid = root.querySelector('.class-hall__trainers');
   trainers.forEach(trainer => {
@@ -1178,78 +1213,29 @@ function renderClassHallWorkflow(building) {
     trainerGrid.appendChild(node);
   });
 
-  const slotsRoot = root.querySelector('.class-hall__slots');
-  hall.slots.forEach((assignment, index) => {
-    const slot = document.createElement('article');
-    slot.className = 'class-hall__slot' + (assignment ? ' is-filled' : ' is-empty') + (assignment && assignment.status === 'training' ? ' is-training' : '');
-    slot.dataset.assignmentSlot = String(index);
-    if (!assignment) {
-      const choices = classHallSelectableHeroes(index);
-      slot.innerHTML =
-        '<div class="class-hall__slot-label"><span>SLOT ' + (index + 1) + '</span><small>Empty</small></div>' +
-        '<select class="wow-select class-hall__hero-select" aria-label="Choose hero for Class Hall slot ' + (index + 1) + '">' +
-          '<option value="">Choose hero</option>' +
-          choices.map(hero => '<option value="' + escapeHtml(hero.id) + '">' + escapeHtml(hero.name) + ' · ' + escapeHtml(hero.classLabel) + '</option>').join('') +
-        '</select>' +
-        '<button class="wow-button class-hall__assign" type="button" disabled>Assign</button>';
-      const select = slot.querySelector('select'), assign = slot.querySelector('.class-hall__assign');
-      select.addEventListener('change', () => { assign.disabled = !select.value; });
-      assign.addEventListener('click', () => {
-        try {
-          ClassHall.assignHero(index, select.value);
-          state.classHallMessage = 'Hero assigned to Class Hall slot ' + (index + 1) + '.';
-          renderSidecar();
-        } catch (error) {
-          state.classHallMessage = error.message;
-          renderSidecar();
-        }
-      });
-    } else {
-      const hero = Roster.hero(assignment.heroId), trainer = hero ? ClassHall.trainerForClass(hero.classId) : null;
-      if (!hero || !trainer) {
-        slot.innerHTML = '<div class="class-hall__slot-label"><span>SLOT ' + (index + 1) + '</span><small>Invalid assignment</small></div>';
-      } else {
-        const status = classHallHeroStatus(hero), training = assignment.status === 'training', remaining = training ? ClassHall.remainingPhases(assignment) : null;
-        const statusLabel = training ? 'TRAINING' : status.label;
-        const statusDetail = training ? (remaining + ' campaign phase' + (remaining === 1 ? '' : 's') + ' remaining') : status.detail;
-        slot.innerHTML =
-          '<div class="class-hall__slot-label"><span>SLOT ' + (index + 1) + '</span><small>' + escapeHtml(statusLabel) + '</small></div>' +
-          '<a class="class-hall__assignee" href="' + ClassHall.openTalentsHref(hero.id) + '">' +
-            iconMarkup('class', hero.classId, 'md', 'class-hall__hero-icon wow-icon-frame--class-' + hero.classId) +
-            '<span><strong>' + escapeHtml(hero.name) + '</strong><small>' + escapeHtml(hero.classLabel + ' · Lv ' + hero.level) + '</small><em>Open Talents</em></span>' +
-          '</a>' +
-          '<div class="class-hall__slot-status"><strong>' + escapeHtml(statusLabel) + '</strong><small>' + escapeHtml(statusDetail) + '</small></div>' +
-          '<div class="class-hall__slot-actions">' +
-            (training
-              ? '<span class="class-hall__duration">1 day training in progress</span>'
-              : '<button class="wow-button wow-button--primary class-hall__train" type="button"' + (status.canTrain && hero.availability === 'available' ? '' : ' disabled') + '>Start Level Training</button><button class="wow-button class-hall__remove" type="button">Remove</button>') +
-          '</div>';
-        if (!training) {
-          slot.querySelector('.class-hall__train').addEventListener('click', () => {
-            try {
-              ClassHall.startLevelTraining(index);
-              state.classHallMessage = hero.name + ' began one-day level training.';
-              renderSidecar();
-            } catch (error) {
-              state.classHallMessage = error.message;
-              renderSidecar();
-            }
-          });
-          slot.querySelector('.class-hall__remove').addEventListener('click', () => {
-            try {
-              ClassHall.removeHero(index);
-              state.classHallMessage = hero.name + ' removed from Class Hall.';
-              renderSidecar();
-            } catch (error) {
-              state.classHallMessage = error.message;
-              renderSidecar();
-            }
-          });
-        }
-      }
-    }
-    slotsRoot.appendChild(slot);
+  Assignments.mount(root.querySelector('#classHallAssignmentBoard'), {
+    buildingId:'classhall',
+    label:'Class Hall',
+    heroes:currentFactionRoster().filter(hero=>Boolean(ClassHall.trainerForClass(hero.classId))),
+    heroMarkup:assignmentHeroMarkup,
+    assignmentData:hero=>{
+      const trainer=ClassHall.trainerForClass(hero.classId);
+      if(!trainer) throw new Error(hero.classLabel + ' has no trainer for this faction.');
+      return {selectedAction:'level-up',selectedTrainerId:trainer.id,trainerId:trainer.id,trainerClassId:trainer.class_id};
+    },
+    describe:hero=>classHallHeroStatus(hero),
+    canStart:hero=>{
+      const status=classHallHeroStatus(hero);
+      return {enabled:status.canTrain&&hero.availability==='available'};
+    },
+    startLabel:'Start Level Training',
+    start:index=>ClassHall.startLevelTraining(index),
+    href:hero=>ClassHall.openTalentsHref(hero.id),
+    hrefLabel:'Open Talents',
+    onChange:()=>{state.classHallMessage='Class Hall assignment updated.';renderSidecar();},
+    onError:error=>{state.classHallMessage=error.message;renderSidecar();}
   });
+
   bindResolvedIcons(root);
   Tooltips.hydrate(root);
 }
@@ -1453,7 +1439,10 @@ window.addEventListener('warcraft:roster-changed', () => {
 
 window.addEventListener('warcraft:campaign-changed', event => {
   const reason = event && event.detail && event.detail.reason;
-  if (state.selected === 'classhall' && !$('#baseSidecar').hidden && ['clock','building-assignment'].includes(reason)) renderSidecar();
+  if (['classhall','artisans','gathering-camp','survival-lodge'].includes(state.selected) && !$('#baseSidecar').hidden && ['clock','building-assignment','profession-selection'].includes(reason)) renderSidecar();
+});
+window.addEventListener('warcraft:assignments-changed', () => {
+  if (['classhall','artisans','gathering-camp','survival-lodge'].includes(state.selected) && !$('#baseSidecar').hidden) renderSidecar();
 });
 
 window.addEventListener('resize', () => {
