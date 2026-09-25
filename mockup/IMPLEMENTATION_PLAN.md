@@ -38,7 +38,7 @@ The Base redesign is intentionally split into dependency-ordered tasks. Each tas
 
 ### WOWUI-021 — Base Entry Point and Player-Facing Routing
 
-Status: planned
+Status: complete (2026-09-24)
 
 Depends on: WOWUI-020
 
