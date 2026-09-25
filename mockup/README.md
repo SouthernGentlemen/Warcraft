@@ -56,6 +56,7 @@ The shared typography contract uses `.wow-title` / `.wow-name` for fantasy-serif
 - `base.html` — player-facing map-first stronghold landing screen with compact resources, clickable core/profession buildings, shared building sidecar, Quest Board dispatch, upgrades, and attention states
 - `quest-journal.html` — read-only player Quest Journal mirroring available, active, and completed Quest Board assignments from authoritative roster state
 - `inventory.html` — global owned-item inventory with compact bag/grid browsing, filters, rarity frames, shared item tooltips, and derived equipped-by state
+- `profession.html` — shared Artisans Guild profession workspace; all six professions are available and mirror the Guild level
 
 ## Development
 
@@ -161,3 +162,7 @@ Storehouse is a direct Base entry point into global Inventory. Its compact sidec
 ### Artisans Guild Base hotspot
 
 The six standalone profession hotspots have been consolidated into one `Artisans Guild` Base building. Alliance and Horde each position the Guild from shared faction presentation data, and the Guild participates in the normal five-level Keep-gated upgrade system. The original Blacksmith, Alchemy, Enchanting, Tailoring, Leatherworking, and Engineering definitions and their former five-tier progression records are preserved under `data/base/profession-buildings/`; only their standalone Base building entries/routes were removed. WOWUI-042 owns the Guild's profession selection and lock/unlock menu.
+
+### Artisans Guild profession workspace
+
+Artisans Guild now exposes Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, and Engineer through one compact profession menu. All six professions are always available; there is no per-profession unlock ladder. `WarcraftProfessions` persists the shared Artisans Guild level and selected profession, and every profession reads that same level as its current tier. `profession.html` is the shared profession workspace and renders the preserved profession progression data for the selected profession. Profession-specific material and recipe requirements are intentionally deferred until they are authored later.
