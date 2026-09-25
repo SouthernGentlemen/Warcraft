@@ -176,11 +176,8 @@
   letter-spacing: .035em;
   text-transform: uppercase;
 }
-.roster-arrow {
-  color: var(--wow-text-dim);
-  font-size: 19px;
-}
-.hero-roster-card.active .roster-arrow { color: var(--wow-gold-bright); }
+.roster-arrow { width: 8px; height: 8px; border-top: 2px solid var(--wow-text-dim); border-right: 2px solid var(--wow-text-dim); transform: rotate(45deg); }
+.hero-roster-card.active .roster-arrow { border-color: var(--wow-gold-bright); }
 
 .gear-character-panel {
   min-width: 0;
@@ -361,15 +358,18 @@
   top: 10px;
   right: 0;
   z-index: 9;
-  width: 16px;
-  height: 16px;
+  min-width: 46px;
+  min-height: 18px;
+  padding: 1px 4px;
   display: grid;
   place-items: center;
   border: 1px solid var(--wow-error-deep);
-  border-radius: 50%;
+  border-radius: var(--wow-radius-tight);
   background: #170a0a;
-  color: var(--wow-error);
-  font: 700 11px Arial, sans-serif;
+  color: #ff8b8b;
+  font: 800 8px var(--wow-font-ui);
+  letter-spacing: .04em;
+  text-transform: uppercase;
   opacity: 0;
 }
 .gear-slot.filled:hover .gear-slot-remove,
