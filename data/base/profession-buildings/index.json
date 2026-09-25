@@ -5,7 +5,6 @@
       "id": "blacksmith",
       "label": "Blacksmith",
       "icon_key": "blacksmithing",
-      "unlock_level": 1,
       "definition_path": "blacksmith/README.json",
       "progression_id": "blacksmith"
     },
@@ -13,7 +12,6 @@
       "id": "alchemy",
       "label": "Alchemist",
       "icon_key": "alchemy",
-      "unlock_level": 1,
       "definition_path": "alchemist/README.json",
       "progression_id": "alchemy"
     },
@@ -21,7 +19,6 @@
       "id": "enchanter",
       "label": "Enchanter",
       "icon_key": "enchanting",
-      "unlock_level": 2,
       "definition_path": "enchanter/README.json",
       "progression_id": "enchanter"
     },
@@ -29,7 +26,6 @@
       "id": "tailor",
       "label": "Tailor",
       "icon_key": "tailoring",
-      "unlock_level": 3,
       "definition_path": "tailor/README.json",
       "progression_id": "tailor"
     },
@@ -37,7 +33,6 @@
       "id": "leather",
       "label": "Leatherworker",
       "icon_key": "leatherworking",
-      "unlock_level": 4,
       "definition_path": "leatherworker/README.json",
       "progression_id": "leather"
     },
@@ -45,7 +40,6 @@
       "id": "engineer",
       "label": "Engineer",
       "icon_key": "engineering",
-      "unlock_level": 5,
       "definition_path": "engineer/README.json",
       "progression_id": "engineer"
     }
