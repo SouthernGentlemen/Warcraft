@@ -1,5 +1,6 @@
 const Icons = window.WowUIIcons;
-const Tooltips = window.WowUITooltips;\nconst Roster = window.WarcraftRoster;
+const Tooltips = window.WowUITooltips;
+const Roster = window.WarcraftRoster;
 const BUILDING_DATA_ROOT = "../data/base/buildings.json";
 let buildings = [];
 
@@ -56,7 +57,8 @@ const buildingIconKeys = {
   enchanter:['profession','enchanting'],
   tailor:['profession','tailoring'],
   leather:['profession','leatherworking'],
-  engineer:['profession','engineering'],\n  questboard:['building','command-hall']
+  engineer:['profession','engineering'],
+  questboard:['building','command-hall']
 };
 
 const costIconKeys = {
@@ -252,7 +254,8 @@ $('.base-action-bar').addEventListener('click', event => {
     recruit: 'Recruitment flow hook ready for roster expansion.',
     mission: 'Mission launch hook ready for content selection.'
   };
-  if (button.dataset.action === 'keep') selectBuilding('keep');\n  if (button.dataset.action === 'mission') { state.selected='questboard'; renderBuildings(); document.querySelector('.quest-board').scrollIntoView({block:'nearest'}); }
+  if (button.dataset.action === 'keep') selectBuilding('keep');
+  if (button.dataset.action === 'mission') { state.selected='questboard'; renderBuildings(); document.querySelector('.quest-board').scrollIntoView({block:'nearest'}); }
   toast(labels[button.dataset.action]);
 });
 
