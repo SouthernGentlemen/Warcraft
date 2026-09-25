@@ -26,6 +26,27 @@ function showError(message) {
   $("error").classList.add("show");
 }
 
+function validateTalentData(spec) {
+  const talents = spec?.talents || {};
+  const expected = {tier_1:2,tier_2:2,capstones:1};
+  Object.entries(expected).forEach(([tier,count]) => {
+    if (!Array.isArray(talents[tier]) || talents[tier].length !== count) {
+      throw new Error((spec?.specialization || "Specialization") + " must define exactly 2 Tier 1, 2 Tier 2, and 1 capstone talent");
+    }
+  });
+  const records = [...talents.tier_1,...talents.tier_2,...talents.capstones];
+  const names = records.map(item => String(item?.name || "").trim());
+  if (names.some(name => !name) || new Set(names).size !== 5) {
+    throw new Error((spec?.specialization || "Specialization") + " must define five unique talent names");
+  }
+  records.forEach(item => {
+    if (!item.icon_slug || !item.canonical_tree || !item.canonical_source) {
+      throw new Error((spec?.specialization || "Specialization") + " has incomplete canonical talent metadata");
+    }
+  });
+  return spec;
+}
+
 function blankPicks() {
   const out = {};
   state.classMeta.specs.forEach(spec => {
@@ -299,7 +320,7 @@ async function changeClass(classId) {
 
   for (const meta of state.classMeta.specs) {
     const path = DATA_ROOT + meta.data_path.replace("./", "");
-    state.specs.set(meta.id, await loadJson(path));
+    state.specs.set(meta.id, validateTalentData(await loadJson(path)));
   }
 
   state.primarySpec = null;
