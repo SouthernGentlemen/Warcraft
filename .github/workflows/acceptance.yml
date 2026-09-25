@@ -1,0 +1,34 @@
+name: Warcraft Mockup Acceptance
+
+on:
+  push:
+    paths:
+      - "mockup/**/*.js"
+      - "mockup/**/*.html"
+      - "mockup/**/*.css"
+      - "data/**"
+      - "scripts/integration-acceptance.mjs"
+      - "package.json"
+      - "dev-server.mjs"
+      - ".github/workflows/acceptance.yml"
+  pull_request:
+    paths:
+      - "mockup/**/*.js"
+      - "mockup/**/*.html"
+      - "mockup/**/*.css"
+      - "data/**"
+      - "scripts/integration-acceptance.mjs"
+      - "package.json"
+      - "dev-server.mjs"
+      - ".github/workflows/acceptance.yml"
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run integration and combat acceptance
+        run: npm test
