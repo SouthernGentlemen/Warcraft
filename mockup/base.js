@@ -22,18 +22,43 @@ function nextProgression(building) {
   return building.progression.find(entry => entry.level === building.level + 1) || null;
 }
 
+function keepUpgradeGate(building, next) {
+  const keep = buildings.find(entry => entry.id === 'keep') || null;
+  if (!next || building.id === 'keep') {
+    return {blocked:false, currentLevel:keep ? keep.level : 0, requiredLevel:null, reason:''};
+  }
+  const requiredLevel = next.level;
+  const currentLevel = keep ? keep.level : 0;
+  const blocked = !keep || currentLevel < requiredLevel;
+  return {
+    blocked,
+    currentLevel,
+    requiredLevel,
+    reason:blocked ? 'Upgrade Keep to level ' + requiredLevel + ' first.' : ''
+  };
+}
+
+function resourceShortages(next) {
+  if (!next) return [];
+  return Object.entries(next.cost).filter(([key,value]) => (state.resources[key] || 0) < value)
+    .map(([key,value]) => ({resource:key, required:value, current:state.resources[key] || 0}));
+}
+
 function upgradeState(building) {
   const next = nextProgression(building);
-  if (!next) return {canUpgrade:false, reason:"Maximum level reached", next:null};
-  const unmet = [];
-  Object.entries(next.cost).forEach(([key,value]) => { if ((state.resources[key] || 0) < value) unmet.push(key + " " + fmt(value)); });
-  (next.requirements || []).forEach(req => {
-    if (req.type === "building_level") {
-      const dependency = buildings.find(entry => entry.id === req.building);
-      if (!dependency || dependency.level < req.level) unmet.push((dependency ? dependency.name : req.building) + " level " + req.level);
-    }
-  });
-  return {canUpgrade:unmet.length === 0, reason:unmet.length ? "Requires " + unmet.join(", ") : "", next:next};
+  if (!next) return {canUpgrade:false, reason:'Maximum level reached', next:null, keepGate:keepUpgradeGate(building, null), shortages:[]};
+  const keepGate = keepUpgradeGate(building, next);
+  const shortages = resourceShortages(next);
+  const reasons = [];
+  if (keepGate.blocked) reasons.push(keepGate.reason);
+  if (shortages.length) reasons.push('Need ' + shortages.map(entry => labelize(entry.resource) + ' ' + fmt(entry.required)).join(', ') + '.');
+  return {
+    canUpgrade:!keepGate.blocked && shortages.length === 0,
+    reason:reasons.join(' '),
+    next,
+    keepGate,
+    shortages
+  };
 }
 
 
@@ -101,7 +126,7 @@ function buildingAttentionState(building) {
 
   const upgrade = upgradeState(building);
   if (upgrade.next && upgrade.canUpgrade) {
-    return {key:'upgrade-ready', label:'Upgrade available', detail:'Resources and building requirements are met for the next level.'};
+    return {key:'upgrade-ready', label:'Upgrade available', detail:'Keep gate and resource costs are satisfied for the next level.'};
   }
   if (upgrade.next && !upgrade.canUpgrade) {
     return {key:'blocked', label:'Upgrade blocked', detail:upgrade.reason || 'The next building level is currently blocked.'};
@@ -165,20 +190,6 @@ function capabilityMarkup(capabilities) {
     : '<p class="base-sidecar__empty">No additional capability.</p>';
 }
 
-function requirementMarkup(requirements) {
-  const rows = Array.isArray(requirements) ? requirements : [];
-  if (!rows.length) return '<p class="base-sidecar__requirement is-met">No building prerequisite.</p>';
-  return rows.map(req => {
-    if (req.type !== 'building_level') return '<p class="base-sidecar__requirement">Requirement: ' + labelize(req.type) + '</p>';
-    const dependency = buildings.find(entry => entry.id === req.building);
-    const met = Boolean(dependency && dependency.level >= req.level);
-    const name = dependency ? dependency.name : labelize(req.building);
-    return '<p class="base-sidecar__requirement ' + (met ? 'is-met' : 'is-blocked') + '">' +
-      '<strong>' + (met ? 'Met' : 'Required') + '</strong><span>' + name + ' Level ' + req.level + '</span>' +
-    '</p>';
-  }).join('');
-}
-
 function bindResolvedIcons(root) {
   (root || document).querySelectorAll('.wow-icon-frame img').forEach(Icons.bindFallback);
 }
@@ -197,6 +208,36 @@ function buildingTooltipModel(building) {
       .concat(upgrade.next ? Object.entries(upgrade.next.cost).map(([key,value])=>({label:'Next '+key,value:fmt(value)})) : []),
     meta:[{label:'Category',value:building.category==='profession'?'Profession':'Core'},{label:'Next level',value:upgrade.next ? String(upgrade.next.level) : 'MAX'}].concat(attention ? [{label:'Attention',value:attention.label}] : []),
     locked:attention && attention.key === 'blocked' ? [attention.detail] : (upgrade.reason ? [upgrade.reason] : [])
+  };
+}
+
+function upgradeTooltipModel(building) {
+  const upgrade = upgradeState(building);
+  const icon = buildingIconSpec(building);
+  if (!upgrade.next) {
+    return {
+      variant:'control',
+      title:building.name + ' · Max Level',
+      type:'Building upgrade',
+      icon:{category:icon[0], key:icon[1]},
+      description:'This building is already at maximum level.',
+      stats:[{label:'Current level', value:String(building.level)}]
+    };
+  }
+  const stats = [
+    {label:'Upgrade', value:'Level ' + building.level + ' → ' + upgrade.next.level}
+  ].concat(Object.entries(upgrade.next.cost).map(([key,value]) => ({label:labelize(key), value:fmt(value)})));
+  if (building.id !== 'keep') {
+    stats.push({label:'Keep gate', value:'Level ' + upgrade.keepGate.requiredLevel + ' required · current ' + upgrade.keepGate.currentLevel});
+  }
+  return {
+    variant:'control',
+    title:'Upgrade ' + building.name,
+    type:upgrade.canUpgrade ? 'Ready' : 'Blocked',
+    icon:{category:icon[0], key:icon[1]},
+    description:upgrade.canUpgrade ? 'Spend the listed resources to advance this building.' : upgrade.reason,
+    stats,
+    locked:upgrade.canUpgrade ? [] : [upgrade.reason]
   };
 }
 
@@ -437,7 +478,7 @@ function renderSidecar() {
         '<span class="wow-kicker">MAXIMUM LEVEL</span>' +
         '<h3>Level ' + building.level + ' / ' + building.max + '</h3>' +
         '<p>This building has reached its current progression cap.</p>' +
-        '<button class="wow-button wow-button--primary" type="button" disabled>MAX LEVEL</button>' +
+        '<button id="baseSidecarUpgrade" class="wow-button wow-button--primary is-disabled" type="button" aria-disabled="true">MAX LEVEL</button>' +
       '</section>' +
       (building.category === 'profession'
         ? '<section class="base-sidecar__section"><span class="wow-label">Profession</span><button class="wow-button base-sidecar__profession-action" type="button" disabled>Profession actions coming later</button></section>'
@@ -454,18 +495,13 @@ function renderSidecar() {
         capabilityMarkup(next.capabilities) +
       '</section>' +
       '<section class="base-sidecar__section">' +
-        '<span class="wow-label">Requirements</span>' +
-        requirementMarkup(next.requirements) +
-      '</section>' +
-      '<section class="base-sidecar__section">' +
         '<span class="wow-label">Upgrade Cost</span>' +
         '<div class="base-sidecar__costs">' + Object.entries(next.cost).map(([key,value]) => costMarkup(key,value)).join('') + '</div>' +
       '</section>' +
       '<section class="base-sidecar__section base-sidecar__upgrade ' + (upgrade.canUpgrade ? 'is-ready' : 'is-blocked') + '">' +
         '<span class="wow-kicker">' + (upgrade.canUpgrade ? 'READY TO UPGRADE' : 'UPGRADE BLOCKED') + '</span>' +
         '<h3>Level ' + building.level + ' → ' + next.level + '</h3>' +
-        (upgrade.reason ? '<p class="base-sidecar__blocked-copy">' + upgrade.reason + '</p>' : '<p>Requirements met. Spend the resources below to advance this building.</p>') +
-        '<button id="baseSidecarUpgrade" class="wow-button wow-button--primary" type="button" ' + (upgrade.canUpgrade ? '' : 'disabled') + '>Upgrade to Level ' + next.level + '</button>' +
+        '<button id="baseSidecarUpgrade" class="wow-button wow-button--primary' + (upgrade.canUpgrade ? '' : ' is-disabled') + '" type="button" aria-disabled="' + (upgrade.canUpgrade ? 'false' : 'true') + '">Upgrade to Level ' + next.level + '</button>' +
       '</section>' +
       (building.category === 'profession'
         ? '<section class="base-sidecar__section"><span class="wow-label">Profession</span><button class="wow-button base-sidecar__profession-action" type="button" disabled>Profession actions coming later</button></section>'
@@ -484,7 +520,10 @@ function renderSidecar() {
   bindResolvedIcons(sidecar);
   if (building.id === 'questboard') renderQuestBoard();
   const upgradeButton = $('#baseSidecarUpgrade');
-  if (upgradeButton) upgradeButton.addEventListener('click', () => upgradeBuilding(building.id));
+  if (upgradeButton) {
+    Tooltips.attach(upgradeButton, () => upgradeTooltipModel(building), {anchor:'target'});
+    upgradeButton.addEventListener('click', () => upgradeBuilding(building.id));
+  }
 }
 
 function openSidecar(id, origin) {
