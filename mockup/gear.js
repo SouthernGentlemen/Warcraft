@@ -54,126 +54,6 @@ const BASELINE = {
   5: {major:56, minor:12, stamina:58, spirit:40, crit:6, haste:6, hit:4, mastery:4}
 };
 
-const QUALITY_BY_TIER = {
-  1: {label:"Common", key:"common"},
-  2: {label:"Uncommon", key:"uncommon"},
-  3: {label:"Rare", key:"rare"},
-  4: {label:"Epic", key:"epic"},
-  5: {label:"Epic", key:"epic"}
-};
-
-const TIER_PREFIX = {
-  1: "Worn",
-  2: "Fieldforged",
-  3: "Veteran's",
-  4: "Runed",
-  5: "Ascendant"
-};
-
-const ARMOR_PATTERN = {
-  1: ["Cloth", "Cloth", "Cloth", "Cloth", "Cloth"],
-  2: ["Cloth", "Leather", "Mail", "Plate", "Cloth"],
-  3: ["Leather", "Mail", "Plate", "Cloth", "Leather"],
-  4: ["Mail", "Plate", "Cloth", "Leather", "Mail"],
-  5: ["Plate", "Cloth", "Leather", "Mail", "Plate"]
-};
-
-const SLOT_NOUNS = {
-  Head: {Cloth:"Cowl", Leather:"Mask", Mail:"Coif", Plate:"Helm"},
-  Chest: {Cloth:"Robe", Leather:"Jerkin", Mail:"Hauberk", Plate:"Cuirass"},
-  Pants: {Cloth:"Leggings", Leather:"Legguards", Mail:"Chausses", Plate:"Greaves"},
-  Feet: {Cloth:"Slippers", Leather:"Boots", Mail:"Sabatons", Plate:"Warboots"},
-  Gloves: {Cloth:"Gloves", Leather:"Grips", Mail:"Gauntlets", Plate:"Handguards"}
-};
-
-const WEAPON_TEMPLATES = [
-  {family:"Staff", noun:"Spellstaff", focus:"Intellect"},
-  {family:"Dagger", noun:"Quickblade", focus:"Agility"},
-  {family:"Sword", noun:"Warblade", focus:"Strength"}
-];
-
-const state = {
-  classIndex: null,
-  heroes: [],
-  items: [],
-  selectedHeroId: null,
-  filters: {tier:"all", slot:"all", query:"", equippable:true}
-};
-
-const $ = id => document.getElementById(id);
-
-function escapeHtml(value) {
-  return String(value == null ? "" : value).replace(/[&<>"']/g, function(c) {
-    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
-  });
-}
-
-function armorFocus(family) {
-  if (family === "Cloth") return "Intellect";
-  if (family === "Leather" || family === "Mail") return "Agility";
-  return "Strength";
-}
-
-function makeStats(tier, focus) {
-  if (tier === 1) return [];
-  if (tier === 2) return [{stat:focus, value:4}];
-  if (tier === 3) return [{stat:focus, value:6}, {stat:"Stamina", value:5}];
-  if (tier === 4) return [{stat:focus, value:9}, {stat:"Stamina", value:8}, {stat:"Crit", value:3}];
-  return [{stat:focus, value:13}, {stat:"Stamina", value:12}, {stat:"Crit", value:5}, {stat:"Haste", value:4}];
-}
-
-function buildArmory() {
-  const items = [];
-  const armorSlots = SLOT_ORDER.slice(0, 5);
-
-  for (let tier = 1; tier <= 5; tier += 1) {
-    armorSlots.forEach(function(slot, index) {
-      const family = ARMOR_PATTERN[tier][index];
-      const quality = QUALITY_BY_TIER[tier];
-      items.push({
-        id:"t" + tier + "-" + slot.toLowerCase() + "-" + family.toLowerCase(),
-        name:TIER_PREFIX[tier] + " " + SLOT_NOUNS[slot][family],
-        tier:tier,
-        quality:quality.label,
-        qualityKey:quality.key,
-        slot:slot,
-        family:family,
-        icon:Icons.resolveSlug("item-family", family, {slot:slot}),
-        stats:makeStats(tier, armorFocus(family))
-      });
-    });
-
-    const trinketFocus = ["Strength", "Agility", "Intellect", "Stamina", "Crit"][tier - 1];
-    const quality = QUALITY_BY_TIER[tier];
-    items.push({
-      id:"t" + tier + "-trinket-relic",
-      name:TIER_PREFIX[tier] + " Adventurer's Relic",
-      tier:tier, quality:quality.label, qualityKey:quality.key,
-      slot:"Trinket", family:"Trinket",
-      icon:Icons.resolveSlug("item-family", "Trinket", {slot:"Trinket"}),
-      statFocus:trinketFocus, stats:makeStats(tier, trinketFocus)
-    });
-
-    WEAPON_TEMPLATES.forEach(function(weapon) {
-      const quality = QUALITY_BY_TIER[tier];
-      items.push({
-        id:"t" + tier + "-weapon-" + weapon.family.toLowerCase(),
-        name:TIER_PREFIX[tier] + " " + weapon.noun,
-        tier:tier,
-        quality:quality.label,
-        qualityKey:quality.key,
-        slot:"Weapon",
-        family:weapon.family,
-        icon:Icons.resolveSlug("item-family", weapon.family, {slot:"Weapon"}),
-        statFocus:weapon.focus,
-        stats:makeStats(tier, weapon.focus)
-      });
-    });
-  }
-
-  return items;
-}
-
 function defaultBlueprint(classMeta, index) {
   return {
     name:classMeta.label + " " + (index + 1),
@@ -610,7 +490,7 @@ async function loadJson(path) {
 async function init() {
   try {
     Tooltips.hydrate(document);
-    state.items = buildArmory();
+    state.items = window.WarcraftEquipment.build();
     const loaded = await Promise.all([
       loadJson(CLASS_DATA_ROOT + "index.json"),
       loadJson(RACE_DATA_ROOT + "index.json")
