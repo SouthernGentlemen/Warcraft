@@ -1403,3 +1403,61 @@
     width: 100%;
   }
 }
+
+
+/* WOWUI-027 — Single-state building attention markers. */
+.base-plot-attention {
+  position: absolute;
+  z-index: 14;
+  top: -3px;
+  right: 7px;
+  pointer-events: none;
+}
+
+.base-plot-attention .wow-icon-frame {
+  --wow-icon-size: 21px;
+  border-width: 1px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.58);
+}
+
+.base-plot-attention.is-upgrade-ready .wow-icon-frame,
+.base-plot-attention.is-quest-ready .wow-icon-frame,
+.base-plot-attention.is-quest-complete .wow-icon-frame,
+.base-plot-attention.is-profession-action .wow-icon-frame {
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.72),
+    0 0 8px rgba(214,182,95,.42);
+}
+
+.base-plot-attention.is-blocked {
+  opacity: .6;
+  filter: grayscale(.28);
+}
+
+.base-plot[data-attention-state="quest-complete"] .plot-label {
+  border-color: var(--wow-success);
+}
+
+.base-plot[data-attention-state="quest-ready"] .plot-label,
+.base-plot[data-attention-state="upgrade-ready"] .plot-label {
+  border-color: var(--wow-gold);
+}
+
+.base-plot[data-attention-state="profession-action"] .plot-label {
+  border-color: var(--wow-alliance-bright);
+}
+
+.base-plot[data-attention-state="blocked"] .plot-label {
+  border-color: rgba(185,139,52,.38);
+}
+
+@media (max-width: 700px) {
+  .base-plot-attention {
+    top: 0;
+    right: 10px;
+  }
+
+  .base-plot-attention .wow-icon-frame {
+    --wow-icon-size: 19px;
+  }
+}
