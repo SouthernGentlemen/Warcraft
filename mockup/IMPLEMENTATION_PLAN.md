@@ -2475,7 +2475,7 @@ When automation is unlocked, make Quest Board assignments behave like Darkest Du
 
 ### WOWUI-088 — Embark Top-Level Gameplay Surface
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-080, WOWUI-082, WOWUI-086, WOWUI-087
 
