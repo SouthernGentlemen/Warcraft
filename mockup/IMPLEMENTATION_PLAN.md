@@ -2301,7 +2301,7 @@ Replace the current checklist-based Party Loadout manager with compact collapsed
 
 ### WOWUI-083 — Raid Loadouts from Party Defaults and Hero Overrides
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-082
 
