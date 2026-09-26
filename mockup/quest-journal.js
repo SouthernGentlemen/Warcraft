@@ -1,6 +1,9 @@
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
+const Campaign = window.WarcraftCampaign;
+const Progression = window.WarcraftContentProgression;
+const ContentAssignments = window.WarcraftContentAssignments;
 
 const STATUS_GROUPS = Object.freeze([
   Object.freeze({status:"available", listId:"availableQuestList", countId:"availableQuestCount"}),
@@ -120,11 +123,24 @@ function renderJournal() {
   STATUS_GROUPS.forEach(group => renderGroup(group, quests));
 }
 
-function initQuestJournal() {
+async function renderAutomation() {
+  const root=$("questAutomation"),board=$("questAutomationBoard");
+  if(Campaign.getBaseLevel()<2){root.hidden=true;board.innerHTML="";return;}
+  root.hidden=false;
+  if(!Progression.getCatalog()){const data=await fetch("../data/content/progression.json").then(r=>r.json());Progression.configure(data);ContentAssignments.configure(data);}
+  const offers=Roster.getState().quests.filter(q=>q.status==="available");const state=ContentAssignments.state("quest");board.innerHTML="";
+  state.slots.forEach((assignment,index)=>{const slot=document.createElement("article");slot.className="assignment-slot "+(assignment?"is-filled":"is-empty");slot.dataset.assignmentSlot=String(index);const hero=assignment&&Roster.hero(assignment.heroId);slot.innerHTML="<div class=\"assignment-slot__label\"><span>AUTO QUEST "+(index+1)+"</span><small>"+(assignment?"Assigned":"Drop hero")+"</small></div><div class=\"assignment-slot__body\">"+(hero?"<strong>"+hero.name+"</strong><small>"+assignment.contentId+"</small>":"<div class=\"assignment-slot__empty\"><strong>Empty assignment slot</strong><small>Drag an available hero here.</small></div>")+"</div>";slot.addEventListener("dragover",e=>{e.preventDefault()});slot.addEventListener("drop",e=>{e.preventDefault();const heroId=e.dataTransfer.getData("text/warcraft-hero-id")||e.dataTransfer.getData("text/plain"),quest=offers[index%Math.max(1,offers.length)];if(heroId&&quest){ContentAssignments.assign("quest",index,heroId,quest.id);renderAutomation();renderJournal();}});board.appendChild(slot);});
+  const roster=document.createElement("div");roster.className="assignment-board__roster";Roster.getState().heroes.forEach(hero=>{const card=document.createElement("div"),available=hero.availability==="available"&&!ContentAssignments.assignmentForHero(hero.id);card.className="assignment-hero"+(available?"":" is-unavailable");card.draggable=available;card.innerHTML="<strong>"+hero.name+"</strong><small>"+hero.classLabel+"</small>";if(available)card.addEventListener("dragstart",e=>{e.dataTransfer.setData("text/warcraft-hero-id",hero.id)});roster.appendChild(card);});board.prepend(roster);
+}
+
+async function initQuestJournal() {
   Icons.hydrate(document);
   Tooltips.hydrate(document);
   renderJournal();
+  await renderAutomation();
   window.addEventListener("warcraft:roster-changed", renderJournal);
+  window.addEventListener("warcraft:roster-changed", renderAutomation);
+  window.addEventListener("warcraft:campaign-changed", ()=>renderAutomation());
 }
 
 initQuestJournal();

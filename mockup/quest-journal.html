@@ -6,6 +6,7 @@
   <title>Quest Journal — Warcraft Mockup</title>
   <link rel="stylesheet" href="./ui/wow-ui.css">
   <link rel="stylesheet" href="./quest-journal.css">
+  <link rel="stylesheet" href="./ui/assignment-slots.css">
 </head>
 <body class="quest-journal-page wow-ui">
   <header class="wow-game-shell">
@@ -45,6 +46,8 @@
         <div><span>Completed</span><strong id="completedQuestCount">0</strong></div>
       </div>
 
+      <section id="questAutomation" class="quest-journal__automation" hidden><header><span class="wow-label">AUTO QUESTS</span><h2>Automated Quest Assignments</h2><p>Drag available heroes into Quest assignments. Work resolves as campaign time advances.</p></header><div id="questAutomationBoard" class="assignment-board"></div></section>
+
       <div class="quest-journal__columns">
         <section class="quest-journal__section" aria-labelledby="availableQuestHeading">
           <header>
@@ -77,6 +80,8 @@
   <script src="./ui/wow-tooltips.js"></script>
   <script src="./ui/warcraft-campaign.js"></script>\n  <script src="./ui/wow-nav.js"></script>
   <script src="./ui/warcraft-roster.js"></script>
+  <script src="./ui/warcraft-content-progression.js"></script>
+  <script src="./ui/warcraft-content-assignments.js"></script>
   <script src="./quest-journal.js"></script>
 </body>
 </html>

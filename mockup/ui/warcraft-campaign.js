@@ -60,6 +60,7 @@ function sanitizeFactionReferencesRecord(campaign){
   campaign.dungeonRuns=(campaign.dungeonRuns||[]).map(record=>sanitizeReferenceValue(record,ownedIds,"run"));
   campaign.embark=sanitizeReferenceValue(campaign.embark,ownedIds,"embark");
   campaign.buildingAssignments=sanitizeReferenceValue(campaign.buildingAssignments,ownedIds,"buildingAssignments");
+  campaign.contentAssignments=sanitizeReferenceValue(campaign.contentAssignments,ownedIds,"contentAssignments");
   const selections=campaign.professionSelections&&typeof campaign.professionSelections==="object"?campaign.professionSelections:{};
   campaign.professionSelections=Object.fromEntries(Object.entries(selections).filter(([heroId])=>ownedIds.has(String(heroId))));
   return campaign;
@@ -117,6 +118,7 @@ function emptyCampaign(faction){
     profession:{guildLevel:1,activeTrack:"artisan",activeProfession:null},
     professionSelections:{},
     buildingAssignments:{},
+    contentAssignments:{},
     clock:defaultClock()
   };
   return campaign;
@@ -188,6 +190,7 @@ function normalizeCampaign(raw,faction){
     },
     professionSelections:source.professionSelections&&typeof source.professionSelections==="object"?clone(source.professionSelections):{},
     buildingAssignments:source.buildingAssignments&&typeof source.buildingAssignments==="object"?clone(source.buildingAssignments):{},
+    contentAssignments:source.contentAssignments&&typeof source.contentAssignments==="object"?clone(source.contentAssignments):{},
     clock:{
       day:Math.max(1,Number(clockSource.day)||1),
       phase,
