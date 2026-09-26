@@ -2337,7 +2337,7 @@ Build ten-player Raid Loadouts as two adjacent five-player formations with inher
 
 ### WOWUI-084 — Siege Loadouts from Four Party Groups
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-083
 
