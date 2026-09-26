@@ -41,6 +41,21 @@ function allAssignments(){
   BUILDING_IDS.forEach(id=>getBuildingState(id).slots.forEach(assignment=>{if(assignment)out.push(assignment);}));
   return out;
 }
+function sanitizeAssignments(){
+  const records=Campaign.getBuildingAssignments(),seen=new Set();
+  BUILDING_IDS.forEach(id=>{
+    const raw=records[id];
+    if(!raw||!Array.isArray(raw.slots))return;
+    const state=normalizeState(id,raw);let changed=false;
+    state.slots.forEach((assignment,index)=>{
+      if(!assignment)return;
+      if(seen.has(assignment.heroId)){state.slots[index]=null;changed=true;return;}
+      seen.add(assignment.heroId);
+    });
+    if(changed)Campaign.setBuildingAssignment(id,state);
+  });
+  return allAssignments();
+}
 function assignmentForHero(heroId){const id=String(heroId);return allAssignments().find(assignment=>assignment.heroId===id)||null;}
 function assignmentAt(id,index){return getBuildingState(id).slots[slotIndex(index)]||null;}
 function assign(id,indexValue,heroId,details={}){
@@ -187,6 +202,7 @@ function mount(root,options={}){
   });
   return root;
 }
-if(typeof global.addEventListener==="function")global.addEventListener("warcraft:campaign-changed",event=>{if(event&&event.detail&&event.detail.reason==="clock")processAll();});
-global.WarcraftAssignmentSlots=Object.freeze({BUILDING_IDS,SLOT_COUNT,DURATION_PHASES,getBuildingState,allAssignments,assignmentForHero,assignmentAt,assign,updateSelection,remove,start,remainingPhases,registerCompletionHandler,processBuilding,processAll,mount});
+if(typeof global.addEventListener==="function")global.addEventListener("warcraft:campaign-changed",event=>{const reason=event&&event.detail&&event.detail.reason;if(reason==="clock")processAll();else if(reason==="faction")sanitizeAssignments();});
+sanitizeAssignments();
+global.WarcraftAssignmentSlots=Object.freeze({BUILDING_IDS,SLOT_COUNT,DURATION_PHASES,getBuildingState,allAssignments,sanitizeAssignments,assignmentForHero,assignmentAt,assign,updateSelection,remove,start,remainingPhases,registerCompletionHandler,processBuilding,processAll,mount});
 })(window);
