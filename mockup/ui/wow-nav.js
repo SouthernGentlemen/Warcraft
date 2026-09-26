@@ -31,6 +31,7 @@
       icon:Object.freeze({category:"quest", key:"journal"})
     }),
     embark:Object.freeze({label:"Embark",title:"Embark",description:"Choose available Quest, Incursion, or Dungeon content and launch the active faction into Battle.",icon:Object.freeze({category:"battle",key:"combat"})}),
+    endgame:Object.freeze({label:"Raids & Sieges",title:"Raids & Sieges",description:"Launch saved ten-player Raid and twenty-player Siege formations.",icon:Object.freeze({category:"battle",key:"combat"})}),
     battle:Object.freeze({
       label:"Battle",
       title:"Battle Mockup",
