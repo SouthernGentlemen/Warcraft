@@ -935,428 +935,62 @@
   line-height: 1.35;
 }
 
-.quest-offer-list {
+.quest-automation {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
-.quest-offer-card {
-  margin: 0;
-  padding: 7px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: var(--wow-surface-inset);
-}
-
-.quest-offer-card.is-locked {
-  opacity: 0.58;
-}
-
-.quest-offer-card.is-active,
-.quest-offer-card.is-retry {
-  border-color: var(--wow-warning);
-}
-
-.quest-offer-card.is-completed {
-  border-color: var(--wow-success);
-}
-
-.quest-offer-card.is-retry .quest-offer-head em {
-  color: var(--wow-warning);
-}
-
-.quest-offer-head {
-  display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
-  align-items: center;
-  gap: 7px;
-}
-
-.quest-offer-head strong {
-  color: var(--wow-gold-pale);
-  font-size: 11px;
-}
-
-.quest-offer-head span {
-  color: var(--wow-text-muted);
-  font-size: 8px;
-}
-
-.quest-offer-head em {
-  overflow: hidden;
-  color: var(--wow-text-dim);
-  font-size: 7px;
-  font-style: normal;
-  text-align: right;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.quest-offer-card.is-active .quest-offer-head em {
-  color: var(--wow-warning);
-}
-
-.quest-offer-description {
-  margin: 5px 0 0;
-  color: var(--wow-text-muted);
-  font-size: 7px;
-  line-height: 1.35;
-}
-
-.quest-selection {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
-  gap: 5px;
-  margin-top: 5px;
-}
-
-.quest-adhoc {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2px;
-  max-height: 120px;
-  overflow: auto;
-}
-
-.quest-hero-choice {
+.quest-automation__slot {
   display: flex;
   align-items: center;
-  gap: 3px;
-  padding: 2px;
-  background: var(--wow-surface);
-  font-size: 8px;
+  gap: 8px;
+  padding: 4px 6px;
+  border: var(--wow-border-thin) dashed var(--wow-inset-line);
+  border-radius: var(--wow-radius-control);
 }
 
-.quest-hero-choice small {
-  display: block;
-  color: var(--wow-text-dim);
-  font-size: 7px;
-}
-
-.quest-party-count {
-  grid-column: 1 / -1;
-  min-height: 12px;
-  color: var(--wow-text-dim);
-  font-size: 7px;
-  text-align: right;
-}
-
-.quest-offer-card[data-party-size="20"] .quest-adhoc {
-  max-height: 260px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.quest-offer-card[data-party-size="20"] .quest-hero-choice {
-  min-height: 30px;
-  padding: 4px;
-}
-
-.quest-dispatched {
-  min-width: 0;
-  align-self: center;
-  color: var(--wow-text-muted);
-  font-size: 8px;
-  line-height: 1.35;
-}
-
-.quest-reward {
-  display: block;
-  margin-top: 6px;
-  color: var(--wow-gold-muted);
-  font-size: 7px;
-}
-
-/* Quest Board Azeroth dungeon map */
-
-.quest-board-mode-tabs {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
-  margin-bottom: 7px;
-}
-
-.quest-board-mode-tabs .wow-tab {
-  min-width: 0;
-}
-
-.dungeon-world-map {
-  position: relative;
-  min-height: 310px;
-  overflow: hidden;
-  isolation: isolate;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background:
-    radial-gradient(circle at 50% 48%, rgba(91, 135, 153, 0.16), transparent 34%),
-    linear-gradient(180deg, #13242d, #0b161d);
-}
-
-.dungeon-world-map::before {
-  content: "";
-  position: absolute;
-  z-index: -3;
-  inset: 0;
-  background:
-    repeating-radial-gradient(
-      circle at 50% 50%,
-      rgba(255, 255, 255, 0.018) 0 1px,
-      transparent 1px 16px
-    ),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size:
-    auto,
-    28px 100%;
-  opacity: 0.7;
-}
-
-.dungeon-map__continent {
-  position: absolute;
-  z-index: -1;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(149, 117, 64, 0.32);
-  background: radial-gradient(
-    circle at 45% 35%,
-    rgba(107, 108, 67, 0.82),
-    rgba(48, 69, 45, 0.9) 58%,
-    rgba(38, 48, 35, 0.94)
-  );
-  box-shadow:
-    inset 0 0 18px rgba(0, 0, 0, 0.36),
-    0 8px 18px rgba(0, 0, 0, 0.24);
-  color: rgba(225, 209, 160, 0.38);
-  font: 700 9px var(--wow-font-display);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.dungeon-map__continent.is-kalimdor {
-  left: 8%;
-  top: 8%;
-  width: 35%;
-  height: 80%;
-  clip-path: polygon(
-    34% 0,
-    62% 6%,
-    78% 20%,
-    72% 34%,
-    88% 48%,
-    76% 62%,
-    80% 77%,
-    60% 100%,
-    34% 92%,
-    20% 73%,
-    25% 57%,
-    8% 40%,
-    18% 22%
-  );
-}
-
-.dungeon-map__continent.is-eastern-kingdoms {
-  right: 7%;
-  top: 8%;
-  width: 31%;
-  height: 81%;
-  clip-path: polygon(
-    48% 0,
-    74% 9%,
-    66% 24%,
-    83% 37%,
-    70% 50%,
-    87% 65%,
-    73% 82%,
-    52% 100%,
-    31% 88%,
-    36% 71%,
-    18% 57%,
-    30% 40%,
-    19% 22%
-  );
-}
-
-.dungeon-map__hotspot {
-  position: absolute;
-  z-index: 3;
-  left: var(--x);
-  top: var(--y);
-  min-width: 28px;
-  min-height: 28px;
-  padding: 0;
-  transform: translate(-50%, -50%);
-  border: 0;
-  background: transparent;
-  color: var(--wow-text);
+.quest-automation__slot.is-filled {
+  border-style: solid;
   cursor: pointer;
 }
 
-.dungeon-map__marker {
-  --wow-icon-size: 25px;
-  display: block;
-  margin: 0 auto;
-  box-shadow:
-    0 0 0 1px #060708,
-    0 3px 8px rgba(0, 0, 0, 0.7);
+.quest-automation__slot.is-drop-target {
+  border-color: var(--wow-gold);
+  background: var(--wow-surface-hover);
 }
 
-.dungeon-map__hotspot:hover .dungeon-map__marker,
-.dungeon-map__hotspot:focus-visible .dungeon-map__marker,
-.dungeon-map__hotspot.is-selected .dungeon-map__marker {
-  outline: 2px solid var(--wow-gold-bright);
-  outline-offset: 2px;
-}
-
-.dungeon-map__hotspot:focus-visible {
-  outline: none;
-}
-
-.dungeon-map__hotspot.is-starter .dungeon-map__marker {
-  box-shadow:
-    0 0 0 2px var(--wow-success),
-    0 0 12px rgba(89, 163, 74, 0.48);
-}
-
-.dungeon-map__hotspot.is-locked {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.dungeon-map__label {
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 4px);
-  min-width: 92px;
-  max-width: 118px;
-  transform: translateX(-50%);
-  padding: 3px 4px;
-  border: 1px solid rgba(75, 61, 37, 0.68);
-  background: rgba(8, 10, 11, 0.9);
-  text-align: center;
-  pointer-events: none;
-}
-
-.dungeon-map__label strong,
-.dungeon-map__label small {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dungeon-map__label strong {
-  color: var(--wow-gold-pale);
-  font: 700 8px var(--wow-font-display);
-}
-
-.dungeon-map__label small {
-  margin-top: 1px;
-  color: var(--wow-text-dim);
-  font-size: 5px;
-  text-transform: uppercase;
-}
-
-.dungeon-map__hotspot.is-starter .dungeon-map__label small {
-  color: var(--wow-success);
-}
-
-.dungeon-selection {
-  margin-top: 7px;
-  padding: 8px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: var(--wow-surface-inset);
-}
-
-.dungeon-selection__head {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 8px;
-  padding-bottom: 7px;
-  border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
-}
-
-.dungeon-selection__head h4 {
-  margin: 2px 0 0;
-  color: var(--wow-gold-pale);
-  font: 700 13px var(--wow-font-display);
-}
-
-.dungeon-selection__head small,
-.dungeon-selection__pool {
-  color: var(--wow-text-dim);
-  font-size: 6px;
-}
-
-.dungeon-selection__pool {
-  max-width: 132px;
-  overflow: hidden;
-  text-align: right;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dungeon-selection__result {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 7px;
-  padding: 5px 7px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0, 0, 0, 0.16);
-}
-
-.dungeon-selection__result strong {
-  color: var(--wow-text);
-  font: 700 8px var(--wow-font-display);
-  text-transform: uppercase;
-}
-
-.dungeon-selection__result small {
-  color: var(--wow-text-dim);
-  font-size: 6px;
-  text-align: right;
-}
-
-.dungeon-selection__result.is-victory {
-  border-color: var(--wow-success);
-}
-
-.dungeon-selection__result.is-defeat {
-  border-color: var(--wow-error);
-}
-
-.dungeon-party-picker {
+.quest-automation__hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 6px;
-  margin-top: 7px;
+  place-items: center;
+  width: 32px;
+  height: 32px;
 }
 
-.dungeon-party-adhoc {
-  grid-column: 1 / -1;
+.quest-automation__slot:not(.is-filled) .quest-automation__hero {
+  border: var(--wow-border-thin) dashed var(--wow-inset-line);
+  border-radius: var(--wow-radius-control);
 }
 
-@media (max-width: 700px) {
-  .dungeon-world-map {
-    min-height: 340px;
-  }
+.quest-automation__copy {
+  display: grid;
+  min-width: 0;
+}
 
-  .dungeon-map__label {
-    min-width: 76px;
-    max-width: 88px;
-  }
+.quest-automation__copy strong,
+.quest-automation__copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  .dungeon-party-picker {
-    grid-template-columns: 1fr;
-  }
+.quest-automation__copy strong {
+  color: var(--wow-gold-pale);
+  font-size: 9px;
+}
 
-  .dungeon-party-picker > .wow-button {
-    width: 100%;
-  }
-
-  .dungeon-party-adhoc {
-    grid-column: auto;
-  }
+.quest-automation__copy small {
+  color: var(--wow-text-dim);
+  font-size: 8px;
 }
 
 /* Toast */
@@ -1537,19 +1171,6 @@
   .base-sidecar__section {
     padding: 8px;
   }
-
-  .quest-selection {
-    grid-template-columns: 1fr;
-  }
-
-  .quest-selection > .wow-button {
-    width: 100%;
-  }
-
-  .quest-adhoc {
-    grid-template-columns: 1fr;
-    max-height: 180px;
-  }
 }
 
 @media (max-width: 420px) {
@@ -1596,8 +1217,7 @@
   display: grid;
   gap: 8px;
 }
-.class-hall__head,
-.class-hall__assignment-head {
+.class-hall__head {
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -1608,8 +1228,7 @@
   color: var(--wow-gold-pale);
   font: 700 14px var(--wow-font-display);
 }
-.class-hall__head small,
-.class-hall__assignment-head small {
+.class-hall__head small {
   color: var(--wow-text-dim);
   font-size: 7px;
 }
@@ -1620,43 +1239,6 @@
   color: var(--wow-text-muted);
   font-size: 7px;
   line-height: 1.35;
-}
-.class-hall__trainers {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
-}
-.class-hall__trainer {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 6px;
-  padding: 5px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: var(--wow-surface);
-  color: var(--wow-text);
-  text-align: left;
-}
-.class-hall__trainer:hover,
-.class-hall__trainer:focus-visible {
-  border-color: var(--wow-gold);
-  outline: none;
-}
-.class-hall__trainer strong,
-.class-hall__trainer small {
-  display: block;
-}
-.class-hall__trainer strong {
-  font-size: 8px;
-}
-.class-hall__trainer small {
-  color: var(--wow-text-dim);
-  font-size: 7px;
-}
-@media (max-width: 700px) {
-  .class-hall__trainers {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* WOWUI-080 — shared faction campaign clock in the Base HUD */

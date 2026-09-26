@@ -94,19 +94,14 @@ test("raid and siege encounters reference existing NPC pools", () => {
   }
 });
 
-test("quest offers are unique and cover every supported party size", () => {
+test("quest offers are unique and fit the Embark bar's party sizes", () => {
   const pool = readJson("data/base/quest-offers.json");
   unique(
     pool.offers.map(offer => offer.id),
     "quest offer ids"
   );
   assert.ok(pool.offer_count > 0 && pool.offer_count < pool.offers.length);
-  for (const size of [1, 3, 5, 10, 20]) {
-    assert.ok(
-      pool.offers.some(offer => offer.party_size === size),
-      "party size " + size
-    );
-  }
+  assert.deepEqual([...new Set(pool.offers.map(offer => offer.party_size))].sort(), [1, 3, 5]);
   for (const offer of pool.offers.filter(offer => offer.encounter)) {
     assert.equal(offer.encounter.enemy_count, offer.party_size, offer.id);
   }

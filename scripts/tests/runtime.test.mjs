@@ -264,3 +264,54 @@ test("the roster sidecar lists the active faction and hands heroes to drop targe
   });
   assert.equal(dropped, "rogue");
 });
+
+function dropHero(target, heroId) {
+  target.dispatchEvent({
+    type: "drop",
+    preventDefault() {},
+    dataTransfer: { getData: type => (type === "text/warcraft-hero-id" ? heroId : "") }
+  });
+}
+
+const descendants = node => [node, ...(node.children || []).flatMap(descendants)];
+const clickButton = (node, label) =>
+  descendants(node)
+    .find(el => el.tagName === "BUTTON" && el.textContent === label)
+    .dispatchEvent({ type: "click" });
+
+test("every assignment building's slots take heroes dropped from the roster sidecar", () => {
+  const { win, Slots } = fresh();
+  for (const building of ["artisans", "gathering-camp", "survival-lodge", "classhall"]) {
+    const root = win.document.createElement("div");
+    const render = () => Slots.mount(root, { buildingId: building, onChange: render });
+    render();
+    assert.equal(root.children.length, Slots.SLOT_COUNT, building);
+    dropHero(root.children[1], "hunter");
+    assert.equal(Slots.assignmentAt(building, 1).heroId, "hunter", building);
+    clickButton(root.children[1], "Remove");
+    assert.equal(Slots.assignmentAt(building, 1), null, building);
+  }
+});
+
+test("a profession building trains a hero dropped into its slot", () => {
+  const { win, Campaign, Slots, Professions } = fresh();
+  Professions.configure(readJson("data/base/profession-buildings/index.json"));
+  const root = win.document.createElement("div");
+  const render = () =>
+    Slots.mount(root, {
+      buildingId: "gathering-camp",
+      assignmentData: () => ({ selectedProfessionId: "mining", trackId: "gathering" }),
+      start: index => Professions.startProfessionTraining("gathering-camp", index),
+      onChange: render
+    });
+  render();
+  dropHero(root.children[0], "hunter");
+  clickButton(root.children[0], "Begin Assignment");
+  dropHero(root.children[0], "druid");
+  assert.equal(Slots.assignmentAt("gathering-camp", 0).heroId, "hunter", "training slots stay put");
+  for (let phase = 0; phase < 2; phase += 1) {
+    Campaign.confirmEmbark({ kind: "quest", contentId: "test", heroIds: ["mage"] });
+  }
+  assert.equal(Professions.getHeroProfessions("hunter").gathering, "mining");
+  assert.equal(Slots.assignmentAt("gathering-camp", 0), null);
+});

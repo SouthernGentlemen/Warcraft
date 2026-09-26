@@ -1,54 +1,5 @@
-/* Shared Darkest Dungeon-style hero assignment board */
+/* Shared building assignment slots; heroes are dragged in from the roster sidecar. */
 .assignment-board {
-  display: grid;
-  gap: 8px;
-}
-.assignment-board__roster {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 5px;
-  padding: 7px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0, 0, 0, 0.15);
-}
-.assignment-hero {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-  padding: 5px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: var(--wow-surface-inset);
-  cursor: grab;
-  user-select: none;
-}
-.assignment-hero:active {
-  cursor: grabbing;
-}
-.assignment-hero.is-dragging {
-  opacity: 0.45;
-}
-.assignment-hero.is-unavailable {
-  opacity: 0.42;
-  cursor: not-allowed;
-}
-.assignment-hero strong,
-.assignment-hero small {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.assignment-hero strong {
-  color: var(--wow-gold-pale);
-  font-size: 8px;
-}
-.assignment-hero small {
-  color: var(--wow-text-dim);
-  font-size: 6px;
-}
-.assignment-board__slots {
   display: grid;
   gap: 6px;
 }
@@ -67,7 +18,7 @@
 .assignment-slot.is-empty {
   border-style: dashed;
 }
-.assignment-slot.is-dragover {
+.assignment-slot.is-drop-target {
   border-color: var(--wow-gold-bright);
   box-shadow: inset 0 0 14px rgba(183, 139, 59, 0.18);
 }
@@ -115,11 +66,28 @@
   font-size: 6px;
 }
 .assignment-slot__hero {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   min-width: 0;
 }
-.assignment-slot__hero .assignment-hero {
-  cursor: default;
-  opacity: 1;
+.assignment-slot__hero > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+.assignment-slot__hero strong,
+.assignment-slot__hero small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.assignment-slot__hero strong {
+  color: var(--wow-gold-pale);
+  font-size: 8px;
+}
+.assignment-slot__hero small {
+  color: var(--wow-text-dim);
+  font-size: 7px;
 }
 .assignment-slot__config {
   min-width: 0;
@@ -158,9 +126,6 @@
   text-transform: uppercase;
 }
 @media (max-width: 700px) {
-  .assignment-board__roster {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .assignment-slot {
     grid-template-columns: 48px minmax(0, 1fr);
   }

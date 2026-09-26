@@ -339,7 +339,7 @@ Manual play starts from a bar docked at the bottom of Base: Quest, Incursion, or
 
 ### WOWUI-102 — Buildings Take Heroes From the Roster Sidecar
 
-Status: todo
+Status: complete (2026-09-26)
 
 Depends on: WOWUI-100
 
@@ -561,11 +561,34 @@ Every tooltip is short, human text.
 
 ---
 
+### WOWUI-112 — Quest Board Levels 4 and 5
+
+Status: todo
+
+Depends on: WOWUI-102
+
+#### Objective
+
+Upgrading the Quest Board past level 3 does something again. Levels 4 and 5 unlocked the 10- and
+20-hero quests, which WOWUI-102 removed because the Embark bar launches at most five heroes.
+
+#### Work
+
+- Give levels 4 and 5 a function (for example more auto-quest slots), or cap the Quest Board at
+  level 3 in `data/base/buildings.json`.
+
+#### Acceptance Criteria
+
+- Every Quest Board upgrade changes something a test can observe.
+- `npm test` passes.
+
+---
+
 ### WOWUI-111 — Phase 6 Sweep
 
 Status: todo
 
-Depends on: WOWUI-098 through WOWUI-110
+Depends on: WOWUI-098 through WOWUI-110, WOWUI-112
 
 #### Objective
 

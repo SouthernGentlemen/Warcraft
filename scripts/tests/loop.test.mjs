@@ -180,3 +180,92 @@ test("Raids & Sieges launches a ten-hero Raid at Base Level 4", async () => {
   const encounter = await runBattle(storage, "raid");
   assert.equal(encounter.partySize, 10);
 });
+
+// Opens one Base building and records every element the page creates, so a test can check
+// that the roster sidecar's rows are the only drag sources (no building lists heroes itself).
+async function bootBuilding(storage, building) {
+  const browser = createBrowser({ page: "base", storage, search: "?building=" + building });
+  const make = browser.window.document.createElement;
+  const created = [];
+  browser.window.document.createElement = tag => {
+    const element = make(tag);
+    created.push(element);
+    return element;
+  };
+  await browser.boot();
+  assert.deepEqual(browser.errors, []);
+  const dragSources = created.filter(element => element.draggable === true);
+  assert.ok(dragSources.length > 0);
+  assert.ok(
+    dragSources.every(element => element.className.startsWith("roster-sidecar__hero")),
+    building + " renders no hero list of its own"
+  );
+  return browser;
+}
+
+function drop(target, heroId) {
+  target.dispatchEvent({
+    type: "drop",
+    preventDefault() {},
+    dataTransfer: { getData: type => (type === "text/warcraft-hero-id" ? heroId : "") }
+  });
+}
+
+const descendants = node => [node, ...(node.children || []).flatMap(descendants)];
+const click = (node, label) =>
+  descendants(node)
+    .find(element => element.textContent === label)
+    .dispatchEvent({ type: "click" });
+const sidecarRow = (browser, heroId) =>
+  browser.element("rosterSidecarList").children.find(row => row.dataset.heroId === heroId);
+const embarkQuest = Campaign =>
+  Campaign.confirmEmbark({ kind: "quest", contentId: "test", heroIds: ["mage"] });
+
+test("the Class Hall trains and releases heroes dragged from the roster sidecar", async () => {
+  const storage = new MemoryStorage();
+  const { Campaign, Roster } = modules(storage);
+  upgradeKeep(Campaign, 3);
+  for (let i = 0; i < 7; i += 1) Roster.awardHeroXp(["priest"], "dungeon");
+  const base = await bootBuilding(storage, "classhall");
+  const { WarcraftAssignmentSlots: Slots, WarcraftCampaign: LiveCampaign } = base.window;
+  const slots = () => base.element("classHallAssignmentBoard").children;
+  assert.equal(slots().length, 3);
+
+  drop(slots()[1], "hunter");
+  assert.equal(Slots.assignmentAt("classhall", 1).heroId, "hunter");
+  click(slots()[1], "Remove");
+  assert.equal(Slots.assignmentAt("classhall", 1), null);
+
+  drop(slots()[0], "priest");
+  click(slots()[0], "Start Level Training");
+  assert.equal(Slots.assignmentAt("classhall", 0).status, "training");
+  assert.equal(sidecarRow(base, "priest").draggable, false, "training heroes cannot be dragged");
+  embarkQuest(LiveCampaign);
+  embarkQuest(LiveCampaign);
+  assert.equal(base.window.WarcraftRoster.hero("priest").level, 3);
+});
+
+test("Quest Board automation takes heroes dragged from the roster sidecar", async () => {
+  const locked = await bootBuilding(new MemoryStorage(), "questboard");
+  assert.equal(locked.element("questAutomationSlots").children.length, 0, "locked at Base Level 1");
+
+  const storage = new MemoryStorage();
+  upgradeKeep(modules(storage).Campaign, 2);
+  const base = await bootBuilding(storage, "questboard");
+  const { WarcraftRoster: Roster, WarcraftCampaign: Campaign } = base.window;
+  const slots = () => base.element("questAutomationSlots").children;
+  assert.equal(slots().length, 3);
+
+  drop(slots()[1], "druid");
+  assert.equal(Roster.hero("druid").availability, "assigned");
+  slots()[1].dispatchEvent({ type: "click" });
+  assert.equal(Roster.hero("druid").availability, "available", "clicking a filled slot recalls");
+
+  const xp = Roster.getHeroProgress("hunter").xp;
+  drop(slots()[0], "hunter");
+  assert.equal(sidecarRow(base, "hunter").draggable, false, "questing heroes cannot be dragged");
+  embarkQuest(Campaign);
+  embarkQuest(Campaign);
+  assert.equal(Roster.hero("hunter").availability, "available");
+  assert.equal(Roster.getHeroProgress("hunter").xp, xp + 1, "an automated quest grants Quest XP");
+});

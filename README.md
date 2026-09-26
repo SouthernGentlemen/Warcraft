@@ -57,7 +57,11 @@ Developer-only (linked from `dev.html`): `gear.html` and `talent-calculator.html
 - **Professions:** three tracks (Artisan, Gathering, Survival). A hero knows at most one
   profession per track.
 - **Buildings with assignments** (Artisans Guild, Gathering Camp, Survival Lodge, Class Hall)
-  have three hero slots. An assignment lasts one campaign day.
+  have three hero slots, filled by dragging heroes from the roster sidecar. An assignment lasts
+  one campaign day.
+- **Quests** launch from the Embark bar with 1, 3, or 5 heroes. From Base Level 2 the Quest Board
+  also has three auto-quest slots: a hero dragged into one quests alone for one campaign day and
+  earns Quest XP.
 - **Campaign clock:** every confirmed Embark advances the faction's clock one phase
   (Day → Night → Day); one day is two phases.
 - **Combat** is real-time, deterministic, and seeded. Each hero has an auto attack, two

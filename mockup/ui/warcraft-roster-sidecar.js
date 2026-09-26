@@ -1,7 +1,7 @@
 /*
  * Roster sidecar: the one hero list on Base. Each available hero is a drag source for every
- * assignment (party slots, building slots); `dropTarget` wires any element to accept them.
- * The drag payload type matches warcraft-assignment-slots.js, so its slots accept these drags.
+ * assignment (Embark party slots, building slots, Quest Board automation); `dropTarget` wires
+ * any element to accept them.
  */
 (function (global) {
   "use strict";

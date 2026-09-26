@@ -110,7 +110,6 @@
   }
   global.WarcraftClassHall = Object.freeze({
     configure,
-    trainers,
     trainerForClass,
     startLevelTraining,
     processCompletions,

@@ -12,10 +12,12 @@
   function clone(v) {
     return v == null ? v : JSON.parse(JSON.stringify(v));
   }
+  // Also resolves work whose campaign time passed on a page that did not load this module.
   function configure(data) {
     catalog = data;
     if (!Campaign.getActiveCampaign().contentAssignments)
       Campaign.getActiveCampaign().contentAssignments = {};
+    process();
     return api;
   }
   function def(type) {
@@ -135,11 +137,8 @@
       if (e.detail?.reason === "clock") process();
     });
   const api = {
-    SLOT_COUNT,
-    DURATION_PHASES,
     configure,
     state,
-    assignmentForHero,
     assign,
     remove
   };

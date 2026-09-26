@@ -5,120 +5,36 @@
     {
       "id": "ragefire-chasm",
       "display_name": "Ragefire Chasm",
-      "continent": "Kalimdor",
-      "zone": "Orgrimmar",
-      "subregion": "Cleft of Shadow",
-      "map": {
-        "azeroth": {
-          "x_pct": 34,
-          "y_pct": 31
-        },
-        "continent": {
-          "x_pct": 73,
-          "y_pct": 29
-        }
-      },
       "faction": {
         "starter_for": [
           "horde"
-        ],
-        "available_to": [
-          "alliance",
-          "horde"
-        ],
-        "presentation": "horde"
-      },
-      "party": {
-        "canonical_size": 5
+        ]
       },
       "npc_pool_id": "dungeon-ragefire-chasm"
     },
     {
       "id": "the-stockade",
       "display_name": "The Stockade",
-      "continent": "Eastern Kingdoms",
-      "zone": "Stormwind City",
-      "subregion": "The Canals",
-      "map": {
-        "azeroth": {
-          "x_pct": 68,
-          "y_pct": 70
-        },
-        "continent": {
-          "x_pct": 39,
-          "y_pct": 72
-        }
-      },
       "faction": {
         "starter_for": [
           "alliance"
-        ],
-        "available_to": [
-          "alliance",
-          "horde"
-        ],
-        "presentation": "alliance"
-      },
-      "party": {
-        "canonical_size": 5
+        ]
       },
       "npc_pool_id": "dungeon-the-stockade"
     },
     {
       "id": "scarlet-monastery",
       "display_name": "Scarlet Monastery",
-      "continent": "Eastern Kingdoms",
-      "zone": "Tirisfal Glades",
-      "subregion": "Northeastern Tirisfal Glades",
-      "map": {
-        "azeroth": {
-          "x_pct": 70,
-          "y_pct": 27
-        },
-        "continent": {
-          "x_pct": 44,
-          "y_pct": 24
-        }
-      },
       "faction": {
-        "starter_for": [],
-        "available_to": [
-          "alliance",
-          "horde"
-        ],
-        "presentation": "neutral"
-      },
-      "party": {
-        "canonical_size": 5
+        "starter_for": []
       },
       "npc_pool_id": "dungeon-scarlet-monastery"
     },
     {
       "id": "zul-farrak",
       "display_name": "Zul'Farrak",
-      "continent": "Kalimdor",
-      "zone": "Tanaris",
-      "subregion": "Sandsorrow Watch",
-      "map": {
-        "azeroth": {
-          "x_pct": 31,
-          "y_pct": 69
-        },
-        "continent": {
-          "x_pct": 63,
-          "y_pct": 72
-        }
-      },
       "faction": {
-        "starter_for": [],
-        "available_to": [
-          "alliance",
-          "horde"
-        ],
-        "presentation": "neutral"
-      },
-      "party": {
-        "canonical_size": 5
+        "starter_for": []
       },
       "npc_pool_id": "dungeon-zul-farrak"
     }
