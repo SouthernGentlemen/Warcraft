@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="./styles.css">
   <link rel="stylesheet" href="./base.css">
   <link rel="stylesheet" href="./ui/assignment-slots.css">
+  <link rel="stylesheet" href="./ui/campaign-clock.css">
 </head>
 <body class="base-page wow-ui">
   <header class="wow-game-shell" data-wow-nav-active="base">
@@ -31,7 +32,7 @@
   <main class="base-shell">
     <section class="base-game-frame">
       <section class="base-main-column">
-        <div class="base-resource-bar wow-inset" aria-label="Resources">
+        <div class="base-resource-bar wow-inset" aria-label="Resources and campaign time">
           <div class="base-resource-counter" data-resource="gold" tabindex="0">
             <span class="base-resource-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="currency" data-wow-key="gold" alt=""></span>
             <span class="base-resource-copy"><small>Gold</small><strong id="goldValue">25,430</strong></span>
@@ -44,6 +45,7 @@
             <span class="base-resource-icon wow-icon-frame wow-icon-frame--xs"><img data-wow-icon="resource" data-wow-key="stone" alt=""></span>
             <span class="base-resource-copy"><small>Stone</small><strong id="stoneValue">8,440</strong></span>
           </div>
+          <div id="baseCampaignClock" class="campaign-clock" data-campaign-clock role="status" aria-live="polite"></div>
         </div>
 
         <section class="base-map wow-inset" id="baseMap" aria-label="Base map">
@@ -158,7 +160,9 @@
 
   <script src="./ui/wow-icons.js"></script>
   <script src="./ui/wow-tooltips.js"></script>
-  <script src="./ui/warcraft-campaign.js"></script>\n  <script src="./ui/wow-nav.js"></script>
+  <script src="./ui/warcraft-campaign.js"></script>
+  <script src="./ui/warcraft-campaign-clock.js"></script>
+  <script src="./ui/wow-nav.js"></script>
   <script src="./ui/warcraft-roster.js"></script>
   <script src="./ui/warcraft-assignment-slots.js"></script>
   <script src="./ui/warcraft-class-hall.js"></script>

@@ -2,6 +2,7 @@ const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
 const Roster = window.WarcraftRoster;
 const Campaign = window.WarcraftCampaign;
+const CampaignClock = window.WarcraftCampaignClock;
 const Equipment = window.WarcraftEquipment;
 const ClassHall = window.WarcraftClassHall;
 const Assignments = window.WarcraftAssignmentSlots;
@@ -663,6 +664,7 @@ function syncResourceBar() {
   $('#goldValue').textContent = fmt(campaignResources().gold);
   $('#lumberValue').textContent = fmt(campaignResources().lumber);
   $('#stoneValue').textContent = fmt(campaignResources().stone);
+  if (CampaignClock) CampaignClock.render($('#baseCampaignClock'));
   if (buildings.length) syncMapBuildings();
 }
 
@@ -952,9 +954,11 @@ function renderQuestOffers() {
           const assignment=Roster.dispatchQuest(offer,ids);
           if(battleOffer){
             Roster.setPendingEncounter(questBattleEncounter(offer,ids,assignment,selectedLoadoutId));
+            Campaign.confirmEmbark({kind:'quest',contentId:offer.id,assignmentId:assignment.id,heroIds:ids,loadoutId:selectedLoadoutId||null,faction:currentFactionId(),source:'questboard'});
             window.location.href='./battle.html?encounter=quest&quest='+encodeURIComponent(assignment.id);
             return;
           }
+          Campaign.confirmEmbark({kind:'quest',contentId:offer.id,assignmentId:assignment.id,heroIds:ids,loadoutId:selectedLoadoutId||null,faction:currentFactionId(),source:'questboard'});
           state.questMessage=offer.title+' dispatched with '+ids.length+' hero'+(ids.length===1?'':'es')+'.';
           syncMapBuildings();
           renderSidecar();
@@ -1089,6 +1093,7 @@ function renderDungeonSelection(dungeon) {
         seed:questSeedHash(dungeon.id+':'+ids.join(',')),
         source:'questboard'
       });
+      Campaign.confirmEmbark({kind:'dungeon',contentId:dungeon.id,heroIds:ids,loadoutId:selectedLoadoutId||null,faction:currentFactionId(),source:'questboard'});
       window.location.href='./battle.html?encounter=dungeon&dungeon='+encodeURIComponent(dungeon.id);
     }catch(error){
       state.dungeonMessage=error.message;
@@ -1439,6 +1444,7 @@ window.addEventListener('warcraft:roster-changed', () => {
 
 window.addEventListener('warcraft:campaign-changed', event => {
   const reason = event && event.detail && event.detail.reason;
+  if (['clock','faction','reset'].includes(reason)) syncResourceBar();
   if (['classhall','artisans','gathering-camp','survival-lodge'].includes(state.selected) && !$('#baseSidecar').hidden && ['clock','building-assignment','profession-selection'].includes(reason)) renderSidecar();
 });
 window.addEventListener('warcraft:assignments-changed', () => {

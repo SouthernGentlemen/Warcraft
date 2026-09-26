@@ -384,6 +384,7 @@ function advanceClock(){
 }
 function confirmEmbark(record){
   const source=record&&typeof record==="object"?clone(record):{};
+  if(source.faction&&factionId(source.faction)!==state.activeFaction)throw new Error("Embark faction must match the active campaign.");
   const heroIds=collectReferencedHeroIds(source);
   validateHeroIds(heroIds);
   const campaign=getActiveCampaign(),before=clone(campaign.clock);
