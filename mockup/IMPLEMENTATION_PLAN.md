@@ -2189,7 +2189,7 @@ Create one reusable drag/drop hero-assignment interaction for training/professio
 
 ### WOWUI-080 — Faction Day/Night Campaign Clock
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-069, WOWUI-079
 
