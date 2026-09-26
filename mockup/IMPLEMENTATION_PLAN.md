@@ -2146,7 +2146,7 @@ Expand professions into three independent hero profession tracks with Base owner
 
 ### WOWUI-079 — Shared Darkest Dungeon-Style Building Assignment Slots
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-077, WOWUI-078
 
