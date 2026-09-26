@@ -15,10 +15,6 @@
           "x": 76,
           "y": 28
         },
-        "training": {
-          "x": 48,
-          "y": 51
-        },
         "questboard": {
           "x": 35,
           "y": 49
@@ -65,10 +61,6 @@
           "x": 38,
           "y": 42
         },
-        "training": {
-          "x": 62,
-          "y": 42
-        },
         "storehouse": {
           "x": 85,
           "y": 42
@@ -111,10 +103,6 @@
         "recruitment": {
           "x": 27,
           "y": 31
-        },
-        "training": {
-          "x": 53,
-          "y": 48
         },
         "questboard": {
           "x": 36,
@@ -160,10 +148,6 @@
         },
         "questboard": {
           "x": 62,
-          "y": 42
-        },
-        "training": {
-          "x": 38,
           "y": 42
         },
         "storehouse": {

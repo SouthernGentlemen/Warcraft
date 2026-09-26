@@ -427,8 +427,7 @@
 
 .base-plot-attention.is-upgrade-ready .wow-icon-frame,
 .base-plot-attention.is-quest-ready .wow-icon-frame,
-.base-plot-attention.is-quest-complete .wow-icon-frame,
-.base-plot-attention.is-profession-action .wow-icon-frame {
+.base-plot-attention.is-quest-complete .wow-icon-frame {
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.72),
     0 0 8px rgba(214, 182, 95, 0.42);
@@ -448,491 +447,92 @@
   border-color: var(--wow-gold);
 }
 
-.base-plot[data-attention-state="profession-action"] .plot-label {
-  border-color: var(--wow-alliance-bright);
-}
-
 .base-plot[data-attention-state="blocked"] .plot-label {
   border-color: rgba(185, 139, 52, 0.38);
 }
 
-/* Reusable building sidecar */
+/* Building modal: one function plus an upgrade button, inside the shared WowUIModal. */
 
-.base-sidecar[hidden] {
-  display: none;
-}
-
-.base-sidecar {
-  position: fixed;
-  z-index: 1200;
-  top: var(--wow-nav-height);
-  right: 0;
-  bottom: 0;
-  width: min(390px, 34vw);
-  min-width: 320px;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  margin: 0;
-  overflow: hidden;
-  overscroll-behavior: contain;
-  border-width: 0 0 0 var(--wow-border);
-  border-radius: 0;
-  background: linear-gradient(180deg, rgba(29, 32, 35, 0.99), rgba(10, 12, 14, 0.99));
-  box-shadow: -14px 0 34px rgba(0, 0, 0, 0.56);
-}
-
-.base-sidecar__header {
-  min-height: 84px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 10px 10px 12px;
-}
-
-.base-sidecar__identity {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.base-sidecar__icon {
-  flex: 0 0 auto;
-}
-
-.base-sidecar__building-icon {
-  --wow-icon-size: 54px;
-  --wow-icon-accent: var(--wow-gold-muted);
-}
-
-.base-sidecar__identity > div:last-child {
-  min-width: 0;
-}
-
-.base-sidecar__identity h2 {
-  margin: 2px 0 3px;
-  overflow: hidden;
-  color: var(--wow-gold-pale);
-  font: 700 18px var(--wow-font-display);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.base-sidecar__identity small {
+.building-modal__status {
+  margin: 0 0 var(--wow-space-2);
   color: var(--wow-text-muted);
-  font-size: 8px;
-}
-
-.base-sidecar__header-actions {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.base-sidecar__header-upgrade {
-  min-width: 92px;
-  min-height: 38px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 4px 9px;
-}
-
-.base-sidecar__header-upgrade[aria-disabled="true"] {
-  cursor: not-allowed;
-}
-
-.base-sidecar__header-upgrade-icon {
-  --wow-icon-size: 24px;
-}
-
-.base-sidecar__close {
-  flex: 0 0 auto;
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  min-height: 38px;
-  padding: 0;
-  font-size: 18px;
-  line-height: 1;
-}
-
-.base-sidecar__body {
-  min-height: 0;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  padding: 8px;
-}
-
-.base-sidecar__section {
-  padding: 10px;
-  border: var(--wow-border-thin) solid var(--wow-inset-line);
-  background: linear-gradient(180deg, var(--wow-surface), var(--wow-surface-inset));
-}
-
-.base-sidecar__section + .base-sidecar__section {
-  margin-top: 7px;
-}
-
-.base-sidecar__menu {
-  display: grid;
-  gap: 6px;
-}
-
-.base-sidecar__menu-item {
-  width: 100%;
-  min-height: 52px;
-  display: grid;
-  grid-template-columns: 38px minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  border-radius: var(--wow-radius-tight);
-  background: linear-gradient(180deg, rgba(38, 43, 46, 0.96), rgba(18, 21, 23, 0.96));
-  color: var(--wow-text);
-  text-align: left;
-  text-decoration: none;
-}
-
-.base-sidecar__menu-item:hover,
-.base-sidecar__menu-item:focus-visible {
-  border-color: var(--wow-gold-muted);
-  outline: none;
-  background: linear-gradient(180deg, rgba(57, 53, 38, 0.98), rgba(28, 27, 22, 0.98));
-}
-
-.base-sidecar__menu-icon {
-  --wow-icon-size: 34px;
-}
-
-.base-sidecar__menu-copy {
-  min-width: 0;
-  display: grid;
-  gap: 2px;
-}
-
-.base-sidecar__menu-copy strong {
-  overflow: hidden;
-  color: var(--wow-gold-pale);
-  font: 700 11px var(--wow-font-display);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.base-sidecar__menu-copy small {
-  color: var(--wow-text-dim);
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-/* Storehouse / Bank / Armory browsers */
-
-.base-sidecar__storage {
-  margin-top: 7px;
-}
-
-.base-sidecar__storage-head {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 7px;
-}
-
-.base-sidecar__storage-head h3 {
-  margin: 2px 0 0;
-  color: var(--wow-gold-pale);
-  font: 700 12px var(--wow-font-display);
-}
-
-.base-sidecar__storage-head > small {
-  color: var(--wow-text-dim);
-  font-size: 7px;
-  text-transform: uppercase;
-}
-
-.base-sidecar__storage-grid {
-  display: grid;
-  gap: 5px;
-}
-
-.base-sidecar__storage-item {
-  width: 100%;
-  min-width: 0;
-  min-height: 50px;
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 7px;
-  padding: 6px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  border-radius: var(--wow-radius-tight);
-  background: rgba(0, 0, 0, 0.18);
-  color: var(--wow-text);
-  text-align: left;
-  cursor: help;
-}
-
-.base-sidecar__storage-item:hover,
-.base-sidecar__storage-item:focus-visible {
-  border-color: var(--wow-gold-muted);
-  outline: none;
-  background: rgba(183, 139, 59, 0.07);
-}
-
-.base-sidecar__storage-item.is-equipment {
-  box-shadow: inset 2px 0 0 currentColor;
-}
-
-.base-sidecar__storage-icon {
-  --wow-icon-size: 32px;
-}
-
-.base-sidecar__storage-copy {
-  min-width: 0;
-  display: grid;
-  gap: 2px;
-}
-
-.base-sidecar__storage-copy strong,
-.base-sidecar__storage-copy small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.base-sidecar__storage-copy strong {
-  font: 700 9px var(--wow-font-display);
-}
-
-.base-sidecar__storage-copy small {
-  color: var(--wow-text-dim);
-  font-size: 7px;
-}
-
-.base-sidecar__storage-count,
-.base-sidecar__storage-state {
-  color: var(--wow-gold-pale);
-  font-size: 8px;
-  font-weight: 800;
-  text-align: right;
-  white-space: nowrap;
-}
-
-.base-sidecar__storage-state {
-  color: var(--wow-text-muted);
-  text-transform: uppercase;
-}
-
-/* Recruitment Hall workflow */
-
-.base-sidecar__recruitment {
-  margin-top: 7px;
-}
-
-.base-sidecar__recruitment-head {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.base-sidecar__recruitment-head > span {
-  display: grid;
-  justify-items: center;
-  gap: 1px;
-  padding: 6px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0, 0, 0, 0.18);
-}
-
-.base-sidecar__recruitment-head strong {
-  color: var(--wow-gold-pale);
   font-size: 12px;
 }
 
-.base-sidecar__recruitment-head small,
-.base-sidecar__recruitment-status {
-  color: var(--wow-text-dim);
-  font-size: 7px;
-  text-transform: uppercase;
-}
-
-.base-sidecar__recruitment-status {
-  min-height: 24px;
+.building-modal__grid,
+.building-modal__unlocks {
   display: flex;
-  align-items: center;
-  padding: 5px 7px;
-  border: var(--wow-border-thin) solid var(--wow-inset-line);
-  background: rgba(0, 0, 0, 0.14);
+  flex-wrap: wrap;
+  gap: var(--wow-space-2);
 }
 
-.base-sidecar__candidate-list {
-  display: grid;
-  gap: 5px;
-  margin-top: 6px;
+.building-modal__item {
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 0;
+  cursor: help;
 }
 
-.base-sidecar__candidate {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 7px;
-  padding: 6px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: var(--wow-surface-inset);
-}
-
-.base-sidecar__candidate.is-recruited {
-  opacity: 0.62;
-}
-
-.base-sidecar__candidate-icon {
-  --wow-icon-size: 30px;
-}
-
-.base-sidecar__candidate-copy {
-  min-width: 0;
-  display: grid;
-  gap: 2px;
-}
-
-.base-sidecar__candidate-copy strong,
-.base-sidecar__candidate-copy small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.base-sidecar__candidate-copy strong {
-  color: var(--wow-gold-pale);
-  font: 700 10px var(--wow-font-display);
-}
-
-.base-sidecar__candidate-copy small {
-  color: var(--wow-text-muted);
-  font-size: 7px;
-}
-
-.base-sidecar__recruit-button {
-  min-width: 72px;
-}
-
-/* Artisans Guild profession launcher */
-
-.base-sidecar__artisans {
-  margin-top: 7px;
-}
-
-.base-sidecar__artisan-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
-.base-sidecar__artisan-head small {
-  color: var(--wow-text-dim);
-  font-size: 7px;
-  text-transform: uppercase;
-}
-
-.base-sidecar__profession-list {
-  display: grid;
-  gap: 5px;
-}
-
-.base-sidecar__profession-entry {
-  min-width: 0;
-  min-height: 48px;
-  display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  align-items: center;
-  gap: 7px;
-  padding: 6px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  border-radius: var(--wow-radius-tight);
-  background: var(--wow-surface-inset);
+.building-modal__count {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
   color: var(--wow-text);
-  text-decoration: none;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 1px 2px #000;
 }
 
-.base-sidecar__profession-entry:hover,
-.base-sidecar__profession-entry:focus-visible {
-  border-color: var(--wow-gold-muted);
-  outline: none;
-  background: rgba(183, 139, 59, 0.07);
-}
-
-.base-sidecar__profession-icon {
-  --wow-icon-size: 30px;
-}
-
-.base-sidecar__profession-copy {
-  min-width: 0;
+.building-modal__rows {
   display: grid;
-  gap: 2px;
+  gap: var(--wow-space-1);
 }
 
-.base-sidecar__profession-copy strong,
-.base-sidecar__profession-copy small {
+.building-modal__row {
+  display: flex;
+  align-items: center;
+  gap: var(--wow-space-2);
+}
+
+.building-modal__row.is-recruited {
+  opacity: 0.5;
+}
+
+.building-modal__name {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
+  font-size: 13px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.base-sidecar__profession-copy strong {
-  color: var(--wow-gold-pale);
-  font: 700 10px var(--wow-font-display);
-}
-
-.base-sidecar__profession-copy small {
-  color: var(--wow-text-muted);
-  font-size: 7px;
-}
-
-/* Quest Board content inside the same sidecar */
-
-.base-sidecar__quests {
-  padding-bottom: 12px;
-}
-
-.base-sidecar__quest-head {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-
-.base-sidecar__quest-head h3 {
-  margin: 2px 0 0;
-  color: var(--wow-gold-pale);
-  font: 700 15px var(--wow-font-display);
-}
-
-.base-sidecar__quest-head > small {
+.building-modal__label {
   color: var(--wow-text-dim);
-  font-size: 7px;
+  font-size: 12px;
 }
 
-.base-sidecar__quest-status {
-  margin: 0 0 7px;
-  padding: 6px 7px;
-  border: var(--wow-border-thin) solid var(--wow-inset-line);
-  background: rgba(0, 0, 0, 0.18);
+.building-modal__unlock {
+  color: var(--wow-gold-pale);
+  font-size: 13px;
+  cursor: help;
+}
+
+.building-modal__unlock.is-locked {
+  color: var(--wow-text-dim);
+}
+
+.building-modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wow-space-2);
+  margin-top: var(--wow-space-3);
   color: var(--wow-text-muted);
-  font-size: 8px;
-  line-height: 1.35;
+  font-size: 12px;
 }
 
 .quest-automation {
@@ -943,8 +543,8 @@
 .quest-automation__slot {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 6px;
+  gap: var(--wow-space-2);
+  padding: var(--wow-space-1) var(--wow-space-2);
   border: var(--wow-border-thin) dashed var(--wow-inset-line);
   border-radius: var(--wow-radius-control);
 }
@@ -962,8 +562,8 @@
 .quest-automation__hero {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
 }
 
 .quest-automation__slot:not(.is-filled) .quest-automation__hero {
@@ -985,12 +585,12 @@
 
 .quest-automation__copy strong {
   color: var(--wow-gold-pale);
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .quest-automation__copy small {
   color: var(--wow-text-dim);
-  font-size: 8px;
+  font-size: 11px;
 }
 
 /* Toast */
@@ -1015,11 +615,6 @@
 /* Responsive behavior */
 
 @media (min-width: 701px) and (max-width: 1024px) {
-  .base-sidecar {
-    width: min(420px, 48vw);
-    min-width: 340px;
-  }
-
   .base-plot {
     width: 92px;
     height: 78px;
@@ -1130,47 +725,6 @@
   .base-plot-attention .wow-icon-frame {
     --wow-icon-size: 18px;
   }
-
-  .base-sidecar {
-    top: auto;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    max-height: 62dvh;
-    border-width: var(--wow-border) 0 0;
-    box-shadow: 0 -14px 34px rgba(0, 0, 0, 0.58);
-  }
-
-  .base-sidecar__header {
-    min-height: 66px;
-    padding: 7px 8px 7px 10px;
-  }
-
-  .base-sidecar__building-icon {
-    --wow-icon-size: 44px;
-  }
-  .base-sidecar__identity h2 {
-    font-size: 16px;
-  }
-
-  .base-sidecar__close {
-    width: 44px;
-    height: 44px;
-    min-width: 44px;
-    min-height: 44px;
-  }
-
-  .base-sidecar__body {
-    max-height: calc(62dvh - 66px);
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
-  }
-
-  .base-sidecar__section {
-    padding: 8px;
-  }
 }
 
 @media (max-width: 420px) {
@@ -1194,51 +748,13 @@
   .plot-label strong {
     font-size: 7px;
   }
-
-  .base-sidecar {
-    max-height: 66dvh;
-  }
-  .base-sidecar__body {
-    max-height: calc(66dvh - 66px);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .base-plot .plot-art,
-  .base-sidecar,
-  .base-sidecar * {
+  .base-plot .plot-art {
     transition: none !important;
     animation: none !important;
   }
-}
-
-/* WOWUI-077 — Class Hall */
-.class-hall {
-  display: grid;
-  gap: 8px;
-}
-.class-hall__head {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 8px;
-}
-.class-hall__head h3 {
-  margin: 2px 0 0;
-  color: var(--wow-gold-pale);
-  font: 700 14px var(--wow-font-display);
-}
-.class-hall__head small {
-  color: var(--wow-text-dim);
-  font-size: 7px;
-}
-.class-hall__message {
-  padding: 5px 7px;
-  border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: var(--wow-surface-inset);
-  color: var(--wow-text-muted);
-  font-size: 7px;
-  line-height: 1.35;
 }
 
 /* WOWUI-080 — shared faction campaign clock in the Base HUD */

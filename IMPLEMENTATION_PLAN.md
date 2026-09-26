@@ -364,7 +364,7 @@ automation) are drop targets fed by the roster sidecar.
 
 ### WOWUI-103 — Building Modal Replaces the Sidecar
 
-Status: todo
+Status: complete (2026-09-26)
 
 Depends on: WOWUI-099, WOWUI-102
 
@@ -491,11 +491,35 @@ and ability icons with cooldown sweeps.
 
 ---
 
+### WOWUI-113 — Tooltips Above Blocking Modals
+
+Status: todo
+
+Depends on: WOWUI-099
+
+#### Objective
+
+Tooltips show inside a blocking modal. Today `WowUIModal.open({ modal: true })` puts the dialog
+in the browser's top layer, so the shared tooltip layer (a `z-index` on `<body>`) renders under
+the dialog and its backdrop. Floating modals (the Base building modals) are unaffected.
+
+#### Work
+
+- Show the tooltip layer above an open blocking dialog (for example, host it inside the dialog
+  that contains the hovered element).
+
+#### Acceptance Criteria
+
+- A tooltip on an element inside a blocking modal is visible (verified in a browser).
+- `npm test` passes.
+
+---
+
 ### WOWUI-108 — Hero Modal
 
 Status: todo
 
-Depends on: WOWUI-100, WOWUI-104
+Depends on: WOWUI-100, WOWUI-104, WOWUI-113
 
 #### Objective
 
@@ -522,7 +546,7 @@ compact talent tree.
 
 Status: todo
 
-Depends on: WOWUI-103
+Depends on: WOWUI-103, WOWUI-113
 
 #### Objective
 
@@ -588,7 +612,7 @@ Upgrading the Quest Board past level 3 does something again. Levels 4 and 5 unlo
 
 Status: todo
 
-Depends on: WOWUI-098 through WOWUI-110, WOWUI-112
+Depends on: WOWUI-098 through WOWUI-110, WOWUI-112, WOWUI-113
 
 #### Objective
 

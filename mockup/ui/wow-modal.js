@@ -22,18 +22,25 @@
     dialog.addEventListener("click", event => {
       if (event.target === dialog) close();
     });
-    dialog.addEventListener("keydown", event => {
-      if (event.key === "Escape" && !dialog.classList.contains("is-blocking")) close();
+    // Browsers fire `close` a task later; a dialog reopened by then has already finished.
+    dialog.addEventListener("close", () => {
+      if (!dialog.open) finish(true);
     });
-    dialog.addEventListener("close", finish);
     document.body.appendChild(dialog);
     return dialog;
   }
 
+  // Opening while open swaps the content: the previous onClose runs, and focus later returns
+  // to whatever opened the new content (or the original opener if focus was inside).
   function open({ title = "", render, modal = true, onClose } = {}) {
     const node = ensureDialog();
-    if (node.open) node.close();
-    lastFocus = document.activeElement;
+    const active = document.activeElement;
+    const opener = node.open && node.contains(active) ? lastFocus : active;
+    if (node.open) {
+      finish(false);
+      node.close();
+    }
+    lastFocus = opener;
     onCloseHandler = typeof onClose === "function" ? onClose : null;
     node.classList.toggle("is-blocking", modal);
     node.querySelector(".wow-modal__title").textContent = title;
@@ -49,10 +56,11 @@
     if (dialog && dialog.open) dialog.close();
   }
 
-  function finish() {
+  function finish(restoreFocus) {
     const handler = onCloseHandler;
     onCloseHandler = null;
-    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    if (restoreFocus && lastFocus && typeof lastFocus.focus === "function")
+      lastFocus.focus({ preventScroll: true });
     lastFocus = null;
     if (handler) handler();
   }
@@ -60,6 +68,11 @@
   function isOpen() {
     return Boolean(dialog && dialog.open);
   }
+
+  // Blocking dialogs close on Escape natively; a floating one closes wherever focus is.
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && isOpen() && !dialog.classList.contains("is-blocking")) close();
+  });
 
   global.WowUIModal = Object.freeze({ open, close, isOpen });
 })(window);

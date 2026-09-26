@@ -56,11 +56,12 @@ const Roster = window.WarcraftRoster;
 ```
 
 Shared scripts must load in dependency order (see `base.html`):
-`wow-icons` → `wow-tooltips` → `warcraft-campaign` → `warcraft-campaign-clock` → `wow-nav` →
-`warcraft-roster` → `warcraft-assignment-slots` → `warcraft-class-hall` → `warcraft-professions` →
-`warcraft-equipment-rules` → `warcraft-equipment`. `warcraft-content-progression` →
-`warcraft-content-assignments` load after the roster, and Base then adds `warcraft-roster-sidecar` →
-`warcraft-embark-bar` (assignment slots look the sidecar up when they mount).
+`wow-icons` → `wow-tooltips` → `wow-modal` → `warcraft-campaign` → `warcraft-campaign-clock` →
+`wow-nav` → `warcraft-roster` → `warcraft-assignment-slots` → `warcraft-class-hall` →
+`warcraft-professions` → `warcraft-equipment-rules` → `warcraft-equipment`.
+`warcraft-content-progression` → `warcraft-content-assignments` load after the roster, and Base
+then adds `warcraft-roster-sidecar` → `warcraft-embark-bar` (assignment slots look the sidecar up
+when they mount).
 
 ### Shared runtime (`mockup/ui/`)
 
@@ -154,9 +155,14 @@ as a defeat.
 - **One roster:** the roster sidecar is the only hero list. Anything that takes a hero (Embark
   party slots, building slots, Quest Board auto quests) is a `WarcraftRosterSidecar.dropTarget`;
   never render a second hero list, hero dropdown, or checkbox roster.
-- **Modals:** `WowUIModal.open({ title, render, modal, onClose })` (`ui/wow-modal.js`). Use
-  `modal: true` for focused tasks. Use `modal: false` for panels that must accept heroes dragged
-  from the roster sidecar, because a blocking `<dialog>` makes the rest of the page inert.
+- **Modals:** `WowUIModal.open({ title, render, modal, onClose })` (`ui/wow-modal.js`) returns the
+  body to render into; calling it while a modal is open swaps the content. Use `modal: true` for
+  focused tasks. Use `modal: false` for panels that must accept heroes dragged from the roster
+  sidecar, because a blocking `<dialog>` makes the rest of the page inert. Base building modals
+  all float, so any plot can be opened straight from the map.
+- **Buildings:** clicking a plot opens its modal: the building's one function above a footer
+  Upgrade button whose tooltip carries the cost. Plot tooltips show only name, level, purpose, and
+  next upgrade cost.
 - Use the shared primitives in `ui/wow-ui.css` (`.wow-frame`, `.wow-button`, `.wow-tab`,
   `.wow-input`, `.wow-select`, `.wow-icon-frame`, …). Screen stylesheets hold only screen layout.
 - Colors, spacing, and type come from `--wow-*` tokens defined in `ui/wow-ui.css`. A test fails if

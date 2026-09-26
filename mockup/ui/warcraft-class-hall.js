@@ -104,15 +104,10 @@
   function processCompletions() {
     return Assignments.processBuilding(BUILDING_ID);
   }
-  function openTalentsHref(heroId) {
-    if (!Roster.hero(String(heroId))) throw new Error("Unknown hero " + heroId + ".");
-    return "./heroes.html?hero=" + encodeURIComponent(String(heroId)) + "&tab=talents";
-  }
   global.WarcraftClassHall = Object.freeze({
     configure,
     trainerForClass,
     startLevelTraining,
-    processCompletions,
-    openTalentsHref
+    processCompletions
   });
 })(window);

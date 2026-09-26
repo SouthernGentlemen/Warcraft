@@ -137,7 +137,7 @@ function createElement(tagName = "div", id = "") {
       if (child && typeof child === "object") child.isConnected = true;
       return child;
     },
-    // <dialog> behavior for WowUIModal.
+    // <dialog> behavior for WowUIModal; like browsers, `close` fires in a later task.
     open: false,
     show() {
       this.open = true;
@@ -148,7 +148,7 @@ function createElement(tagName = "div", id = "") {
     close() {
       if (!this.open) return;
       this.open = false;
-      this.dispatchEvent({ type: "close" });
+      setImmediate(() => this.dispatchEvent({ type: "close" }));
     },
     append(...nodes) {
       this.children.push(...nodes);
@@ -199,7 +199,6 @@ function createElement(tagName = "div", id = "") {
 
 function createDocument() {
   const byId = new Map();
-  const listeners = new Map();
   const doc = createElement("#document");
   Object.assign(doc, {
     readyState: "complete",
@@ -215,9 +214,6 @@ function createDocument() {
     },
     querySelector(selector) {
       return /^#[\w-]+$/.test(selector) ? doc.getElementById(selector.slice(1)) : createElement();
-    },
-    addEventListener(type, fn) {
-      listeners.set(type, [...(listeners.get(type) || []), fn]);
     },
     elementsById: byId
   });

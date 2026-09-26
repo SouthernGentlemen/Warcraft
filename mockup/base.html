@@ -147,14 +147,6 @@
                 ><strong>Recruitment Hall</strong><small>Lv. <b>1</b></small></span
               >
             </button>
-            <button class="base-plot training" data-building="training" style="--x: 48%; --y: 51%">
-              <span class="plot-art wow-icon-frame"
-                ><img data-wow-icon="building" data-wow-key="training-grounds" alt=""
-              /></span>
-              <span class="plot-label"
-                ><strong>Training Grounds</strong><small>Lv. <b>1</b></small></span
-              >
-            </button>
             <button
               class="base-plot classhall"
               data-building="classhall"
@@ -242,48 +234,6 @@
           </section>
           <section id="embarkBar" class="embark-bar wow-panel" aria-label="Embark"></section>
         </section>
-
-        <aside
-          id="baseSidecar"
-          class="base-sidecar wow-frame"
-          role="dialog"
-          aria-modal="false"
-          aria-labelledby="baseSidecarTitle"
-          hidden
-        >
-          <header class="base-sidecar__header wow-titlebar">
-            <div class="base-sidecar__identity">
-              <div id="baseSidecarIcon" class="base-sidecar__icon" aria-hidden="true"></div>
-              <div>
-                <span id="baseSidecarCategory" class="wow-kicker">BUILDING</span>
-                <h2 id="baseSidecarTitle">Building</h2>
-                <small id="baseSidecarLevel">Level 1 / 5</small>
-              </div>
-            </div>
-            <div class="base-sidecar__header-actions">
-              <button
-                id="baseSidecarUpgrade"
-                class="base-sidecar__header-upgrade wow-button"
-                type="button"
-                aria-disabled="false"
-              >
-                <span class="base-sidecar__header-upgrade-icon wow-icon-frame wow-icon-frame--xs"
-                  ><img data-wow-icon="building" data-wow-key="upgrade" alt=""
-                /></span>
-                <span id="baseSidecarUpgradeLabel">Upgrade</span>
-              </button>
-              <button
-                id="baseSidecarClose"
-                class="base-sidecar__close wow-button"
-                type="button"
-                aria-label="Close building details"
-              >
-                ×
-              </button>
-            </div>
-          </header>
-          <div id="baseSidecarBody" class="base-sidecar__body"></div>
-        </aside>
       </section>
 
       <div class="base-toast" id="baseToast" role="status" aria-live="polite" hidden></div>
@@ -291,6 +241,7 @@
 
     <script src="./ui/wow-icons.js"></script>
     <script src="./ui/wow-tooltips.js"></script>
+    <script src="./ui/wow-modal.js"></script>
     <script src="./ui/warcraft-campaign.js"></script>
     <script src="./ui/warcraft-campaign-clock.js"></script>
     <script src="./ui/wow-nav.js"></script>
