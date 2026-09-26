@@ -22,6 +22,15 @@ async function fetchJson(path){
 function normalizeSpecId(value){return String(value||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-");}
 function heroFaction(hero){return String(hero.faction||"").toLowerCase();}
 function uniqueIds(ids){return [...new Set((ids||[]).map(String))];}
+function normalizeGroupedFormation(formation,heroIds,faction,partySize){
+  if(![10,20].includes(partySize))return null;
+  const expectedGroups=partySize/5,groups=formation&&Array.isArray(formation.groups)?formation.groups:[];
+  if(groups.length!==expectedGroups)throw new Error("Encounter formation requires exactly "+expectedGroups+" five-player groups.");
+  const normalizedGroups=groups.map((group,index)=>{const slots=PARTY_FORMATION_SLOT_IDS.map(id=>{const record=Array.isArray(group.slots)?group.slots.find(slot=>slot&&String(slot.id)===id):null;return {id,heroId:record&&record.heroId!=null?String(record.heroId):null};});return {id:String(group.id||"group-"+(index+1)),slots};});
+  const slotted=normalizedGroups.flatMap(group=>group.slots.map(slot=>slot.heroId)).filter(Boolean),ids=uniqueIds(heroIds);
+  if(slotted.length!==partySize||new Set(slotted).size!==partySize||ids.some(id=>!slotted.includes(id)))throw new Error("Grouped encounter formation must contain every unique battle hero exactly once.");
+  return {type:partySize===10?"raid":"siege",faction:String(faction||""),groups:normalizedGroups};
+}
 function normalizePartyFormation(formation,heroIds,faction){
   const ids=uniqueIds(heroIds);
   if(ids.length!==5)return null;
@@ -67,7 +76,7 @@ export function validateEncounterHandoff(encounter,roster){
   if(unavailable.length)throw new Error("Every battle hero must be available.");
   if(!encounter.npcPoolId)throw new Error("Encounter requires an NPC pool.");
   const sourceFormation=encounter.formation||(loadout&&typeof roster.partyFormation==="function"?roster.partyFormation(loadout):null);
-  const formation=partySize===5?normalizePartyFormation(sourceFormation,heroIds,encounter.faction||roster.getFaction()):null;
+  const formation=partySize===5?normalizePartyFormation(sourceFormation,heroIds,encounter.faction||roster.getFaction()):([10,20].includes(partySize)?normalizeGroupedFormation(sourceFormation,heroIds,encounter.faction||roster.getFaction(),partySize):null);
   return Object.assign({},encounter,{partySize,heroIds,formation,seed:integer(encounter.seed,0x5eed)});
 }
 
@@ -135,10 +144,12 @@ export async function resolveEncounter({encounter,roster}){
     fetchJson(FORMATION_ROOT)
   ]);
   const formations=validateFormationConfig(formationConfig),partySlots=new Map((formations.party.slots||[]).map(slot=>[String(slot.id),slot]));
-  const heroFormation=new Map(config.formation&&Array.isArray(config.formation.slots)?config.formation.slots.filter(slot=>slot&&slot.heroId).map(slot=>[String(slot.heroId),String(slot.id)]):[]);
+  const heroFormation=new Map();
+  if(config.formation&&Array.isArray(config.formation.slots))for(const slot of config.formation.slots)if(slot&&slot.heroId)heroFormation.set(String(slot.heroId),{groupId:"party",slotId:String(slot.id)});
+  if(config.formation&&Array.isArray(config.formation.groups))for(const group of config.formation.groups)for(const slot of group.slots||[])if(slot&&slot.heroId)heroFormation.set(String(slot.heroId),{groupId:String(group.id),slotId:String(slot.id)});
   const heroes=await Promise.all(config.heroIds.map(id=>{
-    const slotId=heroFormation.get(id)||null,slot=slotId&&partySlots.get(slotId);
-    return heroDefinition(roster.hero(id),classIndex,0,slotId?{slotId,targetWeight:slot&&slot.target_weight}:null);
+    const meta=heroFormation.get(id)||null,slot=meta&&partySlots.get(meta.slotId);
+    return heroDefinition(roster.hero(id),classIndex,0,meta?{groupId:meta.groupId,slotId:meta.slotId,targetWeight:slot&&slot.target_weight}:null);
   }));
   const poolEnemies=resolveNpcPoolDefinitions({catalog:npcCatalog,pools:npcPools,poolId:config.npcPoolId,team:1});
   const enemyCount=Math.max(1,integer(config.enemyCount,poolEnemies.length));
