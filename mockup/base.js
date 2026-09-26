@@ -764,7 +764,7 @@ function syncMapBuildings() {
 }
 
 function questBoardBuilding(){return buildings.find(b=>b.id==="questboard");}
-function compatibleLoadouts(size){return Roster.getState().loadouts.filter(l=>l.size===size&&Roster.validateLoadout(l,true).valid);}
+function compatibleLoadouts(size){return Number(size)===Roster.PARTY_SIZE?Roster.getState().loadouts.filter(loadout=>Roster.validateLoadout(loadout,true).valid):[];}
 
 function questSeedHash(value) {
   let hash = 2166136261;
@@ -934,7 +934,7 @@ function renderQuestOffers() {
         else if(select.value.startsWith('loadout:')){
           selectedLoadoutId=select.value.slice(8);
           const l=Roster.getState().loadouts.find(x=>x.id===selectedLoadoutId);
-          ids=l?l.heroIds.slice():[];
+          ids=l?Roster.partyHeroIds(l):[];
         } else if(select.value==='adhoc'){
           available.forEach(h=>{
             const label=document.createElement('label');label.className='quest-hero-choice';
@@ -1062,7 +1062,7 @@ function renderDungeonSelection(dungeon) {
     if(select.value.startsWith('loadout:')){
       selectedLoadoutId=select.value.slice(8);
       const loadout=Roster.getState().loadouts.find(entry=>entry.id===selectedLoadoutId);
-      ids=loadout?loadout.heroIds.slice():[];
+      ids=loadout?Roster.partyHeroIds(loadout):[];
     } else if(select.value==='adhoc'){
       available.forEach(hero=>{
         const label=document.createElement('label');

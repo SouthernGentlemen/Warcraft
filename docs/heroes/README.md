@@ -76,7 +76,7 @@ A hero's build is defined by:
 
 Auto Attack identity comes from the active specialization. Ability 1 and Ability 2 must be distinct learned abilities compatible with that specialization. The capstone defines the hero's Ultimate; Ultimate is not an independent generic class selection.
 
-Saved party loadouts are roster-level records, not hero-level configuration. They store authoritative hero IDs and are validated for current availability when content launches.
+Saved Party Loadouts are roster-level records, not hero-level configuration. Every saved Party belongs to one faction and stores a fixed five-slot 2 / 2 / 1 formation: `rear-left`, `rear-right`, `middle-left`, `middle-right`, and `front`. Blank slots are valid while editing, but readiness requires five unique faction-valid heroes. One Party per faction is marked as the default so Raid and Siege loadouts can inherit it later. Legacy five-person hero-ID lists migrate into these slots deterministically in their original order; 10- and 20-player content does not use the Party record type.
 
 ## Hero Roles
 

@@ -81,6 +81,20 @@ The combat prototype follows the deterministic fixed-tick model used by Hexframe
 
 See [Combat Runtime](./runtime/README.md).
 
+## Formation Targeting
+
+Five-hero Party Loadouts use the authored rear-to-front **2 / 2 / 1** formation in `data/combat/formations.json`:
+
+- rear-left — target weight 10
+- rear-right — target weight 10
+- middle-left — target weight 20
+- middle-right — target weight 20
+- front — target weight 40
+
+The Front slot is the primary aggro position because it has the unique highest weight, but it is not a forced target. Enemy single-target actions choose among living formation heroes through seeded deterministic weighted RNG, so every living position remains targetable. The hero-to-slot mapping is carried through the Battle handoff and into combat actor definitions.
+
+Encounters without formation weights retain the existing deterministic first-living-hostile behavior. Formation targeting therefore changes only positional encounters and remains reproducible from the combat seed.
+
 ## Party Capability
 
 Combat should evaluate contributions such as:

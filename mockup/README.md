@@ -144,7 +144,9 @@ Each Alliance and Horde campaign owns an independent persisted clock with `day`,
 
 ### Shared roster state
 
-`ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved party loadouts. The Heroes/Roster workspace owns a dedicated roster-level Party Loadouts manager beside the hero list; individual hero detail no longer edits party membership. Party templates store only hero IDs and read current identity and availability from the shared roster. Templates support only 3, 5, 10, or 20 heroes, and ready-state composition validation requires the exact selected size with no duplicate hero IDs. A saved template may contain a hero who later becomes unavailable without losing membership or ready state; Quest Board and dungeon launch-time validation re-check current availability before the party can enter an encounter.
+`ui/warcraft-roster.js` owns the prototype hero collection and exactly five saved Party Loadouts per faction. Every Party is a fixed five-hero **2 / 2 / 1** formation with explicit `rear-left`, `rear-right`, `middle-left`, `middle-right`, and `front` slot records. Blank slots are legal while editing, but a Party can be ready only when all five slots contain unique heroes owned by that Party's faction. Current identity and availability still come from the shared roster, so temporary unavailability never deletes a saved slot; launch-time validation simply blocks the Party until every assigned hero is available.
+
+Every saved Party persists its faction and exactly one Party per faction is marked `isDefault`, giving later Raid/Siege loadouts a stable inheritance reference. Existing legacy five-person `heroIds` lists migrate deterministically into the five authored slot IDs in their original order. The old generic 3 / 5 / 10 / 20 saved-Party size contract is retired: saved Party Loadouts are always five heroes, while larger 10/20-player content will use dedicated Raid and Siege loadout types. The shared Battle engine still supports its existing encounter scales independently of this saved-Party contract.
 
 ### Talent data contract
 
