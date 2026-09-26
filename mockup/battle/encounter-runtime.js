@@ -76,7 +76,7 @@ export function validateEncounterHandoff(encounter,roster){
   if(unavailable.length)throw new Error("Every battle hero must be available.");
   if(!encounter.npcPoolId)throw new Error("Encounter requires an NPC pool.");
   const sourceFormation=encounter.formation||(loadout&&typeof roster.partyFormation==="function"?roster.partyFormation(loadout):null);
-  const formation=partySize===5?normalizePartyFormation(sourceFormation,heroIds,encounter.faction||roster.getFaction()):([10,20].includes(partySize)?normalizeGroupedFormation(sourceFormation,heroIds,encounter.faction||roster.getFaction(),partySize):null);
+  const formation=partySize===5?normalizePartyFormation(sourceFormation,heroIds,encounter.faction||roster.getFaction()):([10,20].includes(partySize)&&sourceFormation?normalizeGroupedFormation(sourceFormation,heroIds,encounter.faction||roster.getFaction(),partySize):null);
   return Object.assign({},encounter,{partySize,heroIds,formation,seed:integer(encounter.seed,0x5eed)});
 }
 
