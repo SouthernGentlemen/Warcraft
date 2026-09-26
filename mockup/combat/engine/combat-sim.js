@@ -389,6 +389,14 @@ export class CombatSimulation {
     return hostiles[hostiles.length-1];
   }
 
+  hasTargetCandidate(index, action) {
+    if (action.target === "self") return this.state.actors[index].alive === 1;
+    if (action.target === "enemy" || action.target === "all-enemies") return this.livingHostiles(index).length > 0;
+    if (action.target === "lowest-ally") return this.lowestHealthAlly(index) >= 0;
+    if (action.target === "all-allies") return this.livingAllies(index).length > 0;
+    return false;
+  }
+
   targetsFor(index, action) {
     if (action.target === "self") return [index];
     if (action.target === "enemy") {
@@ -493,7 +501,7 @@ export class CombatSimulation {
 
     report.events.push({
       type: "action_start", actor: actorIndex, action: action.name, source,
-      targets: [...targets], frame: this.state.frame
+      targets: [...targets], targetContext: targets.map(target=>({actor:target,group:this.defs[target].formationGroup||null,slot:this.defs[target].formationSlot||null,weight:Math.max(0,Math.trunc(this.defs[target].formationTargetWeight||0))})), frame: this.state.frame
     });
 
     let successful = false;
