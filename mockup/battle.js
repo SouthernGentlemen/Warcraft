@@ -333,7 +333,7 @@ function applyEncounterLabels() {
   if(enemyName)enemyName.textContent=encounter.dungeonName||"NPC Encounter";
   $(state.playerSide+"Team").setAttribute("aria-label",encounter.partySize+" player hero"+(encounter.partySize===1?"":"es"));
   $(state.enemySide+"Team").setAttribute("aria-label",(encounter.dungeonName||"Encounter")+" NPC enemies");
-  $("battleEncounterType").textContent=encounter.kind==="quest"?"QUEST":"DUNGEON";
+  $("battleEncounterType").textContent=encounter.kind==="quest"?"QUEST":encounter.kind==="raid"?"RAID":encounter.kind==="siege"?"SIEGE":"DUNGEON";
   $("battleEncounterName").textContent=encounter.encounterName||encounter.dungeonName||encounter.dungeonId||"Encounter";
   $("battleEncounterParty").textContent=encounter.partySize+" hero"+(encounter.partySize===1?"":"es")+" · seed "+encounter.seed;
   const frame=document.querySelector(".battle-frame");
@@ -436,8 +436,11 @@ function completionHook(result) {
     ? (heroesWin?"Quest completed · heroes returned to available status"+rewardCopy+xpCopy:"Quest failed · heroes released and offer can be retried")
     : (heroesWin?"Encounter result saved"+xpCopy+" · reset to replay the same seed":"Encounter result saved · reset to replay the same seed");
   const returnMode=questResult?"offers":"dungeons";
+  const endgameResult=["raid","siege"].includes(state.encounter&&state.encounter.kind);
+  const returnHref=endgameResult?"./endgame.html":("./base.html?building=questboard&mode="+returnMode);
+  const returnLabel=endgameResult?"Return to Raids & Sieges":"Return to Quest Board";
   banner.innerHTML='<span>'+(heroesWin?"VICTORY":"DEFEAT")+'</span><strong>'+(heroesWin?"Heroes":"NPC Enemies")+'</strong><small>'+detail+'</small>'+
-    '<div class="result-banner__actions"><a class="wow-button wow-button--primary" href="./base.html?building=questboard&mode='+returnMode+'">Return to Quest Board</a><a class="wow-button" href="./base.html">Return to Base</a></div>';
+    '<div class="result-banner__actions"><a class="wow-button wow-button--primary" href="'+returnHref+'">'+returnLabel+'</a><a class="wow-button" href="./base.html">Return to Base</a></div>';
   banner.hidden=false;
   $("battleStatus").textContent="Encounter complete";
   if(resolved&&resolved.result)$("battleEvent").textContent=(heroesWin?"Victory":"Defeat")+" recorded for "+(state.encounter.encounterName||state.encounter.dungeonName||"encounter")+".";

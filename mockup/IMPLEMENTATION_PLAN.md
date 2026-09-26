@@ -2519,7 +2519,7 @@ Create Embark as the primary manual gameplay loop for Quest/Incursion/Dungeon co
 
 ### WOWUI-089 — Raids and Sieges Top-Level Surface
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-083, WOWUI-084, WOWUI-085, WOWUI-086
 
