@@ -72,6 +72,18 @@ Class Hall, Artisans Guild, Gathering Camp, and Survival Lodge each expose exact
 
 A hero cannot occupy more than one building assignment slot at a time. Pre-start assignments may be removed or replaced. Once training starts, the hero becomes unavailable for content/formation launch and the slot is locked until completion. One assignment lasts one full campaign day, represented deterministically as two campaign phase advances; real-world timers are not used. Assignment state is faction-scoped and persists through reload.
 
+## Faction Campaign Clock
+
+Alliance and Horde each own an independent persisted campaign clock:
+
+- `phase`: Day or Night
+- `day`: starts at 1 and increments when Night advances back to Day
+- `phaseAdvances`: monotonic deterministic phase counter
+
+One confirmed manual Embark advances only the active faction one phase: Day → Night or Night → Day. Two confirmations therefore advance one full campaign day. `WarcraftCampaign.confirmEmbark()` records the launch in that faction's Embark history and emits the same clock transition used by Class Hall and profession-building assignment completion.
+
+Campaign time is gameplay state, not real-world time. Reloading does not advance it, and Battle pause/speed controls do not interact with it. The shared compact campaign-clock UI is used by Base and is designed to be reused unchanged by the dedicated Embark surface introduced later.
+
 ## Building Progression
 
 Buildings are expected to have five tiers.

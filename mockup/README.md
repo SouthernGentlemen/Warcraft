@@ -132,6 +132,14 @@ The faction Base **Class Hall** owns hero level training and talent-trainer acce
 
 A hero may occupy only one building assignment slot at a time across all four buildings. Starting an assignment records the selected trainer/profession/action plus the current campaign day/phase and a two-phase duration, then changes the hero availability to `training`. Existing formation/Embark launch validation therefore rejects that hero until completion. Assignment progress reads only `WarcraftCampaign.getClock().phaseAdvances`; there are no wall-clock timers. Reload preserves the slot and remaining phase state, and completion releases the hero and frees the slot. The shared `assignment-slots.css` empty/drop/filled/training visual language is intentionally reusable by later Quest Board automation.
 
+### Faction Day / Night campaign clock
+
+Each Alliance and Horde campaign owns an independent persisted clock with `day`, `phase`, and `phaseAdvances`. The phase alternates deterministically **Day → Night → Day**; returning to Day increments the campaign day, so exactly two phase advances equal one full campaign day.
+
+`WarcraftCampaign.confirmEmbark(record)` is the authoritative manual-launch transition. A successful confirmation records the launch in the active faction's Embark history and advances that faction's clock exactly once. It rejects an Embark that claims the inactive faction. The current Quest Board manual Quest/Dungeon launch paths use this contract; WOWUI-088 will move those launch choices onto the dedicated Embark screen without changing clock behavior.
+
+`ui/warcraft-campaign-clock.js` and `campaign-clock.css` provide the shared compact clock presentation. Base shows it persistently and the current manual launch surface shows the same component. The future Embark screen can mount the same `data-campaign-clock` surface. Reloading only normalizes persisted clock state and never advances it. Building assignment completion listens to campaign clock events, while Battle pause/fast-forward speed remains combat-only and never changes campaign time.
+
 `WarcraftRoster` and `WarcraftProfessions` are compatibility-facing adapters over the active campaign rather than separate global save files. Switching faction changes the records returned by those APIs without copying or mutating the inactive campaign. Fresh state seeds the existing sample heroes into their authored faction only. A legacy `warcraft.mockup.roster.v1` / `warcraft.mockup.professions.v1` save migrates once into its previously active faction; the opposite campaign is left independent and legacy hero IDs are never cloned into both campaigns.
 
 ### Shared roster state
