@@ -440,7 +440,7 @@ function completionHook(result) {
   const returnHref=endgameResult?"./endgame.html":("./base.html?building=questboard&mode="+returnMode);
   const returnLabel=endgameResult?"Return to Raids & Sieges":"Return to Quest Board";
   banner.innerHTML='<span>'+(heroesWin?"VICTORY":"DEFEAT")+'</span><strong>'+(heroesWin?"Heroes":"NPC Enemies")+'</strong><small>'+detail+'</small>'+
-    '<div class="result-banner__actions"><a class="wow-button wow-button--primary" href="'+returnHref+'">'+returnLabel</a><a class="wow-button" href="./base.html">Return to Base</a></div>';
+    '<div class="result-banner__actions"><a class="wow-button wow-button--primary" href="'+returnHref+'">'+returnLabel+'</a><a class="wow-button" href="./base.html">Return to Base</a></div>';
   banner.hidden=false;
   $("battleStatus").textContent="Encounter complete";
   if(resolved&&resolved.result)$("battleEvent").textContent=(heroesWin?"Victory":"Defeat")+" recorded for "+(state.encounter.encounterName||state.encounter.dungeonName||"encounter")+".";
