@@ -138,7 +138,8 @@ async function initQuestJournal() {
   Tooltips.hydrate(document);
   renderJournal();
   await renderAutomation();
-  window.addEventListener("warcraft:roster-changed", ()=>{renderJournal();renderAutomation();});
+  window.addEventListener("warcraft:roster-changed", renderJournal);
+  window.addEventListener("warcraft:roster-changed", renderAutomation);
   window.addEventListener("warcraft:campaign-changed", ()=>renderAutomation());
 }
 
