@@ -751,7 +751,6 @@
       questBoard: defaultQuestBoard(),
       quests: [],
       pendingEncounter: null,
-      dungeonRuns: [],
       endgameRuns: [],
       raidLoadouts: defaultRaidLoadouts(id),
       siegeLoadouts: defaultSiegeLoadouts(id)
@@ -875,26 +874,6 @@
         partySize: Number(encounter.partySize) || heroIds.length
       });
     }
-    const dungeonRuns = Array.isArray(saved.dungeonRuns) ? saved.dungeonRuns : [];
-    base.dungeonRuns = dungeonRuns
-      .filter(run => run && run.dungeonId)
-      .slice(-50)
-      .map(run => ({
-        dungeonId: String(run.dungeonId),
-        dungeonName: String(run.dungeonName || run.dungeonId),
-        partySize: Number(run.partySize) || 5,
-        heroIds: [...new Set(run.heroIds || [])].filter(id =>
-          base.heroes.some(hero => hero.id === id)
-        ),
-        loadoutId: run.loadoutId ? String(run.loadoutId) : null,
-        faction: String(run.faction || faction),
-        formation: run.formation && typeof run.formation === "object" ? run.formation : null,
-        seed: Number(run.seed) || 0,
-        winnerTeam: Number(run.winnerTeam),
-        victory: Boolean(run.victory),
-        frame: Number(run.frame) || 0,
-        attempt: Number(run.attempt) || 1
-      }));
     return base;
   }
   function attachLoadoutAlias(campaign) {
@@ -921,7 +900,6 @@
     campaign.questBoard = normalized.questBoard;
     campaign.quests = normalized.quests;
     campaign.pendingEncounter = normalized.pendingEncounter;
-    campaign.dungeonRuns = normalized.dungeonRuns;
     attachLoadoutAlias(campaign);
     return campaign;
   }
@@ -974,13 +952,6 @@
   }
   function getPendingEncounter() {
     return getState().pendingEncounter;
-  }
-  function getLatestDungeonRun(dungeonId) {
-    state = getState();
-    for (let index = state.dungeonRuns.length - 1; index >= 0; index -= 1) {
-      if (state.dungeonRuns[index].dungeonId === dungeonId) return state.dungeonRuns[index];
-    }
-    return null;
   }
   function setPendingEncounter(encounter) {
     state = getState();
@@ -1562,23 +1533,6 @@
     save();
     return quest;
   }
-  function completeQuest(identifier) {
-    state = getState();
-    const quest = state.quests.find(q => q.id === String(identifier));
-    if (!quest || quest.status !== "active") return null;
-    const heroIds = quest.heroIds.slice();
-    heroIds
-      .map(hero)
-      .filter(Boolean)
-      .forEach(h => (h.availability = "available"));
-    quest.status = "completed";
-    quest.completedCount = (quest.completedCount || 0) + 1;
-    quest.lastResult = "victory";
-    quest.lastXpEvents = applyHeroXpReward(heroIds, "quest", true);
-    quest.heroIds = [];
-    save();
-    return quest;
-  }
   function resolveQuestEncounter(identifier, victory) {
     state = getState();
     const quest = state.quests.find(q => q.id === identifier);
@@ -1643,25 +1597,6 @@
       });
       state.endgameRuns = state.endgameRuns.slice(-50);
     }
-    if (encounter.kind === "dungeon" && encounter.dungeonId) {
-      const attempt =
-        state.dungeonRuns.filter(run => run.dungeonId === encounter.dungeonId).length + 1;
-      state.dungeonRuns.push({
-        dungeonId: encounter.dungeonId,
-        dungeonName: encounter.dungeonName || encounter.dungeonId,
-        partySize: Number(encounter.partySize) || encounter.heroIds.length,
-        heroIds: (encounter.heroIds || []).slice(),
-        loadoutId: encounter.loadoutId || null,
-        faction: encounter.faction || getFaction(),
-        formation: encounter.formation ? JSON.parse(JSON.stringify(encounter.formation)) : null,
-        seed: Number(encounter.seed) || 0,
-        winnerTeam: normalized.winnerTeam,
-        victory: normalized.victory,
-        frame: normalized.frame,
-        attempt
-      });
-      state.dungeonRuns = state.dungeonRuns.slice(-50);
-    }
     state.pendingEncounter = Object.assign({}, encounter, {
       status: "resolved",
       result: normalized
@@ -1679,7 +1614,6 @@
     state.questBoard = fresh.questBoard;
     state.quests = fresh.quests;
     state.pendingEncounter = null;
-    state.dungeonRuns = [];
     state.endgameRuns = [];
     save();
     return state;
@@ -1703,7 +1637,6 @@
     getQuestBoardState,
     getQuestRoundStatus,
     getPendingEncounter,
-    getLatestDungeonRun,
     setPendingEncounter,
     resolvePendingEncounterResult,
     setQuestBoardOffers,
@@ -1741,7 +1674,6 @@
     setSiegeGroupParty,
     setSiegeOverride,
     dispatchQuest,
-    completeQuest,
     resolveQuestEncounter,
     reset
   });

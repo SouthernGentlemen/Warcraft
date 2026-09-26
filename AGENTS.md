@@ -58,8 +58,9 @@ const Roster = window.WarcraftRoster;
 Shared scripts must load in dependency order (see `base.html`):
 `wow-icons` → `wow-tooltips` → `warcraft-campaign` → `warcraft-campaign-clock` → `wow-nav` →
 `warcraft-roster` → `warcraft-assignment-slots` → `warcraft-class-hall` → `warcraft-professions` →
-`warcraft-equipment-rules` → `warcraft-equipment`. `warcraft-content-progression` loads after the
-roster, and Base then adds `warcraft-roster-sidecar` → `warcraft-embark-bar`.
+`warcraft-equipment-rules` → `warcraft-equipment`. `warcraft-content-progression` →
+`warcraft-content-assignments` load after the roster, and Base then adds `warcraft-roster-sidecar` →
+`warcraft-embark-bar` (assignment slots look the sidecar up when they mount).
 
 ### Shared runtime (`mockup/ui/`)
 
@@ -67,11 +68,11 @@ roster, and Base then adds `warcraft-roster-sidecar` → `warcraft-embark-bar`.
 | ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | `WarcraftCampaign`                               | Both faction campaigns and persistence; Base/building levels, resources, clock, `confirmEmbark`               |
 | `WarcraftRoster`                                 | Active faction's heroes, XP and levels, party/raid/siege loadouts, Quest Board rounds, pending battle handoff |
-| `WarcraftAssignmentSlots`                        | Three-slot, one-day building assignments                                                                      |
+| `WarcraftAssignmentSlots`                        | Three-slot, one-day building assignments and the slots that render them                                       |
 | `WarcraftClassHall`                              | Class trainers and level-up training                                                                          |
 | `WarcraftProfessions`                            | Profession tracks and hero profession choices                                                                 |
 | `WarcraftContentProgression`                     | Which content tiers the Base Level unlocks                                                                    |
-| `WarcraftContentAssignments`                     | Automated Quest/Incursion/Dungeon assignments                                                                 |
+| `WarcraftContentAssignments`                     | Automated Quest/Incursion/Dungeon assignments (the Quest Board's auto-quest slots)                            |
 | `WarcraftEquipmentRules`, `WarcraftEquipment`    | Slots, armor access, the item catalog, `canEquip`                                                             |
 | `WarcraftRosterSidecar`                          | The one hero list on Base; drag source for every assignment, `dropTarget` for any slot                        |
 | `WarcraftEmbarkBar`                              | Quest / Incursion / Dungeon launcher docked under the Base map                                                |
@@ -150,6 +151,9 @@ as a defeat.
   })();
   ```
 
+- **One roster:** the roster sidecar is the only hero list. Anything that takes a hero (Embark
+  party slots, building slots, Quest Board auto quests) is a `WarcraftRosterSidecar.dropTarget`;
+  never render a second hero list, hero dropdown, or checkbox roster.
 - **Modals:** `WowUIModal.open({ title, render, modal, onClose })` (`ui/wow-modal.js`). Use
   `modal: true` for focused tasks. Use `modal: false` for panels that must accept heroes dragged
   from the roster sidecar, because a blocking `<dialog>` makes the rest of the page inert.

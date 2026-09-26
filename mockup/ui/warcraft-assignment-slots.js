@@ -288,217 +288,160 @@
   function processAll() {
     return BUILDING_IDS.flatMap(processBuilding);
   }
-  function heroDragPayload(event, heroId) {
-    event.dataTransfer.setData("text/warcraft-hero-id", String(heroId));
-    event.dataTransfer.setData("text/plain", String(heroId));
-    event.dataTransfer.effectAllowed = "move";
+  function element(tag, className, html) {
+    const node = document.createElement(tag);
+    node.className = className;
+    if (html) node.innerHTML = html;
+    return node;
   }
-  function draggedHeroId(event) {
-    return (
-      event.dataTransfer.getData("text/warcraft-hero-id") ||
-      event.dataTransfer.getData("text/plain") ||
-      ""
-    );
-  }
+  // Renders a building's three slots into `root`. Heroes arrive by drag from the roster sidecar
+  // (warcraft-roster-sidecar.js loads after this module, so it is looked up at mount time).
   function mount(root, options = {}) {
     if (!root) throw new Error("Assignment slot root is required.");
-    const id = buildingId(options.buildingId),
-      roster = Array.isArray(options.heroes) ? options.heroes : Roster.getState().heroes;
-    const state = getBuildingState(id),
-      assignedByHero = new Map(allAssignments().map(entry => [entry.heroId, entry]));
-    root.innerHTML =
-      '<div class="assignment-board__roster" aria-label="Draggable active-faction roster"></div><div class="assignment-board__slots" aria-label="' +
-      String(options.label || id) +
-      ' assignment slots"></div>';
-    const rosterRoot = root.querySelector(".assignment-board__roster"),
-      slotsRoot = root.querySelector(".assignment-board__slots");
-    roster.forEach(hero => {
-      const occupied = assignedByHero.get(hero.id),
-        available = hero.availability === "available" && !occupied;
-      const card = document.createElement("div");
-      card.className = "assignment-hero" + (available ? "" : " is-unavailable");
-      card.draggable = available;
-      card.dataset.heroId = hero.id;
-      card.setAttribute("aria-disabled", available ? "false" : "true");
-      card.innerHTML =
-        typeof options.heroMarkup === "function"
-          ? options.heroMarkup(hero, occupied)
-          : "<strong>" + hero.name + "</strong><small>" + hero.classLabel + "</small>";
-      if (available)
-        card.addEventListener("dragstart", event => {
-          card.classList.add("is-dragging");
-          heroDragPayload(event, hero.id);
-        });
-      card.addEventListener("dragend", () => card.classList.remove("is-dragging"));
-      rosterRoot.appendChild(card);
-    });
-    state.slots.forEach((assignment, index) => {
-      const slot = document.createElement("article"),
-        hero = assignment ? Roster.hero(assignment.heroId) : null,
-        training = Boolean(assignment && assignment.status === "training");
-      slot.className =
-        "assignment-slot" +
-        (assignment ? " is-filled" : " is-empty") +
-        (training ? " is-training" : "");
-      slot.dataset.assignmentSlot = String(index);
-      slot.innerHTML =
-        '<div class="assignment-slot__label"><span>SLOT ' +
-        (index + 1) +
-        "</span><small>" +
-        (training ? "Training" : assignment ? "Assigned" : "Drop hero") +
-        '</small></div><div class="assignment-slot__body"></div>';
-      slot.addEventListener("dragover", event => {
-        if (training) return;
-        event.preventDefault();
-        event.dataTransfer.dropEffect = "move";
-        slot.classList.add("is-dragover");
-      });
-      slot.addEventListener("dragleave", () => slot.classList.remove("is-dragover"));
-      slot.addEventListener("drop", event => {
-        if (training) return;
-        event.preventDefault();
-        slot.classList.remove("is-dragover");
-        const heroId = draggedHeroId(event);
-        if (!heroId) return;
-        try {
-          const dropped = Roster.hero(heroId);
-          const details =
-            typeof options.assignmentData === "function"
-              ? options.assignmentData(dropped, index)
-              : {};
-          assign(id, index, heroId, details);
-          if (typeof options.onChange === "function")
-            options.onChange({ type: "assign", buildingId: id, slotIndex: index, heroId });
-        } catch (error) {
-          if (typeof options.onError === "function") options.onError(error);
-          else throw error;
-        }
-      });
-      const body = slot.querySelector(".assignment-slot__body");
-      if (!assignment || !hero) {
-        body.innerHTML =
-          '<div class="assignment-slot__empty"><strong>Empty assignment slot</strong><small>Drag an available hero here.</small></div>';
-      } else {
-        const remaining = training ? remainingPhases(assignment) : null;
-        body.innerHTML =
-          '<div class="assignment-slot__hero">' +
-          (typeof options.heroMarkup === "function"
-            ? options.heroMarkup(hero, assignment)
-            : "<strong>" + hero.name + "</strong><small>" + hero.classLabel + "</small>") +
-          '</div><div class="assignment-slot__config"></div><div class="assignment-slot__status"></div><div class="assignment-slot__actions"></div>';
-        const config = body.querySelector(".assignment-slot__config"),
-          status = body.querySelector(".assignment-slot__status"),
-          actions = body.querySelector(".assignment-slot__actions");
-        const actionOptions =
-          typeof options.actionOptions === "function"
-            ? options.actionOptions(hero, assignment)
-            : [];
-        if (!training && actionOptions.length) {
-          const select = document.createElement("select");
-          select.className = "wow-select assignment-slot__select";
-          actionOptions.forEach(option => {
-            const node = document.createElement("option");
-            node.value = option.value;
-            node.textContent = option.label;
-            if (
-              String(option.value) ===
-              String(assignment.selectedProfessionId || assignment.selectedAction || "")
-            )
-              node.selected = true;
-            select.appendChild(node);
-          });
-          select.addEventListener("change", () => {
-            try {
-              const patch =
-                typeof options.selectionPatch === "function"
-                  ? options.selectionPatch(select.value, hero, assignment)
-                  : { selectedAction: select.value };
-              updateSelection(id, index, patch);
-              if (typeof options.onChange === "function")
-                options.onChange({
-                  type: "selection",
-                  buildingId: id,
-                  slotIndex: index,
-                  heroId: hero.id
-                });
-            } catch (error) {
-              if (typeof options.onError === "function") options.onError(error);
-            }
-          });
-          config.appendChild(select);
-        }
-        const descriptor =
-          typeof options.describe === "function" ? options.describe(hero, assignment) : null;
-        status.innerHTML =
-          "<strong>" +
-          (training ? "TRAINING" : (descriptor && descriptor.label) || "READY") +
-          "</strong><small>" +
-          (training
-            ? remaining + " campaign phase" + (remaining === 1 ? "" : "s") + " remaining"
-            : (descriptor && descriptor.detail) || "Ready to begin") +
-          "</small>";
-        if (training) {
-          actions.innerHTML =
-            '<span class="assignment-slot__duration">1 day assignment in progress</span>';
-        } else {
-          const startButton = document.createElement("button"),
-            removeButton = document.createElement("button");
-          startButton.type = "button";
-          startButton.className = "wow-button wow-button--primary";
-          startButton.textContent = options.startLabel || "Begin Assignment";
-          const canStart =
-            typeof options.canStart === "function"
-              ? options.canStart(hero, assignment)
-              : { enabled: true };
-          startButton.disabled =
-            canStart === false || Boolean(canStart && canStart.enabled === false);
-          startButton.addEventListener("click", () => {
-            try {
-              if (typeof options.start === "function") options.start(index, assignment);
-              else start(id, index);
-              if (typeof options.onChange === "function")
-                options.onChange({
-                  type: "start",
-                  buildingId: id,
-                  slotIndex: index,
-                  heroId: hero.id
-                });
-            } catch (error) {
-              if (typeof options.onError === "function") options.onError(error);
-            }
-          });
-          removeButton.type = "button";
-          removeButton.className = "wow-button";
-          removeButton.textContent = "Remove";
-          removeButton.addEventListener("click", () => {
-            try {
-              remove(id, index);
-              if (typeof options.onChange === "function")
-                options.onChange({
-                  type: "remove",
-                  buildingId: id,
-                  slotIndex: index,
-                  heroId: hero.id
-                });
-            } catch (error) {
-              if (typeof options.onError === "function") options.onError(error);
-            }
-          });
-          actions.append(startButton, removeButton);
-          if (typeof options.href === "function") {
-            const href = options.href(hero, assignment);
-            if (href) {
-              const link = document.createElement("a");
-              link.className = "wow-button assignment-slot__link";
-              link.href = href;
-              link.textContent = options.hrefLabel || "Open";
-              actions.prepend(link);
-            }
-          }
-        }
+    const id = buildingId(options.buildingId);
+    const Sidecar = global.WarcraftRosterSidecar;
+    function attempt(type, index, action) {
+      try {
+        const heroId = action();
+        if (typeof options.onChange === "function")
+          options.onChange({ type, buildingId: id, slotIndex: index, heroId });
+      } catch (error) {
+        if (typeof options.onError === "function") options.onError(error);
+        else throw error;
       }
-      slotsRoot.appendChild(slot);
-    });
+    }
+    function button(label, className, onClick) {
+      const node = element("button", className);
+      node.type = "button";
+      node.textContent = label;
+      node.addEventListener("click", onClick);
+      return node;
+    }
+    function dropHero(index, heroId) {
+      const hero = Roster.hero(heroId);
+      if (!hero) throw new Error("Unknown hero " + heroId + ".");
+      const details =
+        typeof options.assignmentData === "function" ? options.assignmentData(hero, index) : {};
+      assign(id, index, hero.id, details);
+      return hero.id;
+    }
+    function slotElement(assignment, index) {
+      const hero = assignment ? Roster.hero(assignment.heroId) : null,
+        training = Boolean(hero && assignment.status === "training");
+      const slot = element(
+        "article",
+        "assignment-slot" + (hero ? " is-filled" : " is-empty") + (training ? " is-training" : ""),
+        '<div class="assignment-slot__label"><span>SLOT ' +
+          (index + 1) +
+          "</span><small>" +
+          (training ? "Training" : hero ? "Assigned" : "Drop hero") +
+          "</small></div>"
+      );
+      slot.dataset.assignmentSlot = String(index);
+      if (!training)
+        Sidecar.dropTarget(slot, heroId => attempt("assign", index, () => dropHero(index, heroId)));
+      const body = element("div", "assignment-slot__body");
+      slot.appendChild(body);
+      if (!hero) {
+        body.innerHTML =
+          '<div class="assignment-slot__empty"><strong>Empty assignment slot</strong><small>Drag a hero here from the roster.</small></div>';
+        return slot;
+      }
+      if (typeof options.tooltip === "function")
+        global.WowUITooltips.attach(slot, () => options.tooltip(hero, assignment));
+      const config = element("div", "assignment-slot__config"),
+        status = element("div", "assignment-slot__status"),
+        actions = element("div", "assignment-slot__actions");
+      body.append(
+        element(
+          "div",
+          "assignment-slot__hero",
+          typeof options.heroMarkup === "function"
+            ? options.heroMarkup(hero, assignment)
+            : "<strong>" + hero.name + "</strong><small>" + hero.classLabel + "</small>"
+        ),
+        config,
+        status,
+        actions
+      );
+      const actionOptions =
+        typeof options.actionOptions === "function" ? options.actionOptions(hero, assignment) : [];
+      if (!training && actionOptions.length) {
+        const select = element("select", "wow-select assignment-slot__select");
+        actionOptions.forEach(option => {
+          const node = element("option", "");
+          node.value = option.value;
+          node.textContent = option.label;
+          node.selected =
+            String(option.value) ===
+            String(assignment.selectedProfessionId || assignment.selectedAction || "");
+          select.appendChild(node);
+        });
+        select.addEventListener("change", () =>
+          attempt("selection", index, () => {
+            updateSelection(
+              id,
+              index,
+              typeof options.selectionPatch === "function"
+                ? options.selectionPatch(select.value, hero, assignment)
+                : { selectedAction: select.value }
+            );
+            return hero.id;
+          })
+        );
+        config.appendChild(select);
+      }
+      const remaining = training ? remainingPhases(assignment) : null,
+        descriptor =
+          typeof options.describe === "function" ? options.describe(hero, assignment) : null;
+      status.innerHTML =
+        "<strong>" +
+        (training ? "TRAINING" : (descriptor && descriptor.label) || "READY") +
+        "</strong><small>" +
+        (training
+          ? remaining + " campaign phase" + (remaining === 1 ? "" : "s") + " remaining"
+          : (descriptor && descriptor.detail) || "Ready to begin") +
+        "</small>";
+      if (training) {
+        actions.innerHTML =
+          '<span class="assignment-slot__duration">1 day assignment in progress</span>';
+        return slot;
+      }
+      const startButton = button(
+        options.startLabel || "Begin Assignment",
+        "wow-button wow-button--primary",
+        () =>
+          attempt("start", index, () => {
+            if (typeof options.start === "function") options.start(index, assignment);
+            else start(id, index);
+            return hero.id;
+          })
+      );
+      const canStart =
+        typeof options.canStart === "function"
+          ? options.canStart(hero, assignment)
+          : { enabled: true };
+      startButton.disabled = canStart === false || Boolean(canStart && canStart.enabled === false);
+      actions.append(
+        startButton,
+        button("Remove", "wow-button", () =>
+          attempt("remove", index, () => {
+            remove(id, index);
+            return hero.id;
+          })
+        )
+      );
+      const href = typeof options.href === "function" ? options.href(hero, assignment) : null;
+      if (href) {
+        const link = element("a", "wow-button assignment-slot__link");
+        link.href = href;
+        link.textContent = options.hrefLabel || "Open";
+        actions.prepend(link);
+      }
+      return slot;
+    }
+    root.setAttribute("aria-label", (options.label || id) + " assignment slots");
+    root.replaceChildren(...getBuildingState(id).slots.map(slotElement));
     return root;
   }
   if (typeof global.addEventListener === "function")

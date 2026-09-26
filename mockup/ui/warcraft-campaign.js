@@ -84,9 +84,6 @@
       campaign.pendingEncounter =
         pending.heroIds && pending.heroIds.length === expected ? pending : null;
     }
-    campaign.dungeonRuns = (campaign.dungeonRuns || []).map(record =>
-      sanitizeReferenceValue(record, ownedIds, "run")
-    );
     campaign.embark = sanitizeReferenceValue(campaign.embark, ownedIds, "embark");
     campaign.buildingAssignments = sanitizeReferenceValue(
       campaign.buildingAssignments,
@@ -167,7 +164,6 @@
       questBoard: defaultQuestBoard(),
       quests: [],
       pendingEncounter: null,
-      dungeonRuns: [],
       embark: { active: null, history: [] },
       profession: { guildLevel: 1, activeTrack: "artisan", activeProfession: null },
       professionSelections: {},
@@ -254,7 +250,6 @@
         source.pendingEncounter && typeof source.pendingEncounter === "object"
           ? clone(source.pendingEncounter)
           : null,
-      dungeonRuns: Array.isArray(source.dungeonRuns) ? clone(source.dungeonRuns).slice(-50) : [],
       embark: {
         active: embark.active && typeof embark.active === "object" ? clone(embark.active) : null,
         history: Array.isArray(embark.history) ? clone(embark.history) : []

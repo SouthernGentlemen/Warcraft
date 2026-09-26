@@ -16,7 +16,6 @@
         "meta_amount": 1
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 1
       }
     },
@@ -33,7 +32,6 @@
         "meta_amount": 1
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 1
       }
     },
@@ -50,7 +48,6 @@
         "meta_amount": 1
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 1
       }
     },
@@ -67,7 +64,6 @@
         "meta_amount": 1
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 1
       }
     },
@@ -84,7 +80,6 @@
         "meta_amount": 1
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 1
       }
     },
@@ -101,7 +96,6 @@
         "meta_amount": 2
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 3
       }
     },
@@ -118,7 +112,6 @@
         "meta_amount": 2
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 3
       }
     },
@@ -135,7 +128,6 @@
         "meta_amount": 2
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 3
       }
     },
@@ -152,7 +144,6 @@
         "meta_amount": 2
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 3
       }
     },
@@ -169,7 +160,6 @@
         "meta_amount": 2
       },
       "encounter": {
-        "kind": "npc",
         "enemy_count": 3
       }
     },
@@ -236,176 +226,6 @@
         "gold": 750,
         "meta_currency": "quest_marks",
         "meta_amount": 3
-      }
-    },
-    {
-      "id": "quest-4-siege-breakers",
-      "title": "Siege Breakers",
-      "description": "A level 4 Quest Board assignment for 10 heroes.",
-      "min_board_level": 4,
-      "difficulty": 4,
-      "party_size": 10,
-      "reward": {
-        "gold": 1000,
-        "meta_currency": "quest_marks",
-        "meta_amount": 4
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 10
-      }
-    },
-    {
-      "id": "quest-4-warband-hunt",
-      "title": "Warband Hunt",
-      "description": "A level 4 Quest Board assignment for 10 heroes.",
-      "min_board_level": 4,
-      "difficulty": 4,
-      "party_size": 10,
-      "reward": {
-        "gold": 1000,
-        "meta_currency": "quest_marks",
-        "meta_amount": 4
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 10
-      }
-    },
-    {
-      "id": "quest-4-ancient-ruins",
-      "title": "Ancient Ruins",
-      "description": "A level 4 Quest Board assignment for 10 heroes.",
-      "min_board_level": 4,
-      "difficulty": 4,
-      "party_size": 10,
-      "reward": {
-        "gold": 1000,
-        "meta_currency": "quest_marks",
-        "meta_amount": 4
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 10
-      }
-    },
-    {
-      "id": "quest-4-blackrock-push",
-      "title": "Blackrock Push",
-      "description": "A level 4 Quest Board assignment for 10 heroes.",
-      "min_board_level": 4,
-      "difficulty": 4,
-      "party_size": 10,
-      "reward": {
-        "gold": 1000,
-        "meta_currency": "quest_marks",
-        "meta_amount": 4
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 10
-      }
-    },
-    {
-      "id": "quest-4-plague-column",
-      "title": "Plague Column",
-      "description": "A level 4 Quest Board assignment for 10 heroes.",
-      "min_board_level": 4,
-      "difficulty": 4,
-      "party_size": 10,
-      "reward": {
-        "gold": 1000,
-        "meta_currency": "quest_marks",
-        "meta_amount": 4
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 10
-      }
-    },
-    {
-      "id": "quest-5-raid-vanguard",
-      "title": "Raid Vanguard",
-      "description": "A level 5 Quest Board assignment for 20 heroes.",
-      "min_board_level": 5,
-      "difficulty": 5,
-      "party_size": 20,
-      "reward": {
-        "gold": 1250,
-        "meta_currency": "quest_marks",
-        "meta_amount": 5
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 20
-      }
-    },
-    {
-      "id": "quest-5-dragonkin-assault",
-      "title": "Dragonkin Assault",
-      "description": "A level 5 Quest Board assignment for 20 heroes.",
-      "min_board_level": 5,
-      "difficulty": 5,
-      "party_size": 20,
-      "reward": {
-        "gold": 1250,
-        "meta_currency": "quest_marks",
-        "meta_amount": 5
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 20
-      }
-    },
-    {
-      "id": "quest-5-legion-holdout",
-      "title": "Legion Holdout",
-      "description": "A level 5 Quest Board assignment for 20 heroes.",
-      "min_board_level": 5,
-      "difficulty": 5,
-      "party_size": 20,
-      "reward": {
-        "gold": 1250,
-        "meta_currency": "quest_marks",
-        "meta_amount": 5
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 20
-      }
-    },
-    {
-      "id": "quest-5-worldbreaker-patrol",
-      "title": "Worldbreaker Patrol",
-      "description": "A level 5 Quest Board assignment for 20 heroes.",
-      "min_board_level": 5,
-      "difficulty": 5,
-      "party_size": 20,
-      "reward": {
-        "gold": 1250,
-        "meta_currency": "quest_marks",
-        "meta_amount": 5
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 20
-      }
-    },
-    {
-      "id": "quest-5-citadel-strike",
-      "title": "Citadel Strike",
-      "description": "A level 5 Quest Board assignment for 20 heroes.",
-      "min_board_level": 5,
-      "difficulty": 5,
-      "party_size": 20,
-      "reward": {
-        "gold": 1250,
-        "meta_currency": "quest_marks",
-        "meta_amount": 5
-      },
-      "encounter": {
-        "kind": "npc",
-        "enemy_count": 20
       }
     }
   ]

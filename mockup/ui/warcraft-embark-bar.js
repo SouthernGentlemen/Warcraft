@@ -43,7 +43,7 @@
       const round = Roster.getQuestBoardState();
       return round.offerIds
         .map(id => offersById.get(id))
-        .filter(offer => offer && offer.party_size <= Roster.PARTY_SIZE)
+        .filter(Boolean)
         .filter(offer => {
           const prior = state.quests.find(
             quest => quest.round === round.round && quest.sourceOfferId === offer.id

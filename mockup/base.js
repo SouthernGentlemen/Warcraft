@@ -17,15 +17,16 @@ const BANK_HOLDINGS_ROOT = "../data/items/economy/holdings.json";
 const CLASS_HALL_DATA_ROOT = "../data/base/class-hall.json";
 const CONTENT_PROGRESSION_ROOT = "../data/content/progression.json";
 const Professions = window.WarcraftProfessions;
+const ContentAssignments = window.WarcraftContentAssignments;
 let buildings = [];
 let basePresentation = null;
 let recruitmentData = null;
 let professionData = null;
 let questOfferPool = null;
-let dungeonCatalog = null;
 let reagentHoldings = null;
 let bankHoldings = null;
 let classHallData = null;
+let contentProgression = null;
 let armoryItems = [];
 let sidecarOrigin = null;
 
@@ -101,9 +102,6 @@ const state = {
   recruitmentOpen: false,
   recruitmentMessage: "",
   professionOpen: null,
-  questBoardMode: "offers",
-  selectedDungeonId: null,
-  dungeonMessage: "",
   classHallMessage: "",
   professionAssignmentMessage: ""
 };
@@ -195,7 +193,7 @@ function buildingAttentionState(building) {
       return {
         key: "quest-ready",
         label: "Quest ready",
-        detail: "A quest offer in the current round can be dispatched with the available roster."
+        detail: "A quest in the current round can launch from the Embark bar."
       };
     if (quests.some(quest => quest.status === "active")) return null;
   }
@@ -531,12 +529,6 @@ const BUILDING_ACTIONS = Object.freeze({
       href: "./quest-journal.html",
       icon: ["quest", "journal"],
       description: "Review available, active, and completed quests."
-    }),
-    Object.freeze({
-      label: "Dungeon Map",
-      action: "dungeon-map",
-      icon: ["battle", "combat"],
-      description: "Open the Azeroth dungeon map and prepare a dungeon party."
     })
   ]),
   artisans: Object.freeze([
@@ -822,23 +814,13 @@ function professionTrackForBuilding(buildingId) {
     : null;
 }
 
-function assignmentHeroMarkup(hero, occupied) {
-  const status = occupied
-    ? "Assigned · " + labelize(occupied.buildingId)
-    : hero.availability === "available"
-      ? "Available"
-      : labelize(hero.availability);
+function assignmentHeroMarkup(hero) {
   return (
-    iconMarkup(
-      "class",
-      hero.classId,
-      "sm",
-      "assignment-hero__icon wow-icon-frame--class-" + hero.classId
-    ) +
+    iconMarkup("class", hero.classId, "sm", "wow-icon-frame--class-" + hero.classId) +
     "<span><strong>" +
     escapeHtml(hero.name) +
     "</strong><small>" +
-    escapeHtml(hero.classLabel + " · Lv " + hero.level + " · " + status) +
+    escapeHtml(hero.classLabel + " · Lv " + hero.level) +
     "</small></span>"
   );
 }
@@ -892,7 +874,7 @@ function renderProfessionBuildingWorkflow(building) {
     '<div class="assignment-workflow__message" role="status">' +
     escapeHtml(
       state.professionAssignmentMessage ||
-        "Drag an available hero into a slot, choose one " +
+        "Drag a hero from the roster into a slot, choose a " +
           track.label +
           " profession, then begin training."
     ) +
@@ -931,10 +913,9 @@ function renderProfessionBuildingWorkflow(building) {
     .map(id => professionData.professions.find(definition => definition.id === id))
     .filter(Boolean)
     .map(definition => ({ value: definition.id, label: definition.label }));
-  Assignments.mount(root.querySelector("#professionAssignmentBoard"), {
+  Assignments.mount($("#professionAssignmentBoard"), {
     buildingId: building.id,
     label: building.name,
-    heroes: currentFactionRoster(),
     heroMarkup: assignmentHeroMarkup,
     assignmentData: hero => professionAssignmentData(track, hero),
     actionOptions: () => actionOptions,
@@ -1147,585 +1128,102 @@ function syncMapBuildings() {
   });
 }
 
-function questBoardBuilding() {
-  return buildings.find(b => b.id === "questboard");
-}
-function compatibleLoadouts(size) {
-  return Number(size) === Roster.PARTY_SIZE
-    ? Roster.getState().loadouts.filter(loadout => Roster.validateLoadout(loadout, true).valid)
-    : [];
-}
-
-function questSeedHash(value) {
-  let hash = 2166136261;
-  for (let index = 0; index < value.length; index += 1) {
-    hash ^= value.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
-}
-
-function maybeTransitionQuestRound(board) {
-  const round = Roster.getQuestBoardState().round;
-  if (!Roster.advanceQuestRound(questOfferPool, board.level)) return false;
-  state.questMessage = "Round " + round + " complete · Round " + (round + 1) + " ready.";
-  return true;
-}
-
-function questBattleEncounter(offer, heroIds, assignment, loadoutId = null) {
-  const dungeon = factionStarterDungeon();
-  if (!dungeon) throw new Error("No faction starter dungeon is available.");
-  const partySize = Number(offer.party_size) || heroIds.length;
-  return {
-    kind: "quest",
-    encounterName: offer.title,
-    questOfferId: offer.id,
-    questAssignmentId: assignment.id,
-    questRound: assignment.round,
-    dungeonId: dungeon.id,
-    dungeonName: dungeon.display_name,
-    npcPoolId: dungeon.npc_pool_id,
-    partySize,
-    enemyCount: Number(offer.encounter && offer.encounter.enemy_count) || partySize,
-    reward: Object.assign({}, offer.reward || {}),
-    heroIds: heroIds.slice(),
-    loadoutId: loadoutId || null,
-    faction: currentFactionId(),
-    seed: questSeedHash(offer.id + ":" + assignment.round + ":" + heroIds.join(",")),
-    source: "questboard"
-  };
-}
-
-function renderQuestOffers() {
-  const board = questBoardBuilding(),
-    root = $("#questOfferList");
-  if (!board || !root || !questOfferPool) return;
-  Roster.ensureQuestRound(questOfferPool, board.level);
-  maybeTransitionQuestRound(board);
-  root.innerHTML = "";
-
-  const boardState = Roster.getQuestBoardState();
-  const status = $("#questBoardStatus");
-  if (status)
-    status.textContent =
-      state.questMessage ||
-      "Round " + boardState.round + " · Complete all current offers to reveal the next round.";
-
-  currentQuestOffers().forEach(offer => {
-    const quest = currentRoundQuestForOffer(offer.id);
-    const active = quest && quest.status === "active";
-    const completed = quest && quest.status === "completed";
-    const retry = quest && quest.status === "available" && quest.lastResult === "defeat";
-    const card = document.createElement("article");
-    card.className =
-      "quest-offer-card" +
-      (active ? " is-active" : "") +
-      (completed ? " is-completed" : "") +
-      (retry ? " is-retry" : "");
-    card.dataset.partySize = String(offer.party_size);
-    const loadouts = offer.party_size > 1 ? compatibleLoadouts(offer.party_size) : [];
-    const available = Roster.getState().heroes.filter(h => h.availability === "available");
-    card.innerHTML =
-      '<div class="quest-offer-head"><strong>' +
-      offer.title +
-      "</strong><span>" +
-      offer.party_size +
-      " hero" +
-      (offer.party_size === 1 ? "" : "es") +
-      "</span><em>" +
-      (active ? "ACTIVE" : completed ? "COMPLETED" : retry ? "RETRY" : "AVAILABLE") +
-      "</em></div>" +
-      '<div class="quest-offer-description">' +
-      offer.description +
-      "</div>" +
-      '<div class="quest-selection"></div>' +
-      '<small class="quest-reward">Reward · ' +
-      fmt(offer.reward.gold) +
-      " gold · " +
-      offer.reward.meta_amount +
-      " quest mark" +
-      (offer.reward.meta_amount === 1 ? "" : "s") +
-      "</small>";
-
-    const selection = card.querySelector(".quest-selection");
-    const battleOffer = Boolean(offer.encounter && offer.encounter.kind === "npc");
-    if (active) {
-      if (battleOffer) {
-        selection.innerHTML =
-          '<span class="quest-dispatched">Committed: ' +
-          quest.heroIds
-            .map(id => {
-              const h = Roster.hero(id);
-              return h ? h.name : id;
-            })
-            .join(", ") +
-          '</span><button class="wow-button wow-button--primary" type="button">Resume Battle</button>';
-        selection.querySelector("button").addEventListener("click", () => {
-          try {
-            const pending = Roster.getPendingEncounter();
-            if (
-              !pending ||
-              pending.questAssignmentId !== quest.id ||
-              pending.status === "resolved"
-            ) {
-              Roster.setPendingEncounter(questBattleEncounter(offer, quest.heroIds, quest));
-            }
-            window.location.href =
-              "./battle.html?encounter=quest&quest=" + encodeURIComponent(quest.id);
-          } catch (error) {
-            state.questMessage = error.message;
-            renderSidecar();
-          }
-        });
-      } else {
-        selection.innerHTML =
-          '<span class="quest-dispatched">Dispatched: ' +
-          quest.heroIds
-            .map(id => {
-              const h = Roster.hero(id);
-              return h ? h.name : id;
-            })
-            .join(", ") +
-          '</span><button class="wow-button" type="button">Complete Quest</button>';
-        selection.querySelector("button").addEventListener("click", () => {
-          const result = Roster.completeQuest(quest.id);
-          state.questMessage = result
-            ? offer.title + " completed. Heroes returned to available status."
-            : "Quest is not active.";
-          syncMapBuildings();
-          renderSidecar();
-        });
-      }
-    } else if (completed) {
-      selection.innerHTML = '<span class="quest-dispatched">Completed this round.</span>';
-    } else {
-      const select = document.createElement("select");
-      select.className = "wow-select quest-source";
-      select.innerHTML =
-        '<option value="">Choose ' +
-        (offer.party_size === 1 ? "hero" : "party source") +
-        "</option>" +
-        (offer.party_size === 1
-          ? available
-              .map(
-                h =>
-                  '<option value="hero:' + h.id + '">' + h.name + " · " + h.classLabel + "</option>"
-              )
-              .join("")
-          : loadouts
-              .map(l => '<option value="loadout:' + l.id + '">Saved · ' + l.name + "</option>")
-              .join("")) +
-        '<option value="adhoc">Ad-hoc roster</option>';
-      if (offer.party_size === 1) select.querySelector('option[value="adhoc"]').remove();
-      selection.appendChild(select);
-      const adhoc = document.createElement("div");
-      adhoc.className = "quest-adhoc";
-      selection.appendChild(adhoc);
-      const partyCount = document.createElement("small");
-      partyCount.className = "quest-party-count";
-      selection.appendChild(partyCount);
-      const dispatch = document.createElement("button");
-      dispatch.type = "button";
-      dispatch.className = "wow-button wow-button--primary";
-      dispatch.disabled = true;
-      selection.appendChild(dispatch);
-      let ids = [];
-      let selectedLoadoutId = null;
-      function sync() {
-        const invalid =
-          ids.length !== offer.party_size ||
-          ids.some(id => {
-            const h = Roster.hero(id);
-            return !h || h.availability !== "available";
-          });
-        dispatch.disabled = invalid;
-        partyCount.textContent =
-          offer.party_size === 1 ? "" : ids.length + " / " + offer.party_size + " heroes selected";
-        dispatch.textContent = battleOffer
-          ? "Launch Battle" +
-            (offer.party_size >= 10 ? " · " + ids.length + "/" + offer.party_size : "")
-          : "Dispatch";
-      }
-      select.addEventListener("change", () => {
-        ids = [];
-        adhoc.innerHTML = "";
-        selectedLoadoutId = null;
-        if (select.value.startsWith("hero:")) ids = [select.value.slice(5)];
-        else if (select.value.startsWith("loadout:")) {
-          selectedLoadoutId = select.value.slice(8);
-          const l = Roster.getState().loadouts.find(x => x.id === selectedLoadoutId);
-          ids = l ? Roster.partyHeroIds(l) : [];
-        } else if (select.value === "adhoc") {
-          available.forEach(h => {
-            const label = document.createElement("label");
-            label.className = "quest-hero-choice";
-            label.innerHTML =
-              '<input type="checkbox" value="' +
-              h.id +
-              '"><span>' +
-              h.name +
-              "<small>" +
-              h.classLabel +
-              "</small></span>";
-            label.querySelector("input").addEventListener("change", event => {
-              ids = event.target.checked ? ids.concat(h.id) : ids.filter(id => id !== h.id);
-              if (ids.length > offer.party_size) {
-                event.target.checked = false;
-                ids = ids.filter(id => id !== h.id);
-              }
-              sync();
-            });
-            adhoc.appendChild(label);
-          });
-        }
-        sync();
-      });
-      dispatch.addEventListener("click", () => {
-        try {
-          const assignment = Roster.dispatchQuest(offer, ids);
-          if (battleOffer) {
-            Roster.setPendingEncounter(
-              questBattleEncounter(offer, ids, assignment, selectedLoadoutId)
-            );
-            Campaign.confirmEmbark({
-              kind: "quest",
-              contentId: offer.id,
-              assignmentId: assignment.id,
-              heroIds: ids,
-              loadoutId: selectedLoadoutId || null,
-              faction: currentFactionId(),
-              source: "questboard"
-            });
-            window.location.href =
-              "./battle.html?encounter=quest&quest=" + encodeURIComponent(assignment.id);
-            return;
-          }
-          Campaign.confirmEmbark({
-            kind: "quest",
-            contentId: offer.id,
-            assignmentId: assignment.id,
-            heroIds: ids,
-            loadoutId: selectedLoadoutId || null,
-            faction: currentFactionId(),
-            source: "questboard"
-          });
-          state.questMessage =
-            offer.title +
-            " dispatched with " +
-            ids.length +
-            " hero" +
-            (ids.length === 1 ? "" : "es") +
-            ".";
-          syncMapBuildings();
-          renderSidecar();
-        } catch (error) {
-          state.questMessage = error.message;
-          renderSidecar();
-        }
-      });
-    }
-    root.appendChild(card);
-  });
-}
-
 function validateDungeonCatalog(payload) {
   if (!payload || !Array.isArray(payload.dungeons) || !payload.dungeons.length)
     throw new Error("Dungeon catalog is empty.");
-  const ids = payload.dungeons.map(dungeon => dungeon.id);
-  if (new Set(ids).size !== ids.length) throw new Error("Dungeon IDs must be unique.");
-  payload.dungeons.forEach(dungeon => {
-    const point = dungeon.map && dungeon.map.azeroth;
-    if (!point || point.x_pct < 0 || point.x_pct > 100 || point.y_pct < 0 || point.y_pct > 100)
-      throw new Error("Invalid Azeroth coordinate for " + dungeon.id);
-    if (!dungeon.npc_pool_id) throw new Error("Dungeon NPC pool missing for " + dungeon.id);
-  });
   return payload;
 }
 
-function dungeonForId(id) {
-  return (dungeonCatalog && dungeonCatalog.dungeons.find(dungeon => dungeon.id === id)) || null;
+// Quest Board automation: heroes dragged from the roster sidecar quest on their own for one
+// campaign day. Manual quests launch from the Embark bar.
+function questAutomationLevel() {
+  return contentProgression.content.find(entry => entry.id === "quest").automation_base_level;
 }
 
-function factionStarterDungeon() {
-  if (!dungeonCatalog) return null;
-  const faction = currentFactionId();
-  return (
-    dungeonCatalog.dungeons.find(dungeon =>
-      (dungeon.faction.starter_for || []).includes(faction)
-    ) ||
-    dungeonCatalog.dungeons[0] ||
-    null
-  );
-}
-
-function dungeonTooltipModel(dungeon) {
-  const faction = currentFactionId();
-  const starter = (dungeon.faction.starter_for || []).includes(faction);
-  return {
-    variant: "control",
-    title: dungeon.display_name,
-    type: dungeon.continent + " · " + dungeon.zone,
-    icon: { category: "battle", key: "combat" },
-    description: dungeon.subregion + (starter ? " · Faction starter dungeon." : ""),
-    stats: [
-      { label: "Party size", value: String(dungeon.party.canonical_size) },
-      {
-        label: "Access",
-        value: (dungeon.faction.available_to || []).includes(faction) ? "Available" : "Unavailable"
-      },
-      { label: "NPC pool", value: dungeon.npc_pool_id }
-    ],
-    meta: [
-      { label: "Continent", value: dungeon.continent },
-      { label: "Zone", value: dungeon.zone }
-    ]
-  };
-}
-
-function renderDungeonSelection(dungeon) {
-  const root = $("#dungeonSelection");
-  if (!root || !dungeon) return;
-  const size = Number(dungeon.party.canonical_size) || 5;
-  const loadouts = compatibleLoadouts(size);
-  const available = Roster.getState().heroes.filter(hero => hero.availability === "available");
-  const latestRun = Roster.getLatestDungeonRun(dungeon.id);
-  root.innerHTML =
-    '<div class="dungeon-selection__head">' +
-    '<div><span class="wow-kicker">SELECTED DUNGEON</span><h4>' +
-    dungeon.display_name +
-    "</h4><small>" +
-    dungeon.continent +
-    " · " +
-    dungeon.zone +
-    " · " +
-    size +
-    " players</small></div>" +
-    '<span class="dungeon-selection__pool">' +
-    dungeon.npc_pool_id +
-    "</span>" +
-    "</div>" +
-    (latestRun
-      ? '<div class="dungeon-selection__result is-' +
-        (latestRun.victory ? "victory" : "defeat") +
-        '"><strong>Last Run · ' +
-        (latestRun.victory ? "Victory" : "Defeat") +
-        "</strong><small>Attempt " +
-        latestRun.attempt +
-        " · " +
-        latestRun.partySize +
-        " heroes · " +
-        latestRun.frame +
-        " ticks</small></div>"
-      : "") +
-    '<div id="dungeonPartyPicker" class="dungeon-party-picker"></div>';
-
-  const picker = $("#dungeonPartyPicker");
-  const select = document.createElement("select");
-  select.className = "wow-select dungeon-party-source";
-  select.innerHTML =
-    '<option value="">Choose party source</option>' +
-    loadouts
-      .map(
-        loadout =>
-          '<option value="loadout:' + loadout.id + '">Saved · ' + loadout.name + "</option>"
-      )
-      .join("") +
-    '<option value="adhoc">Ad-hoc roster</option>';
-  picker.appendChild(select);
-
-  const adhoc = document.createElement("div");
-  adhoc.className = "quest-adhoc dungeon-party-adhoc";
-  picker.appendChild(adhoc);
-
-  const launch = document.createElement("button");
-  launch.type = "button";
-  launch.className = "wow-button wow-button--primary";
-  launch.textContent = "Launch Battle";
-  launch.disabled = true;
-  picker.appendChild(launch);
-
-  let ids = [];
-  let selectedLoadoutId = null;
-  function sync() {
-    launch.disabled =
-      ids.length !== size ||
-      ids.some(id => {
-        const hero = Roster.hero(id);
-        return !hero || hero.availability !== "available";
-      });
+function runQuestAutomation(action) {
+  try {
+    action();
+    state.questMessage = "";
+  } catch (error) {
+    state.questMessage = error.message;
   }
-
-  select.addEventListener("change", () => {
-    ids = [];
-    selectedLoadoutId = null;
-    adhoc.innerHTML = "";
-    if (select.value.startsWith("loadout:")) {
-      selectedLoadoutId = select.value.slice(8);
-      const loadout = Roster.getState().loadouts.find(entry => entry.id === selectedLoadoutId);
-      ids = loadout ? Roster.partyHeroIds(loadout) : [];
-    } else if (select.value === "adhoc") {
-      available.forEach(hero => {
-        const label = document.createElement("label");
-        label.className = "quest-hero-choice";
-        label.innerHTML =
-          '<input type="checkbox" value="' +
-          hero.id +
-          '"><span>' +
-          hero.name +
-          "<small>" +
-          hero.classLabel +
-          "</small></span>";
-        label.querySelector("input").addEventListener("change", event => {
-          ids = event.target.checked ? ids.concat(hero.id) : ids.filter(id => id !== hero.id);
-          if (ids.length > size) {
-            event.target.checked = false;
-            ids = ids.filter(id => id !== hero.id);
-          }
-          sync();
-        });
-        adhoc.appendChild(label);
-      });
-    }
-    sync();
-  });
-
-  launch.addEventListener("click", () => {
-    try {
-      Roster.setPendingEncounter({
-        kind: "dungeon",
-        dungeonId: dungeon.id,
-        dungeonName: dungeon.display_name,
-        npcPoolId: dungeon.npc_pool_id,
-        partySize: size,
-        heroIds: ids,
-        loadoutId: selectedLoadoutId,
-        faction: currentFactionId(),
-        seed: questSeedHash(dungeon.id + ":" + ids.join(",")),
-        source: "questboard"
-      });
-      Campaign.confirmEmbark({
-        kind: "dungeon",
-        contentId: dungeon.id,
-        heroIds: ids,
-        loadoutId: selectedLoadoutId || null,
-        faction: currentFactionId(),
-        source: "questboard"
-      });
-      window.location.href =
-        "./battle.html?encounter=dungeon&dungeon=" + encodeURIComponent(dungeon.id);
-    } catch (error) {
-      state.dungeonMessage = error.message;
-      const status = $("#questBoardStatus");
-      if (status) status.textContent = state.dungeonMessage;
-    }
-  });
+  renderSidecar();
 }
 
-function renderDungeonMap() {
-  const map = $("#dungeonWorldMap");
-  if (!map || !dungeonCatalog) return;
-  const faction = currentFactionId();
-  map.innerHTML =
-    '<div class="dungeon-map__continent is-kalimdor" aria-hidden="true"><span>Kalimdor</span></div>' +
-    '<div class="dungeon-map__continent is-eastern-kingdoms" aria-hidden="true"><span>Eastern Kingdoms</span></div>';
-
-  let selected = dungeonForId(state.selectedDungeonId);
-  if (!selected) {
-    selected = factionStarterDungeon();
-    state.selectedDungeonId = selected ? selected.id : null;
-  }
-
-  dungeonCatalog.dungeons.forEach(dungeon => {
-    const point = dungeon.map.azeroth;
-    const starter = (dungeon.faction.starter_for || []).includes(faction);
-    const available = (dungeon.faction.available_to || []).includes(faction);
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className =
-      "dungeon-map__hotspot" +
-      (starter ? " is-starter" : "") +
-      (dungeon.id === state.selectedDungeonId ? " is-selected" : "") +
-      (available ? "" : " is-locked");
-    button.style.setProperty("--x", point.x_pct + "%");
-    button.style.setProperty("--y", point.y_pct + "%");
-    button.dataset.dungeonId = dungeon.id;
-    button.setAttribute(
-      "aria-label",
-      dungeon.display_name +
-        ", " +
-        dungeon.zone +
-        ", " +
-        dungeon.party.canonical_size +
-        " players" +
-        (starter ? ", faction starter" : "")
+function questAutomationSlot(assignment, index, offers) {
+  const hero = assignment ? Roster.hero(assignment.heroId) : null;
+  const offer = hero
+    ? questOfferPool.offers.find(entry => entry.id === assignment.contentId)
+    : offers[index % offers.length];
+  const title = offer ? offer.title : "Auto Quest " + (index + 1);
+  const remaining = hero ? assignment.remainingCampaignPhases : 0;
+  const slot = document.createElement("div");
+  slot.className = "quest-automation__slot" + (hero ? " is-filled" : "");
+  slot.dataset.slot = String(index);
+  slot.innerHTML =
+    '<span class="quest-automation__hero">' +
+    (hero ? iconMarkup("race", hero.race, "sm", "wow-icon-frame--class-" + hero.classId) : "") +
+    '</span><span class="quest-automation__copy"><strong>' +
+    escapeHtml(title) +
+    "</strong><small>" +
+    escapeHtml(hero ? hero.name : "Drop a hero") +
+    "</small></span>";
+  Tooltips.attach(slot, () => ({
+    title,
+    type: "Auto Quest",
+    description: hero
+      ? hero.name +
+        " returns in " +
+        remaining +
+        " campaign phase" +
+        (remaining === 1 ? "" : "s") +
+        ". Click to recall."
+      : "Drag a hero here from the roster. Heroes return in one campaign day with Quest XP."
+  }));
+  if (hero)
+    slot.addEventListener("click", () =>
+      runQuestAutomation(() => ContentAssignments.remove("quest", index))
     );
-    button.innerHTML =
-      '<span class="dungeon-map__marker wow-icon-frame wow-icon-frame--xs"><img src="' +
-      Icons.resolve("battle", "combat") +
-      '" alt=""></span>' +
-      '<span class="dungeon-map__label"><strong>' +
-      dungeon.display_name +
-      "</strong><small>" +
-      dungeon.zone +
-      (starter ? " · STARTER" : "") +
-      "</small></span>";
-    button.querySelectorAll("img").forEach(Icons.bindFallback);
-    Tooltips.attach(button, () => dungeonTooltipModel(dungeon), { anchor: "target" });
-    if (available)
-      button.addEventListener("click", () => {
-        state.selectedDungeonId = dungeon.id;
-        state.dungeonMessage = "";
-        renderDungeonMap();
-      });
-    map.appendChild(button);
-  });
+  else
+    window.WarcraftRosterSidecar.dropTarget(slot, heroId =>
+      runQuestAutomation(() =>
+        ContentAssignments.assign("quest", index, heroId, offer ? offer.id : "quest")
+      )
+    );
+  return slot;
+}
 
+function renderQuestAutomation() {
+  const root = $("#questAutomationSlots");
   const status = $("#questBoardStatus");
-  if (status)
+  if (!root || !status) return;
+  const unlockLevel = questAutomationLevel();
+  if (Campaign.getBaseLevel() < unlockLevel) {
     status.textContent =
-      state.dungeonMessage ||
-      (selected
-        ? selected.display_name +
-          " selected · choose a " +
-          selected.party.canonical_size +
-          "-hero party."
-        : "Select a dungeon.");
-  if (selected) renderDungeonSelection(selected);
+      "Launch quests from the Embark bar. Auto quests unlock at Base Level " + unlockLevel + ".";
+    root.replaceChildren();
+    return;
+  }
+  status.textContent =
+    state.questMessage || "Drag heroes from the roster to quest on their own for one day.";
+  const offers = currentQuestOffers();
+  root.replaceChildren(
+    ...ContentAssignments.state("quest").slots.map((assignment, index) =>
+      questAutomationSlot(assignment, index, offers)
+    )
+  );
+  bindResolvedIcons(root);
 }
 
-function renderQuestBoard() {
-  const offersView = $("#questOffersView");
-  const mapView = $("#dungeonMapView");
-  const offersTab = $("#questBoardOffersTab");
-  const dungeonsTab = $("#questBoardDungeonsTab");
-  if (!offersView || !mapView) return;
-  const dungeonMode = state.questBoardMode === "dungeons";
-  offersView.hidden = dungeonMode;
-  mapView.hidden = !dungeonMode;
-  if (offersTab) {
-    offersTab.classList.toggle("is-selected", !dungeonMode);
-    offersTab.setAttribute("aria-pressed", dungeonMode ? "false" : "true");
-  }
-  if (dungeonsTab) {
-    dungeonsTab.classList.toggle("is-selected", dungeonMode);
-    dungeonsTab.setAttribute("aria-pressed", dungeonMode ? "true" : "false");
-  }
-  if (dungeonMode) renderDungeonMap();
-  else renderQuestOffers();
-}
-
-function classHallTrainerTooltip(trainer) {
+function classHallSlotTooltip(hero) {
+  const trainer = ClassHall.trainerForClass(hero.classId);
   return {
     variant: "control",
     title: trainer.label,
     type: "Class Trainer",
-    classId: trainer.class_id,
-    icon: { category: "class", key: trainer.class_id },
-    description: "Faction-valid trainer for " + labelize(trainer.class_id) + " heroes.",
-    meta: [
-      { label: "Class", value: labelize(trainer.class_id) },
-      { label: "Faction", value: labelize(currentFactionId()) }
-    ]
+    classId: hero.classId,
+    icon: { category: "class", key: hero.classId },
+    description: "Trains " + hero.name + " to the next level."
   };
 }
 
@@ -1760,46 +1258,20 @@ function renderClassHallWorkflow(building) {
     state.classHallMessage = completions
       .map(event => event.heroName + " reached level " + event.toLevel + ".")
       .join(" ");
-  const trainers = ClassHall.trainers(currentFactionId());
   root.hidden = false;
   root.innerHTML =
-    '<div class="class-hall__head"><div><span class="wow-kicker">CLASS TRAINERS</span><h3>Class Hall</h3></div><small>3 slots · 1 day training</small></div>' +
+    '<div class="class-hall__head"><div><span class="wow-kicker">LEVEL TRAINING</span><h3>Class Hall</h3></div><small>3 slots · 1 day training</small></div>' +
     '<div id="classHallMessage" class="class-hall__message" role="status">' +
     escapeHtml(
       state.classHallMessage ||
-        "Drag a faction-valid hero into a slot for talent access or level training."
+        "Drag a hero from the roster into a slot to train with their class trainer."
     ) +
     "</div>" +
-    '<div class="class-hall__trainers" aria-label="Available class trainers"></div>' +
-    '<div class="class-hall__assignment-head"><span class="wow-kicker">HERO ASSIGNMENTS</span><small>Drag from active-faction roster · 2 campaign phases</small></div>' +
     '<div id="classHallAssignmentBoard" class="assignment-board"></div>';
 
-  const trainerGrid = root.querySelector(".class-hall__trainers");
-  trainers.forEach(trainer => {
-    const node = document.createElement("button");
-    node.type = "button";
-    node.className = "class-hall__trainer";
-    node.dataset.trainerClass = trainer.class_id;
-    node.innerHTML =
-      iconMarkup(
-        "class",
-        trainer.class_id,
-        "sm",
-        "class-hall__trainer-icon wow-icon-frame--class-" + trainer.class_id
-      ) +
-      "<span><strong>" +
-      escapeHtml(trainer.label) +
-      "</strong><small>" +
-      escapeHtml(labelize(trainer.class_id)) +
-      "</small></span>";
-    Tooltips.attach(node, () => classHallTrainerTooltip(trainer), { anchor: "target" });
-    trainerGrid.appendChild(node);
-  });
-
-  Assignments.mount(root.querySelector("#classHallAssignmentBoard"), {
+  Assignments.mount($("#classHallAssignmentBoard"), {
     buildingId: "classhall",
     label: "Class Hall",
-    heroes: currentFactionRoster().filter(hero => Boolean(ClassHall.trainerForClass(hero.classId))),
     heroMarkup: assignmentHeroMarkup,
     assignmentData: hero => {
       const trainer = ClassHall.trainerForClass(hero.classId);
@@ -1820,6 +1292,7 @@ function renderClassHallWorkflow(building) {
     start: index => ClassHall.startLevelTraining(index),
     href: hero => ClassHall.openTalentsHref(hero.id),
     hrefLabel: "Open Talents",
+    tooltip: classHallSlotTooltip,
     onChange: () => {
       state.classHallMessage = "Class Hall assignment updated.";
       renderSidecar();
@@ -1831,7 +1304,6 @@ function renderClassHallWorkflow(building) {
   });
 
   bindResolvedIcons(root);
-  Tooltips.hydrate(root);
 }
 
 function toast(message) {
@@ -1920,22 +1392,12 @@ function renderSidecar() {
     body.insertAdjacentHTML(
       "beforeend",
       '<section class="base-sidecar__section base-sidecar__quests">' +
-        '<div class="base-sidecar__quest-head"><div><span class="wow-kicker">HERO DISPATCH</span><h3>Quest Board</h3></div><small>Round <span id="questBoardRound">' +
+        '<div class="base-sidecar__quest-head"><div><span class="wow-kicker">AUTO QUESTS</span><h3>Quest Board</h3></div><small>Round ' +
         Roster.getQuestBoardState().round +
-        "</span></small></div>" +
-        '<div class="quest-board-mode-tabs" role="group" aria-label="Quest Board mode">' +
-        '<button id="questBoardOffersTab" class="wow-tab" type="button" aria-pressed="true">Quest Offers</button>' +
-        '<button id="questBoardDungeonsTab" class="wow-tab" type="button" aria-pressed="false">Dungeon Map</button>' +
-        "</div>" +
+        "</small></div>" +
         '<div class="quest-board-campaign-time campaign-clock" data-campaign-clock role="status" aria-live="polite"></div>' +
         '<div id="questBoardStatus" class="base-sidecar__quest-status" role="status" aria-live="polite"></div>' +
-        '<div id="questOffersView">' +
-        '<div id="questOfferList" class="quest-offer-list"></div>' +
-        "</div>" +
-        '<div id="dungeonMapView" hidden>' +
-        '<div id="dungeonWorldMap" class="dungeon-world-map wow-inset" aria-label="Azeroth dungeon map"></div>' +
-        '<div id="dungeonSelection" class="dungeon-selection"></div>' +
-        "</div>" +
+        '<div id="questAutomationSlots" class="quest-automation" aria-label="Auto quest slots"></div>' +
         "</section>"
     );
   }
@@ -1945,30 +1407,7 @@ function renderSidecar() {
   Tooltips.hydrate(sidecar);
   if (["storehouse", "bank", "armory"].includes(building.id)) renderStorageBrowser(building);
   if (building.id === "classhall") renderClassHallWorkflow(building);
-  if (building.id === "questboard") {
-    renderQuestBoard();
-    const offersTab = $("#questBoardOffersTab");
-    const dungeonsTab = $("#questBoardDungeonsTab");
-    if (offersTab)
-      offersTab.addEventListener("click", () => {
-        state.questBoardMode = "offers";
-        state.questMessage = "";
-        renderSidecar();
-      });
-    if (dungeonsTab)
-      dungeonsTab.addEventListener("click", () => {
-        state.questBoardMode = "dungeons";
-        state.dungeonMessage = "";
-        renderSidecar();
-      });
-    const dungeonAction = sidecar.querySelector('[data-building-action="dungeon-map"]');
-    if (dungeonAction)
-      dungeonAction.addEventListener("click", () => {
-        state.questBoardMode = "dungeons";
-        state.dungeonMessage = "";
-        renderSidecar();
-      });
-  }
+  if (building.id === "questboard") renderQuestAutomation();
   if (building.id === "recruitment") {
     renderRecruitmentWorkflow(building);
     const recruitmentAction = sidecar.querySelector('[data-building-action="recruitment"]');
@@ -2004,11 +1443,7 @@ function openSidecar(id, origin) {
     state.recruitmentOpen = false;
     state.recruitmentMessage = "";
     state.professionOpen = null;
-    if (id !== "questboard") {
-      state.questBoardMode = "offers";
-      state.selectedDungeonId = null;
-      state.dungeonMessage = "";
-    }
+    state.questMessage = "";
   }
   state.selected = id;
   sidecarOrigin = origin || sidecarOrigin;
@@ -2056,10 +1491,6 @@ function upgradeBuilding(id) {
   if (b.id === "artisans") Professions.setGuildLevel(b.level);
   syncResourceBar();
   syncMapBuildings();
-  if (b.id === "questboard") {
-    state.questMessage =
-      "Quest Board upgraded. Difficulty " + b.level + " quest offers are now unlocked.";
-  }
   renderSidecar();
   toast(b.name + " upgraded to level " + b.level + ".");
 }
@@ -2150,13 +1581,14 @@ async function initBase() {
     questOfferPool = await responses[4].json();
     if (!questOfferPool || !Array.isArray(questOfferPool.offers) || !questOfferPool.offers.length)
       throw new Error("Quest offer pool is empty.");
-    dungeonCatalog = validateDungeonCatalog(await responses[5].json());
+    const dungeonCatalog = validateDungeonCatalog(await responses[5].json());
     reagentHoldings = validateReagentHoldings(await responses[6].json());
     bankHoldings = validateBankHoldings(await responses[7].json());
     classHallData = await responses[8].json();
-    const contentProgression = await responses[9].json();
+    contentProgression = await responses[9].json();
     if (!ClassHall) throw new Error("Class Hall runtime is unavailable.");
     ClassHall.configure(classHallData);
+    ContentAssignments.configure(contentProgression);
     Campaign.ensureBankHoldings(bankHoldings.holdings);
     armoryItems = armoryOwnedItems();
     if (!armoryItems.length) throw new Error("Armory equipment ownership is empty.");
@@ -2190,8 +1622,6 @@ async function initBase() {
     const params = new URLSearchParams(window.location.search);
     const requestedBuilding = params.get("building");
     if (requestedBuilding && buildings.some(entry => entry.id === requestedBuilding)) {
-      if (requestedBuilding === "questboard")
-        state.questBoardMode = params.get("mode") === "dungeons" ? "dungeons" : "offers";
       const origin = document.querySelector('[data-building="' + requestedBuilding + '"]');
       openSidecar(requestedBuilding, origin);
     }

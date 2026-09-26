@@ -339,6 +339,10 @@
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") hide();
   });
+  // A re-render can remove the hovered element without a mouseleave; drop its tooltip then.
+  document.addEventListener("mousemove", function () {
+    if (activeTarget && !activeTarget.isConnected) hide();
+  });
 
   global.WowUITooltips = Object.freeze({
     attach: attach,
