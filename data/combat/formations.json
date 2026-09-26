@@ -4,7 +4,6 @@
   "party": {
     "id": "party-2-2-1",
     "size": 5,
-    "geometry": "rear-to-front 2 / 2 / 1",
     "slot_order": [
       "rear-left",
       "rear-right",

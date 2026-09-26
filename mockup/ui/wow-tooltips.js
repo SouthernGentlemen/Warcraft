@@ -3,7 +3,7 @@
  * Supports pointer and keyboard focus anchoring, structured content, comparison,
  * semantic icons, and viewport collision/clamping.
  */
-(function(global) {
+(function (global) {
   "use strict";
 
   const TOOLTIP_ID = "wow-shared-tooltip";
@@ -17,8 +17,8 @@
   let uid = 0;
 
   function escapeHtml(value) {
-    return String(value == null ? "" : value).replace(/[&<>"']/g, function(char) {
-      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char];
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char];
     });
   }
 
@@ -39,7 +39,10 @@
 
   function normalizeRows(value) {
     if (value == null || value === "") return [];
-    if (Array.isArray(value)) return value.filter(function(row) { return row != null && row !== ""; });
+    if (Array.isArray(value))
+      return value.filter(function (row) {
+        return row != null && row !== "";
+      });
     return [value];
   }
 
@@ -49,7 +52,8 @@
     const Icons = global.WowUIIcons;
     if (!Icons) return "";
     if (icon.slug) return Icons.iconUrl(icon.slug);
-    if (icon.category && icon.key) return Icons.resolve(icon.category, icon.key, icon.context || {});
+    if (icon.category && icon.key)
+      return Icons.resolve(icon.category, icon.key, icon.context || {});
     return "";
   }
 
@@ -63,20 +67,24 @@
   }
 
   function renderLineRows(rows, className) {
-    return normalizeRows(rows).map(function(row) {
-      if (typeof row === "object") {
-        const label = row.label ? '<span>' + escapeHtml(row.label) + '</span>' : "";
-        const value = row.value != null ? '<strong>' + escapeHtml(row.value) + '</strong>' : "";
-        const tone = row.tone ? " is-" + escapeHtml(row.tone) : "";
-        return '<div class="' + className + tone + '">' + label + value + '</div>';
-      }
-      return '<div class="' + className + '">' + escapeHtml(row) + '</div>';
-    }).join("");
+    return normalizeRows(rows)
+      .map(function (row) {
+        if (typeof row === "object") {
+          const label = row.label ? "<span>" + escapeHtml(row.label) + "</span>" : "";
+          const value = row.value != null ? "<strong>" + escapeHtml(row.value) + "</strong>" : "";
+          const tone = row.tone ? " is-" + escapeHtml(row.tone) : "";
+          return '<div class="' + className + tone + '">' + label + value + "</div>";
+        }
+        return '<div class="' + className + '">' + escapeHtml(row) + "</div>";
+      })
+      .join("");
   }
 
   function renderPanel(model, comparison) {
     model = model || {};
-    const variant = String(model.variant || "generic").toLowerCase().replace(/[^a-z0-9-]+/g, "-");
+    const variant = String(model.variant || "generic")
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, "-");
     const quality = model.quality ? " wow-tooltip--quality-" + escapeHtml(model.quality) : "";
     const classId = model.classId ? " wow-tooltip--class-" + escapeHtml(model.classId) : "";
     const badge = model.badge || (comparison ? "Equipped" : "");
@@ -92,22 +100,47 @@
     const locked = normalizeRows(model.locked || model.unmet);
     const description = model.description || model.primary || "";
 
-    return '<section class="wow-tooltip-card wow-tooltip--' + escapeHtml(variant) + quality + classId + '"' +
-      (comparison ? ' data-wow-tooltip-comparison="true"' : ' data-wow-tooltip-primary="true"') + '>' +
-      (badge ? '<div class="wow-tooltip__badge">' + escapeHtml(badge) + '</div>' : "") +
+    return (
+      '<section class="wow-tooltip-card wow-tooltip--' +
+      escapeHtml(variant) +
+      quality +
+      classId +
+      '"' +
+      (comparison ? ' data-wow-tooltip-comparison="true"' : ' data-wow-tooltip-primary="true"') +
+      ">" +
+      (badge ? '<div class="wow-tooltip__badge">' + escapeHtml(badge) + "</div>" : "") +
       '<header class="wow-tooltip__header">' +
-        headerIcon +
-        '<div class="wow-tooltip__heading">' +
-          (model.title ? '<strong class="wow-tooltip__title">' + escapeHtml(model.title) + '</strong>' : "") +
-          (model.type ? '<span class="wow-tooltip__type">' + escapeHtml(model.type) + '</span>' : "") +
-        '</div>' +
-      '</header>' +
-      (requirements.length ? '<div class="wow-tooltip__requirements">' + renderLineRows(requirements, "wow-tooltip__requirement") + '</div>' : "") +
-      (description ? '<div class="wow-tooltip__description">' + escapeHtml(description) + '</div>' : "") +
-      (stats.length ? '<div class="wow-tooltip__stats">' + renderLineRows(stats, "wow-tooltip__stat") + '</div>' : "") +
-      (metadata.length ? '<div class="wow-tooltip__meta">' + renderLineRows(metadata, "wow-tooltip__meta-row") + '</div>' : "") +
-      (locked.length ? '<div class="wow-tooltip__locked">' + renderLineRows(locked, "wow-tooltip__locked-row") + '</div>' : "") +
-    '</section>';
+      headerIcon +
+      '<div class="wow-tooltip__heading">' +
+      (model.title
+        ? '<strong class="wow-tooltip__title">' + escapeHtml(model.title) + "</strong>"
+        : "") +
+      (model.type ? '<span class="wow-tooltip__type">' + escapeHtml(model.type) + "</span>" : "") +
+      "</div>" +
+      "</header>" +
+      (requirements.length
+        ? '<div class="wow-tooltip__requirements">' +
+          renderLineRows(requirements, "wow-tooltip__requirement") +
+          "</div>"
+        : "") +
+      (description
+        ? '<div class="wow-tooltip__description">' + escapeHtml(description) + "</div>"
+        : "") +
+      (stats.length
+        ? '<div class="wow-tooltip__stats">' + renderLineRows(stats, "wow-tooltip__stat") + "</div>"
+        : "") +
+      (metadata.length
+        ? '<div class="wow-tooltip__meta">' +
+          renderLineRows(metadata, "wow-tooltip__meta-row") +
+          "</div>"
+        : "") +
+      (locked.length
+        ? '<div class="wow-tooltip__locked">' +
+          renderLineRows(locked, "wow-tooltip__locked-row") +
+          "</div>"
+        : "") +
+      "</section>"
+    );
   }
 
   function bindRenderedIcons() {
@@ -135,8 +168,10 @@
     } else {
       left = targetRect.right + GAP;
       top = targetRect.top;
-      if (left + groupRect.width > viewportWidth - PAD) left = targetRect.left - groupRect.width - GAP;
-      if (top + groupRect.height > viewportHeight - PAD) top = viewportHeight - groupRect.height - PAD;
+      if (left + groupRect.width > viewportWidth - PAD)
+        left = targetRect.left - groupRect.width - GAP;
+      if (top + groupRect.height > viewportHeight - PAD)
+        top = viewportHeight - groupRect.height - PAD;
     }
 
     const maxLeft = Math.max(PAD, viewportWidth - groupRect.width - PAD);
@@ -170,9 +205,8 @@
 
   function resolveModel(binding) {
     if (!binding) return null;
-    const raw = typeof binding.provider === "function"
-      ? binding.provider(binding.element)
-      : binding.provider;
+    const raw =
+      typeof binding.provider === "function" ? binding.provider(binding.element) : binding.provider;
     if (!raw) return null;
     return raw;
   }
@@ -188,7 +222,7 @@
     activeTarget = binding.element;
     activeBinding = binding;
     if (event && Number.isFinite(event.clientX) && Number.isFinite(event.clientY)) {
-      pointer = {x:event.clientX, y:event.clientY};
+      pointer = { x: event.clientX, y: event.clientY };
     } else {
       pointer = null;
     }
@@ -206,14 +240,14 @@
   }
 
   function attach(element, provider, options) {
-    if (!element) return function() {};
+    if (!element) return function () {};
     const binding = {
-      id:++uid,
-      element:element,
-      provider:provider,
-      anchor:options && options.anchor === "target" ? "target" : "cursor",
-      hovered:false,
-      focused:false
+      id: ++uid,
+      element: element,
+      provider: provider,
+      anchor: options && options.anchor === "target" ? "target" : "cursor",
+      hovered: false,
+      focused: false
     };
 
     function enter(event) {
@@ -223,7 +257,7 @@
 
     function move(event) {
       if (!binding.hovered || activeTarget !== element) return;
-      pointer = {x:event.clientX, y:event.clientY};
+      pointer = { x: event.clientX, y: event.clientY };
       position();
     }
 
@@ -261,28 +295,37 @@
 
   function dataModel(element) {
     return {
-      variant:element.dataset.wowTooltipVariant || "generic",
-      title:element.dataset.wowTooltipTitle || element.dataset.wowTooltip || "",
-      type:element.dataset.wowTooltipType || "",
-      description:element.dataset.wowTooltipDescription || "",
-      requirements:element.dataset.wowTooltipRequirements || "",
-      meta:element.dataset.wowTooltipMeta || "",
-      locked:element.dataset.wowTooltipLocked || "",
-      icon:element.dataset.wowTooltipIconCategory && element.dataset.wowTooltipIconKey ? {
-        category:element.dataset.wowTooltipIconCategory,
-        key:element.dataset.wowTooltipIconKey
-      } : null
+      variant: element.dataset.wowTooltipVariant || "generic",
+      title: element.dataset.wowTooltipTitle || element.dataset.wowTooltip || "",
+      type: element.dataset.wowTooltipType || "",
+      description: element.dataset.wowTooltipDescription || "",
+      requirements: element.dataset.wowTooltipRequirements || "",
+      meta: element.dataset.wowTooltipMeta || "",
+      locked: element.dataset.wowTooltipLocked || "",
+      icon:
+        element.dataset.wowTooltipIconCategory && element.dataset.wowTooltipIconKey
+          ? {
+              category: element.dataset.wowTooltipIconCategory,
+              key: element.dataset.wowTooltipIconKey
+            }
+          : null
     };
   }
 
   function hydrate(root) {
     const scope = root || document;
-    scope.querySelectorAll("[data-wow-tooltip]").forEach(function(element) {
+    scope.querySelectorAll("[data-wow-tooltip]").forEach(function (element) {
       if (element.dataset.wowTooltipBound === "true") return;
       element.dataset.wowTooltipBound = "true";
-      attach(element, function() { return dataModel(element); }, {
-        anchor:element.dataset.wowTooltipAnchor === "target" ? "target" : "cursor"
-      });
+      attach(
+        element,
+        function () {
+          return dataModel(element);
+        },
+        {
+          anchor: element.dataset.wowTooltipAnchor === "target" ? "target" : "cursor"
+        }
+      );
     });
   }
 
@@ -291,20 +334,27 @@
     show(activeBinding, null);
   }
 
-  window.addEventListener("resize", position, {passive:true});
-  window.addEventListener("scroll", position, {passive:true, capture:true});
-  document.addEventListener("keydown", function(event) {
+  window.addEventListener("resize", position, { passive: true });
+  window.addEventListener("scroll", position, { passive: true, capture: true });
+  document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") hide();
   });
 
   global.WowUITooltips = Object.freeze({
-    attach:attach,
-    hydrate:hydrate,
-    show:function(element, model, event, options) {
-      show({element:element, provider:model, anchor:options && options.anchor === "target" ? "target" : "cursor"}, event || null);
+    attach: attach,
+    hydrate: hydrate,
+    show: function (element, model, event, options) {
+      show(
+        {
+          element: element,
+          provider: model,
+          anchor: options && options.anchor === "target" ? "target" : "cursor"
+        },
+        event || null
+      );
     },
-    hide:hide,
-    refresh:refresh,
-    position:position
+    hide: hide,
+    refresh: refresh,
+    position: position
   });
 })(window);

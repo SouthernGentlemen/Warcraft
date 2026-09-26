@@ -1,19 +1,10 @@
 {
   "schema_version": 1,
   "kind": "wow_dungeon_catalog",
-  "coordinate_system": {
-    "id": "azeroth-dual-continent-v1",
-    "units": "percent",
-    "description": "Normalized presentation coordinates for the future dual-continent Azeroth Quest Board map; x/y are authored UI positions, not in-game player coordinates."
-  },
-  "npc_pool_source": "../npcs/dungeon-pools.json",
   "dungeons": [
     {
       "id": "ragefire-chasm",
       "display_name": "Ragefire Chasm",
-      "aliases": [
-        "RFC"
-      ],
       "continent": "Kalimdor",
       "zone": "Orgrimmar",
       "subregion": "Cleft of Shadow",
@@ -38,22 +29,13 @@
         "presentation": "horde"
       },
       "party": {
-        "canonical_size": 5,
-        "supported_sizes": [
-          5
-        ]
+        "canonical_size": 5
       },
-      "npc_pool_id": "dungeon-ragefire-chasm",
-      "source_note": "Ragefire Chasm is located in the Cleft of Shadow, Orgrimmar."
+      "npc_pool_id": "dungeon-ragefire-chasm"
     },
     {
       "id": "the-stockade",
       "display_name": "The Stockade",
-      "aliases": [
-        "Stormwind Stockade",
-        "Stormwind Stockades",
-        "Stocks"
-      ],
       "continent": "Eastern Kingdoms",
       "zone": "Stormwind City",
       "subregion": "The Canals",
@@ -78,20 +60,13 @@
         "presentation": "alliance"
       },
       "party": {
-        "canonical_size": 5,
-        "supported_sizes": [
-          5
-        ]
+        "canonical_size": 5
       },
-      "npc_pool_id": "dungeon-the-stockade",
-      "source_note": "Stormwind Stockade, also called The Stockade, is beneath the canals of Stormwind City."
+      "npc_pool_id": "dungeon-the-stockade"
     },
     {
       "id": "scarlet-monastery",
       "display_name": "Scarlet Monastery",
-      "aliases": [
-        "SM"
-      ],
       "continent": "Eastern Kingdoms",
       "zone": "Tirisfal Glades",
       "subregion": "Northeastern Tirisfal Glades",
@@ -114,20 +89,13 @@
         "presentation": "neutral"
       },
       "party": {
-        "canonical_size": 5,
-        "supported_sizes": [
-          5
-        ]
+        "canonical_size": 5
       },
-      "npc_pool_id": "dungeon-scarlet-monastery",
-      "source_note": "Scarlet Monastery is located in the northeast corner of Tirisfal Glades."
+      "npc_pool_id": "dungeon-scarlet-monastery"
     },
     {
       "id": "zul-farrak",
       "display_name": "Zul'Farrak",
-      "aliases": [
-        "ZF"
-      ],
       "continent": "Kalimdor",
       "zone": "Tanaris",
       "subregion": "Sandsorrow Watch",
@@ -150,13 +118,9 @@
         "presentation": "neutral"
       },
       "party": {
-        "canonical_size": 5,
-        "supported_sizes": [
-          5
-        ]
+        "canonical_size": 5
       },
-      "npc_pool_id": "dungeon-zul-farrak",
-      "source_note": "Zul'Farrak is a Sandfury city in northwestern Tanaris near Sandsorrow Watch."
+      "npc_pool_id": "dungeon-zul-farrak"
     }
   ]
 }

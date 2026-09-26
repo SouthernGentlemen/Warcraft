@@ -1,34 +1,39 @@
 export function validateTalentShape(specData) {
   const talents = specData?.talents || {};
-  const expected = { tier_1:2, tier_2:2, capstones:1 };
-  for (const [tier,count] of Object.entries(expected)) {
+  const expected = { tier_1: 2, tier_2: 2, capstones: 1 };
+  for (const [tier, count] of Object.entries(expected)) {
     if (!Array.isArray(talents[tier]) || talents[tier].length !== count) {
-      throw new Error((specData?.specialization || "Specialization") + " talents must use exact 2 / 2 / 1 shape.");
+      throw new Error(
+        (specData?.specialization || "Specialization") + " talents must use exact 2 / 2 / 1 shape."
+      );
     }
   }
   const records = [...talents.tier_1, ...talents.tier_2, ...talents.capstones];
   const names = records.map(record => String(record?.name || "").trim());
   if (names.some(name => !name) || new Set(names).size !== records.length) {
-    throw new Error((specData?.specialization || "Specialization") + " talents require five unique named records.");
+    throw new Error(
+      (specData?.specialization || "Specialization") + " talents require five unique named records."
+    );
   }
   for (const record of records) {
     if (!record.icon_slug || !record.canonical_tree || !record.canonical_source) {
-      throw new Error((specData?.specialization || "Specialization") + " talent metadata is incomplete.");
+      throw new Error(
+        (specData?.specialization || "Specialization") + " talent metadata is incomplete."
+      );
     }
   }
   if (!talents.capstones[0].ultimate_id) {
-    throw new Error((specData?.specialization || "Specialization") + " capstone must define an Ultimate action ID.");
+    throw new Error(
+      (specData?.specialization || "Specialization") +
+        " capstone must define an Ultimate action ID."
+    );
   }
   return specData;
 }
 
 export function allTalentRecords(specData) {
   validateTalentShape(specData);
-  return [
-    ...specData.talents.tier_1,
-    ...specData.talents.tier_2,
-    ...specData.talents.capstones
-  ];
+  return [...specData.talents.tier_1, ...specData.talents.tier_2, ...specData.talents.capstones];
 }
 
 function escapeRegExp(value) {
@@ -56,7 +61,9 @@ export function compileTalentHooks(specData, selectedNames = []) {
     unimplemented: []
   };
 
-  const autoName = String(specData.identity?.auto_attack || "").split(" — ")[0].trim();
+  const autoName = String(specData.identity?.auto_attack || "")
+    .split(" — ")[0]
+    .trim();
   const autoPattern = autoName ? new RegExp(escapeRegExp(autoName), "i") : null;
 
   for (const talent of allTalentRecords(specData)) {
@@ -72,15 +79,19 @@ export function compileTalentHooks(specData, selectedNames = []) {
       matched = true;
     }
 
-    match = effect.match(/auto-attack bar fills (\d+)% faster/i)
-      || effect.match(/auto-attack bars fill (\d+)% faster/i);
+    match =
+      effect.match(/auto-attack bar fills (\d+)% faster/i) ||
+      effect.match(/auto-attack bars fill (\d+)% faster/i);
     if (match) {
       hooks.autoHasteBp += Number(match[1]) * 100;
       matched = true;
     }
 
     match = effect.match(/gains? (\d+)% Critical Strike chance/i);
-    if (match && (effect.toLowerCase().includes("auto") || (autoPattern && autoPattern.test(effect)))) {
+    if (
+      match &&
+      (effect.toLowerCase().includes("auto") || (autoPattern && autoPattern.test(effect)))
+    ) {
       hooks.autoCritBp += Number(match[1]) * 100;
       matched = true;
     }

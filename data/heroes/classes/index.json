@@ -5,7 +5,7 @@
       "id": "druid",
       "label": "Druid",
       "resource": "Mana / Energy / Rage by form",
-      "abilities_path": "./druid/abilities/README.json",
+      "abilities_path": "./druid/abilities.json",
       "specs": [
         {
           "id": "balance",
@@ -74,7 +74,7 @@
       "id": "hunter",
       "label": "Hunter",
       "resource": "Mana",
-      "abilities_path": "./hunter/abilities/README.json",
+      "abilities_path": "./hunter/abilities.json",
       "specs": [
         {
           "id": "beast-mastery",
@@ -143,7 +143,7 @@
       "id": "mage",
       "label": "Mage",
       "resource": "Mana",
-      "abilities_path": "./mage/abilities/README.json",
+      "abilities_path": "./mage/abilities.json",
       "specs": [
         {
           "id": "arcane",
@@ -213,7 +213,7 @@
       "label": "Paladin",
       "resource": "Mana",
       "faction": "Alliance",
-      "abilities_path": "./paladin/abilities/README.json",
+      "abilities_path": "./paladin/abilities.json",
       "specs": [
         {
           "id": "holy",
@@ -282,7 +282,7 @@
       "id": "priest",
       "label": "Priest",
       "resource": "Mana",
-      "abilities_path": "./priest/abilities/README.json",
+      "abilities_path": "./priest/abilities.json",
       "specs": [
         {
           "id": "discipline",
@@ -351,7 +351,7 @@
       "id": "rogue",
       "label": "Rogue",
       "resource": "Energy",
-      "abilities_path": "./rogue/abilities/README.json",
+      "abilities_path": "./rogue/abilities.json",
       "specs": [
         {
           "id": "assassination",
@@ -421,7 +421,7 @@
       "label": "Shaman",
       "resource": "Mana",
       "faction": "Horde",
-      "abilities_path": "./shaman/abilities/README.json",
+      "abilities_path": "./shaman/abilities.json",
       "specs": [
         {
           "id": "elemental",
@@ -490,7 +490,7 @@
       "id": "warlock",
       "label": "Warlock",
       "resource": "Mana",
-      "abilities_path": "./warlock/abilities/README.json",
+      "abilities_path": "./warlock/abilities.json",
       "specs": [
         {
           "id": "affliction",
@@ -559,7 +559,7 @@
       "id": "warrior",
       "label": "Warrior",
       "resource": "Rage",
-      "abilities_path": "./warrior/abilities/README.json",
+      "abilities_path": "./warrior/abilities.json",
       "specs": [
         {
           "id": "arms",
@@ -624,27 +624,5 @@
         }
       }
     }
-  ],
-  "base_stat_model": {
-    "levels": [
-      1,
-      2,
-      3,
-      4,
-      5
-    ],
-    "stats": [
-      "strength",
-      "agility",
-      "intellect",
-      "stamina",
-      "spirit"
-    ],
-    "rule": "Each class owns one authored base-stat row per hero level. Specializations, equipment, talents, and temporary effects do not rewrite these base rows."
-  },
-  "ability_icon_model": {
-    "source": "Wowhead CDN",
-    "url_template": "https://wow.zamimg.com/images/wow/icons/large/{icon_slug}.jpg",
-    "rule": "Authored Auto Attack, cooldown, and Ultimate actions must resolve a non-fallback WoW icon from data. UI surfaces consume the authored slug through WowUIIcons."
-  }
+  ]
 }

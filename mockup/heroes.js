@@ -1,110 +1,1211 @@
-const Icons=window.WowUIIcons,Tooltips=window.WowUITooltips,Roster=window.WarcraftRoster,Equipment=window.WarcraftEquipment;
-const CLASS_ROOT="../data/heroes/classes/";const RACE_ROOT="../data/heroes/races/";const SLOTS=Array.from(Equipment.SLOTS);const LEFT_GEAR_SLOTS=["Head","Chest","Gloves"],RIGHT_GEAR_SLOTS=["Pants","Feet","Weapon","Trinket"];const HERO_TABS=Object.freeze(["abilities","gear","stats","talents"]);const PRIMARY_STATS=[["strength","Strength"],["agility","Agility"],["intellect","Intellect"],["stamina","Stamina"],["spirit","Spirit"]];const state={selectedId:null,activeTab:"abilities",classIndex:null,raceIndex:null,specData:{},abilityData:{},items:[],gearFilters:{tier:"all",slot:"all",query:"",equippable:true}};
-const $=id=>document.getElementById(id);const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-async function json(path){const r=await fetch(path);if(!r.ok)throw new Error("Could not load "+path);return r.json();}
-function hero(){return Roster.hero(state.selectedId)||Roster.getState().heroes[0];}
-function normalizeHeroTab(value){const tab=String(value||"").toLowerCase();return HERO_TABS.includes(tab)?tab:"abilities";}
-function syncWorkspaceUrl(){if(!window.history||typeof window.history.replaceState!=="function")return;const url=new URL(window.location.href);if(state.selectedId)url.searchParams.set("hero",state.selectedId);else url.searchParams.delete("hero");url.searchParams.set("tab",state.activeTab);window.history.replaceState(null,"",url.pathname+url.search+url.hash);}
-function activateHeroTab(tab,{syncUrl=true,focus=false}={}){state.activeTab=normalizeHeroTab(tab);document.querySelectorAll("[data-hero-tab]").forEach(button=>{const active=button.dataset.heroTab===state.activeTab;button.classList.toggle("is-active",active);button.setAttribute("aria-selected",active?"true":"false");button.tabIndex=active?0:-1;});document.querySelectorAll("[data-hero-tab-panel]").forEach(panel=>{panel.hidden=panel.dataset.heroTabPanel!==state.activeTab;});if(syncUrl)syncWorkspaceUrl();if(focus)$('[data-hero-tab="'+state.activeTab+'"]')?.focus();return state.activeTab;}
-async function openHeroWorkspace(heroId,tab=state.activeTab,{syncUrl=true,focus=false}={}){const selected=Roster.hero(heroId);if(!selected)return false;state.selectedId=selected.id;state.activeTab=normalizeHeroTab(tab);$("heroDetail").hidden=false;await render();activateHeroTab(state.activeTab,{syncUrl,focus});return true;}
-function toast(m){const n=$("heroToast");n.textContent=m;n.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>n.hidden=true,1800);}
-function availabilityLabel(h,long=false){if(h.availability==="training")return long?"Training at Class Hall":"Training";if(h.availability==="on-quest")return long?"Dispatched on quest":"On quest";return "Available";}
-function renderRail(){const root=$("heroRail");root.innerHTML="";const heroes=Roster.getState().heroes;const capacity=Roster.getRosterCapacity();const summary=$("rosterCapacity");if(summary){summary.textContent=heroes.length+" / "+capacity;summary.setAttribute("aria-label",heroes.length+" of "+capacity+" roster slots used");}if(!heroes.length){root.innerHTML='<div class="hero-rail-empty"><span class="wow-kicker">EMPTY ROSTER</span><p>Recruit heroes for this faction from its Base.</p></div>';return;}heroes.forEach(h=>{const b=document.createElement("button");b.type="button";b.className="hero-rail-card"+(h.id===state.selectedId?" is-selected":"")+(h.availability!=="available"?" is-unavailable":"");b.innerHTML='<span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-'+h.classId+'"><img src="'+Icons.resolve("race",h.race)+'" alt=""></span><span><strong>'+esc(h.name)+'</strong><small>'+esc(h.race)+' · '+esc(h.classLabel)+' · Lv '+h.level+'</small><small>'+esc(availabilityLabel(h))+'</small></span>';b.querySelectorAll("img").forEach(Icons.bindFallback);b.addEventListener("click",()=>openHeroWorkspace(h.id,state.activeTab));root.appendChild(b);});}
-function heroXpMarkup(h){const progress=Roster.getHeroProgress(h.id),segments=Array.from({length:Roster.HERO_XP_MAX},(_,index)=>'<span class="hero-xp-segment'+(index<progress.xp?" is-filled":"")+'" aria-hidden="true"></span>').join(""),status=progress.levelCapped?"LEVEL CAP":progress.readyToTrain?(progress.baseBlocked?"BASE LEVEL "+progress.nextLevel+" REQUIRED":"READY TO TRAIN"):progress.xp+" / "+progress.maxXp+" XP";return '<div class="hero-xp-progress'+(progress.readyToTrain?" is-ready":"")+(progress.baseBlocked?" is-blocked":"")+(progress.levelCapped?" is-capped":"")+'" aria-label="'+esc(status)+'"><div class="hero-xp-progress__head"><span>LEVEL PROGRESS</span><strong>'+esc(status)+'</strong></div><div class="hero-xp-segments">'+segments+'</div></div>';}
-function renderIdentity(){const h=hero();$("heroIdentity").innerHTML='<span class="wow-icon-frame wow-icon-frame--lg wow-icon-frame--class-'+h.classId+'"><img src="'+Icons.resolve("race",h.race)+'" alt=""></span><div class="hero-identity-copy"><span class="wow-kicker">'+esc(h.faction)+' · LEVEL '+h.level+'</span><h1>'+esc(h.name)+'</h1><p>'+esc(h.race)+' · '+esc(h.classLabel)+' · '+esc(h.spec)+'</p></div>'+heroXpMarkup(h)+'<span class="hero-availability '+(h.availability!=="available"?"is-quest":"")+'">'+esc(availabilityLabel(h,true))+'</span>';$("heroIdentity").querySelectorAll("img").forEach(Icons.bindFallback);}
-function classMeta(h){return state.classIndex&&state.classIndex.classes.find(entry=>entry.id===h.classId)||null;}
-function authoredBaseStats(h){const meta=classMeta(h),level=String(Math.max(1,Math.min(5,Number(h.level)||1))),row=meta&&meta.base_stats&&meta.base_stats[level];if(!row)throw new Error("Missing authored base stats for "+h.classLabel+" level "+level+".");return Object.fromEntries(PRIMARY_STATS.map(([key])=>[key,Number(row[key])||0]));}
-function racialRecord(h){for(const faction of Object.values(state.raceIndex&&state.raceIndex.factions||{})){const race=(faction.races||[]).find(entry=>entry.label===h.race);if(race)return race.racial||null;}return null;}
-function renderRacial(){const h=hero(),racial=racialRecord(h),root=$("heroRacial");if(!root)return;if(!racial){root.innerHTML='<span class="wow-kicker">RACIAL PASSIVE</span><strong>Unknown racial</strong>';return;}root.innerHTML='<div><span class="wow-kicker">RACIAL PASSIVE</span><strong>'+esc(racial.name)+'</strong></div><p>'+esc(racial.mechanic)+'</p>';}
-function itemStats(item){return item&&Array.isArray(item.stats)?item.stats:[];}
-function equipmentItem(id){return state.items.find(item=>item.id===id)||null;}
-function equipmentPrimaryModifiers(h){const modifiers=Equipment.modifiers(h.equipment,h);return Object.fromEntries(PRIMARY_STATS.map(([key])=>[key,Number(modifiers[key])||0]));}
-function talentPrimaryModifiers(){return Object.fromEntries(PRIMARY_STATS.map(([key])=>[key,0]));}
-function signed(value){const n=Number(value)||0;return n>0?"+"+n:String(n);}
-function renderPrimaryStats(h){const base=authoredBaseStats(h),gear=equipmentPrimaryModifiers(h),talent=talentPrimaryModifiers(h);$("heroStats").innerHTML='<div class="hero-stat-row hero-stat-row--head"><span>Stat</span><span>Base</span><span>Gear</span><span>Talent</span><span>Final</span></div>'+PRIMARY_STATS.map(([key,label])=>{const finalValue=base[key]+gear[key]+talent[key];return '<div class="hero-stat-row" data-stat="'+key+'"><strong>'+label+'</strong><span>'+base[key]+'</span><span>'+signed(gear[key])+'</span><span>'+signed(talent[key])+'</span><b>'+finalValue+'</b></div>';}).join("");}
-function eligibility(h,item){return Equipment.canEquip(h,item);}
-function qualityClass(item){return "wow-quality--"+item.qualityKey;}
-function qualityFrameClass(item){return "wow-icon-frame--quality-"+item.qualityKey;}
-function itemTooltipModel(item,h,options={}){if(!item)return null;const allowed=eligibility(h,item),stats=itemStats(item).map(line=>({label:line.stat,value:"+"+line.value}));return{variant:"item",title:item.name,type:item.slot,quality:item.qualityKey,badge:options.badge||"",icon:{slug:item.icon,quality:item.qualityKey},requirements:[{label:"Required level",value:String(item.tier)},{label:"Slot",value:item.slot},{label:item.slot==="Weapon"?"Weapon family":item.slot==="Trinket"?"Item family":"Armor family",value:item.family}],description:options.description||(allowed.ok?"Usable by "+h.classLabel+".":"This item cannot currently be equipped."),stats:stats.length?stats:[{label:"Bonus stats",value:"None"}],meta:[{label:"Quality",value:item.quality},{label:"Tier",value:"T"+item.tier}],locked:allowed.ok?[]:[allowed.reason]};}
-function itemComparisonTooltip(item,h){const current=equipmentItem(h.equipment[item.slot]),model=itemTooltipModel(item,h,{badge:current&&current.id===item.id?"Equipped":"Candidate"});if(current&&current.id!==item.id)model.comparison=itemTooltipModel(current,h,{badge:"Equipped",description:"Currently equipped in this slot."});return model;}
-function equipHeroItem(h,item){const allowed=eligibility(h,item);if(!allowed.ok)throw new Error(allowed.reason);const previous=equipmentItem(h.equipment[item.slot]),next=Object.assign({},h.equipment,{[item.slot]:item.id});Roster.setEquipment(h.id,next);toast((previous?"Replaced "+previous.name+" with ":"Equipped ")+item.name);}
-function unequipHeroSlot(h,slot){const current=equipmentItem(h.equipment[slot]);if(!current)return;const next=Object.assign({},h.equipment,{[slot]:null});Roster.setEquipment(h.id,next);toast("Unequipped "+current.name);}
-function closePicker(){document.querySelectorAll(".hero-item-picker,.hero-ability-picker").forEach(node=>node.remove());}
-function openPicker(anchor,slot){closePicker();const h=hero(),p=document.createElement("div");p.className="hero-item-picker wow-frame";p.setAttribute("role","dialog");p.setAttribute("aria-label",slot+" equipment picker");const items=state.items.filter(item=>item.slot===slot&&eligibility(h,item).ok).sort((a,b)=>b.tier-a.tier||a.name.localeCompare(b.name));items.forEach(item=>{const b=document.createElement("button");b.type="button";b.className="hero-picker-item "+qualityClass(item)+(h.equipment[slot]===item.id?" is-selected":"");b.innerHTML='<span class="wow-icon-frame wow-icon-frame--sm '+qualityFrameClass(item)+'"><img src="'+Icons.iconUrl(item.icon)+'" alt=""></span><span><strong>'+esc(item.name)+'</strong><small>'+esc(item.quality)+' · T'+item.tier+' · '+esc(item.family)+'</small></span>';Icons.bindFallback(b.querySelector("img"));Tooltips.attach(b,()=>itemComparisonTooltip(item,h));b.addEventListener("click",()=>{equipHeroItem(h,item);closePicker();});p.appendChild(b);});if(h.equipment[slot]){const u=document.createElement("button");u.type="button";u.className="hero-picker-item hero-picker-unequip";u.innerHTML='<span class="wow-icon-frame wow-icon-frame--sm"><img src="'+Icons.resolve("item-family",slot,{slot})+'" alt=""></span><span><strong>Unequip '+esc(slot)+'</strong><small>Return item to the Armory</small></span>';Icons.bindFallback(u.querySelector("img"));u.addEventListener("click",()=>{unequipHeroSlot(h,slot);closePicker();});p.appendChild(u);}document.body.appendChild(p);const r=anchor.getBoundingClientRect();p.style.left=Math.max(8,Math.min(r.left,innerWidth-p.offsetWidth-8))+"px";p.style.top=Math.max(8,Math.min(r.bottom+4,innerHeight-p.offsetHeight-8))+"px";p.querySelector("button")?.focus();}
-function gearSlotMarkup(h,slot){const item=equipmentItem(h.equipment[slot]);return '<span class="hero-gear-slot__label">'+slot+'</span><span class="hero-gear-slot__icon wow-icon-frame '+(item?qualityFrameClass(item):"")+'"><img src="'+(item?Icons.iconUrl(item.icon):Icons.resolve("item-family",slot,{slot}))+'" alt=""></span>'+(item?'<span class="hero-gear-slot__name '+qualityClass(item)+'">'+esc(item.name)+'</span>':'<span class="hero-gear-slot__name">Empty</span>');}
-function renderGearSlots(rootId,slots,h){const root=$(rootId);root.innerHTML="";slots.forEach(slot=>{const item=equipmentItem(h.equipment[slot]),button=document.createElement("button");button.type="button";button.className="hero-gear-slot "+(item?"is-filled":"is-empty");button.dataset.gearSlot=slot;button.setAttribute("aria-label",item?slot+": "+item.name+". Open equipment picker.":slot+": empty. Open equipment picker.");button.innerHTML=gearSlotMarkup(h,slot);button.querySelectorAll("img").forEach(Icons.bindFallback);if(item)Tooltips.attach(button,()=>itemTooltipModel(item,h,{badge:"Equipped",description:"Open this slot to compare, replace, or unequip."}));button.addEventListener("click",event=>{event.stopPropagation();openPicker(button,slot);});root.appendChild(button);});}
-function renderArmory(){const h=hero(),query=state.gearFilters.query.trim().toLowerCase();let items=state.items.filter(item=>{if(state.gearFilters.tier!=="all"&&item.tier!==Number(state.gearFilters.tier))return false;if(state.gearFilters.slot!=="all"&&item.slot!==state.gearFilters.slot)return false;if(query&&!(item.name+" "+item.family+" "+item.slot).toLowerCase().includes(query))return false;if(state.gearFilters.equippable&&!eligibility(h,item).ok)return false;return true;});items.sort((a,b)=>b.tier-a.tier||SLOTS.indexOf(a.slot)-SLOTS.indexOf(b.slot)||a.name.localeCompare(b.name));$("heroArmoryCount").textContent=items.length+" / "+state.items.length+" items";const root=$("heroArmoryList");root.innerHTML="";if(!items.length){root.innerHTML='<div class="hero-armory-empty"><strong>No equipment matches.</strong><span>Change filters or show unavailable gear.</span></div>';return;}items.forEach(item=>{const allowed=eligibility(h,item),equipped=h.equipment[item.slot]===item.id,button=document.createElement("button");button.type="button";button.className="hero-armory-item "+qualityClass(item)+(allowed.ok?"":" is-locked")+(equipped?" is-equipped":"");button.setAttribute("aria-label",item.name+". "+(equipped?"Equipped; click to unequip.":allowed.ok?"Click to equip.":allowed.reason+"."));if(!allowed.ok)button.setAttribute("aria-disabled","true");button.innerHTML='<span class="wow-icon-frame '+qualityFrameClass(item)+(allowed.ok?"":" is-locked")+(equipped?" is-selected":"")+'"><img src="'+Icons.iconUrl(item.icon)+'" alt="">'+(equipped?'<span class="hero-armory-equipped-mark" aria-hidden="true">E</span>':'')+'</span>';Icons.bindFallback(button.querySelector("img"));Tooltips.attach(button,()=>itemComparisonTooltip(item,h));if(allowed.ok)button.addEventListener("click",()=>{if(equipped)unequipHeroSlot(h,item.slot);else equipHeroItem(h,item);});root.appendChild(button);});}
-function renderEquipment(){const h=hero();renderGearSlots("heroGearLeft",LEFT_GEAR_SLOTS,h);renderGearSlots("heroGearRight",RIGHT_GEAR_SLOTS,h);const portrait=$("heroGearPortrait");portrait.src=Icons.resolve("race",h.race);portrait.alt=h.race+" character portrait";Icons.bindFallback(portrait);$("heroGearLevel").textContent=h.level;$("heroGearArmorAccess").textContent=(Equipment.ARMOR_ACCESS[h.classId]||["Cloth"]).join(" / ");const equipped=SLOTS.map(slot=>equipmentItem(h.equipment[slot])).filter(Boolean);$("heroGearEquippedCount").textContent=equipped.length;const highest=equipped.length?Math.max(...equipped.map(item=>item.tier)):0;$("heroGearTier").textContent=highest?"Loadout reaches Tier "+highest:"No gear equipped";renderArmory();}
-function syncGearFilters(){state.gearFilters.tier=$("heroGearTierFilter").value;state.gearFilters.slot=$("heroGearSlotFilter").value;state.gearFilters.query=$("heroGearSearch").value;state.gearFilters.equippable=$("heroGearEquippableOnly").checked;renderArmory();}
-async function loadSpec(classId,specId){const meta=state.classIndex.classes.find(c=>c.id===classId)?.specs.find(s=>s.id===specId);if(!meta)return null;const key=classId+"/"+specId;if(!state.specData[key])state.specData[key]=await json(CLASS_ROOT+meta.data_path.replace("./",""));return state.specData[key];}
-async function loadAbilities(classId){if(state.abilityData[classId])return state.abilityData[classId];const cls=state.classIndex.classes.find(c=>c.id===classId);if(!cls)throw new Error("Unknown hero class: "+classId);state.abilityData[classId]=await json(CLASS_ROOT+(cls.abilities_path||("./"+classId+"/abilities/README.json")).replace("./",""));return state.abilityData[classId];}
-function activeSpecMeta(h){const cls=state.classIndex.classes.find(c=>c.id===h.classId);const wanted=String(h.talentBuild?.primarySpec||h.spec||"").toLowerCase();return cls?.specs.find(spec=>spec.id===wanted||String(spec.label).toLowerCase()===wanted)||cls?.specs[0]||null;}
-function activeResource(specData){const value=String(specData?.identity?.resource||"").toLowerCase();if(value.includes("energy"))return "energy";if(value.includes("rage"))return "rage";return "mana";}
-function compatibleAction(action,resource){return action.resource==="none"||action.resource===resource;}
-function abilityIcon(action,slot){if(action?.icon_slug)return Icons.iconUrl(action.icon_slug);if(slot==="auto")return Icons.resolve("ability","attack");if(slot==="ultimate")return Icons.resolve("ability","ultimate");if(action?.kind==="heal")return Icons.resolve("ability","heal");if(action?.kind==="shield"||action?.kind==="buff")return Icons.resolve("ability","defensive");return Icons.resolve("ability","damage");}
-function actionTooltip(action,slot,extraDescription=""){const cooldown=slot==="auto"?"Automatic":slot==="ultimate"?"Ultimate charge":((Number(action.cooldown_ticks)||0)/60).toFixed((Number(action.cooldown_ticks)||0)%60?1:0)+" sec";const resource=action.resource&&action.resource!=="none"?(String(action.resource).replace(/^./,c=>c.toUpperCase())+" · "+(Number(action.cost)||0)):"None";return {variant:"ability",title:action.name,type:slot==="auto"?"Auto Attack":slot==="ultimate"?"Ultimate":"Combat ability",icon:action.icon_slug?{slug:action.icon_slug}:{category:"ability",key:slot==="auto"?"attack":slot==="ultimate"?"ultimate":action.kind==="heal"?"heal":action.kind==="shield"||action.kind==="buff"?"defensive":"damage"},description:extraDescription||((action.effect&&action.effect!=="none")?action.effect:"No additional effect."),stats:[{label:"Resource / cost",value:resource},{label:"Cooldown",value:cooldown},{label:"Target",value:String(action.target||"enemy")},{label:"Effect",value:String(action.effect||"none")}],meta:[{label:"ID",value:String(action.id)}]};}
-function autoAttackRecord(specData,specMeta){const text=String(specData?.identity?.auto_attack||"Auto Attack");const parts=text.split(" — ");const iconSlug=String(specMeta?.auto_attack_icon_slug||"");if(!iconSlug)throw new Error("Missing authored Auto Attack icon for "+String(specMeta?.id||specData?.specialization||"unknown")+".");return {id:"auto",name:(parts[0]||"Auto Attack").trim(),kind:"damage",resource:"none",cost:0,target:"enemy",effect:"none",description:parts.slice(1).join(" — ").trim(),icon_slug:iconSlug,icon_source:specMeta.auto_attack_icon_source,icon_source_url:specMeta.auto_attack_icon_source_url};}
-function loadoutSlotButton(slotLabel,slotKey,action,editable){const button=document.createElement("button");button.type="button";button.className="hero-action-slot"+(editable?" is-editable":" is-fixed");button.dataset.combatSlot=slotKey;button.innerHTML='<span class="wow-icon-frame wow-icon-frame--md"><img src="'+abilityIcon(action,slotKey)+'" alt=""></span><span class="hero-action-slot__copy"><small>'+slotLabel+'</small><strong>'+esc(action.name)+'</strong></span>'+(editable?'<span class="hero-action-slot__chevron" aria-hidden="true">▾</span>':'');button.querySelectorAll("img").forEach(Icons.bindFallback);Tooltips.attach(button,()=>actionTooltip(action,slotKey,action.description||""));return button;}
-async function openAbilityPicker(anchor,slotKey){closePicker();const h=hero(),specMeta=activeSpecMeta(h);if(!specMeta)return;const [specData,abilityData]=await Promise.all([loadSpec(h.classId,specMeta.id),loadAbilities(h.classId)]);const resource=activeResource(specData),otherId=slotKey==="ability1Id"?h.combatLoadout.ability2Id:h.combatLoadout.ability1Id,currentId=h.combatLoadout[slotKey];const learned=new Set(h.learnedAbilityIds||[]);const choices=(abilityData.cooldowns||[]).filter(action=>learned.has(action.id)&&compatibleAction(action,resource)&&action.id!==otherId);const picker=document.createElement("div");picker.className="hero-ability-picker wow-frame";picker.setAttribute("role","dialog");picker.setAttribute("aria-label",(slotKey==="ability1Id"?"Ability 1":"Ability 2")+" picker");choices.forEach(action=>{const selected=action.id===currentId,b=document.createElement("button");b.type="button";b.className="hero-picker-item hero-ability-picker__item"+(selected?" is-selected":"");b.innerHTML='<span class="wow-icon-frame wow-icon-frame--sm"><img src="'+abilityIcon(action,"ability")+'" alt=""></span><span><strong>'+esc(action.name)+'</strong><small>'+esc(action.resource||"none")+' · '+(Number(action.cost)||0)+' · '+((Number(action.cooldown_ticks)||0)/60).toFixed((Number(action.cooldown_ticks)||0)%60?1:0)+' sec</small></span><em>'+(selected?"EQUIPPED":"")+'</em>';b.querySelectorAll("img").forEach(Icons.bindFallback);Tooltips.attach(b,()=>actionTooltip(action,"ability"));b.addEventListener("click",()=>{if(selected){closePicker();return;}Roster.setCombatLoadout(h.id,{[slotKey]:action.id});closePicker();render();});picker.appendChild(b);});document.body.appendChild(picker);const rect=anchor.getBoundingClientRect();picker.style.left=Math.max(8,Math.min(rect.left,innerWidth-picker.offsetWidth-8))+"px";picker.style.top=Math.max(8,Math.min(rect.bottom+4,innerHeight-picker.offsetHeight-8))+"px";picker.querySelector("button")?.focus();}
-function capstoneFor(specData){const capstone=specData?.talents?.capstones?.[0];if(!capstone?.name||!capstone?.ultimate_id)throw new Error("Specialization capstone is missing its Ultimate action mapping.");return capstone;}
-function talentTierLabel(tier){return tier==="tier_1"?"Tier 1":tier==="tier_2"?"Tier 2":"Capstone · Ultimate";}
-function talentTierPick(data,tier,picks){return (data.talents[tier]||[]).find(talent=>picks.includes(talent.name))||null;}
-function talentNodeState(data,tier,talent,picks){const selected=tier==="capstones"||picks.includes(talent.name);if(selected)return{key:"selected",label:tier==="capstones"?"Ultimate":"Selected",locked:false};if(tier==="tier_2"&&!talentTierPick(data,"tier_1",picks))return{key:"locked",label:"Requires Tier 1",locked:true};return{key:"available",label:"Available",locked:false};}
-function talentTooltip(data,tier,talent,nodeState){return {variant:"talent",title:talent.name,type:talentTierLabel(tier),badge:nodeState.key==="selected"?(tier==="capstones"?"ULTIMATE":"Learned"):"",icon:{slug:talent.icon_slug},description:tier==="capstones"?"Defines Ultimate action "+talent.ultimate_id+".":talent.effect,meta:[{label:"Specialization",value:data.specialization},{label:"Tier",value:talentTierLabel(tier)},{label:"State",value:nodeState.label},{label:"Progression",value:"Tier-only; no per-node prerequisites"}],locked:nodeState.locked?[nodeState.label]:[]};}
-function talentTreeConnectors(hasTier1,hasTier2){return '<svg class="hero-talent-connectors" viewBox="0 0 400 390" preserveAspectRatio="none" aria-hidden="true"><g class="hero-talent-connector-group '+(hasTier1?"is-active":"")+'"><path d="M118 86 H200"/><path d="M282 86 H200"/><path d="M200 86 V185"/></g><g class="hero-talent-connector-group '+(hasTier2?"is-active":"")+'"><path d="M118 216 H200"/><path d="M282 216 H200"/><path d="M200 185 V326"/></g></svg>';}
-function talentNodeButton(h,data,tier,talent,picks,capstone){const nodeState=talentNodeState(data,tier,talent,picks),button=document.createElement("button");button.type="button";button.className="hero-talent-node is-"+nodeState.key+(tier==="capstones"?" is-capstone":"");button.dataset.tier=tier;button.dataset.talent=talent.name;button.setAttribute("aria-pressed",nodeState.key==="selected"?"true":"false");button.setAttribute("aria-disabled",nodeState.locked?"true":"false");button.setAttribute("aria-label",talent.name+", "+talentTierLabel(tier)+", "+nodeState.label);button.innerHTML='<span class="hero-talent-node__icon wow-icon-frame"><img src="'+Icons.iconUrl(talent.icon_slug)+'" alt=""><span class="hero-talent-node__rank">'+(nodeState.key==="selected"?"1":"0")+'/1</span></span><span class="hero-talent-node__copy"><strong>'+esc(talent.name)+'</strong><small>'+(tier==="capstones"?"Ultimate · "+esc(talent.ultimate_id):nodeState.label)+'</small></span>';button.querySelectorAll("img").forEach(Icons.bindFallback);Tooltips.attach(button,()=>talentTooltip(data,tier,talent,nodeState));if(tier!=="capstones")button.addEventListener("click",()=>{if(nodeState.locked)return;const tierNames=new Set((data.talents[tier]||[]).map(item=>item.name));let next=(h.talentBuild?.picks||[]).filter(name=>!tierNames.has(name));next.push(talent.name);if(!next.includes(capstone.name))next.push(capstone.name);Roster.setTalentBuild(h.id,{primarySpec:data.specialization,picks:next,capstone:capstone.name,capstoneUltimateId:capstone.ultimate_id});});return button;}
-function renderTalentRow(root,h,data,tier,picks,capstone){const row=document.createElement("div");row.className="hero-talent-tree-row hero-talent-tree-row--"+tier;row.dataset.talentTier=tier;const label=document.createElement("span");label.className="hero-talent-tree-row__label";label.textContent=talentTierLabel(tier);row.appendChild(label);const nodes=document.createElement("div");nodes.className="hero-talent-tree-row__nodes";(data.talents[tier]||[]).forEach(talent=>nodes.appendChild(talentNodeButton(h,data,tier,talent,picks,capstone)));row.appendChild(nodes);root.appendChild(row);}
-async function openTalentTab(focusCapstone=false){closePicker();activateHeroTab("talents",{syncUrl:true});await renderTalentTab();if(focusCapstone)$("heroTalentTree")?.querySelector('[data-tier="capstones"]')?.focus();}
-async function renderTalentTab(){const h=hero(),cls=state.classIndex.classes.find(c=>c.id===h.classId),select=$("heroTalentSpec");if(!h||!cls||!select)return;select.innerHTML=cls.specs.map(spec=>'<option value="'+spec.id+'">'+esc(spec.label)+'</option>').join("");const active=activeSpecMeta(h)||cls.specs[0];select.value=active.id;const data=await loadSpec(h.classId,active.id),capstone=capstoneFor(data),picks=Array.isArray(h.talentBuild?.picks)?h.talentBuild.picks:[],tier1=talentTierPick(data,"tier_1",picks),tier2=talentTierPick(data,"tier_2",picks),specIcon=Icons.resolve("spec",active.id,{classId:h.classId});$("heroTalentTitle").textContent=h.name+" · "+data.specialization+" Talents";$("heroTalentStatus").textContent=(tier1&&tier2?"Build complete · ":"Choose one talent from each tier · ")+"Capstone Ultimate is fixed by specialization.";const root=$("heroTalentTree");root.innerHTML="";const panel=document.createElement("article");panel.className="hero-talent-spec-panel wow-frame wow-class--"+h.classId;panel.style.setProperty("--hero-spec-art",'url("'+specIcon+'")');panel.innerHTML='<header class="hero-talent-spec-header"><span class="hero-talent-spec-icon wow-icon-frame wow-icon-frame--class-'+h.classId+'"><img src="'+specIcon+'" alt=""></span><div><strong>'+esc(data.specialization)+'</strong><small>'+esc(data.identity?.role||h.classLabel)+'</small></div><span class="hero-talent-spec-points">'+([tier1,tier2,capstone].filter(Boolean).length)+' / 3</span></header><div class="hero-talent-tree-canvas">'+talentTreeConnectors(Boolean(tier1),Boolean(tier2))+'<span class="hero-talent-tree-note">Tier-only progression · no per-node prerequisites</span></div>';panel.querySelectorAll("img").forEach(Icons.bindFallback);const canvas=panel.querySelector(".hero-talent-tree-canvas");renderTalentRow(canvas,h,data,"tier_1",picks,capstone);renderTalentRow(canvas,h,data,"tier_2",picks,capstone);renderTalentRow(canvas,h,data,"capstones",picks,capstone);const ultimate=document.createElement("div");ultimate.className="hero-talent-ultimate-link";ultimate.innerHTML='<span>CAPSTONE DEFINES ULTIMATE</span><strong>'+esc(capstone.name)+'</strong><small>'+esc(capstone.ultimate_id)+'</small>';canvas.appendChild(ultimate);root.appendChild(panel);select.onchange=async()=>{const nextData=await loadSpec(h.classId,select.value),nextCapstone=capstoneFor(nextData);Roster.setTalentBuild(h.id,{primarySpec:nextData.specialization,picks:[nextCapstone.name],capstone:nextCapstone.name,capstoneUltimateId:nextCapstone.ultimate_id});};}
-async function renderCombatLoadout(){const h=hero(),root=$("heroCombatLoadout");if(!root)return;const specMeta=activeSpecMeta(h);if(!specMeta)return;const [specData,abilityData]=await Promise.all([loadSpec(h.classId,specMeta.id),loadAbilities(h.classId)]);const capstone=capstoneFor(specData),cooldowns=new Map((abilityData.cooldowns||[]).map(action=>[action.id,action])),ultimates=new Map((abilityData.ultimates||[]).map(action=>[action.id,action])),auto=autoAttackRecord(specData,specMeta),ability1=cooldowns.get(h.combatLoadout.ability1Id),ability2=cooldowns.get(h.combatLoadout.ability2Id),ultimate=ultimates.get(capstone.ultimate_id);if(!ability1||!ability2||!ultimate)throw new Error("Hero combat loadout references missing authored abilities.");if(h.combatLoadout.ultimateId!==capstone.ultimate_id)throw new Error("Hero Ultimate does not match the active capstone.");root.innerHTML="";const autoButton=loadoutSlotButton("Auto Attack","auto",auto,false),ability1Button=loadoutSlotButton("Ability 1","ability1Id",ability1,true),ability2Button=loadoutSlotButton("Ability 2","ability2Id",ability2,true),ultimateButton=loadoutSlotButton("Ultimate","ultimate",ultimate,false);ultimateButton.classList.add("is-capstone");ultimateButton.setAttribute("aria-label","Ultimate "+ultimate.name+". Open Talents capstone.");ability1Button.addEventListener("click",event=>{event.stopPropagation();openAbilityPicker(ability1Button,"ability1Id");});ability2Button.addEventListener("click",event=>{event.stopPropagation();openAbilityPicker(ability2Button,"ability2Id");});ultimateButton.addEventListener("click",event=>{event.stopPropagation();openTalentTab(true);});root.append(autoButton,ability1Button,ability2Button,ultimateButton);}
-function renderPartyManager(){
-  const root=$("rosterParties");if(!root)return;
-  root.innerHTML="";
-  const snapshot=Roster.getState(),heroById=new Map(snapshot.heroes.map(h=>[h.id,h]));
-  let openId=null,drag=null;
-  const persist=(index,loadout,slots)=>{try{Roster.updateLoadout(index,{slots,ready:Roster.validateLoadout(Object.assign({},loadout,{slots}),false).valid});}catch(error){toast(error.message);}};
-  const slotsWith=(loadout,slotId,heroId,fromSlotId)=>{
-    const slots=loadout.slots.map(slot=>({id:slot.id,heroId:slot.heroId||null}));
-    const target=slots.find(slot=>slot.id===slotId);if(!target)return slots;
-    const priorTarget=target.heroId||null;
-    slots.forEach(slot=>{if(slot.heroId===heroId)slot.heroId=null;});
-    if(fromSlotId&&fromSlotId!==slotId){const from=slots.find(slot=>slot.id===fromSlotId);if(from)from.heroId=priorTarget;}
-    target.heroId=heroId;return slots;
+const Icons = window.WowUIIcons,
+  Tooltips = window.WowUITooltips,
+  Roster = window.WarcraftRoster,
+  Equipment = window.WarcraftEquipment;
+const CLASS_ROOT = "../data/heroes/classes/";
+const RACE_ROOT = "../data/heroes/races/";
+const SLOTS = Array.from(Equipment.SLOTS);
+const LEFT_GEAR_SLOTS = ["Head", "Chest", "Gloves"],
+  RIGHT_GEAR_SLOTS = ["Pants", "Feet", "Weapon", "Trinket"];
+const HERO_TABS = Object.freeze(["abilities", "gear", "stats", "talents"]);
+const PRIMARY_STATS = [
+  ["strength", "Strength"],
+  ["agility", "Agility"],
+  ["intellect", "Intellect"],
+  ["stamina", "Stamina"],
+  ["spirit", "Spirit"]
+];
+const state = {
+  selectedId: null,
+  activeTab: "abilities",
+  classIndex: null,
+  raceIndex: null,
+  specData: {},
+  abilityData: {},
+  items: [],
+  gearFilters: { tier: "all", slot: "all", query: "", equippable: true }
+};
+const $ = id => document.getElementById(id);
+const esc = s =>
+  String(s ?? "").replace(
+    /[&<>"']/g,
+    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
+  );
+async function json(path) {
+  const r = await fetch(path);
+  if (!r.ok) throw new Error("Could not load " + path);
+  return r.json();
+}
+function hero() {
+  return Roster.hero(state.selectedId) || Roster.getState().heroes[0];
+}
+function normalizeHeroTab(value) {
+  const tab = String(value || "").toLowerCase();
+  return HERO_TABS.includes(tab) ? tab : "abilities";
+}
+function syncWorkspaceUrl() {
+  if (!window.history || typeof window.history.replaceState !== "function") return;
+  const url = new URL(window.location.href);
+  if (state.selectedId) url.searchParams.set("hero", state.selectedId);
+  else url.searchParams.delete("hero");
+  url.searchParams.set("tab", state.activeTab);
+  window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+}
+function activateHeroTab(tab, { syncUrl = true, focus = false } = {}) {
+  state.activeTab = normalizeHeroTab(tab);
+  document.querySelectorAll("[data-hero-tab]").forEach(button => {
+    const active = button.dataset.heroTab === state.activeTab;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", active ? "true" : "false");
+    button.tabIndex = active ? 0 : -1;
+  });
+  document.querySelectorAll("[data-hero-tab-panel]").forEach(panel => {
+    panel.hidden = panel.dataset.heroTabPanel !== state.activeTab;
+  });
+  if (syncUrl) syncWorkspaceUrl();
+  if (focus) $('[data-hero-tab="' + state.activeTab + '"]')?.focus();
+  return state.activeTab;
+}
+async function openHeroWorkspace(
+  heroId,
+  tab = state.activeTab,
+  { syncUrl = true, focus = false } = {}
+) {
+  const selected = Roster.hero(heroId);
+  if (!selected) return false;
+  state.selectedId = selected.id;
+  state.activeTab = normalizeHeroTab(tab);
+  $("heroDetail").hidden = false;
+  await render();
+  activateHeroTab(state.activeTab, { syncUrl, focus });
+  return true;
+}
+function toast(m) {
+  const n = $("heroToast");
+  n.textContent = m;
+  n.hidden = false;
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => (n.hidden = true), 1800);
+}
+function availabilityLabel(h, long = false) {
+  if (h.availability === "training") return long ? "Training at Class Hall" : "Training";
+  if (h.availability === "on-quest") return long ? "Dispatched on quest" : "On quest";
+  return "Available";
+}
+function renderRail() {
+  const root = $("heroRail");
+  root.innerHTML = "";
+  const heroes = Roster.getState().heroes;
+  const capacity = Roster.getRosterCapacity();
+  const summary = $("rosterCapacity");
+  if (summary) {
+    summary.textContent = heroes.length + " / " + capacity;
+    summary.setAttribute("aria-label", heroes.length + " of " + capacity + " roster slots used");
+  }
+  if (!heroes.length) {
+    root.innerHTML =
+      '<div class="hero-rail-empty"><span class="wow-kicker">EMPTY ROSTER</span><p>Recruit heroes for this faction from its Base.</p></div>';
+    return;
+  }
+  heroes.forEach(h => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className =
+      "hero-rail-card" +
+      (h.id === state.selectedId ? " is-selected" : "") +
+      (h.availability !== "available" ? " is-unavailable" : "");
+    b.innerHTML =
+      '<span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-' +
+      h.classId +
+      '"><img src="' +
+      Icons.resolve("race", h.race) +
+      '" alt=""></span><span><strong>' +
+      esc(h.name) +
+      "</strong><small>" +
+      esc(h.race) +
+      " · " +
+      esc(h.classLabel) +
+      " · Lv " +
+      h.level +
+      "</small><small>" +
+      esc(availabilityLabel(h)) +
+      "</small></span>";
+    b.querySelectorAll("img").forEach(Icons.bindFallback);
+    b.addEventListener("click", () => openHeroWorkspace(h.id, state.activeTab));
+    root.appendChild(b);
+  });
+}
+function heroXpMarkup(h) {
+  const progress = Roster.getHeroProgress(h.id),
+    segments = Array.from(
+      { length: Roster.HERO_XP_MAX },
+      (_, index) =>
+        '<span class="hero-xp-segment' +
+        (index < progress.xp ? " is-filled" : "") +
+        '" aria-hidden="true"></span>'
+    ).join(""),
+    status = progress.levelCapped
+      ? "LEVEL CAP"
+      : progress.readyToTrain
+        ? progress.baseBlocked
+          ? "BASE LEVEL " + progress.nextLevel + " REQUIRED"
+          : "READY TO TRAIN"
+        : progress.xp + " / " + progress.maxXp + " XP";
+  return (
+    '<div class="hero-xp-progress' +
+    (progress.readyToTrain ? " is-ready" : "") +
+    (progress.baseBlocked ? " is-blocked" : "") +
+    (progress.levelCapped ? " is-capped" : "") +
+    '" aria-label="' +
+    esc(status) +
+    '"><div class="hero-xp-progress__head"><span>LEVEL PROGRESS</span><strong>' +
+    esc(status) +
+    '</strong></div><div class="hero-xp-segments">' +
+    segments +
+    "</div></div>"
+  );
+}
+function renderIdentity() {
+  const h = hero();
+  $("heroIdentity").innerHTML =
+    '<span class="wow-icon-frame wow-icon-frame--lg wow-icon-frame--class-' +
+    h.classId +
+    '"><img src="' +
+    Icons.resolve("race", h.race) +
+    '" alt=""></span><div class="hero-identity-copy"><span class="wow-kicker">' +
+    esc(h.faction) +
+    " · LEVEL " +
+    h.level +
+    "</span><h1>" +
+    esc(h.name) +
+    "</h1><p>" +
+    esc(h.race) +
+    " · " +
+    esc(h.classLabel) +
+    " · " +
+    esc(h.spec) +
+    "</p></div>" +
+    heroXpMarkup(h) +
+    '<span class="hero-availability ' +
+    (h.availability !== "available" ? "is-quest" : "") +
+    '">' +
+    esc(availabilityLabel(h, true)) +
+    "</span>";
+  $("heroIdentity").querySelectorAll("img").forEach(Icons.bindFallback);
+}
+function classMeta(h) {
+  return (
+    (state.classIndex && state.classIndex.classes.find(entry => entry.id === h.classId)) || null
+  );
+}
+function authoredBaseStats(h) {
+  const meta = classMeta(h),
+    level = String(Math.max(1, Math.min(5, Number(h.level) || 1))),
+    row = meta && meta.base_stats && meta.base_stats[level];
+  if (!row)
+    throw new Error("Missing authored base stats for " + h.classLabel + " level " + level + ".");
+  return Object.fromEntries(PRIMARY_STATS.map(([key]) => [key, Number(row[key]) || 0]));
+}
+function racialRecord(h) {
+  for (const faction of Object.values((state.raceIndex && state.raceIndex.factions) || {})) {
+    const race = (faction.races || []).find(entry => entry.label === h.race);
+    if (race) return race.racial || null;
+  }
+  return null;
+}
+function renderRacial() {
+  const h = hero(),
+    racial = racialRecord(h),
+    root = $("heroRacial");
+  if (!root) return;
+  if (!racial) {
+    root.innerHTML =
+      '<span class="wow-kicker">RACIAL PASSIVE</span><strong>Unknown racial</strong>';
+    return;
+  }
+  root.innerHTML =
+    '<div><span class="wow-kicker">RACIAL PASSIVE</span><strong>' +
+    esc(racial.name) +
+    "</strong></div><p>" +
+    esc(racial.mechanic) +
+    "</p>";
+}
+function itemStats(item) {
+  return item && Array.isArray(item.stats) ? item.stats : [];
+}
+function equipmentItem(id) {
+  return state.items.find(item => item.id === id) || null;
+}
+function equipmentPrimaryModifiers(h) {
+  const modifiers = Equipment.modifiers(h.equipment, h);
+  return Object.fromEntries(PRIMARY_STATS.map(([key]) => [key, Number(modifiers[key]) || 0]));
+}
+function talentPrimaryModifiers() {
+  return Object.fromEntries(PRIMARY_STATS.map(([key]) => [key, 0]));
+}
+function signed(value) {
+  const n = Number(value) || 0;
+  return n > 0 ? "+" + n : String(n);
+}
+function renderPrimaryStats(h) {
+  const base = authoredBaseStats(h),
+    gear = equipmentPrimaryModifiers(h),
+    talent = talentPrimaryModifiers(h);
+  $("heroStats").innerHTML =
+    '<div class="hero-stat-row hero-stat-row--head"><span>Stat</span><span>Base</span><span>Gear</span><span>Talent</span><span>Final</span></div>' +
+    PRIMARY_STATS.map(([key, label]) => {
+      const finalValue = base[key] + gear[key] + talent[key];
+      return (
+        '<div class="hero-stat-row" data-stat="' +
+        key +
+        '"><strong>' +
+        label +
+        "</strong><span>" +
+        base[key] +
+        "</span><span>" +
+        signed(gear[key]) +
+        "</span><span>" +
+        signed(talent[key]) +
+        "</span><b>" +
+        finalValue +
+        "</b></div>"
+      );
+    }).join("");
+}
+function eligibility(h, item) {
+  return Equipment.canEquip(h, item);
+}
+function qualityClass(item) {
+  return "wow-quality--" + item.qualityKey;
+}
+function qualityFrameClass(item) {
+  return "wow-icon-frame--quality-" + item.qualityKey;
+}
+function itemTooltipModel(item, h, options = {}) {
+  if (!item) return null;
+  const allowed = eligibility(h, item),
+    stats = itemStats(item).map(line => ({ label: line.stat, value: "+" + line.value }));
+  return {
+    variant: "item",
+    title: item.name,
+    type: item.slot,
+    quality: item.qualityKey,
+    badge: options.badge || "",
+    icon: { slug: item.icon, quality: item.qualityKey },
+    requirements: [
+      { label: "Required level", value: String(item.tier) },
+      { label: "Slot", value: item.slot },
+      {
+        label:
+          item.slot === "Weapon"
+            ? "Weapon family"
+            : item.slot === "Trinket"
+              ? "Item family"
+              : "Armor family",
+        value: item.family
+      }
+    ],
+    description:
+      options.description ||
+      (allowed.ok ? "Usable by " + h.classLabel + "." : "This item cannot currently be equipped."),
+    stats: stats.length ? stats : [{ label: "Bonus stats", value: "None" }],
+    meta: [
+      { label: "Quality", value: item.quality },
+      { label: "Tier", value: "T" + item.tier }
+    ],
+    locked: allowed.ok ? [] : [allowed.reason]
   };
-  const draw=()=>{
-    root.innerHTML="";
-    snapshot.loadouts.forEach((loadout,index)=>{
-      const ids=Roster.partyHeroIds(loadout),expanded=openId===loadout.id,composition=Roster.validateLoadout(loadout,false),availability=Roster.validateLoadout(loadout,true);
-      const card=document.createElement("article");card.className="roster-party-card roster-party-accordion"+(expanded?" is-open":"")+(composition.valid?" is-ready":"")+(loadout.isDefault?" is-default":"");
-      card.innerHTML='<button class="roster-party-summary" type="button" aria-expanded="'+expanded+'"><span class="roster-party-summary__chevron">▸</span><span class="roster-party-summary__name">'+esc(loadout.name)+'</span><span class="roster-party-summary__meta">'+ids.length+' / '+Roster.PARTY_SIZE+'</span><span class="roster-party-summary__state">'+(composition.valid?"READY":"EDITING")+'</span>'+(loadout.isDefault?'<span class="roster-party-summary__default">DEFAULT</span>':'')+'</button>';
-      const summary=card.querySelector(".roster-party-summary");summary.addEventListener("click",()=>{openId=expanded?null:loadout.id;draw();});
-      if(expanded){
-        const editor=document.createElement("div");editor.className="roster-party-editor";
-        editor.innerHTML='<div class="roster-party-toolbar"><label><span class="wow-label">Party name</span><input class="wow-input roster-party-name" maxlength="40" value="'+esc(loadout.name)+'"></label><button class="wow-button roster-party-default" type="button"'+(loadout.isDefault?" disabled":"")+'>'+(loadout.isDefault?"Default Party":"Make Default")+'</button></div><div class="roster-party-dnd"><section class="roster-party-source"><span class="wow-kicker">ACTIVE FACTION ROSTER</span><div class="roster-party-roster" role="list"></div><div class="roster-party-return" data-roster-return>Drop here to remove from formation</div></section><section class="roster-party-formation" aria-label="'+esc(loadout.name)+' formation"><span class="wow-kicker">FORMATION · 2 / 2 / 1</span><div class="roster-party-formation-grid"></div></section></div><div class="roster-party-card__footer"><span class="roster-party-validation '+(availability.valid?"is-valid":"is-warning")+'">'+(composition.valid?(availability.valid?"Five unique heroes · ready to launch":availability.reason):composition.reason)+'</span></div>';
-        const nameInput=editor.querySelector(".roster-party-name");nameInput.addEventListener("change",()=>{Roster.updateLoadout(index,{name:nameInput.value.trim()||("Party "+(index+1))});});
-        editor.querySelector(".roster-party-default").addEventListener("click",()=>Roster.setDefaultParty(loadout.id));
-        const roster=editor.querySelector(".roster-party-roster"),used=new Set(ids);
-        snapshot.heroes.forEach(h=>{
-          const inParty=used.has(h.id),available=h.availability==="available",canDrag=available&&!inParty;
-          const item=document.createElement("div");item.className="roster-party-roster-hero"+(inParty?" is-used":"")+(available?"":" is-unavailable");item.draggable=canDrag;item.dataset.heroId=h.id;item.setAttribute("role","listitem");item.setAttribute("aria-disabled",canDrag?"false":"true");
-          item.innerHTML='<span class="wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-'+esc(h.classId)+'"><img src="'+Icons.resolve("race",h.race)+'" alt=""></span><span><strong>'+esc(h.name)+'</strong><small>'+esc(h.classLabel)+' · '+esc(h.spec||h.primary||"Hero")+'</small></span><em>'+(inParty?"IN PARTY":available?"DRAG":"UNAVAILABLE")+'</em>';item.querySelectorAll("img").forEach(Icons.bindFallback);
-          if(canDrag)item.addEventListener("dragstart",e=>{drag={heroId:h.id,fromSlotId:null};e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",h.id);item.classList.add("is-dragging");});
-          item.addEventListener("dragend",()=>{drag=null;item.classList.remove("is-dragging");});
+}
+function itemComparisonTooltip(item, h) {
+  const current = equipmentItem(h.equipment[item.slot]),
+    model = itemTooltipModel(item, h, {
+      badge: current && current.id === item.id ? "Equipped" : "Candidate"
+    });
+  if (current && current.id !== item.id)
+    model.comparison = itemTooltipModel(current, h, {
+      badge: "Equipped",
+      description: "Currently equipped in this slot."
+    });
+  return model;
+}
+function equipHeroItem(h, item) {
+  const allowed = eligibility(h, item);
+  if (!allowed.ok) throw new Error(allowed.reason);
+  const previous = equipmentItem(h.equipment[item.slot]),
+    next = Object.assign({}, h.equipment, { [item.slot]: item.id });
+  Roster.setEquipment(h.id, next);
+  toast((previous ? "Replaced " + previous.name + " with " : "Equipped ") + item.name);
+}
+function unequipHeroSlot(h, slot) {
+  const current = equipmentItem(h.equipment[slot]);
+  if (!current) return;
+  const next = Object.assign({}, h.equipment, { [slot]: null });
+  Roster.setEquipment(h.id, next);
+  toast("Unequipped " + current.name);
+}
+function closePicker() {
+  document
+    .querySelectorAll(".hero-item-picker,.hero-ability-picker")
+    .forEach(node => node.remove());
+}
+function openPicker(anchor, slot) {
+  closePicker();
+  const h = hero(),
+    p = document.createElement("div");
+  p.className = "hero-item-picker wow-frame";
+  p.setAttribute("role", "dialog");
+  p.setAttribute("aria-label", slot + " equipment picker");
+  const items = state.items
+    .filter(item => item.slot === slot && eligibility(h, item).ok)
+    .sort((a, b) => b.tier - a.tier || a.name.localeCompare(b.name));
+  items.forEach(item => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className =
+      "hero-picker-item " +
+      qualityClass(item) +
+      (h.equipment[slot] === item.id ? " is-selected" : "");
+    b.innerHTML =
+      '<span class="wow-icon-frame wow-icon-frame--sm ' +
+      qualityFrameClass(item) +
+      '"><img src="' +
+      Icons.iconUrl(item.icon) +
+      '" alt=""></span><span><strong>' +
+      esc(item.name) +
+      "</strong><small>" +
+      esc(item.quality) +
+      " · T" +
+      item.tier +
+      " · " +
+      esc(item.family) +
+      "</small></span>";
+    Icons.bindFallback(b.querySelector("img"));
+    Tooltips.attach(b, () => itemComparisonTooltip(item, h));
+    b.addEventListener("click", () => {
+      equipHeroItem(h, item);
+      closePicker();
+    });
+    p.appendChild(b);
+  });
+  if (h.equipment[slot]) {
+    const u = document.createElement("button");
+    u.type = "button";
+    u.className = "hero-picker-item hero-picker-unequip";
+    u.innerHTML =
+      '<span class="wow-icon-frame wow-icon-frame--sm"><img src="' +
+      Icons.resolve("item-family", slot, { slot }) +
+      '" alt=""></span><span><strong>Unequip ' +
+      esc(slot) +
+      "</strong><small>Return item to the Armory</small></span>";
+    Icons.bindFallback(u.querySelector("img"));
+    u.addEventListener("click", () => {
+      unequipHeroSlot(h, slot);
+      closePicker();
+    });
+    p.appendChild(u);
+  }
+  document.body.appendChild(p);
+  const r = anchor.getBoundingClientRect();
+  p.style.left = Math.max(8, Math.min(r.left, innerWidth - p.offsetWidth - 8)) + "px";
+  p.style.top = Math.max(8, Math.min(r.bottom + 4, innerHeight - p.offsetHeight - 8)) + "px";
+  p.querySelector("button")?.focus();
+}
+function gearSlotMarkup(h, slot) {
+  const item = equipmentItem(h.equipment[slot]);
+  return (
+    '<span class="hero-gear-slot__label">' +
+    slot +
+    '</span><span class="hero-gear-slot__icon wow-icon-frame ' +
+    (item ? qualityFrameClass(item) : "") +
+    '"><img src="' +
+    (item ? Icons.iconUrl(item.icon) : Icons.resolve("item-family", slot, { slot })) +
+    '" alt=""></span>' +
+    (item
+      ? '<span class="hero-gear-slot__name ' +
+        qualityClass(item) +
+        '">' +
+        esc(item.name) +
+        "</span>"
+      : '<span class="hero-gear-slot__name">Empty</span>')
+  );
+}
+function renderGearSlots(rootId, slots, h) {
+  const root = $(rootId);
+  root.innerHTML = "";
+  slots.forEach(slot => {
+    const item = equipmentItem(h.equipment[slot]),
+      button = document.createElement("button");
+    button.type = "button";
+    button.className = "hero-gear-slot " + (item ? "is-filled" : "is-empty");
+    button.dataset.gearSlot = slot;
+    button.setAttribute(
+      "aria-label",
+      item
+        ? slot + ": " + item.name + ". Open equipment picker."
+        : slot + ": empty. Open equipment picker."
+    );
+    button.innerHTML = gearSlotMarkup(h, slot);
+    button.querySelectorAll("img").forEach(Icons.bindFallback);
+    if (item)
+      Tooltips.attach(button, () =>
+        itemTooltipModel(item, h, {
+          badge: "Equipped",
+          description: "Open this slot to compare, replace, or unequip."
+        })
+      );
+    button.addEventListener("click", event => {
+      event.stopPropagation();
+      openPicker(button, slot);
+    });
+    root.appendChild(button);
+  });
+}
+function renderArmory() {
+  const h = hero(),
+    query = state.gearFilters.query.trim().toLowerCase();
+  let items = state.items.filter(item => {
+    if (state.gearFilters.tier !== "all" && item.tier !== Number(state.gearFilters.tier))
+      return false;
+    if (state.gearFilters.slot !== "all" && item.slot !== state.gearFilters.slot) return false;
+    if (query && !(item.name + " " + item.family + " " + item.slot).toLowerCase().includes(query))
+      return false;
+    if (state.gearFilters.equippable && !eligibility(h, item).ok) return false;
+    return true;
+  });
+  items.sort(
+    (a, b) =>
+      b.tier - a.tier ||
+      SLOTS.indexOf(a.slot) - SLOTS.indexOf(b.slot) ||
+      a.name.localeCompare(b.name)
+  );
+  $("heroArmoryCount").textContent = items.length + " / " + state.items.length + " items";
+  const root = $("heroArmoryList");
+  root.innerHTML = "";
+  if (!items.length) {
+    root.innerHTML =
+      '<div class="hero-armory-empty"><strong>No equipment matches.</strong><span>Change filters or show unavailable gear.</span></div>';
+    return;
+  }
+  items.forEach(item => {
+    const allowed = eligibility(h, item),
+      equipped = h.equipment[item.slot] === item.id,
+      button = document.createElement("button");
+    button.type = "button";
+    button.className =
+      "hero-armory-item " +
+      qualityClass(item) +
+      (allowed.ok ? "" : " is-locked") +
+      (equipped ? " is-equipped" : "");
+    button.setAttribute(
+      "aria-label",
+      item.name +
+        ". " +
+        (equipped
+          ? "Equipped; click to unequip."
+          : allowed.ok
+            ? "Click to equip."
+            : allowed.reason + ".")
+    );
+    if (!allowed.ok) button.setAttribute("aria-disabled", "true");
+    button.innerHTML =
+      '<span class="wow-icon-frame ' +
+      qualityFrameClass(item) +
+      (allowed.ok ? "" : " is-locked") +
+      (equipped ? " is-selected" : "") +
+      '"><img src="' +
+      Icons.iconUrl(item.icon) +
+      '" alt="">' +
+      (equipped ? '<span class="hero-armory-equipped-mark" aria-hidden="true">E</span>' : "") +
+      "</span>";
+    Icons.bindFallback(button.querySelector("img"));
+    Tooltips.attach(button, () => itemComparisonTooltip(item, h));
+    if (allowed.ok)
+      button.addEventListener("click", () => {
+        if (equipped) unequipHeroSlot(h, item.slot);
+        else equipHeroItem(h, item);
+      });
+    root.appendChild(button);
+  });
+}
+function renderEquipment() {
+  const h = hero();
+  renderGearSlots("heroGearLeft", LEFT_GEAR_SLOTS, h);
+  renderGearSlots("heroGearRight", RIGHT_GEAR_SLOTS, h);
+  const portrait = $("heroGearPortrait");
+  portrait.src = Icons.resolve("race", h.race);
+  portrait.alt = h.race + " character portrait";
+  Icons.bindFallback(portrait);
+  $("heroGearLevel").textContent = h.level;
+  $("heroGearArmorAccess").textContent = (Equipment.ARMOR_ACCESS[h.classId] || ["Cloth"]).join(
+    " / "
+  );
+  const equipped = SLOTS.map(slot => equipmentItem(h.equipment[slot])).filter(Boolean);
+  $("heroGearEquippedCount").textContent = equipped.length;
+  const highest = equipped.length ? Math.max(...equipped.map(item => item.tier)) : 0;
+  $("heroGearTier").textContent = highest ? "Loadout reaches Tier " + highest : "No gear equipped";
+  renderArmory();
+}
+function syncGearFilters() {
+  state.gearFilters.tier = $("heroGearTierFilter").value;
+  state.gearFilters.slot = $("heroGearSlotFilter").value;
+  state.gearFilters.query = $("heroGearSearch").value;
+  state.gearFilters.equippable = $("heroGearEquippableOnly").checked;
+  renderArmory();
+}
+async function loadSpec(classId, specId) {
+  const meta = state.classIndex.classes
+    .find(c => c.id === classId)
+    ?.specs.find(s => s.id === specId);
+  if (!meta) return null;
+  const key = classId + "/" + specId;
+  if (!state.specData[key])
+    state.specData[key] = await json(CLASS_ROOT + meta.data_path.replace("./", ""));
+  return state.specData[key];
+}
+async function loadAbilities(classId) {
+  if (state.abilityData[classId]) return state.abilityData[classId];
+  const cls = state.classIndex.classes.find(c => c.id === classId);
+  if (!cls) throw new Error("Unknown hero class: " + classId);
+  state.abilityData[classId] = await json(
+    CLASS_ROOT + (cls.abilities_path || "./" + classId + "/abilities.json").replace("./", "")
+  );
+  return state.abilityData[classId];
+}
+function activeSpecMeta(h) {
+  const cls = state.classIndex.classes.find(c => c.id === h.classId);
+  const wanted = String(h.talentBuild?.primarySpec || h.spec || "").toLowerCase();
+  return (
+    cls?.specs.find(spec => spec.id === wanted || String(spec.label).toLowerCase() === wanted) ||
+    cls?.specs[0] ||
+    null
+  );
+}
+function activeResource(specData) {
+  const value = String(specData?.identity?.resource || "").toLowerCase();
+  if (value.includes("energy")) return "energy";
+  if (value.includes("rage")) return "rage";
+  return "mana";
+}
+function compatibleAction(action, resource) {
+  return action.resource === "none" || action.resource === resource;
+}
+function abilityIcon(action, slot) {
+  if (action?.icon_slug) return Icons.iconUrl(action.icon_slug);
+  if (slot === "auto") return Icons.resolve("ability", "attack");
+  if (slot === "ultimate") return Icons.resolve("ability", "ultimate");
+  if (action?.kind === "heal") return Icons.resolve("ability", "heal");
+  if (action?.kind === "shield" || action?.kind === "buff")
+    return Icons.resolve("ability", "defensive");
+  return Icons.resolve("ability", "damage");
+}
+function actionTooltip(action, slot, extraDescription = "") {
+  const cooldown =
+    slot === "auto"
+      ? "Automatic"
+      : slot === "ultimate"
+        ? "Ultimate charge"
+        : ((Number(action.cooldown_ticks) || 0) / 60).toFixed(
+            (Number(action.cooldown_ticks) || 0) % 60 ? 1 : 0
+          ) + " sec";
+  const resource =
+    action.resource && action.resource !== "none"
+      ? String(action.resource).replace(/^./, c => c.toUpperCase()) +
+        " · " +
+        (Number(action.cost) || 0)
+      : "None";
+  return {
+    variant: "ability",
+    title: action.name,
+    type: slot === "auto" ? "Auto Attack" : slot === "ultimate" ? "Ultimate" : "Combat ability",
+    icon: action.icon_slug
+      ? { slug: action.icon_slug }
+      : {
+          category: "ability",
+          key:
+            slot === "auto"
+              ? "attack"
+              : slot === "ultimate"
+                ? "ultimate"
+                : action.kind === "heal"
+                  ? "heal"
+                  : action.kind === "shield" || action.kind === "buff"
+                    ? "defensive"
+                    : "damage"
+        },
+    description:
+      extraDescription ||
+      (action.effect && action.effect !== "none" ? action.effect : "No additional effect."),
+    stats: [
+      { label: "Resource / cost", value: resource },
+      { label: "Cooldown", value: cooldown },
+      { label: "Target", value: String(action.target || "enemy") },
+      { label: "Effect", value: String(action.effect || "none") }
+    ],
+    meta: [{ label: "ID", value: String(action.id) }]
+  };
+}
+function autoAttackRecord(specData, specMeta) {
+  const text = String(specData?.identity?.auto_attack || "Auto Attack");
+  const parts = text.split(" — ");
+  const iconSlug = String(specMeta?.auto_attack_icon_slug || "");
+  if (!iconSlug)
+    throw new Error(
+      "Missing authored Auto Attack icon for " +
+        String(specMeta?.id || specData?.specialization || "unknown") +
+        "."
+    );
+  return {
+    id: "auto",
+    name: (parts[0] || "Auto Attack").trim(),
+    kind: "damage",
+    resource: "none",
+    cost: 0,
+    target: "enemy",
+    effect: "none",
+    description: parts.slice(1).join(" — ").trim(),
+    icon_slug: iconSlug,
+    icon_source: specMeta.auto_attack_icon_source,
+    icon_source_url: specMeta.auto_attack_icon_source_url
+  };
+}
+function loadoutSlotButton(slotLabel, slotKey, action, editable) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "hero-action-slot" + (editable ? " is-editable" : " is-fixed");
+  button.dataset.combatSlot = slotKey;
+  button.innerHTML =
+    '<span class="wow-icon-frame wow-icon-frame--md"><img src="' +
+    abilityIcon(action, slotKey) +
+    '" alt=""></span><span class="hero-action-slot__copy"><small>' +
+    slotLabel +
+    "</small><strong>" +
+    esc(action.name) +
+    "</strong></span>" +
+    (editable ? '<span class="hero-action-slot__chevron" aria-hidden="true">▾</span>' : "");
+  button.querySelectorAll("img").forEach(Icons.bindFallback);
+  Tooltips.attach(button, () => actionTooltip(action, slotKey, action.description || ""));
+  return button;
+}
+async function openAbilityPicker(anchor, slotKey) {
+  closePicker();
+  const h = hero(),
+    specMeta = activeSpecMeta(h);
+  if (!specMeta) return;
+  const [specData, abilityData] = await Promise.all([
+    loadSpec(h.classId, specMeta.id),
+    loadAbilities(h.classId)
+  ]);
+  const resource = activeResource(specData),
+    otherId = slotKey === "ability1Id" ? h.combatLoadout.ability2Id : h.combatLoadout.ability1Id,
+    currentId = h.combatLoadout[slotKey];
+  const learned = new Set(h.learnedAbilityIds || []);
+  const choices = (abilityData.cooldowns || []).filter(
+    action => learned.has(action.id) && compatibleAction(action, resource) && action.id !== otherId
+  );
+  const picker = document.createElement("div");
+  picker.className = "hero-ability-picker wow-frame";
+  picker.setAttribute("role", "dialog");
+  picker.setAttribute(
+    "aria-label",
+    (slotKey === "ability1Id" ? "Ability 1" : "Ability 2") + " picker"
+  );
+  choices.forEach(action => {
+    const selected = action.id === currentId,
+      b = document.createElement("button");
+    b.type = "button";
+    b.className = "hero-picker-item hero-ability-picker__item" + (selected ? " is-selected" : "");
+    b.innerHTML =
+      '<span class="wow-icon-frame wow-icon-frame--sm"><img src="' +
+      abilityIcon(action, "ability") +
+      '" alt=""></span><span><strong>' +
+      esc(action.name) +
+      "</strong><small>" +
+      esc(action.resource || "none") +
+      " · " +
+      (Number(action.cost) || 0) +
+      " · " +
+      ((Number(action.cooldown_ticks) || 0) / 60).toFixed(
+        (Number(action.cooldown_ticks) || 0) % 60 ? 1 : 0
+      ) +
+      " sec</small></span><em>" +
+      (selected ? "EQUIPPED" : "") +
+      "</em>";
+    b.querySelectorAll("img").forEach(Icons.bindFallback);
+    Tooltips.attach(b, () => actionTooltip(action, "ability"));
+    b.addEventListener("click", () => {
+      if (selected) {
+        closePicker();
+        return;
+      }
+      Roster.setCombatLoadout(h.id, { [slotKey]: action.id });
+      closePicker();
+      render();
+    });
+    picker.appendChild(b);
+  });
+  document.body.appendChild(picker);
+  const rect = anchor.getBoundingClientRect();
+  picker.style.left = Math.max(8, Math.min(rect.left, innerWidth - picker.offsetWidth - 8)) + "px";
+  picker.style.top =
+    Math.max(8, Math.min(rect.bottom + 4, innerHeight - picker.offsetHeight - 8)) + "px";
+  picker.querySelector("button")?.focus();
+}
+function capstoneFor(specData) {
+  const capstone = specData?.talents?.capstones?.[0];
+  if (!capstone?.name || !capstone?.ultimate_id)
+    throw new Error("Specialization capstone is missing its Ultimate action mapping.");
+  return capstone;
+}
+function talentTierLabel(tier) {
+  return tier === "tier_1" ? "Tier 1" : tier === "tier_2" ? "Tier 2" : "Capstone · Ultimate";
+}
+function talentTierPick(data, tier, picks) {
+  return (data.talents[tier] || []).find(talent => picks.includes(talent.name)) || null;
+}
+function talentNodeState(data, tier, talent, picks) {
+  const selected = tier === "capstones" || picks.includes(talent.name);
+  if (selected)
+    return {
+      key: "selected",
+      label: tier === "capstones" ? "Ultimate" : "Selected",
+      locked: false
+    };
+  if (tier === "tier_2" && !talentTierPick(data, "tier_1", picks))
+    return { key: "locked", label: "Requires Tier 1", locked: true };
+  return { key: "available", label: "Available", locked: false };
+}
+function talentTooltip(data, tier, talent, nodeState) {
+  return {
+    variant: "talent",
+    title: talent.name,
+    type: talentTierLabel(tier),
+    badge: nodeState.key === "selected" ? (tier === "capstones" ? "ULTIMATE" : "Learned") : "",
+    icon: { slug: talent.icon_slug },
+    description:
+      tier === "capstones" ? "Defines Ultimate action " + talent.ultimate_id + "." : talent.effect,
+    meta: [
+      { label: "Specialization", value: data.specialization },
+      { label: "Tier", value: talentTierLabel(tier) },
+      { label: "State", value: nodeState.label },
+      { label: "Progression", value: "Tier-only; no per-node prerequisites" }
+    ],
+    locked: nodeState.locked ? [nodeState.label] : []
+  };
+}
+function talentTreeConnectors(hasTier1, hasTier2) {
+  return (
+    '<svg class="hero-talent-connectors" viewBox="0 0 400 390" preserveAspectRatio="none" aria-hidden="true"><g class="hero-talent-connector-group ' +
+    (hasTier1 ? "is-active" : "") +
+    '"><path d="M118 86 H200"/><path d="M282 86 H200"/><path d="M200 86 V185"/></g><g class="hero-talent-connector-group ' +
+    (hasTier2 ? "is-active" : "") +
+    '"><path d="M118 216 H200"/><path d="M282 216 H200"/><path d="M200 185 V326"/></g></svg>'
+  );
+}
+function talentNodeButton(h, data, tier, talent, picks, capstone) {
+  const nodeState = talentNodeState(data, tier, talent, picks),
+    button = document.createElement("button");
+  button.type = "button";
+  button.className =
+    "hero-talent-node is-" + nodeState.key + (tier === "capstones" ? " is-capstone" : "");
+  button.dataset.tier = tier;
+  button.dataset.talent = talent.name;
+  button.setAttribute("aria-pressed", nodeState.key === "selected" ? "true" : "false");
+  button.setAttribute("aria-disabled", nodeState.locked ? "true" : "false");
+  button.setAttribute(
+    "aria-label",
+    talent.name + ", " + talentTierLabel(tier) + ", " + nodeState.label
+  );
+  button.innerHTML =
+    '<span class="hero-talent-node__icon wow-icon-frame"><img src="' +
+    Icons.iconUrl(talent.icon_slug) +
+    '" alt=""><span class="hero-talent-node__rank">' +
+    (nodeState.key === "selected" ? "1" : "0") +
+    '/1</span></span><span class="hero-talent-node__copy"><strong>' +
+    esc(talent.name) +
+    "</strong><small>" +
+    (tier === "capstones" ? "Ultimate · " + esc(talent.ultimate_id) : nodeState.label) +
+    "</small></span>";
+  button.querySelectorAll("img").forEach(Icons.bindFallback);
+  Tooltips.attach(button, () => talentTooltip(data, tier, talent, nodeState));
+  if (tier !== "capstones")
+    button.addEventListener("click", () => {
+      if (nodeState.locked) return;
+      const tierNames = new Set((data.talents[tier] || []).map(item => item.name));
+      let next = (h.talentBuild?.picks || []).filter(name => !tierNames.has(name));
+      next.push(talent.name);
+      if (!next.includes(capstone.name)) next.push(capstone.name);
+      Roster.setTalentBuild(h.id, {
+        primarySpec: data.specialization,
+        picks: next,
+        capstone: capstone.name,
+        capstoneUltimateId: capstone.ultimate_id
+      });
+    });
+  return button;
+}
+function renderTalentRow(root, h, data, tier, picks, capstone) {
+  const row = document.createElement("div");
+  row.className = "hero-talent-tree-row hero-talent-tree-row--" + tier;
+  row.dataset.talentTier = tier;
+  const label = document.createElement("span");
+  label.className = "hero-talent-tree-row__label";
+  label.textContent = talentTierLabel(tier);
+  row.appendChild(label);
+  const nodes = document.createElement("div");
+  nodes.className = "hero-talent-tree-row__nodes";
+  (data.talents[tier] || []).forEach(talent =>
+    nodes.appendChild(talentNodeButton(h, data, tier, talent, picks, capstone))
+  );
+  row.appendChild(nodes);
+  root.appendChild(row);
+}
+async function openTalentTab(focusCapstone = false) {
+  closePicker();
+  activateHeroTab("talents", { syncUrl: true });
+  await renderTalentTab();
+  if (focusCapstone) $("heroTalentTree")?.querySelector('[data-tier="capstones"]')?.focus();
+}
+async function renderTalentTab() {
+  const h = hero(),
+    cls = state.classIndex.classes.find(c => c.id === h.classId),
+    select = $("heroTalentSpec");
+  if (!h || !cls || !select) return;
+  select.innerHTML = cls.specs
+    .map(spec => '<option value="' + spec.id + '">' + esc(spec.label) + "</option>")
+    .join("");
+  const active = activeSpecMeta(h) || cls.specs[0];
+  select.value = active.id;
+  const data = await loadSpec(h.classId, active.id),
+    capstone = capstoneFor(data),
+    picks = Array.isArray(h.talentBuild?.picks) ? h.talentBuild.picks : [],
+    tier1 = talentTierPick(data, "tier_1", picks),
+    tier2 = talentTierPick(data, "tier_2", picks),
+    specIcon = Icons.resolve("spec", active.id, { classId: h.classId });
+  $("heroTalentTitle").textContent = h.name + " · " + data.specialization + " Talents";
+  $("heroTalentStatus").textContent =
+    (tier1 && tier2 ? "Build complete · " : "Choose one talent from each tier · ") +
+    "Capstone Ultimate is fixed by specialization.";
+  const root = $("heroTalentTree");
+  root.innerHTML = "";
+  const panel = document.createElement("article");
+  panel.className = "hero-talent-spec-panel wow-frame wow-class--" + h.classId;
+  panel.style.setProperty("--hero-spec-art", 'url("' + specIcon + '")');
+  panel.innerHTML =
+    '<header class="hero-talent-spec-header"><span class="hero-talent-spec-icon wow-icon-frame wow-icon-frame--class-' +
+    h.classId +
+    '"><img src="' +
+    specIcon +
+    '" alt=""></span><div><strong>' +
+    esc(data.specialization) +
+    "</strong><small>" +
+    esc(data.identity?.role || h.classLabel) +
+    '</small></div><span class="hero-talent-spec-points">' +
+    [tier1, tier2, capstone].filter(Boolean).length +
+    ' / 3</span></header><div class="hero-talent-tree-canvas">' +
+    talentTreeConnectors(Boolean(tier1), Boolean(tier2)) +
+    '<span class="hero-talent-tree-note">Tier-only progression · no per-node prerequisites</span></div>';
+  panel.querySelectorAll("img").forEach(Icons.bindFallback);
+  const canvas = panel.querySelector(".hero-talent-tree-canvas");
+  renderTalentRow(canvas, h, data, "tier_1", picks, capstone);
+  renderTalentRow(canvas, h, data, "tier_2", picks, capstone);
+  renderTalentRow(canvas, h, data, "capstones", picks, capstone);
+  const ultimate = document.createElement("div");
+  ultimate.className = "hero-talent-ultimate-link";
+  ultimate.innerHTML =
+    "<span>CAPSTONE DEFINES ULTIMATE</span><strong>" +
+    esc(capstone.name) +
+    "</strong><small>" +
+    esc(capstone.ultimate_id) +
+    "</small>";
+  canvas.appendChild(ultimate);
+  root.appendChild(panel);
+  select.onchange = async () => {
+    const nextData = await loadSpec(h.classId, select.value),
+      nextCapstone = capstoneFor(nextData);
+    Roster.setTalentBuild(h.id, {
+      primarySpec: nextData.specialization,
+      picks: [nextCapstone.name],
+      capstone: nextCapstone.name,
+      capstoneUltimateId: nextCapstone.ultimate_id
+    });
+  };
+}
+async function renderCombatLoadout() {
+  const h = hero(),
+    root = $("heroCombatLoadout");
+  if (!root) return;
+  const specMeta = activeSpecMeta(h);
+  if (!specMeta) return;
+  const [specData, abilityData] = await Promise.all([
+    loadSpec(h.classId, specMeta.id),
+    loadAbilities(h.classId)
+  ]);
+  const capstone = capstoneFor(specData),
+    cooldowns = new Map((abilityData.cooldowns || []).map(action => [action.id, action])),
+    ultimates = new Map((abilityData.ultimates || []).map(action => [action.id, action])),
+    auto = autoAttackRecord(specData, specMeta),
+    ability1 = cooldowns.get(h.combatLoadout.ability1Id),
+    ability2 = cooldowns.get(h.combatLoadout.ability2Id),
+    ultimate = ultimates.get(capstone.ultimate_id);
+  if (!ability1 || !ability2 || !ultimate)
+    throw new Error("Hero combat loadout references missing authored abilities.");
+  if (h.combatLoadout.ultimateId !== capstone.ultimate_id)
+    throw new Error("Hero Ultimate does not match the active capstone.");
+  root.innerHTML = "";
+  const autoButton = loadoutSlotButton("Auto Attack", "auto", auto, false),
+    ability1Button = loadoutSlotButton("Ability 1", "ability1Id", ability1, true),
+    ability2Button = loadoutSlotButton("Ability 2", "ability2Id", ability2, true),
+    ultimateButton = loadoutSlotButton("Ultimate", "ultimate", ultimate, false);
+  ultimateButton.classList.add("is-capstone");
+  ultimateButton.setAttribute(
+    "aria-label",
+    "Ultimate " + ultimate.name + ". Open Talents capstone."
+  );
+  ability1Button.addEventListener("click", event => {
+    event.stopPropagation();
+    openAbilityPicker(ability1Button, "ability1Id");
+  });
+  ability2Button.addEventListener("click", event => {
+    event.stopPropagation();
+    openAbilityPicker(ability2Button, "ability2Id");
+  });
+  ultimateButton.addEventListener("click", event => {
+    event.stopPropagation();
+    openTalentTab(true);
+  });
+  root.append(autoButton, ability1Button, ability2Button, ultimateButton);
+}
+// Which saved loadout editor is expanded; survives the re-render every roster change triggers.
+const openEditor = { party: null, raid: null, siege: null };
+
+function renderPartyManager() {
+  const root = $("rosterParties");
+  if (!root) return;
+  root.innerHTML = "";
+  const snapshot = Roster.getState(),
+    heroById = new Map(snapshot.heroes.map(h => [h.id, h]));
+  let drag = null;
+  const persist = (index, loadout, slots) => {
+    try {
+      Roster.updateLoadout(index, {
+        slots,
+        ready: Roster.validateLoadout(Object.assign({}, loadout, { slots }), false).valid
+      });
+    } catch (error) {
+      toast(error.message);
+    }
+  };
+  const slotsWith = (loadout, slotId, heroId, fromSlotId) => {
+    const slots = loadout.slots.map(slot => ({ id: slot.id, heroId: slot.heroId || null }));
+    const target = slots.find(slot => slot.id === slotId);
+    if (!target) return slots;
+    const priorTarget = target.heroId || null;
+    slots.forEach(slot => {
+      if (slot.heroId === heroId) slot.heroId = null;
+    });
+    if (fromSlotId && fromSlotId !== slotId) {
+      const from = slots.find(slot => slot.id === fromSlotId);
+      if (from) from.heroId = priorTarget;
+    }
+    target.heroId = heroId;
+    return slots;
+  };
+  const draw = () => {
+    root.innerHTML = "";
+    snapshot.loadouts.forEach((loadout, index) => {
+      const ids = Roster.partyHeroIds(loadout),
+        expanded = openEditor.party === loadout.id,
+        composition = Roster.validateLoadout(loadout, false),
+        availability = Roster.validateLoadout(loadout, true);
+      const card = document.createElement("article");
+      card.className =
+        "roster-party-card roster-party-accordion" +
+        (expanded ? " is-open" : "") +
+        (composition.valid ? " is-ready" : "") +
+        (loadout.isDefault ? " is-default" : "");
+      card.innerHTML =
+        '<button class="roster-party-summary" type="button" aria-expanded="' +
+        expanded +
+        '"><span class="roster-party-summary__chevron">▸</span><span class="roster-party-summary__name">' +
+        esc(loadout.name) +
+        '</span><span class="roster-party-summary__meta">' +
+        ids.length +
+        " / " +
+        Roster.PARTY_SIZE +
+        '</span><span class="roster-party-summary__state">' +
+        (composition.valid ? "READY" : "EDITING") +
+        "</span>" +
+        (loadout.isDefault ? '<span class="roster-party-summary__default">DEFAULT</span>' : "") +
+        "</button>";
+      const summary = card.querySelector(".roster-party-summary");
+      summary.addEventListener("click", () => {
+        openEditor.party = expanded ? null : loadout.id;
+        draw();
+      });
+      if (expanded) {
+        const editor = document.createElement("div");
+        editor.className = "roster-party-editor";
+        editor.innerHTML =
+          '<div class="roster-party-toolbar"><label><span class="wow-label">Party name</span><input class="wow-input roster-party-name" maxlength="40" value="' +
+          esc(loadout.name) +
+          '"></label><button class="wow-button roster-party-default" type="button"' +
+          (loadout.isDefault ? " disabled" : "") +
+          ">" +
+          (loadout.isDefault ? "Default Party" : "Make Default") +
+          '</button></div><div class="roster-party-dnd"><section class="roster-party-source"><span class="wow-kicker">ACTIVE FACTION ROSTER</span><div class="roster-party-roster" role="list"></div><div class="roster-party-return" data-roster-return>Drop here to remove from formation</div></section><section class="roster-party-formation" aria-label="' +
+          esc(loadout.name) +
+          ' formation"><span class="wow-kicker">FORMATION · 2 / 2 / 1</span><div class="roster-party-formation-grid"></div></section></div><div class="roster-party-card__footer"><span class="roster-party-validation ' +
+          (availability.valid ? "is-valid" : "is-warning") +
+          '">' +
+          (composition.valid
+            ? availability.valid
+              ? "Five unique heroes · ready to launch"
+              : availability.reason
+            : composition.reason) +
+          "</span></div>";
+        const nameInput = editor.querySelector(".roster-party-name");
+        nameInput.addEventListener("change", () => {
+          Roster.updateLoadout(index, { name: nameInput.value.trim() || "Party " + (index + 1) });
+        });
+        editor
+          .querySelector(".roster-party-default")
+          .addEventListener("click", () => Roster.setDefaultParty(loadout.id));
+        const roster = editor.querySelector(".roster-party-roster"),
+          used = new Set(ids);
+        snapshot.heroes.forEach(h => {
+          const inParty = used.has(h.id),
+            available = h.availability === "available",
+            canDrag = available && !inParty;
+          const item = document.createElement("div");
+          item.className =
+            "roster-party-roster-hero" +
+            (inParty ? " is-used" : "") +
+            (available ? "" : " is-unavailable");
+          item.draggable = canDrag;
+          item.dataset.heroId = h.id;
+          item.setAttribute("role", "listitem");
+          item.setAttribute("aria-disabled", canDrag ? "false" : "true");
+          item.innerHTML =
+            '<span class="wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-' +
+            esc(h.classId) +
+            '"><img src="' +
+            Icons.resolve("race", h.race) +
+            '" alt=""></span><span><strong>' +
+            esc(h.name) +
+            "</strong><small>" +
+            esc(h.classLabel) +
+            " · " +
+            esc(h.spec || h.primary || "Hero") +
+            "</small></span><em>" +
+            (inParty ? "IN PARTY" : available ? "DRAG" : "UNAVAILABLE") +
+            "</em>";
+          item.querySelectorAll("img").forEach(Icons.bindFallback);
+          if (canDrag)
+            item.addEventListener("dragstart", e => {
+              drag = { heroId: h.id, fromSlotId: null };
+              e.dataTransfer.effectAllowed = "move";
+              e.dataTransfer.setData("text/plain", h.id);
+              item.classList.add("is-dragging");
+            });
+          item.addEventListener("dragend", () => {
+            drag = null;
+            item.classList.remove("is-dragging");
+          });
           roster.appendChild(item);
         });
-        const grid=editor.querySelector(".roster-party-formation-grid");
-        Roster.PARTY_SLOT_IDS.forEach(slotId=>{
-          const slot=loadout.slots.find(s=>s.id===slotId),h=slot&&slot.heroId?heroById.get(slot.heroId):null,front=slotId==="front";
-          const target=document.createElement("div");target.className="roster-party-slot roster-party-slot--"+slotId+(front?" is-front":"")+(h?" is-filled":" is-empty");target.dataset.slotId=slotId;
-          target.innerHTML='<span class="roster-party-slot__position">'+(front?"FRONT · HIGH AGGRO":slotId.replace("-"," ").toUpperCase())+'</span>'+(h?'<div class="roster-party-slot__hero" draggable="true"><span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-'+esc(h.classId)+'"><img src="'+Icons.resolve("race",h.race)+'" alt=""></span><span><strong>'+esc(h.name)+'</strong><small>'+esc(h.classLabel)+' · '+esc(h.spec||h.primary||"Hero")+'</small></span><button type="button" aria-label="Remove '+esc(h.name)+'">×</button></div>':'<div class="roster-party-slot__empty">Drop hero here</div>');
+        const grid = editor.querySelector(".roster-party-formation-grid");
+        Roster.PARTY_SLOT_IDS.forEach(slotId => {
+          const slot = loadout.slots.find(s => s.id === slotId),
+            h = slot && slot.heroId ? heroById.get(slot.heroId) : null,
+            front = slotId === "front";
+          const target = document.createElement("div");
+          target.className =
+            "roster-party-slot roster-party-slot--" +
+            slotId +
+            (front ? " is-front" : "") +
+            (h ? " is-filled" : " is-empty");
+          target.dataset.slotId = slotId;
+          target.innerHTML =
+            '<span class="roster-party-slot__position">' +
+            (front ? "FRONT · HIGH AGGRO" : slotId.replace("-", " ").toUpperCase()) +
+            "</span>" +
+            (h
+              ? '<div class="roster-party-slot__hero" draggable="true"><span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-' +
+                esc(h.classId) +
+                '"><img src="' +
+                Icons.resolve("race", h.race) +
+                '" alt=""></span><span><strong>' +
+                esc(h.name) +
+                "</strong><small>" +
+                esc(h.classLabel) +
+                " · " +
+                esc(h.spec || h.primary || "Hero") +
+                '</small></span><button type="button" aria-label="Remove ' +
+                esc(h.name) +
+                '">×</button></div>'
+              : '<div class="roster-party-slot__empty">Drop hero here</div>');
           target.querySelectorAll("img").forEach(Icons.bindFallback);
-          target.addEventListener("dragover",e=>{if(!drag)return;e.preventDefault();e.dataTransfer.dropEffect="move";target.classList.add("is-drop-target");});
-          target.addEventListener("dragleave",()=>target.classList.remove("is-drop-target"));
-          target.addEventListener("drop",e=>{e.preventDefault();target.classList.remove("is-drop-target");if(!drag)return;persist(index,loadout,slotsWith(loadout,slotId,drag.heroId,drag.fromSlotId));drag=null;});
-          const heroEl=target.querySelector(".roster-party-slot__hero");if(heroEl){heroEl.addEventListener("dragstart",e=>{drag={heroId:h.id,fromSlotId:slotId};e.dataTransfer.effectAllowed="move";e.dataTransfer.setData("text/plain",h.id);});heroEl.addEventListener("dragend",()=>{drag=null;});heroEl.querySelector("button").addEventListener("click",()=>persist(index,loadout,loadout.slots.map(s=>({id:s.id,heroId:s.id===slotId?null:s.heroId||null}))));}
+          target.addEventListener("dragover", e => {
+            if (!drag) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            target.classList.add("is-drop-target");
+          });
+          target.addEventListener("dragleave", () => target.classList.remove("is-drop-target"));
+          target.addEventListener("drop", e => {
+            e.preventDefault();
+            target.classList.remove("is-drop-target");
+            if (!drag) return;
+            persist(index, loadout, slotsWith(loadout, slotId, drag.heroId, drag.fromSlotId));
+            drag = null;
+          });
+          const heroEl = target.querySelector(".roster-party-slot__hero");
+          if (heroEl) {
+            heroEl.addEventListener("dragstart", e => {
+              drag = { heroId: h.id, fromSlotId: slotId };
+              e.dataTransfer.effectAllowed = "move";
+              e.dataTransfer.setData("text/plain", h.id);
+            });
+            heroEl.addEventListener("dragend", () => {
+              drag = null;
+            });
+            heroEl.querySelector("button").addEventListener("click", () =>
+              persist(
+                index,
+                loadout,
+                loadout.slots.map(s => ({
+                  id: s.id,
+                  heroId: s.id === slotId ? null : s.heroId || null
+                }))
+              )
+            );
+          }
           grid.appendChild(target);
         });
-        const returnZone=editor.querySelector("[data-roster-return]");returnZone.addEventListener("dragover",e=>{if(drag&&drag.fromSlotId){e.preventDefault();returnZone.classList.add("is-drop-target");}});returnZone.addEventListener("dragleave",()=>returnZone.classList.remove("is-drop-target"));returnZone.addEventListener("drop",e=>{e.preventDefault();returnZone.classList.remove("is-drop-target");if(!drag?.fromSlotId)return;persist(index,loadout,loadout.slots.map(s=>({id:s.id,heroId:s.id===drag.fromSlotId?null:s.heroId||null})));drag=null;});
+        const returnZone = editor.querySelector("[data-roster-return]");
+        returnZone.addEventListener("dragover", e => {
+          if (drag && drag.fromSlotId) {
+            e.preventDefault();
+            returnZone.classList.add("is-drop-target");
+          }
+        });
+        returnZone.addEventListener("dragleave", () =>
+          returnZone.classList.remove("is-drop-target")
+        );
+        returnZone.addEventListener("drop", e => {
+          e.preventDefault();
+          returnZone.classList.remove("is-drop-target");
+          if (!drag?.fromSlotId) return;
+          persist(
+            index,
+            loadout,
+            loadout.slots.map(s => ({
+              id: s.id,
+              heroId: s.id === drag.fromSlotId ? null : s.heroId || null
+            }))
+          );
+          drag = null;
+        });
         card.appendChild(editor);
       }
       root.appendChild(card);
@@ -112,34 +1213,470 @@ function renderPartyManager(){
   };
   draw();
 }
-function renderRaidManager(){
-  const root=$("rosterRaids");if(!root)return;let openId=null,drag=null;
-  const draw=()=>{const snapshot=Roster.getState(),raids=Roster.getRaidLoadouts(),heroById=new Map(snapshot.heroes.map(h=>[h.id,h]));root.innerHTML="";
-    raids.forEach((raid,index)=>{const expanded=openId===raid.id,validation=Roster.validateRaidLoadout(raid,false),resolved=Roster.resolveRaidLoadout(raid),card=document.createElement("article");card.className="roster-raid-card roster-party-accordion"+(expanded?" is-open":"")+(validation.valid?" is-ready":"");
-      card.innerHTML='<button class="roster-party-summary" type="button" aria-expanded="'+expanded+'"><span class="roster-party-summary__chevron">▸</span><span class="roster-party-summary__name">'+esc(raid.name)+'</span><span class="roster-party-summary__meta">'+resolved.filter(s=>s.heroId).length+' / '+Roster.RAID_SIZE+'</span><span class="roster-party-summary__state">'+(validation.valid?"READY":"EDITING")+'</span></button>';
-      card.querySelector(".roster-party-summary").addEventListener("click",()=>{openId=expanded?null:raid.id;draw();});
-      if(expanded){const editor=document.createElement("div");editor.className="roster-party-editor roster-raid-editor";editor.innerHTML='<div class="roster-party-toolbar"><label><span class="wow-label">Raid name</span><input class="wow-input roster-raid-name" maxlength="40" value="'+esc(raid.name)+'"></label></div><div class="roster-raid-dnd"><aside class="roster-party-source"><span class="wow-kicker">PARTIES / ACTIVE ROSTER</span><div class="roster-raid-parties"></div><div class="roster-party-roster roster-raid-roster"></div></aside><div class="roster-raid-groups"></div></div><div class="roster-party-card__footer"><span class="roster-party-validation '+(validation.valid?"is-valid":"is-warning")+'">'+esc(validation.reason)+'</span></div>';
-        editor.querySelector(".roster-raid-name").addEventListener("change",e=>Roster.updateRaidLoadout(index,{name:e.target.value.trim()||("Raid "+(index+1))}));
-        const partySource=editor.querySelector(".roster-raid-parties");snapshot.loadouts.forEach(p=>{const item=document.createElement("div");item.className="roster-raid-party-source";item.draggable=true;item.innerHTML='<strong>'+esc(p.name)+'</strong><small>'+Roster.partyHeroIds(p).length+' / 5 · drag to group</small>';item.addEventListener("dragstart",e=>{drag={type:"party",partyId:p.id};e.dataTransfer.effectAllowed="copy";e.dataTransfer.setData("text/plain",p.id);});item.addEventListener("dragend",()=>drag=null);partySource.appendChild(item);});
-        const roster=editor.querySelector(".roster-raid-roster");snapshot.heroes.forEach(h=>{const item=document.createElement("div");item.className="roster-party-roster-hero"+(h.availability==="available"?"":" is-unavailable");item.draggable=h.availability==="available";item.innerHTML='<span class="wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-'+esc(h.classId)+'"><img src="'+Icons.resolve("race",h.race)+'" alt=""></span><span><strong>'+esc(h.name)+'</strong><small>'+esc(h.classLabel)+' · '+esc(h.spec||h.primary||"Hero")+'</small></span><em>'+(h.availability==="available"?"DRAG":"UNAVAILABLE")+'</em>';item.querySelectorAll("img").forEach(Icons.bindFallback);if(item.draggable)item.addEventListener("dragstart",e=>{drag={type:"hero",heroId:h.id};e.dataTransfer.effectAllowed="copy";e.dataTransfer.setData("text/plain",h.id);});item.addEventListener("dragend",()=>drag=null);roster.appendChild(item);});
-        const groups=editor.querySelector(".roster-raid-groups");raid.groups.forEach((group,groupIndex)=>{const groupEl=document.createElement("section");groupEl.className="roster-raid-group";const party=snapshot.loadouts.find(p=>p.id===group.partyId),slots=Roster.resolveRaidGroup(group,snapshot.loadouts);groupEl.innerHTML='<header><span class="wow-kicker">GROUP '+(groupIndex+1)+'</span><strong>'+(party?esc(party.name):"Drop Party Loadout")+'</strong><small>'+(party?"Inherited formation":"No default Party")+'</small></header><div class="roster-party-formation-grid"></div>';groupEl.addEventListener("dragover",e=>{if(drag?.type==="party"){e.preventDefault();groupEl.classList.add("is-drop-target");}});groupEl.addEventListener("dragleave",()=>groupEl.classList.remove("is-drop-target"));groupEl.addEventListener("drop",e=>{if(drag?.type!=="party")return;e.preventDefault();Roster.setRaidGroupParty(index,group.id,drag.partyId);drag=null;});
-          const grid=groupEl.querySelector(".roster-party-formation-grid");slots.forEach(slot=>{const h=slot.heroId?heroById.get(slot.heroId):null,target=document.createElement("div"),overridden=Boolean(slot.overrideHeroId);target.className="roster-party-slot roster-party-slot--"+slot.id+(slot.id==="front"?" is-front":"")+(h?" is-filled":" is-empty")+(overridden?" is-overridden":"");target.innerHTML='<span class="roster-party-slot__position">'+slot.id.replace("-"," ").toUpperCase()+(overridden?" · OVERRIDE":"")+'</span>'+(h?'<div class="roster-party-slot__hero"><span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-'+esc(h.classId)+'"><img src="'+Icons.resolve("race",h.race)+'" alt=""></span><span><strong>'+esc(h.name)+'</strong><small>'+(overridden?"Hero override":"Inherited from Party")+'</small></span>'+(overridden?'<button type="button" title="Clear override">↺</button>':'')+'</div>':'<div class="roster-party-slot__empty">Drop hero override</div>');target.querySelectorAll("img").forEach(Icons.bindFallback);target.addEventListener("dragover",e=>{if(drag?.type==="hero"){e.preventDefault();target.classList.add("is-drop-target");}});target.addEventListener("dragleave",()=>target.classList.remove("is-drop-target"));target.addEventListener("drop",e=>{if(drag?.type!=="hero")return;e.preventDefault();try{Roster.setRaidOverride(index,group.id,slot.id,drag.heroId);}catch(error){toast(error.message);}drag=null;});const clear=target.querySelector("button");if(clear)clear.addEventListener("click",()=>Roster.setRaidOverride(index,group.id,slot.id,null));grid.appendChild(target);});groups.appendChild(groupEl);});
-        card.appendChild(editor);}
-      root.appendChild(card);});};
+function renderRaidManager() {
+  const root = $("rosterRaids");
+  if (!root) return;
+  let drag = null;
+  const draw = () => {
+    const snapshot = Roster.getState(),
+      raids = Roster.getRaidLoadouts(),
+      heroById = new Map(snapshot.heroes.map(h => [h.id, h]));
+    root.innerHTML = "";
+    raids.forEach((raid, index) => {
+      const expanded = openEditor.raid === raid.id,
+        validation = Roster.validateRaidLoadout(raid, false),
+        resolved = Roster.resolveRaidLoadout(raid),
+        card = document.createElement("article");
+      card.className =
+        "roster-raid-card roster-party-accordion" +
+        (expanded ? " is-open" : "") +
+        (validation.valid ? " is-ready" : "");
+      card.innerHTML =
+        '<button class="roster-party-summary" type="button" aria-expanded="' +
+        expanded +
+        '"><span class="roster-party-summary__chevron">▸</span><span class="roster-party-summary__name">' +
+        esc(raid.name) +
+        '</span><span class="roster-party-summary__meta">' +
+        resolved.filter(s => s.heroId).length +
+        " / " +
+        Roster.RAID_SIZE +
+        '</span><span class="roster-party-summary__state">' +
+        (validation.valid ? "READY" : "EDITING") +
+        "</span></button>";
+      card.querySelector(".roster-party-summary").addEventListener("click", () => {
+        openEditor.raid = expanded ? null : raid.id;
+        draw();
+      });
+      if (expanded) {
+        const editor = document.createElement("div");
+        editor.className = "roster-party-editor roster-raid-editor";
+        editor.innerHTML =
+          '<div class="roster-party-toolbar"><label><span class="wow-label">Raid name</span><input class="wow-input roster-raid-name" maxlength="40" value="' +
+          esc(raid.name) +
+          '"></label></div><div class="roster-raid-dnd"><aside class="roster-party-source"><span class="wow-kicker">PARTIES / ACTIVE ROSTER</span><div class="roster-raid-parties"></div><div class="roster-party-roster roster-raid-roster"></div></aside><div class="roster-raid-groups"></div></div><div class="roster-party-card__footer"><span class="roster-party-validation ' +
+          (validation.valid ? "is-valid" : "is-warning") +
+          '">' +
+          esc(validation.reason) +
+          "</span></div>";
+        editor.querySelector(".roster-raid-name").addEventListener("change", e =>
+          Roster.updateRaidLoadout(index, {
+            name: e.target.value.trim() || "Raid " + (index + 1)
+          })
+        );
+        const partySource = editor.querySelector(".roster-raid-parties");
+        snapshot.loadouts.forEach(p => {
+          const item = document.createElement("div");
+          item.className = "roster-raid-party-source";
+          item.draggable = true;
+          item.innerHTML =
+            "<strong>" +
+            esc(p.name) +
+            "</strong><small>" +
+            Roster.partyHeroIds(p).length +
+            " / 5 · drag to group</small>";
+          item.addEventListener("dragstart", e => {
+            drag = { type: "party", partyId: p.id };
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", p.id);
+          });
+          item.addEventListener("dragend", () => (drag = null));
+          partySource.appendChild(item);
+        });
+        const roster = editor.querySelector(".roster-raid-roster");
+        snapshot.heroes.forEach(h => {
+          const item = document.createElement("div");
+          item.className =
+            "roster-party-roster-hero" + (h.availability === "available" ? "" : " is-unavailable");
+          item.draggable = h.availability === "available";
+          item.innerHTML =
+            '<span class="wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-' +
+            esc(h.classId) +
+            '"><img src="' +
+            Icons.resolve("race", h.race) +
+            '" alt=""></span><span><strong>' +
+            esc(h.name) +
+            "</strong><small>" +
+            esc(h.classLabel) +
+            " · " +
+            esc(h.spec || h.primary || "Hero") +
+            "</small></span><em>" +
+            (h.availability === "available" ? "DRAG" : "UNAVAILABLE") +
+            "</em>";
+          item.querySelectorAll("img").forEach(Icons.bindFallback);
+          if (item.draggable)
+            item.addEventListener("dragstart", e => {
+              drag = { type: "hero", heroId: h.id };
+              e.dataTransfer.effectAllowed = "copy";
+              e.dataTransfer.setData("text/plain", h.id);
+            });
+          item.addEventListener("dragend", () => (drag = null));
+          roster.appendChild(item);
+        });
+        const groups = editor.querySelector(".roster-raid-groups");
+        raid.groups.forEach((group, groupIndex) => {
+          const groupEl = document.createElement("section");
+          groupEl.className = "roster-raid-group";
+          const party = snapshot.loadouts.find(p => p.id === group.partyId),
+            slots = Roster.resolveRaidGroup(group, snapshot.loadouts);
+          groupEl.innerHTML =
+            '<header><span class="wow-kicker">GROUP ' +
+            (groupIndex + 1) +
+            "</span><strong>" +
+            (party ? esc(party.name) : "Drop Party Loadout") +
+            "</strong><small>" +
+            (party ? "Inherited formation" : "No default Party") +
+            '</small></header><div class="roster-party-formation-grid"></div>';
+          groupEl.addEventListener("dragover", e => {
+            if (drag?.type === "party") {
+              e.preventDefault();
+              groupEl.classList.add("is-drop-target");
+            }
+          });
+          groupEl.addEventListener("dragleave", () => groupEl.classList.remove("is-drop-target"));
+          groupEl.addEventListener("drop", e => {
+            if (drag?.type !== "party") return;
+            e.preventDefault();
+            Roster.setRaidGroupParty(index, group.id, drag.partyId);
+            drag = null;
+          });
+          const grid = groupEl.querySelector(".roster-party-formation-grid");
+          slots.forEach(slot => {
+            const h = slot.heroId ? heroById.get(slot.heroId) : null,
+              target = document.createElement("div"),
+              overridden = Boolean(slot.overrideHeroId);
+            target.className =
+              "roster-party-slot roster-party-slot--" +
+              slot.id +
+              (slot.id === "front" ? " is-front" : "") +
+              (h ? " is-filled" : " is-empty") +
+              (overridden ? " is-overridden" : "");
+            target.innerHTML =
+              '<span class="roster-party-slot__position">' +
+              slot.id.replace("-", " ").toUpperCase() +
+              (overridden ? " · OVERRIDE" : "") +
+              "</span>" +
+              (h
+                ? '<div class="roster-party-slot__hero"><span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-' +
+                  esc(h.classId) +
+                  '"><img src="' +
+                  Icons.resolve("race", h.race) +
+                  '" alt=""></span><span><strong>' +
+                  esc(h.name) +
+                  "</strong><small>" +
+                  (overridden ? "Hero override" : "Inherited from Party") +
+                  "</small></span>" +
+                  (overridden ? '<button type="button" title="Clear override">↺</button>' : "") +
+                  "</div>"
+                : '<div class="roster-party-slot__empty">Drop hero override</div>');
+            target.querySelectorAll("img").forEach(Icons.bindFallback);
+            target.addEventListener("dragover", e => {
+              if (drag?.type === "hero") {
+                e.preventDefault();
+                target.classList.add("is-drop-target");
+              }
+            });
+            target.addEventListener("dragleave", () => target.classList.remove("is-drop-target"));
+            target.addEventListener("drop", e => {
+              if (drag?.type !== "hero") return;
+              e.preventDefault();
+              try {
+                Roster.setRaidOverride(index, group.id, slot.id, drag.heroId);
+              } catch (error) {
+                toast(error.message);
+              }
+              drag = null;
+            });
+            const clear = target.querySelector("button");
+            if (clear)
+              clear.addEventListener("click", () =>
+                Roster.setRaidOverride(index, group.id, slot.id, null)
+              );
+            grid.appendChild(target);
+          });
+          groups.appendChild(groupEl);
+        });
+        card.appendChild(editor);
+      }
+      root.appendChild(card);
+    });
+  };
   draw();
 }
 
-function renderSiegeManager(){
- const root=$("rosterSieges");if(!root)return;let openId=null,drag=null;
- const draw=()=>{const snapshot=Roster.getState(),sieges=Roster.getSiegeLoadouts(),heroById=new Map(snapshot.heroes.map(h=>[h.id,h]));root.innerHTML="";
- sieges.forEach((siege,index)=>{const expanded=openId===siege.id,validation=Roster.validateSiegeLoadout(siege,false),resolved=Roster.resolveRaidLoadout(siege),card=document.createElement("article");card.className="roster-siege-card roster-party-accordion"+(expanded?" is-open":"")+(validation.valid?" is-ready":"");card.innerHTML='<button class="roster-party-summary" type="button" aria-expanded="'+expanded+'"><span class="roster-party-summary__chevron">▸</span><span class="roster-party-summary__name">'+esc(siege.name)+'</span><span class="roster-party-summary__meta">'+resolved.filter(s=>s.heroId).length+' / '+Roster.SIEGE_SIZE+'</span><span class="roster-party-summary__state">'+(validation.valid?"READY":"EDITING")+'</span></button>';card.querySelector(".roster-party-summary").addEventListener("click",()=>{openId=expanded?null:siege.id;draw();});
- if(expanded){const editor=document.createElement("div");editor.className="roster-party-editor roster-siege-editor";editor.innerHTML='<div class="roster-party-toolbar"><label><span class="wow-label">Siege name</span><input class="wow-input roster-siege-name" maxlength="40" value="'+esc(siege.name)+'"></label></div><div class="roster-siege-dnd"><aside class="roster-party-source"><span class="wow-kicker">PARTIES / ACTIVE ROSTER</span><div class="roster-siege-parties"></div><div class="roster-party-roster roster-siege-roster"></div></aside><div class="roster-siege-groups"></div></div><div class="roster-party-card__footer"><span class="roster-party-validation '+(validation.valid?"is-valid":"is-warning")+'">'+esc(validation.reason)+'</span></div>';editor.querySelector(".roster-siege-name").addEventListener("change",e=>Roster.updateSiegeLoadout(index,{name:e.target.value.trim()||("Siege "+(index+1))}));
- const ps=editor.querySelector(".roster-siege-parties");snapshot.loadouts.forEach(p=>{const item=document.createElement("div");item.className="roster-raid-party-source";item.draggable=true;item.innerHTML='<strong>'+esc(p.name)+'</strong><small>'+Roster.partyHeroIds(p).length+' / 5 · drag to group</small>';item.addEventListener("dragstart",e=>{drag={type:"party",partyId:p.id};e.dataTransfer.effectAllowed="copy";e.dataTransfer.setData("text/plain",p.id);});item.addEventListener("dragend",()=>drag=null);ps.appendChild(item);});
- const rs=editor.querySelector(".roster-siege-roster");snapshot.heroes.forEach(h=>{const item=document.createElement("div");item.className="roster-party-roster-hero"+(h.availability==="available"?"":" is-unavailable");item.draggable=h.availability==="available";item.innerHTML='<span class="wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-'+esc(h.classId)+'"><img src="'+Icons.resolve("race",h.race)+'" alt=""></span><span><strong>'+esc(h.name)+'</strong><small>'+esc(h.classLabel)+' · '+esc(h.spec||h.primary||"Hero")+'</small></span><em>'+(h.availability==="available"?"DRAG":"UNAVAILABLE")+'</em>';item.querySelectorAll("img").forEach(Icons.bindFallback);if(item.draggable)item.addEventListener("dragstart",e=>{drag={type:"hero",heroId:h.id};e.dataTransfer.effectAllowed="copy";e.dataTransfer.setData("text/plain",h.id);});item.addEventListener("dragend",()=>drag=null);rs.appendChild(item);});
- const groups=editor.querySelector(".roster-siege-groups");siege.groups.forEach((group,groupIndex)=>{const ge=document.createElement("section"),party=snapshot.loadouts.find(p=>p.id===group.partyId),slots=Roster.resolveRaidGroup(group,snapshot.loadouts);ge.className="roster-raid-group roster-siege-group";ge.innerHTML='<header><span class="wow-kicker">GROUP '+(groupIndex+1)+'</span><strong>'+(party?esc(party.name):"Drop Party Loadout")+'</strong><small>'+(party?"Inherited formation":"No default Party")+'</small></header><div class="roster-party-formation-grid"></div>';ge.addEventListener("dragover",e=>{if(drag?.type==="party"){e.preventDefault();ge.classList.add("is-drop-target");}});ge.addEventListener("dragleave",()=>ge.classList.remove("is-drop-target"));ge.addEventListener("drop",e=>{if(drag?.type!=="party")return;e.preventDefault();Roster.setSiegeGroupParty(index,group.id,drag.partyId);drag=null;});
- const grid=ge.querySelector(".roster-party-formation-grid");slots.forEach(slot=>{const h=slot.heroId?heroById.get(slot.heroId):null,t=document.createElement("div"),overridden=Boolean(slot.overrideHeroId);t.className="roster-party-slot roster-party-slot--"+slot.id+(slot.id==="front"?" is-front":"")+(h?" is-filled":" is-empty")+(overridden?" is-overridden":"");t.innerHTML='<span class="roster-party-slot__position">'+slot.id.replace("-"," ").toUpperCase()+(overridden?" · OVERRIDE":"")+'</span>'+(h?'<div class="roster-party-slot__hero"><span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-'+esc(h.classId)+'"><img src="'+Icons.resolve("race",h.race)+'" alt=""></span><span><strong>'+esc(h.name)+'</strong><small>'+(overridden?"Hero override":"Inherited from Party")+'</small></span>'+(overridden?'<button type="button" title="Clear override">↺</button>':'')+'</div>':'<div class="roster-party-slot__empty">Drop hero override</div>');t.querySelectorAll("img").forEach(Icons.bindFallback);t.addEventListener("dragover",e=>{if(drag?.type==="hero"){e.preventDefault();t.classList.add("is-drop-target");}});t.addEventListener("dragleave",()=>t.classList.remove("is-drop-target"));t.addEventListener("drop",e=>{if(drag?.type!=="hero")return;e.preventDefault();try{Roster.setSiegeOverride(index,group.id,slot.id,drag.heroId);}catch(error){toast(error.message);}drag=null;});const clear=t.querySelector("button");if(clear)clear.addEventListener("click",()=>Roster.setSiegeOverride(index,group.id,slot.id,null));grid.appendChild(t);});groups.appendChild(ge);});card.appendChild(editor);}root.appendChild(card);});};draw();
+function renderSiegeManager() {
+  const root = $("rosterSieges");
+  if (!root) return;
+  let drag = null;
+  const draw = () => {
+    const snapshot = Roster.getState(),
+      sieges = Roster.getSiegeLoadouts(),
+      heroById = new Map(snapshot.heroes.map(h => [h.id, h]));
+    root.innerHTML = "";
+    sieges.forEach((siege, index) => {
+      const expanded = openEditor.siege === siege.id,
+        validation = Roster.validateSiegeLoadout(siege, false),
+        resolved = Roster.resolveRaidLoadout(siege),
+        card = document.createElement("article");
+      card.className =
+        "roster-siege-card roster-party-accordion" +
+        (expanded ? " is-open" : "") +
+        (validation.valid ? " is-ready" : "");
+      card.innerHTML =
+        '<button class="roster-party-summary" type="button" aria-expanded="' +
+        expanded +
+        '"><span class="roster-party-summary__chevron">▸</span><span class="roster-party-summary__name">' +
+        esc(siege.name) +
+        '</span><span class="roster-party-summary__meta">' +
+        resolved.filter(s => s.heroId).length +
+        " / " +
+        Roster.SIEGE_SIZE +
+        '</span><span class="roster-party-summary__state">' +
+        (validation.valid ? "READY" : "EDITING") +
+        "</span></button>";
+      card.querySelector(".roster-party-summary").addEventListener("click", () => {
+        openEditor.siege = expanded ? null : siege.id;
+        draw();
+      });
+      if (expanded) {
+        const editor = document.createElement("div");
+        editor.className = "roster-party-editor roster-siege-editor";
+        editor.innerHTML =
+          '<div class="roster-party-toolbar"><label><span class="wow-label">Siege name</span><input class="wow-input roster-siege-name" maxlength="40" value="' +
+          esc(siege.name) +
+          '"></label></div><div class="roster-siege-dnd"><aside class="roster-party-source"><span class="wow-kicker">PARTIES / ACTIVE ROSTER</span><div class="roster-siege-parties"></div><div class="roster-party-roster roster-siege-roster"></div></aside><div class="roster-siege-groups"></div></div><div class="roster-party-card__footer"><span class="roster-party-validation ' +
+          (validation.valid ? "is-valid" : "is-warning") +
+          '">' +
+          esc(validation.reason) +
+          "</span></div>";
+        editor.querySelector(".roster-siege-name").addEventListener("change", e =>
+          Roster.updateSiegeLoadout(index, {
+            name: e.target.value.trim() || "Siege " + (index + 1)
+          })
+        );
+        const ps = editor.querySelector(".roster-siege-parties");
+        snapshot.loadouts.forEach(p => {
+          const item = document.createElement("div");
+          item.className = "roster-raid-party-source";
+          item.draggable = true;
+          item.innerHTML =
+            "<strong>" +
+            esc(p.name) +
+            "</strong><small>" +
+            Roster.partyHeroIds(p).length +
+            " / 5 · drag to group</small>";
+          item.addEventListener("dragstart", e => {
+            drag = { type: "party", partyId: p.id };
+            e.dataTransfer.effectAllowed = "copy";
+            e.dataTransfer.setData("text/plain", p.id);
+          });
+          item.addEventListener("dragend", () => (drag = null));
+          ps.appendChild(item);
+        });
+        const rs = editor.querySelector(".roster-siege-roster");
+        snapshot.heroes.forEach(h => {
+          const item = document.createElement("div");
+          item.className =
+            "roster-party-roster-hero" + (h.availability === "available" ? "" : " is-unavailable");
+          item.draggable = h.availability === "available";
+          item.innerHTML =
+            '<span class="wow-icon-frame wow-icon-frame--sm wow-icon-frame--class-' +
+            esc(h.classId) +
+            '"><img src="' +
+            Icons.resolve("race", h.race) +
+            '" alt=""></span><span><strong>' +
+            esc(h.name) +
+            "</strong><small>" +
+            esc(h.classLabel) +
+            " · " +
+            esc(h.spec || h.primary || "Hero") +
+            "</small></span><em>" +
+            (h.availability === "available" ? "DRAG" : "UNAVAILABLE") +
+            "</em>";
+          item.querySelectorAll("img").forEach(Icons.bindFallback);
+          if (item.draggable)
+            item.addEventListener("dragstart", e => {
+              drag = { type: "hero", heroId: h.id };
+              e.dataTransfer.effectAllowed = "copy";
+              e.dataTransfer.setData("text/plain", h.id);
+            });
+          item.addEventListener("dragend", () => (drag = null));
+          rs.appendChild(item);
+        });
+        const groups = editor.querySelector(".roster-siege-groups");
+        siege.groups.forEach((group, groupIndex) => {
+          const ge = document.createElement("section"),
+            party = snapshot.loadouts.find(p => p.id === group.partyId),
+            slots = Roster.resolveRaidGroup(group, snapshot.loadouts);
+          ge.className = "roster-raid-group roster-siege-group";
+          ge.innerHTML =
+            '<header><span class="wow-kicker">GROUP ' +
+            (groupIndex + 1) +
+            "</span><strong>" +
+            (party ? esc(party.name) : "Drop Party Loadout") +
+            "</strong><small>" +
+            (party ? "Inherited formation" : "No default Party") +
+            '</small></header><div class="roster-party-formation-grid"></div>';
+          ge.addEventListener("dragover", e => {
+            if (drag?.type === "party") {
+              e.preventDefault();
+              ge.classList.add("is-drop-target");
+            }
+          });
+          ge.addEventListener("dragleave", () => ge.classList.remove("is-drop-target"));
+          ge.addEventListener("drop", e => {
+            if (drag?.type !== "party") return;
+            e.preventDefault();
+            Roster.setSiegeGroupParty(index, group.id, drag.partyId);
+            drag = null;
+          });
+          const grid = ge.querySelector(".roster-party-formation-grid");
+          slots.forEach(slot => {
+            const h = slot.heroId ? heroById.get(slot.heroId) : null,
+              t = document.createElement("div"),
+              overridden = Boolean(slot.overrideHeroId);
+            t.className =
+              "roster-party-slot roster-party-slot--" +
+              slot.id +
+              (slot.id === "front" ? " is-front" : "") +
+              (h ? " is-filled" : " is-empty") +
+              (overridden ? " is-overridden" : "");
+            t.innerHTML =
+              '<span class="roster-party-slot__position">' +
+              slot.id.replace("-", " ").toUpperCase() +
+              (overridden ? " · OVERRIDE" : "") +
+              "</span>" +
+              (h
+                ? '<div class="roster-party-slot__hero"><span class="wow-icon-frame wow-icon-frame--md wow-icon-frame--class-' +
+                  esc(h.classId) +
+                  '"><img src="' +
+                  Icons.resolve("race", h.race) +
+                  '" alt=""></span><span><strong>' +
+                  esc(h.name) +
+                  "</strong><small>" +
+                  (overridden ? "Hero override" : "Inherited from Party") +
+                  "</small></span>" +
+                  (overridden ? '<button type="button" title="Clear override">↺</button>' : "") +
+                  "</div>"
+                : '<div class="roster-party-slot__empty">Drop hero override</div>');
+            t.querySelectorAll("img").forEach(Icons.bindFallback);
+            t.addEventListener("dragover", e => {
+              if (drag?.type === "hero") {
+                e.preventDefault();
+                t.classList.add("is-drop-target");
+              }
+            });
+            t.addEventListener("dragleave", () => t.classList.remove("is-drop-target"));
+            t.addEventListener("drop", e => {
+              if (drag?.type !== "hero") return;
+              e.preventDefault();
+              try {
+                Roster.setSiegeOverride(index, group.id, slot.id, drag.heroId);
+              } catch (error) {
+                toast(error.message);
+              }
+              drag = null;
+            });
+            const clear = t.querySelector("button");
+            if (clear)
+              clear.addEventListener("click", () =>
+                Roster.setSiegeOverride(index, group.id, slot.id, null)
+              );
+            grid.appendChild(t);
+          });
+          groups.appendChild(ge);
+        });
+        card.appendChild(editor);
+      }
+      root.appendChild(card);
+    });
+  };
+  draw();
 }
 
-async function render(){closePicker();renderRail();renderPartyManager();renderRaidManager();renderSiegeManager();const active=hero();if(!active){state.selectedId=null;$("heroDetail").hidden=true;return;}if(!Roster.hero(state.selectedId))state.selectedId=active.id;renderIdentity();renderEquipment();renderRacial();renderPrimaryStats(active);await Promise.all([renderCombatLoadout(),renderTalentTab()]);activateHeroTab(state.activeTab,{syncUrl:false});}
-async function init(){try{$("closeHeroDetail").addEventListener("click",()=>{$("heroDetail").hidden=true;closePicker();});document.querySelectorAll("[data-hero-tab]").forEach(button=>button.addEventListener("click",()=>activateHeroTab(button.dataset.heroTab,{syncUrl:true,focus:false})));[state.classIndex,state.raceIndex]=await Promise.all([json(CLASS_ROOT+"index.json"),json(RACE_ROOT+"index.json")]);state.items=Equipment.owned();["heroGearTierFilter","heroGearSlotFilter","heroGearSearch","heroGearEquippableOnly"].forEach(id=>$(id).addEventListener(id==="heroGearSearch"?"input":"change",syncGearFilters));const params=new URLSearchParams(window.location.search),requestedHero=params.get("hero"),requestedTab=normalizeHeroTab(params.get("tab")),directHero=requestedHero&&Roster.hero(requestedHero);state.selectedId=directHero?directHero.id:(Roster.getState().heroes[0]?.id||null);state.activeTab=requestedTab;$("heroDetail").hidden=!directHero;Icons.hydrate(document);Tooltips.hydrate(document);window.addEventListener("warcraft:roster-changed",()=>render());document.addEventListener("click",e=>{if(!e.target.closest(".hero-item-picker")&&!e.target.closest(".hero-ability-picker")&&!e.target.closest(".hero-equip-slot")&&!e.target.closest(".hero-action-slot"))closePicker();});document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(document.querySelector(".hero-item-picker,.hero-ability-picker")){e.preventDefault();closePicker();return;}$("heroDetail").hidden=true;});await render();if(directHero)activateHeroTab(requestedTab,{syncUrl:false,focus:false});window.WarcraftHeroWorkspace=Object.freeze({tabs:HERO_TABS.slice(),open:openHeroWorkspace,openTalents:heroId=>openHeroWorkspace(heroId,"talents"),activateTab:tab=>activateHeroTab(tab,{syncUrl:true})});}catch(e){toast(e.message);}}
+async function render() {
+  closePicker();
+  renderRail();
+  renderPartyManager();
+  renderRaidManager();
+  renderSiegeManager();
+  const active = hero();
+  if (!active) {
+    state.selectedId = null;
+    $("heroDetail").hidden = true;
+    return;
+  }
+  if (!Roster.hero(state.selectedId)) state.selectedId = active.id;
+  renderIdentity();
+  renderEquipment();
+  renderRacial();
+  renderPrimaryStats(active);
+  await Promise.all([renderCombatLoadout(), renderTalentTab()]);
+  activateHeroTab(state.activeTab, { syncUrl: false });
+}
+async function init() {
+  try {
+    $("closeHeroDetail").addEventListener("click", () => {
+      $("heroDetail").hidden = true;
+      closePicker();
+    });
+    document
+      .querySelectorAll("[data-hero-tab]")
+      .forEach(button =>
+        button.addEventListener("click", () =>
+          activateHeroTab(button.dataset.heroTab, { syncUrl: true, focus: false })
+        )
+      );
+    [state.classIndex, state.raceIndex] = await Promise.all([
+      json(CLASS_ROOT + "index.json"),
+      json(RACE_ROOT + "index.json")
+    ]);
+    state.items = Equipment.owned();
+    [
+      "heroGearTierFilter",
+      "heroGearSlotFilter",
+      "heroGearSearch",
+      "heroGearEquippableOnly"
+    ].forEach(id =>
+      $(id).addEventListener(id === "heroGearSearch" ? "input" : "change", syncGearFilters)
+    );
+    const params = new URLSearchParams(window.location.search),
+      requestedHero = params.get("hero"),
+      requestedTab = normalizeHeroTab(params.get("tab")),
+      directHero = requestedHero && Roster.hero(requestedHero);
+    state.selectedId = directHero ? directHero.id : Roster.getState().heroes[0]?.id || null;
+    state.activeTab = requestedTab;
+    $("heroDetail").hidden = !directHero;
+    Icons.hydrate(document);
+    Tooltips.hydrate(document);
+    window.addEventListener("warcraft:roster-changed", () => render());
+    document.addEventListener("click", e => {
+      if (
+        !e.target.closest(".hero-item-picker") &&
+        !e.target.closest(".hero-ability-picker") &&
+        !e.target.closest(".hero-equip-slot") &&
+        !e.target.closest(".hero-action-slot")
+      )
+        closePicker();
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key !== "Escape") return;
+      if (document.querySelector(".hero-item-picker,.hero-ability-picker")) {
+        e.preventDefault();
+        closePicker();
+        return;
+      }
+      $("heroDetail").hidden = true;
+    });
+    await render();
+    if (directHero) activateHeroTab(requestedTab, { syncUrl: false, focus: false });
+    window.WarcraftHeroWorkspace = Object.freeze({
+      tabs: HERO_TABS.slice(),
+      open: openHeroWorkspace,
+      openTalents: heroId => openHeroWorkspace(heroId, "talents"),
+      activateTab: tab => activateHeroTab(tab, { syncUrl: true })
+    });
+  } catch (e) {
+    toast(e.message);
+  }
+}
 init();

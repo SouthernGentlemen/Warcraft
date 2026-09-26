@@ -3,7 +3,7 @@
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 50% -18%, rgba(183,139,59,.08), transparent 28%),
+    radial-gradient(circle at 50% -18%, rgba(183, 139, 59, 0.08), transparent 28%),
     var(--wow-bg-canvas);
   color: var(--wow-text);
   font-family: var(--wow-font-ui);
@@ -71,13 +71,13 @@
   color: var(--wow-text-dim);
   font-size: 6px;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .inventory-toolbar {
   display: grid;
-  grid-template-columns: 150px 140px minmax(180px,1fr) auto;
+  grid-template-columns: 150px 140px minmax(180px, 1fr) auto;
   align-items: end;
   gap: 8px;
   padding: 9px 10px;
@@ -111,7 +111,7 @@
   color: var(--wow-text-dim);
   font-size: 7px;
   font-weight: 800;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -127,13 +127,13 @@
   min-width: 0;
   min-height: 64px;
   display: grid;
-  grid-template-columns: 48px minmax(0,1fr);
+  grid-template-columns: 48px minmax(0, 1fr);
   grid-template-rows: auto auto;
   align-items: center;
   gap: 2px 8px;
   padding: 7px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0,0,0,.2);
+  background: rgba(0, 0, 0, 0.2);
   color: var(--wow-text);
   text-align: left;
   cursor: help;
@@ -143,7 +143,7 @@
 .inventory-item:focus-visible {
   border-color: var(--wow-gold-muted);
   outline: none;
-  background: rgba(183,139,59,.07);
+  background: rgba(183, 139, 59, 0.07);
 }
 
 .inventory-item.is-equipped {
@@ -286,7 +286,7 @@
   }
 
   .inventory-item {
-    grid-template-columns: 42px minmax(0,1fr);
+    grid-template-columns: 42px minmax(0, 1fr);
     padding: 6px;
   }
 

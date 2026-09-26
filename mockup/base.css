@@ -5,7 +5,7 @@
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 50% -18%, rgba(183,139,59,.07), transparent 28%),
+    radial-gradient(circle at 50% -18%, rgba(183, 139, 59, 0.07), transparent 28%),
     var(--wow-bg-canvas);
   color: var(--wow-text);
   font-family: var(--wow-font-ui);
@@ -25,7 +25,7 @@
   height: calc(100dvh - var(--wow-nav-height));
   min-height: 560px;
   display: grid;
-  grid-template-columns: minmax(0,1fr);
+  grid-template-columns: auto minmax(0, 1fr);
   overflow: hidden;
   background: var(--wow-bg-deep);
 }
@@ -35,7 +35,7 @@
   min-height: 0;
   max-width: 100%;
   display: grid;
-  grid-template-rows: 44px minmax(0,1fr);
+  grid-template-rows: 44px minmax(0, 1fr) auto;
   background: var(--wow-bg-deep);
 }
 
@@ -54,15 +54,15 @@
   overflow: visible;
   border-width: 0 0 var(--wow-border-thin);
   border-radius: 0;
-  background: linear-gradient(180deg, rgba(31,35,38,.98), rgba(14,17,19,.96));
-  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  background: linear-gradient(180deg, rgba(31, 35, 38, 0.98), rgba(14, 17, 19, 0.96));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
 }
 
 .base-resource-counter {
-  width: min(172px,28vw);
+  width: min(172px, 28vw);
   min-width: 124px;
   display: grid;
-  grid-template-columns: 26px minmax(0,1fr);
+  grid-template-columns: 26px minmax(0, 1fr);
   align-items: center;
   gap: 6px;
   padding: 3px 12px;
@@ -96,7 +96,7 @@
   color: var(--wow-text-dim);
   font-size: 7px;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -122,21 +122,30 @@
   border: 0;
   border-radius: 0;
   background:
-    linear-gradient(180deg, rgba(55,79,92,.62) 0 20%, transparent 20%),
+    linear-gradient(180deg, rgba(55, 79, 92, 0.62) 0 20%, transparent 20%),
     linear-gradient(180deg, #20353d 0 20%, #243628 20% 100%);
   box-shadow:
-    inset 0 16px 30px rgba(0,0,0,.18),
-    inset 0 0 80px rgba(0,0,0,.22);
+    inset 0 16px 30px rgba(0, 0, 0, 0.18),
+    inset 0 0 80px rgba(0, 0, 0, 0.22);
 }
 
 .base-map-backdrop {
   position: absolute;
   inset: 0;
-  opacity: .72;
+  opacity: 0.72;
   background:
-    radial-gradient(circle at 18% 12%, rgba(236,225,175,.08), transparent 17%),
-    linear-gradient(145deg, transparent 0 12%, rgba(48,70,48,.34) 12% 15%, transparent 15% 34%, rgba(38,58,40,.38) 34% 38%, transparent 38% 62%, rgba(44,65,42,.32) 62% 65%, transparent 65%),
-    repeating-linear-gradient(22deg, rgba(255,255,255,.012) 0 2px, transparent 2px 18px);
+    radial-gradient(circle at 18% 12%, rgba(236, 225, 175, 0.08), transparent 17%),
+    linear-gradient(
+      145deg,
+      transparent 0 12%,
+      rgba(48, 70, 48, 0.34) 12% 15%,
+      transparent 15% 34%,
+      rgba(38, 58, 40, 0.38) 34% 38%,
+      transparent 38% 62%,
+      rgba(44, 65, 42, 0.32) 62% 65%,
+      transparent 65%
+    ),
+    repeating-linear-gradient(22deg, rgba(255, 255, 255, 0.012) 0 2px, transparent 2px 18px);
 }
 
 .base-map::after {
@@ -150,28 +159,46 @@
 
 .base-map.is-alliance {
   background:
-    linear-gradient(180deg, rgba(63,91,118,.72) 0 20%, transparent 20%),
+    linear-gradient(180deg, rgba(63, 91, 118, 0.72) 0 20%, transparent 20%),
     linear-gradient(180deg, #20384a 0 20%, #27412e 20% 100%);
 }
 
 .base-map.is-alliance .base-map-backdrop {
   background:
-    radial-gradient(circle at 18% 12%, rgba(236,225,175,.11), transparent 17%),
-    linear-gradient(145deg, transparent 0 12%, rgba(52,78,55,.38) 12% 15%, transparent 15% 34%, rgba(37,61,43,.4) 34% 38%, transparent 38% 62%, rgba(48,72,47,.34) 62% 65%, transparent 65%),
-    repeating-linear-gradient(22deg, rgba(255,255,255,.014) 0 2px, transparent 2px 18px);
+    radial-gradient(circle at 18% 12%, rgba(236, 225, 175, 0.11), transparent 17%),
+    linear-gradient(
+      145deg,
+      transparent 0 12%,
+      rgba(52, 78, 55, 0.38) 12% 15%,
+      transparent 15% 34%,
+      rgba(37, 61, 43, 0.4) 34% 38%,
+      transparent 38% 62%,
+      rgba(48, 72, 47, 0.34) 62% 65%,
+      transparent 65%
+    ),
+    repeating-linear-gradient(22deg, rgba(255, 255, 255, 0.014) 0 2px, transparent 2px 18px);
 }
 
 .base-map.is-horde {
   background:
-    linear-gradient(180deg, rgba(126,62,42,.64) 0 20%, transparent 20%),
+    linear-gradient(180deg, rgba(126, 62, 42, 0.64) 0 20%, transparent 20%),
     linear-gradient(180deg, #4a2b27 0 20%, #4a3525 20% 100%);
 }
 
 .base-map.is-horde .base-map-backdrop {
   background:
-    radial-gradient(circle at 78% 10%, rgba(238,167,90,.12), transparent 19%),
-    linear-gradient(145deg, transparent 0 11%, rgba(93,54,33,.36) 11% 16%, transparent 16% 36%, rgba(75,41,29,.4) 36% 41%, transparent 41% 64%, rgba(97,58,34,.34) 64% 68%, transparent 68%),
-    repeating-linear-gradient(-18deg, rgba(255,220,170,.018) 0 2px, transparent 2px 17px);
+    radial-gradient(circle at 78% 10%, rgba(238, 167, 90, 0.12), transparent 19%),
+    linear-gradient(
+      145deg,
+      transparent 0 11%,
+      rgba(93, 54, 33, 0.36) 11% 16%,
+      transparent 16% 36%,
+      rgba(75, 41, 29, 0.4) 36% 41%,
+      transparent 41% 64%,
+      rgba(97, 58, 34, 0.34) 64% 68%,
+      transparent 68%
+    ),
+    repeating-linear-gradient(-18deg, rgba(255, 220, 170, 0.018) 0 2px, transparent 2px 17px);
 }
 
 .base-map.is-horde::after {
@@ -180,17 +207,17 @@
 
 .base-map.is-horde .base-river {
   background: linear-gradient(90deg, #36404a, #5f5960, #343943);
-  opacity: .42;
+  opacity: 0.42;
 }
 
 .base-map.is-horde .base-road {
   background: #866346;
-  border-color: rgba(74,38,25,.58);
+  border-color: rgba(74, 38, 25, 0.58);
 }
 
 .base-map.is-horde .base-tree-cluster {
-  opacity: .42;
-  filter: sepia(.35) drop-shadow(0 4px 3px rgba(0,0,0,.36));
+  opacity: 0.42;
+  filter: sepia(0.35) drop-shadow(0 4px 3px rgba(0, 0, 0, 0.36));
 }
 
 .base-map.is-horde .base-tree-cluster::before {
@@ -201,40 +228,67 @@
   border-bottom-color: #4a3022;
 }
 
-
 .base-river {
   position: absolute;
   border-radius: 50%;
-  opacity: .62;
+  opacity: 0.62;
   background: linear-gradient(90deg, #25485c, #527789, #284b5f);
-  box-shadow: inset 0 0 13px rgba(183,211,222,.12);
+  box-shadow: inset 0 0 13px rgba(183, 211, 222, 0.12);
   transform: rotate(-13deg);
 }
 
-.river-a { width:56%; height:8%; left:-12%; bottom:20%; }
-.river-b { width:42%; height:7%; right:-12%; top:36%; transform:rotate(21deg); }
+.river-a {
+  width: 56%;
+  height: 8%;
+  left: -12%;
+  bottom: 20%;
+}
+.river-b {
+  width: 42%;
+  height: 7%;
+  right: -12%;
+  top: 36%;
+  transform: rotate(21deg);
+}
 
 .base-road {
   position: absolute;
   height: 12px;
-  opacity: .72;
-  border: 1px solid rgba(68,55,36,.4);
+  opacity: 0.72;
+  border: 1px solid rgba(68, 55, 36, 0.4);
   border-radius: 99px;
   background: #706448;
-  box-shadow: inset 0 0 0 1px rgba(180,160,109,.14), 0 2px 3px rgba(0,0,0,.25);
+  box-shadow:
+    inset 0 0 0 1px rgba(180, 160, 109, 0.14),
+    0 2px 3px rgba(0, 0, 0, 0.25);
   transform-origin: left center;
 }
 
-.road-a { width:48%; left:18%; top:46%; transform:rotate(-15deg); }
-.road-b { width:42%; left:45%; top:43%; transform:rotate(19deg); }
-.road-c { width:54%; left:24%; top:67%; transform:rotate(2deg); }
+.road-a {
+  width: 48%;
+  left: 18%;
+  top: 46%;
+  transform: rotate(-15deg);
+}
+.road-b {
+  width: 42%;
+  left: 45%;
+  top: 43%;
+  transform: rotate(19deg);
+}
+.road-c {
+  width: 54%;
+  left: 24%;
+  top: 67%;
+  transform: rotate(2deg);
+}
 
 .base-tree-cluster {
   position: absolute;
   width: 92px;
   height: 58px;
-  opacity: .58;
-  filter: drop-shadow(0 4px 3px rgba(0,0,0,.32));
+  opacity: 0.58;
+  filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.32));
 }
 
 .base-tree-cluster::before,
@@ -249,75 +303,33 @@
   border-bottom: 52px solid #183125;
 }
 
-.base-tree-cluster::before { left: 2px; }
-.base-tree-cluster::after { right: 3px; border-bottom-color:#213c2b; }
-.trees-a { left:5%; top:13%; }
-.trees-b { right:5%; top:18%; transform:scale(.8); }
-.trees-c { left:7%; bottom:8%; transform:scale(1.15); }
-
-/* Compact player action dock */
-
-.base-action-dock {
-  position: absolute;
-  z-index: 24;
-  left: 10px;
-  top: 50%;
-  width: 72px;
-  display: grid;
-  gap: 1px;
-  padding: 2px;
-  transform: translateY(-50%);
-  border-radius: var(--wow-radius-tight);
-  background: rgba(8,10,11,.9);
-  box-shadow: 0 8px 20px rgba(0,0,0,.38);
+.base-tree-cluster::before {
+  left: 2px;
 }
-
-.base-action-dock__item {
-  min-width: 0;
-  min-height: 58px;
-  display: grid;
-  justify-items: center;
-  align-content: center;
-  gap: 4px;
-  padding: 5px 3px;
-  border: var(--wow-border-thin) solid transparent;
-  background: rgba(24,29,32,.94);
-  color: var(--wow-text-muted);
-  text-decoration: none;
+.base-tree-cluster::after {
+  right: 3px;
+  border-bottom-color: #213c2b;
 }
-
-.base-action-dock__item:hover,
-.base-action-dock__item:focus-visible {
-  position: relative;
-  z-index: 2;
-  border-color: var(--wow-gold-muted);
-  outline: none;
-  background: linear-gradient(180deg, rgba(53,49,35,.98), rgba(24,25,20,.98));
-  color: var(--wow-gold-pale);
+.trees-a {
+  left: 5%;
+  top: 13%;
 }
-
-.base-action-dock__icon {
-  --wow-icon-size: 32px;
+.trees-b {
+  right: 5%;
+  top: 18%;
+  transform: scale(0.8);
 }
-
-.base-action-dock__label {
-  max-width: 62px;
-  overflow: hidden;
-  font-size: 6px;
-  font-weight: 800;
-  letter-spacing: .04em;
-  line-height: 1.15;
-  text-align: center;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
+.trees-c {
+  left: 7%;
+  bottom: 8%;
+  transform: scale(1.15);
 }
 
 /* Clickable buildings */
 
 .base-plot {
-  --x:50%;
-  --y:50%;
+  --x: 50%;
+  --y: 50%;
   position: absolute;
   z-index: 8;
   left: var(--x);
@@ -331,7 +343,7 @@
   align-content: start;
   gap: 4px;
   padding: 0;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   border: 0;
   background: transparent;
   color: var(--wow-text);
@@ -343,8 +355,11 @@
 .plot-art {
   --wow-icon-size: 50px;
   --wow-icon-accent: var(--wow-gold-muted);
-  filter: drop-shadow(0 5px 5px rgba(0,0,0,.42));
-  transition: transform .1s ease, filter .1s ease, box-shadow .1s ease;
+  filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.42));
+  transition:
+    transform 0.1s ease,
+    filter 0.1s ease,
+    box-shadow 0.1s ease;
 }
 
 .base-plot.keep .plot-art {
@@ -355,10 +370,10 @@
   min-width: 96px;
   max-width: 124px;
   padding: 3px 6px;
-  border: var(--wow-border-thin) solid rgba(183,139,59,.62);
+  border: var(--wow-border-thin) solid rgba(183, 139, 59, 0.62);
   border-radius: var(--wow-radius-tight);
-  background: rgba(10,12,13,.88);
-  box-shadow: 0 2px 5px rgba(0,0,0,.45);
+  background: rgba(10, 12, 13, 0.88);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
   white-space: nowrap;
   text-align: center;
 }
@@ -380,7 +395,7 @@
 .base-plot:focus-visible .plot-art,
 .base-plot.selected .plot-art {
   transform: translateY(-1px);
-  filter: brightness(1.12) drop-shadow(0 5px 6px rgba(0,0,0,.48));
+  filter: brightness(1.12) drop-shadow(0 5px 6px rgba(0, 0, 0, 0.48));
 }
 
 .base-plot:focus-visible .plot-art,
@@ -392,44 +407,6 @@
 .base-plot.selected .plot-label {
   border-color: var(--wow-gold-bright);
   color: var(--wow-gold-pale);
-}
-
-.base-map-caption {
-  position: absolute;
-  z-index: 12;
-  left: 14px;
-  bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 6px 9px;
-  border-radius: var(--wow-radius-tight);
-  background: rgba(10,12,13,.84);
-}
-
-.base-map-caption__crest {
-  width: 28px;
-  height: 28px;
-  flex: 0 0 28px;
-}
-
-.base-map-caption__copy {
-  min-width: 0;
-  display: grid;
-}
-
-.base-map-caption__copy strong {
-  color: var(--wow-gold-pale);
-  font: 700 12px var(--wow-font-display);
-}
-
-.base-map-caption__copy small {
-  display: block;
-  margin-top: 2px;
-  color: var(--wow-text-dim);
-  font-size: 7px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
 }
 
 /* Single attention marker per building */
@@ -445,19 +422,21 @@
 .base-plot-attention .wow-icon-frame {
   --wow-icon-size: 21px;
   border-width: 1px;
-  box-shadow: 0 1px 4px rgba(0,0,0,.58);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.58);
 }
 
 .base-plot-attention.is-upgrade-ready .wow-icon-frame,
 .base-plot-attention.is-quest-ready .wow-icon-frame,
 .base-plot-attention.is-quest-complete .wow-icon-frame,
 .base-plot-attention.is-profession-action .wow-icon-frame {
-  box-shadow: 0 0 0 1px rgba(0,0,0,.72), 0 0 8px rgba(214,182,95,.42);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.72),
+    0 0 8px rgba(214, 182, 95, 0.42);
 }
 
 .base-plot-attention.is-blocked {
-  opacity: .6;
-  filter: grayscale(.28);
+  opacity: 0.6;
+  filter: grayscale(0.28);
 }
 
 .base-plot[data-attention-state="quest-complete"] .plot-label {
@@ -474,7 +453,7 @@
 }
 
 .base-plot[data-attention-state="blocked"] .plot-label {
-  border-color: rgba(185,139,52,.38);
+  border-color: rgba(185, 139, 52, 0.38);
 }
 
 /* Reusable building sidecar */
@@ -489,17 +468,17 @@
   top: var(--wow-nav-height);
   right: 0;
   bottom: 0;
-  width: min(390px,34vw);
+  width: min(390px, 34vw);
   min-width: 320px;
   display: grid;
-  grid-template-rows: auto minmax(0,1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   margin: 0;
   overflow: hidden;
   overscroll-behavior: contain;
   border-width: 0 0 0 var(--wow-border);
   border-radius: 0;
-  background: linear-gradient(180deg, rgba(29,32,35,.99), rgba(10,12,14,.99));
-  box-shadow: -14px 0 34px rgba(0,0,0,.56);
+  background: linear-gradient(180deg, rgba(29, 32, 35, 0.99), rgba(10, 12, 14, 0.99));
+  box-shadow: -14px 0 34px rgba(0, 0, 0, 0.56);
 }
 
 .base-sidecar__header {
@@ -608,13 +587,13 @@
   width: 100%;
   min-height: 52px;
   display: grid;
-  grid-template-columns: 38px minmax(0,1fr);
+  grid-template-columns: 38px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
   border-radius: var(--wow-radius-tight);
-  background: linear-gradient(180deg, rgba(38,43,46,.96), rgba(18,21,23,.96));
+  background: linear-gradient(180deg, rgba(38, 43, 46, 0.96), rgba(18, 21, 23, 0.96));
   color: var(--wow-text);
   text-align: left;
   text-decoration: none;
@@ -624,7 +603,7 @@
 .base-sidecar__menu-item:focus-visible {
   border-color: var(--wow-gold-muted);
   outline: none;
-  background: linear-gradient(180deg, rgba(57,53,38,.98), rgba(28,27,22,.98));
+  background: linear-gradient(180deg, rgba(57, 53, 38, 0.98), rgba(28, 27, 22, 0.98));
 }
 
 .base-sidecar__menu-icon {
@@ -649,7 +628,7 @@
   color: var(--wow-text-dim);
   font-size: 7px;
   font-weight: 800;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -689,13 +668,13 @@
   min-width: 0;
   min-height: 50px;
   display: grid;
-  grid-template-columns: 36px minmax(0,1fr) auto;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
   align-items: center;
   gap: 7px;
   padding: 6px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
   border-radius: var(--wow-radius-tight);
-  background: rgba(0,0,0,.18);
+  background: rgba(0, 0, 0, 0.18);
   color: var(--wow-text);
   text-align: left;
   cursor: help;
@@ -705,7 +684,7 @@
 .base-sidecar__storage-item:focus-visible {
   border-color: var(--wow-gold-muted);
   outline: none;
-  background: rgba(183,139,59,.07);
+  background: rgba(183, 139, 59, 0.07);
 }
 
 .base-sidecar__storage-item.is-equipment {
@@ -760,7 +739,7 @@
 
 .base-sidecar__recruitment-head {
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
   margin-bottom: 6px;
 }
@@ -771,7 +750,7 @@
   gap: 1px;
   padding: 6px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0,0,0,.18);
+  background: rgba(0, 0, 0, 0.18);
 }
 
 .base-sidecar__recruitment-head strong {
@@ -792,7 +771,7 @@
   align-items: center;
   padding: 5px 7px;
   border: var(--wow-border-thin) solid var(--wow-inset-line);
-  background: rgba(0,0,0,.14);
+  background: rgba(0, 0, 0, 0.14);
 }
 
 .base-sidecar__candidate-list {
@@ -804,7 +783,7 @@
 .base-sidecar__candidate {
   min-width: 0;
   display: grid;
-  grid-template-columns: 34px minmax(0,1fr) auto;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
   gap: 7px;
   padding: 6px;
@@ -813,7 +792,7 @@
 }
 
 .base-sidecar__candidate.is-recruited {
-  opacity: .62;
+  opacity: 0.62;
 }
 
 .base-sidecar__candidate-icon {
@@ -876,7 +855,7 @@
   min-width: 0;
   min-height: 48px;
   display: grid;
-  grid-template-columns: 34px minmax(0,1fr);
+  grid-template-columns: 34px minmax(0, 1fr);
   align-items: center;
   gap: 7px;
   padding: 6px;
@@ -891,7 +870,7 @@
 .base-sidecar__profession-entry:focus-visible {
   border-color: var(--wow-gold-muted);
   outline: none;
-  background: rgba(183,139,59,.07);
+  background: rgba(183, 139, 59, 0.07);
 }
 
 .base-sidecar__profession-icon {
@@ -950,7 +929,7 @@
   margin: 0 0 7px;
   padding: 6px 7px;
   border: var(--wow-border-thin) solid var(--wow-inset-line);
-  background: rgba(0,0,0,.18);
+  background: rgba(0, 0, 0, 0.18);
   color: var(--wow-text-muted);
   font-size: 8px;
   line-height: 1.35;
@@ -969,7 +948,7 @@
 }
 
 .quest-offer-card.is-locked {
-  opacity: .58;
+  opacity: 0.58;
 }
 
 .quest-offer-card.is-active,
@@ -987,7 +966,7 @@
 
 .quest-offer-head {
   display: grid;
-  grid-template-columns: auto auto minmax(0,1fr);
+  grid-template-columns: auto auto minmax(0, 1fr);
   align-items: center;
   gap: 7px;
 }
@@ -1025,7 +1004,7 @@
 
 .quest-selection {
   display: grid;
-  grid-template-columns: minmax(0,1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
   gap: 5px;
   margin-top: 5px;
@@ -1034,7 +1013,7 @@
 .quest-adhoc {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2px;
   max-height: 120px;
   overflow: auto;
@@ -1065,7 +1044,7 @@
 
 .quest-offer-card[data-party-size="20"] .quest-adhoc {
   max-height: 260px;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .quest-offer-card[data-party-size="20"] .quest-hero-choice {
@@ -1092,7 +1071,7 @@
 
 .quest-board-mode-tabs {
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
   margin-bottom: 7px;
 }
@@ -1108,7 +1087,7 @@
   isolation: isolate;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
   background:
-    radial-gradient(circle at 50% 48%, rgba(91,135,153,.16), transparent 34%),
+    radial-gradient(circle at 50% 48%, rgba(91, 135, 153, 0.16), transparent 34%),
     linear-gradient(180deg, #13242d, #0b161d);
 }
 
@@ -1118,10 +1097,16 @@
   z-index: -3;
   inset: 0;
   background:
-    repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,.018) 0 1px, transparent 1px 16px),
-    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
-  background-size: auto, 28px 100%;
-  opacity: .7;
+    repeating-radial-gradient(
+      circle at 50% 50%,
+      rgba(255, 255, 255, 0.018) 0 1px,
+      transparent 1px 16px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size:
+    auto,
+    28px 100%;
+  opacity: 0.7;
 }
 
 .dungeon-map__continent {
@@ -1129,15 +1114,19 @@
   z-index: -1;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(149,117,64,.32);
-  background:
-    radial-gradient(circle at 45% 35%, rgba(107,108,67,.82), rgba(48,69,45,.9) 58%, rgba(38,48,35,.94));
+  border: 1px solid rgba(149, 117, 64, 0.32);
+  background: radial-gradient(
+    circle at 45% 35%,
+    rgba(107, 108, 67, 0.82),
+    rgba(48, 69, 45, 0.9) 58%,
+    rgba(38, 48, 35, 0.94)
+  );
   box-shadow:
-    inset 0 0 18px rgba(0,0,0,.36),
-    0 8px 18px rgba(0,0,0,.24);
-  color: rgba(225,209,160,.38);
+    inset 0 0 18px rgba(0, 0, 0, 0.36),
+    0 8px 18px rgba(0, 0, 0, 0.24);
+  color: rgba(225, 209, 160, 0.38);
   font: 700 9px var(--wow-font-display);
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -1146,7 +1135,21 @@
   top: 8%;
   width: 35%;
   height: 80%;
-  clip-path: polygon(34% 0,62% 6%,78% 20%,72% 34%,88% 48%,76% 62%,80% 77%,60% 100%,34% 92%,20% 73%,25% 57%,8% 40%,18% 22%);
+  clip-path: polygon(
+    34% 0,
+    62% 6%,
+    78% 20%,
+    72% 34%,
+    88% 48%,
+    76% 62%,
+    80% 77%,
+    60% 100%,
+    34% 92%,
+    20% 73%,
+    25% 57%,
+    8% 40%,
+    18% 22%
+  );
 }
 
 .dungeon-map__continent.is-eastern-kingdoms {
@@ -1154,7 +1157,21 @@
   top: 8%;
   width: 31%;
   height: 81%;
-  clip-path: polygon(48% 0,74% 9%,66% 24%,83% 37%,70% 50%,87% 65%,73% 82%,52% 100%,31% 88%,36% 71%,18% 57%,30% 40%,19% 22%);
+  clip-path: polygon(
+    48% 0,
+    74% 9%,
+    66% 24%,
+    83% 37%,
+    70% 50%,
+    87% 65%,
+    73% 82%,
+    52% 100%,
+    31% 88%,
+    36% 71%,
+    18% 57%,
+    30% 40%,
+    19% 22%
+  );
 }
 
 .dungeon-map__hotspot {
@@ -1165,7 +1182,7 @@
   min-width: 28px;
   min-height: 28px;
   padding: 0;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   border: 0;
   background: transparent;
   color: var(--wow-text);
@@ -1176,7 +1193,9 @@
   --wow-icon-size: 25px;
   display: block;
   margin: 0 auto;
-  box-shadow: 0 0 0 1px #060708, 0 3px 8px rgba(0,0,0,.7);
+  box-shadow:
+    0 0 0 1px #060708,
+    0 3px 8px rgba(0, 0, 0, 0.7);
 }
 
 .dungeon-map__hotspot:hover .dungeon-map__marker,
@@ -1191,11 +1210,13 @@
 }
 
 .dungeon-map__hotspot.is-starter .dungeon-map__marker {
-  box-shadow: 0 0 0 2px var(--wow-success), 0 0 12px rgba(89,163,74,.48);
+  box-shadow:
+    0 0 0 2px var(--wow-success),
+    0 0 12px rgba(89, 163, 74, 0.48);
 }
 
 .dungeon-map__hotspot.is-locked {
-  opacity: .45;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -1207,8 +1228,8 @@
   max-width: 118px;
   transform: translateX(-50%);
   padding: 3px 4px;
-  border: 1px solid rgba(75,61,37,.68);
-  background: rgba(8,10,11,.9);
+  border: 1px solid rgba(75, 61, 37, 0.68);
+  background: rgba(8, 10, 11, 0.9);
   text-align: center;
   pointer-events: none;
 }
@@ -1281,7 +1302,7 @@
   margin-top: 7px;
   padding: 5px 7px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0,0,0,.16);
+  background: rgba(0, 0, 0, 0.16);
 }
 
 .dungeon-selection__result strong {
@@ -1306,7 +1327,7 @@
 
 .dungeon-party-picker {
   display: grid;
-  grid-template-columns: minmax(0,1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 6px;
   margin-top: 7px;
 }
@@ -1351,7 +1372,9 @@
   border-radius: var(--wow-radius-tight);
   background: var(--wow-surface-raised);
   color: var(--wow-gold-pale);
-  box-shadow: inset 0 0 0 1px var(--wow-gold-muted), 0 10px 30px rgba(0,0,0,.48);
+  box-shadow:
+    inset 0 0 0 1px var(--wow-gold-muted),
+    0 10px 30px rgba(0, 0, 0, 0.48);
   font-size: 9px;
 }
 
@@ -1359,7 +1382,7 @@
 
 @media (min-width: 701px) and (max-width: 1024px) {
   .base-sidecar {
-    width: min(420px,48vw);
+    width: min(420px, 48vw);
     min-width: 340px;
   }
 
@@ -1368,8 +1391,12 @@
     height: 78px;
   }
 
-  .plot-art { --wow-icon-size: 46px; }
-  .base-plot.keep .plot-art { --wow-icon-size: 58px; }
+  .plot-art {
+    --wow-icon-size: 46px;
+  }
+  .base-plot.keep .plot-art {
+    --wow-icon-size: 58px;
+  }
 
   .plot-label {
     min-width: 88px;
@@ -1378,39 +1405,6 @@
 }
 
 @media (max-width: 700px) {
-  .base-action-dock {
-    left: 50%;
-    top: auto;
-    bottom: 8px;
-    width: auto;
-    grid-template-columns: repeat(3, minmax(76px, 1fr));
-    gap: 1px;
-    transform: translateX(-50%);
-  }
-
-  .base-action-dock__item {
-    min-height: 50px;
-    grid-template-columns: 28px auto;
-    justify-items: start;
-    align-content: center;
-    gap: 5px;
-    padding: 5px 8px;
-  }
-
-  .base-action-dock__icon {
-    --wow-icon-size: 26px;
-  }
-
-  .base-action-dock__label {
-    max-width: 88px;
-    font-size: 6px;
-    text-align: left;
-  }
-
-  .base-map-caption {
-    bottom: 66px;
-  }
-
   .base-page {
     overflow-x: hidden;
   }
@@ -1422,12 +1416,12 @@
 
   .base-main-column {
     min-height: calc(100dvh - var(--wow-nav-height));
-    grid-template-rows: 44px minmax(620px,1fr);
+    grid-template-rows: 44px minmax(620px, 1fr);
   }
 
   .base-resource-bar {
     display: grid;
-    grid-template-columns: repeat(4,minmax(0,1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     justify-content: stretch;
     gap: 0;
     width: 100%;
@@ -1438,12 +1432,14 @@
   .base-resource-counter {
     width: auto;
     min-width: 0;
-    grid-template-columns: 22px minmax(0,1fr);
+    grid-template-columns: 22px minmax(0, 1fr);
     gap: 4px;
     padding: 3px 5px;
   }
 
-  .base-resource-icon { --wow-icon-size: 21px; }
+  .base-resource-icon {
+    --wow-icon-size: 21px;
+  }
 
   .base-resource-copy {
     min-width: 0;
@@ -1472,8 +1468,12 @@
     height: 70px;
   }
 
-  .plot-art { --wow-icon-size: 42px; }
-  .base-plot.keep .plot-art { --wow-icon-size: 52px; }
+  .plot-art {
+    --wow-icon-size: 42px;
+  }
+  .base-plot.keep .plot-art {
+    --wow-icon-size: 52px;
+  }
 
   .plot-label {
     min-width: 76px;
@@ -1481,19 +1481,12 @@
     padding: 3px 4px;
   }
 
-  .plot-label strong { font-size: 8px; }
-  .plot-label small { font-size: 6px; }
-
-
-  .base-map-caption {
-    left: 8px;
-    bottom: 8px;
-    padding: 5px 7px;
+  .plot-label strong {
+    font-size: 8px;
   }
-
-  .base-map-caption__copy strong { font-size: 10px; }
-  .base-map-caption__copy small { font-size: 6px; }
-  .base-map-caption__crest { width: 24px; height: 24px; flex-basis: 24px; }
+  .plot-label small {
+    font-size: 6px;
+  }
 
   .base-plot-attention {
     top: -1px;
@@ -1514,7 +1507,7 @@
     max-width: 100%;
     max-height: 62dvh;
     border-width: var(--wow-border) 0 0;
-    box-shadow: 0 -14px 34px rgba(0,0,0,.58);
+    box-shadow: 0 -14px 34px rgba(0, 0, 0, 0.58);
   }
 
   .base-sidecar__header {
@@ -1522,8 +1515,12 @@
     padding: 7px 8px 7px 10px;
   }
 
-  .base-sidecar__building-icon { --wow-icon-size: 44px; }
-  .base-sidecar__identity h2 { font-size: 16px; }
+  .base-sidecar__building-icon {
+    --wow-icon-size: 44px;
+  }
+  .base-sidecar__identity h2 {
+    font-size: 16px;
+  }
 
   .base-sidecar__close {
     width: 44px;
@@ -1534,7 +1531,7 @@
 
   .base-sidecar__body {
     max-height: calc(62dvh - 66px);
-    padding-bottom: max(8px,env(safe-area-inset-bottom));
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
   }
 
   .base-sidecar__section {
@@ -1556,28 +1553,12 @@
 }
 
 @media (max-width: 420px) {
-  .base-action-dock {
-    width: calc(100% - 12px);
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .base-resource-copy small {
+    font-size: 6px;
   }
-
-  .base-action-dock__item {
-    min-width: 0;
-    grid-template-columns: 24px minmax(0,1fr);
-    padding-inline: 5px;
+  .base-resource-copy strong {
+    font-size: 8px;
   }
-
-  .base-action-dock__icon {
-    --wow-icon-size: 23px;
-  }
-
-  .base-action-dock__label {
-    max-width: 100%;
-    font-size: 5px;
-  }
-
-  .base-resource-copy small { font-size: 6px; }
-  .base-resource-copy strong { font-size: 8px; }
 
   .base-plot {
     width: 72px;
@@ -1589,11 +1570,16 @@
     max-width: 80px;
   }
 
-  .plot-label strong { font-size: 7px; }
-  .base-map-caption__copy small { display: none; }
+  .plot-label strong {
+    font-size: 7px;
+  }
 
-  .base-sidecar { max-height: 66dvh; }
-  .base-sidecar__body { max-height: calc(66dvh - 66px); }
+  .base-sidecar {
+    max-height: 66dvh;
+  }
+  .base-sidecar__body {
+    max-height: calc(66dvh - 66px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1606,15 +1592,94 @@
 }
 
 /* WOWUI-077 — Class Hall */
-.class-hall{display:grid;gap:8px}.class-hall__head,.class-hall__assignment-head{display:flex;align-items:end;justify-content:space-between;gap:8px}.class-hall__head h3{margin:2px 0 0;color:var(--wow-gold-pale);font:700 14px var(--wow-font-display)}.class-hall__head small,.class-hall__assignment-head small{color:var(--wow-text-dim);font-size:7px}
-.class-hall__message{padding:5px 7px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:var(--wow-surface-inset);color:var(--wow-text-muted);font-size:7px;line-height:1.35}
-.class-hall__trainers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}.class-hall__trainer{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px;padding:5px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:var(--wow-surface);color:var(--wow-text);text-align:left}.class-hall__trainer:hover,.class-hall__trainer:focus-visible{border-color:var(--wow-gold);outline:none}.class-hall__trainer strong,.class-hall__trainer small{display:block}.class-hall__trainer strong{font-size:8px}.class-hall__trainer small{color:var(--wow-text-dim);font-size:7px}
-.class-hall__slots{display:grid;gap:6px}.class-hall__slot{display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:6px;align-items:center;padding:7px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:var(--wow-surface-inset)}.class-hall__slot.is-filled{border-color:rgba(183,139,59,.66)}.class-hall__slot.is-training{border-color:var(--wow-success);box-shadow:inset 0 0 10px rgba(89,163,74,.08)}.class-hall__slot-label span,.class-hall__slot-label small{display:block}.class-hall__slot-label span{color:var(--wow-gold-muted);font-size:7px;font-weight:800}.class-hall__slot-label small{margin-top:2px;color:var(--wow-text-dim);font-size:6px}
-.class-hall__hero-select{min-width:0}.class-hall__assign{min-width:62px}.class-hall__assignee{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px;align-items:center;min-width:0;color:var(--wow-text);text-decoration:none}.class-hall__assignee:hover strong,.class-hall__assignee:focus-visible strong{color:var(--wow-gold-bright)}.class-hall__assignee:focus-visible{outline:1px solid var(--wow-focus);outline-offset:2px}.class-hall__assignee strong,.class-hall__assignee small,.class-hall__assignee em{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.class-hall__assignee strong{font-size:9px}.class-hall__assignee small{color:var(--wow-text-dim);font-size:7px}.class-hall__assignee em{margin-top:2px;color:var(--wow-gold-muted);font-size:6px;font-style:normal;text-transform:uppercase}
-.class-hall__slot-status{min-width:110px;text-align:right}.class-hall__slot-status strong,.class-hall__slot-status small{display:block}.class-hall__slot-status strong{color:var(--wow-gold-pale);font-size:7px}.class-hall__slot-status small{margin-top:2px;color:var(--wow-text-dim);font-size:6px;line-height:1.25}.class-hall__slot-actions{grid-column:2/-1;display:flex;justify-content:flex-end;gap:4px}.class-hall__slot-actions .wow-button{font-size:7px}.class-hall__duration{color:var(--wow-success);font-size:7px;text-transform:uppercase}
-@media(max-width:700px){.class-hall__trainers{grid-template-columns:1fr}.class-hall__slot{grid-template-columns:54px minmax(0,1fr)}.class-hall__slot-status{grid-column:2;text-align:left}.class-hall__slot-actions{grid-column:1/-1}.class-hall__assign{grid-column:1/-1}.class-hall__hero-select{grid-column:2}}
+.class-hall {
+  display: grid;
+  gap: 8px;
+}
+.class-hall__head,
+.class-hall__assignment-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 8px;
+}
+.class-hall__head h3 {
+  margin: 2px 0 0;
+  color: var(--wow-gold-pale);
+  font: 700 14px var(--wow-font-display);
+}
+.class-hall__head small,
+.class-hall__assignment-head small {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+}
+.class-hall__message {
+  padding: 5px 7px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface-inset);
+  color: var(--wow-text-muted);
+  font-size: 7px;
+  line-height: 1.35;
+}
+.class-hall__trainers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+.class-hall__trainer {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  padding: 5px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface);
+  color: var(--wow-text);
+  text-align: left;
+}
+.class-hall__trainer:hover,
+.class-hall__trainer:focus-visible {
+  border-color: var(--wow-gold);
+  outline: none;
+}
+.class-hall__trainer strong,
+.class-hall__trainer small {
+  display: block;
+}
+.class-hall__trainer strong {
+  font-size: 8px;
+}
+.class-hall__trainer small {
+  color: var(--wow-text-dim);
+  font-size: 7px;
+}
+@media (max-width: 700px) {
+  .class-hall__trainers {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* WOWUI-080 — shared faction campaign clock in the Base HUD */
-.base-resource-bar > .campaign-clock{width:min(172px,28vw);min-width:126px;border-width:0 var(--wow-border-thin) 0 0;border-color:var(--wow-inset-line);background:transparent}
-@media(max-width:700px){.base-resource-bar > .campaign-clock{width:auto;min-width:0;border-width:0 var(--wow-border-thin) 0 0}}
-@media(max-width:420px){.base-resource-bar{grid-template-columns:repeat(2,minmax(0,1fr));min-height:72px}.base-main-column{grid-template-rows:72px minmax(620px,1fr)}}
+.base-resource-bar > .campaign-clock {
+  width: min(172px, 28vw);
+  min-width: 126px;
+  border-width: 0 var(--wow-border-thin) 0 0;
+  border-color: var(--wow-inset-line);
+  background: transparent;
+}
+@media (max-width: 700px) {
+  .base-resource-bar > .campaign-clock {
+    width: auto;
+    min-width: 0;
+    border-width: 0 var(--wow-border-thin) 0 0;
+  }
+}
+@media (max-width: 420px) {
+  .base-resource-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 72px;
+  }
+  .base-main-column {
+    grid-template-rows: 72px minmax(620px, 1fr);
+  }
+}

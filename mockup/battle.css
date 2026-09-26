@@ -4,7 +4,7 @@
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 50% -15%, rgba(183,139,59,.07), transparent 28%),
+    radial-gradient(circle at 50% -15%, rgba(183, 139, 59, 0.07), transparent 28%),
     var(--wow-bg-canvas);
   color: var(--wow-text);
   font-family: var(--wow-font-ui);
@@ -27,15 +27,21 @@
   z-index: 20;
   min-height: 94px;
   display: grid;
-  grid-template-columns: minmax(0,1fr) 230px minmax(0,1fr);
+  grid-template-columns: minmax(0, 1fr) 230px minmax(0, 1fr);
   align-items: center;
   gap: 16px;
   padding: 11px 14px;
   border-bottom: var(--wow-border) solid var(--wow-frame-edge);
   background:
-    linear-gradient(90deg, rgba(73,137,211,.07), transparent 30%, transparent 70%, rgba(185,67,63,.07)),
+    linear-gradient(
+      90deg,
+      rgba(73, 137, 211, 0.07),
+      transparent 30%,
+      transparent 70%,
+      rgba(185, 67, 63, 0.07)
+    ),
     linear-gradient(180deg, var(--wow-surface-raised), var(--wow-surface));
-  box-shadow: 0 5px 18px rgba(0,0,0,.46);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.46);
 }
 
 .team-summary {
@@ -82,7 +88,7 @@
   color: var(--wow-alliance-bright);
   font-size: 8px;
   font-weight: 900;
-  letter-spacing: .16em;
+  letter-spacing: 0.16em;
 }
 
 .horde-summary .team-faction {
@@ -144,7 +150,7 @@
   color: #eff9e8;
   font-size: 7px;
   font-weight: 900;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-shadow: 0 1px 2px #000;
 }
 
@@ -155,9 +161,14 @@
   max-width: 100%;
   height: 100%;
   transform-origin: left center;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--wow-health) 72%, white), var(--wow-health), var(--wow-health-dark));
-  box-shadow: inset 0 1px rgba(255,255,255,.24);
-  transition: width .22s ease;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--wow-health) 72%, white),
+    var(--wow-health),
+    var(--wow-health-dark)
+  );
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.24);
+  transition: width 0.22s ease;
   pointer-events: none;
 }
 
@@ -210,7 +221,7 @@
   color: var(--wow-text-dim);
   font-size: 7px;
   font-weight: 800;
-  letter-spacing: .14em;
+  letter-spacing: 0.14em;
 }
 
 .encounter-name strong {
@@ -238,7 +249,7 @@
   isolation: isolate;
   border: 0;
   background:
-    radial-gradient(circle at 50% 22%, rgba(112,143,160,.16), transparent 22%),
+    radial-gradient(circle at 50% 22%, rgba(112, 143, 160, 0.16), transparent 22%),
     linear-gradient(180deg, #172129 0, #101820 42%, #0b1115 72%, #080c0f 100%);
 }
 
@@ -248,9 +259,9 @@
   z-index: 0;
   inset: 0;
   background:
-    linear-gradient(180deg, transparent 0 58%, rgba(99,125,87,.08) 58% 59%, transparent 59%),
-    radial-gradient(ellipse at 18% 82%, rgba(53,78,58,.22), transparent 30%),
-    radial-gradient(ellipse at 82% 82%, rgba(52,72,58,.19), transparent 31%);
+    linear-gradient(180deg, transparent 0 58%, rgba(99, 125, 87, 0.08) 58% 59%, transparent 59%),
+    radial-gradient(ellipse at 18% 82%, rgba(53, 78, 58, 0.22), transparent 30%),
+    radial-gradient(ellipse at 82% 82%, rgba(52, 72, 58, 0.19), transparent 31%);
   pointer-events: none;
 }
 
@@ -263,8 +274,10 @@
   bottom: -54px;
   height: 150px;
   border-radius: 50% 50% 0 0;
-  background: rgba(30,45,35,.52);
-  box-shadow: 0 -28px 0 rgba(45,63,47,.25), 0 -55px 0 rgba(30,42,40,.13);
+  background: rgba(30, 45, 35, 0.52);
+  box-shadow:
+    0 -28px 0 rgba(45, 63, 47, 0.25),
+    0 -55px 0 rgba(30, 42, 40, 0.13);
   pointer-events: none;
 }
 
@@ -275,8 +288,8 @@
   width: 38%;
   height: 37%;
   background: #263844;
-  clip-path: polygon(0 100%,28% 45%,40% 68%,58% 17%,100% 100%);
-  opacity: .54;
+  clip-path: polygon(0 100%, 28% 45%, 40% 68%, 58% 17%, 100% 100%);
+  opacity: 0.54;
 }
 
 .mountain::after {
@@ -284,13 +297,36 @@
   position: absolute;
   inset: 0;
   background: #52616a;
-  clip-path: polygon(21% 57%,28% 45%,35% 57%,40% 68%,47% 51%,58% 17%,67% 41%,72% 35%,83% 68%,100% 100%,0 100%);
-  opacity: .32;
+  clip-path: polygon(
+    21% 57%,
+    28% 45%,
+    35% 57%,
+    40% 68%,
+    47% 51%,
+    58% 17%,
+    67% 41%,
+    72% 35%,
+    83% 68%,
+    100% 100%,
+    0 100%
+  );
+  opacity: 0.32;
 }
 
-.mountain-a { left: -7%; }
-.mountain-b { left: 31%; width: 43%; height: 32%; opacity: .36; }
-.mountain-c { right: -9%; transform: scaleX(-1); opacity: .48; }
+.mountain-a {
+  left: -7%;
+}
+.mountain-b {
+  left: 31%;
+  width: 43%;
+  height: 32%;
+  opacity: 0.36;
+}
+.mountain-c {
+  right: -9%;
+  transform: scaleX(-1);
+  opacity: 0.48;
+}
 
 .tree-line {
   position: absolute;
@@ -314,7 +350,7 @@
   top: 31%;
   color: #263f3a;
   font-size: 70px;
-  opacity: .5;
+  opacity: 0.5;
   filter: drop-shadow(0 22px 0 #233831);
 }
 
@@ -322,7 +358,7 @@
   bottom: 2%;
   color: #172c25;
   font-size: 108px;
-  opacity: .9;
+  opacity: 0.9;
   filter: drop-shadow(0 35px 0 #12251f);
 }
 
@@ -332,7 +368,7 @@
   min-height: 610px;
   width: min(1400px, 97%);
   display: grid;
-  grid-template-columns: minmax(0,1fr) 54px minmax(0,1fr);
+  grid-template-columns: minmax(0, 1fr) 54px minmax(0, 1fr);
   align-items: center;
   gap: 9px;
   margin: 0 auto;
@@ -341,7 +377,7 @@
 
 .combat-team {
   display: grid;
-  grid-template-columns: repeat(2, minmax(220px,1fr));
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
   grid-template-rows: repeat(3, auto);
   align-items: center;
   gap: 12px 13px;
@@ -367,7 +403,7 @@
   top: 8%;
   bottom: 8%;
   width: 1px;
-  background: linear-gradient(transparent, rgba(214,182,95,.16), transparent);
+  background: linear-gradient(transparent, rgba(214, 182, 95, 0.16), transparent);
 }
 
 .center-rune {
@@ -381,7 +417,9 @@
   border-radius: 50%;
   background: var(--wow-surface-inset);
   color: var(--wow-gold-muted);
-  box-shadow: inset 0 0 0 1px var(--wow-frame-edge), 0 4px 12px rgba(0,0,0,.45);
+  box-shadow:
+    inset 0 0 0 1px var(--wow-frame-edge),
+    0 4px 12px rgba(0, 0, 0, 0.45);
   font-size: 19px;
 }
 
@@ -392,7 +430,7 @@
   min-width: 0;
   min-height: 126px;
   display: grid;
-  grid-template-columns: 78px minmax(0,1fr);
+  grid-template-columns: 78px minmax(0, 1fr);
   gap: 8px;
   padding: 7px;
   border: 2px solid #07090a;
@@ -403,9 +441,12 @@
   box-shadow:
     inset 0 0 0 1px #3c4245,
     inset 0 0 0 3px #111518,
-    0 7px 15px rgba(0,0,0,.38);
+    0 7px 15px rgba(0, 0, 0, 0.38);
   color: var(--wow-text);
-  transition: opacity .2s ease, filter .2s ease, transform .2s ease;
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease,
+    transform 0.2s ease;
 }
 
 .alliance-combatant {
@@ -413,7 +454,7 @@
     inset 3px 0 0 var(--wow-alliance-deep),
     inset 0 0 0 1px #3c4245,
     inset 0 0 0 3px #111518,
-    0 7px 15px rgba(0,0,0,.38);
+    0 7px 15px rgba(0, 0, 0, 0.38);
 }
 
 .horde-combatant {
@@ -421,7 +462,7 @@
     inset 3px 0 0 var(--wow-horde-deep),
     inset 0 0 0 1px #3c4245,
     inset 0 0 0 3px #111518,
-    0 7px 15px rgba(0,0,0,.38);
+    0 7px 15px rgba(0, 0, 0, 0.38);
 }
 
 .unit-portrait {
@@ -471,7 +512,7 @@
 .unit-heading {
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0,1fr) minmax(104px, .8fr);
+  grid-template-columns: minmax(0, 1fr) minmax(104px, 0.8fr);
   align-items: center;
   gap: 6px;
 }
@@ -497,7 +538,7 @@
   color: var(--wow-text-muted);
   font-size: 8px;
   font-weight: 800;
-  letter-spacing: .035em;
+  letter-spacing: 0.035em;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -507,20 +548,20 @@
   min-width: 0;
   height: 34px;
   display: grid;
-  grid-template-columns: 30px minmax(0,1fr);
+  grid-template-columns: 30px minmax(0, 1fr);
   align-items: center;
   gap: 5px;
   padding: 2px 4px 2px 2px;
   border: 1px solid var(--wow-inset-line);
   border-radius: var(--wow-radius-tight);
   background: var(--wow-surface-inset);
-  opacity: .7;
+  opacity: 0.7;
 }
 
 .unit-action.is-active {
   border-color: var(--unit-class);
   opacity: 1;
-  animation: unit-action-pulse .36s ease;
+  animation: unit-action-pulse 0.36s ease;
 }
 
 .unit-action[data-action-kind="cooldown"] {
@@ -529,12 +570,12 @@
 
 .unit-action[data-action-kind="ultimate"] {
   border-color: var(--wow-rarity-epic);
-  box-shadow: 0 0 8px rgba(163,53,238,.22);
+  box-shadow: 0 0 8px rgba(163, 53, 238, 0.22);
 }
 
 .unit-action[data-action-kind="death"] {
   border-color: var(--wow-error-deep);
-  opacity: .55;
+  opacity: 0.55;
 }
 
 .unit-action-icon {
@@ -551,7 +592,7 @@
   color: var(--wow-text-dim);
   font-size: 6px;
   font-weight: 900;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
 }
 
 .unit-action-copy strong {
@@ -584,7 +625,7 @@
   max-width: 100%;
   height: auto;
   transform-origin: left center;
-  transition: width .18s ease;
+  transition: width 0.18s ease;
   pointer-events: none;
 }
 
@@ -594,10 +635,10 @@
   left: 5px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255,255,255,.72);
+  color: rgba(255, 255, 255, 0.72);
   font-size: 6px;
   font-weight: 900;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   text-shadow: 0 1px 2px #000;
 }
@@ -614,24 +655,39 @@
 }
 
 .hp-stat .mini-fill {
-  background: linear-gradient(180deg, var(--wow-health-bright), var(--wow-health), var(--wow-health-deep));
+  background: linear-gradient(180deg, var(--wow-health), var(--wow-health-dark));
 }
 
 .resource-stat .mini-fill {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--wow-mana) 72%, white), var(--wow-mana), color-mix(in srgb, var(--wow-mana) 58%, black));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--wow-mana) 72%, white),
+    var(--wow-mana),
+    color-mix(in srgb, var(--wow-mana) 58%, black)
+  );
 }
 
 .wow-class--warrior .resource-stat .mini-fill {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--wow-rage) 72%, white), var(--wow-rage), color-mix(in srgb, var(--wow-rage) 58%, black));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--wow-rage) 72%, white),
+    var(--wow-rage),
+    color-mix(in srgb, var(--wow-rage) 58%, black)
+  );
 }
 
 .wow-class--rogue .resource-stat .mini-fill {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--wow-energy) 72%, white), var(--wow-energy), color-mix(in srgb, var(--wow-energy) 58%, black));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--wow-energy) 72%, white),
+    var(--wow-energy),
+    color-mix(in srgb, var(--wow-energy) 58%, black)
+  );
 }
 
 .hero-combat-actions {
   display: grid;
-  grid-template-columns: repeat(4,minmax(0,1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 3px;
   min-width: 0;
 }
@@ -641,7 +697,7 @@
   min-width: 0;
   min-height: 38px;
   display: grid;
-  grid-template-columns: 25px minmax(0,1fr);
+  grid-template-columns: 25px minmax(0, 1fr);
   grid-template-rows: 1fr auto;
   gap: 2px 4px;
   align-items: center;
@@ -681,7 +737,7 @@
   color: var(--wow-gold-muted);
   font-size: 5px;
   font-weight: 900;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -701,7 +757,7 @@
 }
 
 .hero-combat-action.is-ready {
-  border-color: color-mix(in srgb,var(--wow-success) 52%,var(--wow-frame-edge));
+  border-color: color-mix(in srgb, var(--wow-success) 52%, var(--wow-frame-edge));
 }
 
 .hero-combat-action.is-ready .hero-combat-action__state {
@@ -709,7 +765,7 @@
 }
 
 .hero-combat-action.is-cooling {
-  border-color: color-mix(in srgb,var(--wow-mana) 48%,var(--wow-frame-edge));
+  border-color: color-mix(in srgb, var(--wow-mana) 48%, var(--wow-frame-edge));
 }
 
 .hero-combat-action.is-cooling .hero-combat-action__state {
@@ -717,7 +773,7 @@
 }
 
 .hero-combat-action.is-blocked {
-  border-color: color-mix(in srgb,var(--wow-warning) 52%,var(--wow-frame-edge));
+  border-color: color-mix(in srgb, var(--wow-warning) 52%, var(--wow-frame-edge));
 }
 
 .hero-combat-action.is-blocked .hero-combat-action__state {
@@ -729,14 +785,14 @@
 }
 
 .hero-combat-action.is-dead {
-  opacity: .45;
+  opacity: 0.45;
   filter: grayscale(1);
 }
 
 .hero-swing-timer {
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0,1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 5px;
   padding: 2px 3px;
@@ -761,9 +817,9 @@
   min-width: 0;
   max-width: 100%;
   height: 100%;
-  background: linear-gradient(180deg,var(--wow-gold-pale),var(--wow-gold),var(--wow-gold-deep));
-  box-shadow: inset 0 1px rgba(255,255,255,.22);
-  transition: width .08s linear;
+  background: linear-gradient(180deg, var(--wow-gold-pale), var(--wow-gold), var(--wow-gold-muted));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.22);
+  transition: width 0.08s linear;
 }
 
 .hero-swing-timer__copy {
@@ -779,7 +835,7 @@
   color: var(--wow-text-dim);
   font-size: 5px;
   font-weight: 900;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -789,11 +845,11 @@
 }
 
 .hero-swing-timer.is-ready {
-  border-color: color-mix(in srgb,var(--wow-success) 52%,var(--wow-frame-edge));
+  border-color: color-mix(in srgb, var(--wow-success) 52%, var(--wow-frame-edge));
 }
 
 .hero-swing-timer.is-dead {
-  opacity: .42;
+  opacity: 0.42;
   filter: grayscale(1);
 }
 
@@ -827,7 +883,9 @@
   color: var(--wow-success);
 }
 
-.buff-hooks .unit-status-slot.is-active::after { content: "+"; }
+.buff-hooks .unit-status-slot.is-active::after {
+  content: "+";
+}
 
 .debuff-hooks .unit-status-slot.is-active {
   border-color: var(--wow-error);
@@ -835,22 +893,31 @@
   color: var(--wow-error);
 }
 
-.debuff-hooks .unit-status-slot.is-active::after { content: "−"; }
+.debuff-hooks .unit-status-slot.is-active::after {
+  content: "−";
+}
 
 .unit-frame.low-health .hp-stat {
-  box-shadow: inset 0 0 0 1px var(--wow-error), 0 0 7px rgba(198,47,47,.36);
+  box-shadow:
+    inset 0 0 0 1px var(--wow-error),
+    0 0 7px rgba(198, 47, 47, 0.36);
 }
 
 .unit-frame.defeated {
-  opacity: .3;
+  opacity: 0.3;
   filter: grayscale(1);
   transform: translateY(4px);
 }
 
-.unit-frame.hit { animation: combat-hit .3s ease; }
-.unit-frame.healed { animation: combat-heal .36s ease; }
-.unit-frame.critical .unit-action { animation: combat-crit .36s ease; }
-.unit-frame.death { animation: combat-death .42s ease; }
+.unit-frame.hit {
+  animation: combat-hit 0.3s ease;
+}
+.unit-frame.critical .unit-action {
+  animation: combat-crit 0.36s ease;
+}
+.unit-frame.death {
+  animation: combat-death 0.42s ease;
+}
 
 .fx-layer {
   position: absolute;
@@ -860,61 +927,6 @@
   pointer-events: none;
 }
 
-.floating-number,
-.combat-event-tag {
-  position: absolute;
-  transform: translate(-50%,-50%);
-  font-family: var(--wow-font-ui);
-  font-weight: 1000;
-  text-shadow: -1px -1px 0 #050708, 1px -1px 0 #050708, -1px 1px 0 #050708, 1px 1px 0 #050708, 0 2px 3px #000;
-  pointer-events: none;
-}
-
-.floating-number {
-  font-size: 19px;
-  animation: float-number .72s ease-out forwards;
-}
-
-.floating-number.damage { color: #ff7777; }
-.floating-number.crit { color: var(--wow-gold-bright); font-size: 24px; }
-.floating-number.heal { color: var(--wow-success); }
-.floating-number.miss { color: var(--wow-text-muted); font-size: 14px; }
-
-.combat-event-tag {
-  padding: 2px 5px;
-  border: 1px solid var(--wow-inset-line);
-  border-radius: var(--wow-radius-tight);
-  background: rgba(6,8,9,.88);
-  font-size: 8px;
-  font-weight: 900;
-  letter-spacing: .08em;
-  animation: combat-tag .72s ease-out forwards;
-}
-
-.combat-event-tag.crit { color: var(--wow-gold-bright); border-color: var(--wow-gold-muted); }
-.combat-event-tag.miss { color: var(--wow-text-muted); }
-.combat-event-tag.death { color: var(--wow-error); border-color: var(--wow-error-deep); }
-.combat-event-tag.cooldown { color: var(--wow-gold-pale); border-color: var(--wow-gold-muted); }
-.combat-event-tag.ultimate { color: var(--wow-rarity-epic); border-color: var(--wow-rarity-epic); }
-
-.attack-streak {
-  position: absolute;
-  height: 2px;
-  border-radius: 99px;
-  transform-origin: left center;
-  animation: streak .34s ease-out forwards;
-}
-
-.damage-streak {
-  background: linear-gradient(90deg, transparent, rgba(237,230,209,.9), var(--unit-class, var(--wow-gold-muted)), transparent);
-  box-shadow: 0 0 5px rgba(255,255,255,.45);
-}
-
-.heal-streak {
-  background: linear-gradient(90deg, transparent, var(--wow-success), transparent);
-  box-shadow: 0 0 7px rgba(91,196,110,.42);
-}
-
 .result-banner {
   position: absolute;
   z-index: 30;
@@ -922,11 +934,13 @@
   top: 50%;
   min-width: 300px;
   padding: 16px 24px 19px;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
   border: 2px solid #08090a;
   border-radius: var(--wow-radius-tight);
   background: linear-gradient(180deg, #25231c, #10120f);
-  box-shadow: inset 0 0 0 1px var(--wow-gold), 0 18px 50px rgba(0,0,0,.62);
+  box-shadow:
+    inset 0 0 0 1px var(--wow-gold),
+    0 18px 50px rgba(0, 0, 0, 0.62);
   text-align: center;
 }
 
@@ -938,7 +952,7 @@
 .result-banner span {
   color: var(--wow-gold-muted);
   font-size: 8px;
-  letter-spacing: .22em;
+  letter-spacing: 0.22em;
 }
 
 .result-banner strong {
@@ -1004,7 +1018,7 @@
   flex: 0 0 7px;
   border-radius: 50%;
   background: var(--wow-success);
-  box-shadow: 0 0 6px rgba(91,196,110,.55);
+  box-shadow: 0 0 6px rgba(91, 196, 110, 0.55);
 }
 
 .status-dot.stopped {
@@ -1031,59 +1045,123 @@
   border: 1px solid #08090a;
 }
 
-.legend-swatch.hp { background: var(--wow-health); }
-.legend-swatch.resource { background: var(--wow-mana); }
-.legend-swatch.action { background: var(--wow-gold-muted); }
+.legend-swatch.hp {
+  background: var(--wow-health);
+}
+.legend-swatch.resource {
+  background: var(--wow-mana);
+}
+.legend-swatch.action {
+  background: var(--wow-gold-muted);
+}
 
 @keyframes combat-hit {
-  0%,100% { transform: translateX(0); }
-  28% { transform: translateX(-4px); }
-  58% { transform: translateX(4px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  28% {
+    transform: translateX(-4px);
+  }
+  58% {
+    transform: translateX(4px);
+  }
 }
 
 @keyframes combat-heal {
-  0%,100% { box-shadow: inherit; }
-  50% { box-shadow: inset 0 0 0 1px var(--wow-success), 0 0 12px rgba(91,196,110,.48); }
+  0%,
+  100% {
+    box-shadow: inherit;
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px var(--wow-success),
+      0 0 12px rgba(91, 196, 110, 0.48);
+  }
 }
 
 @keyframes combat-crit {
-  0%,100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
 }
 
 @keyframes combat-death {
-  0% { filter: none; }
-  50% { filter: brightness(1.5) saturate(.4); }
-  100% { filter: grayscale(1); }
+  0% {
+    filter: none;
+  }
+  50% {
+    filter: brightness(1.5) saturate(0.4);
+  }
+  100% {
+    filter: grayscale(1);
+  }
 }
 
 @keyframes unit-action-pulse {
-  0% { transform: translateY(0); }
-  45% { transform: translateY(-1px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 @keyframes float-number {
-  0% { opacity: 0; transform: translate(-50%,-20%) scale(.8); }
-  18% { opacity: 1; transform: translate(-50%,-48%) scale(1.08); }
-  100% { opacity: 0; transform: translate(-50%,-130%) scale(.96); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20%) scale(0.8);
+  }
+  18% {
+    opacity: 1;
+    transform: translate(-50%, -48%) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -130%) scale(0.96);
+  }
 }
 
 @keyframes combat-tag {
-  0% { opacity: 0; transform: translate(-50%,-10%) scale(.9); }
-  20% { opacity: 1; transform: translate(-50%,-42%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%,-105%) scale(.96); }
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -10%) scale(0.9);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, -42%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -105%) scale(0.96);
+  }
 }
 
 @keyframes streak {
-  0% { opacity: 0; clip-path: inset(0 100% 0 0); }
-  30% { opacity: 1; clip-path: inset(0 0 0 0); }
-  100% { opacity: 0; clip-path: inset(0 0 0 76%); }
+  0% {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  30% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    opacity: 0;
+    clip-path: inset(0 0 0 76%);
+  }
 }
 
 @media (max-width: 1180px) {
   .battle-hud {
-    grid-template-columns: minmax(0,1fr) 190px minmax(0,1fr);
+    grid-template-columns: minmax(0, 1fr) 190px minmax(0, 1fr);
     padding-inline: 10px;
   }
 
@@ -1104,7 +1182,7 @@
   }
 
   .battlefield {
-    grid-template-columns: minmax(0,1fr) 40px minmax(0,1fr);
+    grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
     padding-block: 45px 55px;
   }
 }
@@ -1142,12 +1220,12 @@
 
   .battlefield {
     width: 100%;
-    grid-template-columns: minmax(0,1fr) 18px minmax(0,1fr);
+    grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
     padding: 30px 4px 42px;
   }
 
   .unit-frame {
-    grid-template-columns: 58px minmax(0,1fr);
+    grid-template-columns: 58px minmax(0, 1fr);
     min-height: 104px;
     padding: 5px;
   }
@@ -1166,7 +1244,7 @@
 
   .unit-action {
     height: 26px;
-    grid-template-columns: 23px minmax(0,1fr);
+    grid-template-columns: 23px minmax(0, 1fr);
   }
 
   .unit-action-icon {
@@ -1224,7 +1302,7 @@
   }
 
   .battlefield {
-    grid-template-columns: minmax(0,1fr) 8px minmax(0,1fr);
+    grid-template-columns: minmax(0, 1fr) 8px minmax(0, 1fr);
   }
 
   .center-rune {
@@ -1232,7 +1310,7 @@
   }
 
   .unit-frame {
-    grid-template-columns: 46px minmax(0,1fr);
+    grid-template-columns: 46px minmax(0, 1fr);
     min-height: 94px;
     gap: 5px;
   }
@@ -1259,7 +1337,7 @@
   }
 
   .unit-action {
-    grid-template-columns: 20px minmax(0,1fr);
+    grid-template-columns: 20px minmax(0, 1fr);
   }
 
   .unit-action-icon {
@@ -1294,11 +1372,7 @@
     transition: none;
   }
 
-  .floating-number,
-  .combat-event-tag,
-  .attack-streak,
   .unit-frame.hit,
-  .unit-frame.healed,
   .unit-frame.critical .unit-action,
   .unit-frame.death,
   .unit-action.is-active {
@@ -1306,7 +1380,54 @@
   }
 }
 
-.battle-combat-log{margin-top:6px;padding:6px;max-height:190px}.battle-log-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.battle-log-head small{color:var(--wow-text-dim);font-size:8px}.battle-log-scroll{max-height:145px;overflow:auto}.battle-combat-log table{width:100%;border-collapse:collapse;font-size:8px}.battle-combat-log th,.battle-combat-log td{padding:3px 5px;border-bottom:1px solid var(--wow-frame-edge);text-align:left}.battle-combat-log th{position:sticky;top:0;background:var(--wow-surface);color:var(--wow-gold-pale)}.battle-combat-log .event-damage{color:var(--wow-error)}.battle-combat-log .event-critical{color:var(--wow-warning)}.battle-combat-log .event-heal{color:var(--wow-success)}.battle-combat-log .event-death{color:var(--wow-text-dim)}
+.battle-combat-log {
+  margin-top: 6px;
+  padding: 6px;
+  max-height: 190px;
+}
+.battle-log-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.battle-log-head small {
+  color: var(--wow-text-dim);
+  font-size: 8px;
+}
+.battle-log-scroll {
+  max-height: 145px;
+  overflow: auto;
+}
+.battle-combat-log table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8px;
+}
+.battle-combat-log th,
+.battle-combat-log td {
+  padding: 3px 5px;
+  border-bottom: 1px solid var(--wow-frame-edge);
+  text-align: left;
+}
+.battle-combat-log th {
+  position: sticky;
+  top: 0;
+  background: var(--wow-surface);
+  color: var(--wow-gold-pale);
+}
+.battle-combat-log .event-damage {
+  color: var(--wow-error);
+}
+.battle-combat-log .event-critical {
+  color: var(--wow-warning);
+}
+.battle-combat-log .event-heal {
+  color: var(--wow-success);
+}
+.battle-combat-log .event-death {
+  color: var(--wow-text-dim);
+}
 
 /* WOWUI-047 — Shared encounter size primitives */
 
@@ -1376,7 +1497,7 @@
 .battle-frame[data-party-size="10"] .unit-frame,
 .battle-frame[data-party-size="20"] .unit-frame {
   min-height: 92px;
-  grid-template-columns: 52px minmax(0,1fr);
+  grid-template-columns: 52px minmax(0, 1fr);
   gap: 6px;
   padding: 5px;
 }
@@ -1393,13 +1514,13 @@
 
 .battle-frame[data-party-size="10"] .unit-heading,
 .battle-frame[data-party-size="20"] .unit-heading {
-  grid-template-columns: minmax(0,1fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .battle-frame[data-party-size="10"] .unit-action,
 .battle-frame[data-party-size="20"] .unit-action {
   height: 25px;
-  grid-template-columns: 21px minmax(0,1fr);
+  grid-template-columns: 21px minmax(0, 1fr);
 }
 
 .battle-frame[data-party-size="10"] .unit-action-icon,
@@ -1419,7 +1540,7 @@
 
 .battle-frame[data-party-size="20"] .unit-frame {
   min-height: 62px;
-  grid-template-columns: 34px minmax(0,1fr);
+  grid-template-columns: 34px minmax(0, 1fr);
   gap: 4px;
   padding: 4px;
 }
@@ -1476,7 +1597,7 @@
   max-width: calc(100% - 2px);
   padding: 0 2px;
   border-radius: 2px;
-  background: rgba(0,0,0,.78);
+  background: rgba(0, 0, 0, 0.78);
   font-size: 5px;
   line-height: 1.25;
 }
@@ -1521,7 +1642,7 @@
 
 .battle-frame[data-party-size="10"] .hero-swing-timer,
 .battle-frame[data-party-size="20"] .hero-swing-timer {
-  grid-template-columns: minmax(0,1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 1px;
   padding: 1px 2px;
 }
@@ -1554,7 +1675,7 @@
 
   .battle-frame[data-party-size="10"] .combat-team,
   .battle-frame[data-party-size="20"] .combat-team {
-    grid-template-columns: repeat(2, minmax(132px,1fr));
+    grid-template-columns: repeat(2, minmax(132px, 1fr));
   }
 }
 

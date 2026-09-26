@@ -1,18 +1,8 @@
 import { createServer } from "node:http";
 import { spawn } from "node:child_process";
 import { createServer as createNetServer } from "node:net";
-import {
-  readFile,
-  rm,
-  writeFile,
-  stat
-} from "node:fs/promises";
-import {
-  extname,
-  join,
-  normalize,
-  resolve,
-} from "node:path";
+import { readFile, rm, writeFile, stat } from "node:fs/promises";
+import { extname, join, normalize, resolve } from "node:path";
 
 const ROOT = process.cwd();
 const STATE_FILE = join(ROOT, ".warcraft-dev.json");
@@ -32,7 +22,6 @@ const MIME = {
   ".webp": "image/webp",
   ".ico": "image/x-icon"
 };
-
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

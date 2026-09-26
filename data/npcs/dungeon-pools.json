@@ -1,15 +1,9 @@
 {
   "schema_version": 1,
   "kind": "dungeon_npc_pools",
-  "status": "combat_ready_ids",
-  "notes": [
-    "Pools reference authoritative NPC IDs from data/npcs/catalog.json.",
-    "Encounter composition currently uses the listed pool order deterministically; deeper wave/pack authoring can extend this contract later."
-  ],
   "pools": [
     {
       "id": "dungeon-ragefire-chasm",
-      "dungeon_id": "ragefire-chasm",
       "npc_ids": [
         "adarogg",
         "dark-shaman-koranthal",
@@ -19,7 +13,6 @@
     },
     {
       "id": "dungeon-the-stockade",
-      "dungeon_id": "the-stockade",
       "npc_ids": [
         "randolph-moloch",
         "lord-overheat",
@@ -28,7 +21,6 @@
     },
     {
       "id": "dungeon-scarlet-monastery",
-      "dungeon_id": "scarlet-monastery",
       "npc_ids": [
         "thalnos-the-soulrender",
         "brother-korloff",
@@ -37,14 +29,43 @@
     },
     {
       "id": "dungeon-zul-farrak",
-      "dungeon_id": "zul-farrak",
       "npc_ids": [
         "antusul",
         "witch-doctor-zumrah",
         "gahzrilla",
         "chief-ukorz-sandscalp"
       ]
+    },
+    {
+      "id": "raid-molten-core",
+      "npc_ids": [
+        "thalnos-the-soulrender",
+        "brother-korloff",
+        "high-inquisitor-whitemane",
+        "antusul",
+        "witch-doctor-zumrah",
+        "gahzrilla",
+        "chief-ukorz-sandscalp"
+      ]
+    },
+    {
+      "id": "siege-blackrock",
+      "npc_ids": [
+        "adarogg",
+        "dark-shaman-koranthal",
+        "slagmaw",
+        "lava-guard-gordoth",
+        "randolph-moloch",
+        "lord-overheat",
+        "hogger",
+        "thalnos-the-soulrender",
+        "brother-korloff",
+        "high-inquisitor-whitemane",
+        "antusul",
+        "witch-doctor-zumrah",
+        "gahzrilla",
+        "chief-ukorz-sandscalp"
+      ]
     }
-  ],
-  "catalog": "./catalog.json"
+  ]
 }

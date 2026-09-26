@@ -1,9 +1,7 @@
 {
   "schema_version": 2,
-  "source_path": "docs/heroes/classes/paladin/specs/holy.md",
   "kind": "specialization",
   "title": "Paladin — Holy",
-  "source_markdown": "# Paladin — Holy\n\n## Identity\n\n- Role: Healing / support\n- Resource: Mana\n- Primary stat: Intellect\n- Auto-attack: Holy Light — heals the lowest-health ally\n\n## Talent Prototype\n\nThis compact prototype uses exactly **2 Tier 1 talents**, **2 Tier 2 talents**, and **1 capstone**. The choices are canonical Classic talents from the **Holy** tree; prototype combat tuning may be added separately without changing this 2 / 2 / 1 structure.\n\nThe single capstone is the active specialization's Ultimate and resolves through its authored `ultimate_id`.\n\n### Tier 1\n\nChoose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Divine Strength** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Divine Intellect** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Tier 2\n\nRequires a Tier 1 choice. Choose 1 of 2.\n\n| Talent | Prototype effect |\n| --- | --- |\n| **Healing Light** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n| **Consecration** | Canonical Classic talent; prototype tuning is intentionally deferred. |\n\n### Capstone\n\nRequires a Tier 2 choice. Choose the single capstone.\n\n| Capstone | Prototype effect |\n| --- | --- |\n| **Holy Shock** | Defines the hero Ultimate action `capstone-holy-shock`. |\n\nCanonical source: https://github.com/maladr0it/classic-talent-calculator/blob/master/src/trees/Paladin/data.ts\n\n## Combat Loadout\n\nThis specialization uses its authored auto-attack, exactly 2 equipped cooldown abilities, and exactly 1 equipped ultimate.\n\nTalents modify that shared combat package; they do not add extra active ability slots.\n",
   "class": "Paladin",
   "specialization": "Holy",
   "identity": {
@@ -58,16 +56,8 @@
   },
   "talent_model": {
     "kind": "two-tier-plus-capstone",
-    "tier_semantics": "Talent tiers are prototype talent progression only and are unrelated to item/building T1–T5 progression.",
     "tier_1_unlock_points": 0,
     "tier_2_unlock_points": 1,
-    "capstone_unlock_points": 2,
-    "dependency_rule": "tier-only; no per-node prerequisites",
-    "tier_counts": {
-      "tier_1": 2,
-      "tier_2": 2,
-      "capstones": 1
-    },
-    "capstone_contract": "active specialization capstone defines hero Ultimate"
+    "capstone_unlock_points": 2
   }
 }

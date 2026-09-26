@@ -3,7 +3,7 @@
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 50% -18%, rgba(183,139,59,.08), transparent 28%),
+    radial-gradient(circle at 50% -18%, rgba(183, 139, 59, 0.08), transparent 28%),
     var(--wow-bg-canvas);
   color: var(--wow-text);
   font-family: var(--wow-font-ui);
@@ -70,13 +70,13 @@
   color: var(--wow-text-dim);
   font-size: 6px;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .profession-layout {
   display: grid;
-  grid-template-columns: 230px minmax(0,1fr);
+  grid-template-columns: 230px minmax(0, 1fr);
   min-height: 520px;
   border-top: var(--wow-border-thin) solid var(--wow-inset-line);
 }
@@ -93,12 +93,12 @@
 .profession-list__item {
   min-width: 0;
   display: grid;
-  grid-template-columns: 38px minmax(0,1fr);
+  grid-template-columns: 38px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
   padding: 7px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0,0,0,.16);
+  background: rgba(0, 0, 0, 0.16);
   color: var(--wow-text);
   text-align: left;
   cursor: pointer;
@@ -109,7 +109,7 @@
 .profession-list__item.is-active {
   border-color: var(--wow-gold-muted);
   outline: none;
-  background: rgba(183,139,59,.08);
+  background: rgba(183, 139, 59, 0.08);
 }
 
 .profession-list__item.is-active {
@@ -182,7 +182,7 @@
 
 .profession-current {
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -191,7 +191,7 @@
   gap: 3px;
   padding: 9px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0,0,0,.16);
+  background: rgba(0, 0, 0, 0.16);
 }
 
 .profession-current strong {
@@ -202,7 +202,7 @@
 .profession-progression {
   padding: 10px;
   border: var(--wow-border-thin) solid var(--wow-frame-edge);
-  background: rgba(0,0,0,.14);
+  background: rgba(0, 0, 0, 0.14);
 }
 
 .profession-progression h3 {
@@ -218,7 +218,7 @@
 
 .profession-progression__row {
   display: grid;
-  grid-template-columns: 72px minmax(0,1fr) 50px;
+  grid-template-columns: 72px minmax(0, 1fr) 50px;
   align-items: center;
   gap: 8px;
   padding: 7px;
@@ -229,12 +229,12 @@
 }
 
 .profession-progression__row.is-complete {
-  opacity: .72;
+  opacity: 0.72;
 }
 
 .profession-progression__row.is-current {
   border-color: var(--wow-gold-muted);
-  background: rgba(183,139,59,.08);
+  background: rgba(183, 139, 59, 0.08);
   color: var(--wow-gold-pale);
 }
 
@@ -264,7 +264,7 @@
   }
 
   .profession-list {
-    grid-template-columns: repeat(3,minmax(0,1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     border-right: 0;
     border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
   }
@@ -300,12 +300,12 @@
   }
 
   .profession-list {
-    grid-template-columns: repeat(2,minmax(0,1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: 6px;
   }
 
   .profession-list__item {
-    grid-template-columns: 30px minmax(0,1fr);
+    grid-template-columns: 30px minmax(0, 1fr);
     gap: 5px;
     padding: 5px;
   }
@@ -323,21 +323,80 @@
   }
 
   .profession-progression__row {
-    grid-template-columns: 62px minmax(0,1fr) 42px;
+    grid-template-columns: 62px minmax(0, 1fr) 42px;
     font-size: 7px;
   }
 }
 
 /* WOWUI-078 — independent hero profession tracks */
-.profession-hero-training{display:grid;gap:8px;padding:10px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:rgba(0,0,0,.14)}
-.profession-hero-training h3{margin:2px 0 3px;color:var(--wow-text);font:700 14px var(--wow-font-display)}
-.profession-hero-training header p{margin:0;color:var(--wow-text-dim);font-size:7px;line-height:1.4}
-.profession-hero-training__controls{display:grid;grid-template-columns:auto minmax(160px,1fr) auto;align-items:center;gap:6px}
-.profession-hero-training__status{min-height:14px;color:var(--wow-gold-muted);font-size:7px}
-.profession-hero-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
-.profession-hero-choice{display:grid;gap:3px;padding:7px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:var(--wow-surface-inset)}
-.profession-hero-choice.is-active-track{border-color:var(--wow-gold-muted);background:rgba(183,139,59,.08)}
-.profession-hero-choice span{color:var(--wow-text-dim);font-size:6px;font-weight:800;text-transform:uppercase}
-.profession-hero-choice strong{overflow:hidden;color:var(--wow-gold-pale);font-size:9px;text-overflow:ellipsis;white-space:nowrap}
-.profession-hero-choices__empty{grid-column:1/-1;color:var(--wow-text-dim);font-size:8px}
-@media(max-width:760px){.profession-hero-training__controls{grid-template-columns:1fr}.profession-hero-choices{grid-template-columns:1fr}}
+.profession-hero-training {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: rgba(0, 0, 0, 0.14);
+}
+.profession-hero-training h3 {
+  margin: 2px 0 3px;
+  color: var(--wow-text);
+  font: 700 14px var(--wow-font-display);
+}
+.profession-hero-training header p {
+  margin: 0;
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  line-height: 1.4;
+}
+.profession-hero-training__controls {
+  display: grid;
+  grid-template-columns: auto minmax(160px, 1fr) auto;
+  align-items: center;
+  gap: 6px;
+}
+.profession-hero-training__status {
+  min-height: 14px;
+  color: var(--wow-gold-muted);
+  font-size: 7px;
+}
+.profession-hero-choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+}
+.profession-hero-choice {
+  display: grid;
+  gap: 3px;
+  padding: 7px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface-inset);
+}
+.profession-hero-choice.is-active-track {
+  border-color: var(--wow-gold-muted);
+  background: rgba(183, 139, 59, 0.08);
+}
+.profession-hero-choice span {
+  color: var(--wow-text-dim);
+  font-size: 6px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.profession-hero-choice strong {
+  overflow: hidden;
+  color: var(--wow-gold-pale);
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profession-hero-choices__empty {
+  grid-column: 1/-1;
+  color: var(--wow-text-dim);
+  font-size: 8px;
+}
+@media (max-width: 760px) {
+  .profession-hero-training__controls {
+    grid-template-columns: 1fr;
+  }
+  .profession-hero-choices {
+    grid-template-columns: 1fr;
+  }
+}
