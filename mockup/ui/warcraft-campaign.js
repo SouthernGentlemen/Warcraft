@@ -370,13 +370,39 @@ function getBuildingAssignments(faction){return getCampaign(faction||state.activ
 function setBuildingAssignment(buildingId,assignment){const next=clone(assignment);validateHeroIds(collectReferencedHeroIds(next));getActiveCampaign().buildingAssignments[String(buildingId)]=next;commit("building-assignment");return next;}
 function setFormation(kind,index,formation){const key=["party","raid","siege"].includes(kind)?kind:null;if(!key)throw new Error("Formation kind must be party, raid, or siege.");const next=clone(formation);validateHeroIds(collectReferencedHeroIds(next,"",[],{allowSlots:key==="siege"}));const list=getActiveCampaign().formations[key];const slot=Math.max(0,Number(index)||0);list[slot]=next;commit("formation");return next;}
 function getClock(faction){return getCampaign(faction||state.activeFaction).clock;}
+function nextClockPhase(clock){
+  const current=clock&&clock.phase==="night"?"night":"day";
+  return current==="day"?"night":"day";
+}
 function advanceClock(){
   const clock=getActiveCampaign().clock;
-  clock.phase=clock.phase==="day"?"night":"day";
+  clock.phase=nextClockPhase(clock);
   clock.phaseAdvances+=1;
   if(clock.phase==="day")clock.day+=1;
   commit("clock");
   return clock;
+}
+function confirmEmbark(record){
+  const source=record&&typeof record==="object"?clone(record):{};
+  const heroIds=collectReferencedHeroIds(source);
+  validateHeroIds(heroIds);
+  const campaign=getActiveCampaign(),before=clone(campaign.clock);
+  const sequence=campaign.embark.history.length+1;
+  const entry=Object.assign({},source,{
+    sequence,
+    faction:state.activeFaction,
+    heroIds:[...new Set((Array.isArray(source.heroIds)?source.heroIds:heroIds).map(String))],
+    confirmedClock:before
+  });
+  campaign.clock.phase=nextClockPhase(campaign.clock);
+  campaign.clock.phaseAdvances+=1;
+  if(campaign.clock.phase==="day")campaign.clock.day+=1;
+  entry.resultingClock=clone(campaign.clock);
+  campaign.embark.active=clone(entry);
+  campaign.embark.history.push(clone(entry));
+  campaign.embark.history=campaign.embark.history.slice(-100);
+  commit("clock");
+  return clone(entry);
 }
 function reset(){
   state=defaults();
@@ -392,6 +418,6 @@ global.WarcraftCampaign=Object.freeze({
   getState,getMigration,getActiveFaction,setActiveFaction,getCampaign,getActiveCampaign,commit,
   ensureBase,getBaseLevel,getRosterCapacity,getRosterCount,getBuildingLevels,getBuildingLevel,getResources,applyBaseUpgrade,
   ensureBankHoldings,getBankHoldings,getBankHoldingQuantity,setBankHoldingQuantity,
-  getProfessionState,setProfessionState,getFormations,setFormation,getProfessionSelections,setProfessionSelection,getBuildingAssignments,setBuildingAssignment,validateHeroIds,sanitizeFactionReferences,getClock,advanceClock,reset
+  getProfessionState,setProfessionState,getFormations,setFormation,getProfessionSelections,setProfessionSelection,getBuildingAssignments,setBuildingAssignment,validateHeroIds,sanitizeFactionReferences,getClock,nextClockPhase,advanceClock,confirmEmbark,reset
 });
 })(window);
