@@ -40,5 +40,5 @@
       const reason = event && event.detail && event.detail.reason;
       if (["clock", "faction", "reset"].includes(reason)) hydrate(global.document);
     });
-  global.WarcraftCampaignClock = Object.freeze({ render, hydrate });
+  global.WarcraftCampaignClock = Object.freeze({ render });
 })(window);

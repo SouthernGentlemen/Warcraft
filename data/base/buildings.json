@@ -4,318 +4,160 @@
   "buildings": [
     {
       "id": "keep",
-      "name": "Headquarters (Keep)",
-      "category": "core",
+      "name": "Keep",
       "level": 1,
       "max_level": 5,
-      "description": "The heart of your base. Unlocks buildings, tiers, and roster capacity.",
+      "description": "Sets the Base Level: more roster space, new content, and higher building levels.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_board_tier_1",
-            "missions_tier_1"
-          ]
+          }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 3000,
             "lumber": 2000,
             "stone": 500
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_board_tier_2",
-            "missions_tier_2"
-          ]
+          }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 3660,
             "lumber": 2440,
             "stone": 610
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_board_tier_3",
-            "missions_tier_3"
-          ]
+          }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 4470,
             "lumber": 2980,
             "stone": 750
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_board_tier_4",
-            "missions_tier_4"
-          ]
+          }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 5450,
             "lumber": 3640,
             "stone": 910
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_board_tier_5",
-            "missions_tier_5"
-          ]
+          }
         }
       ]
     },
     {
       "id": "questboard",
       "name": "Quest Board",
-      "category": "core",
       "level": 1,
       "max_level": 5,
-      "description": "Unlocks structured hero dispatch quests and higher party-size mission tiers.",
+      "description": "Posts the quests the Embark bar offers. From Base Level 2, heroes dropped here quest on their own.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_tier_1"
-          ]
+          }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 750,
             "lumber": 400,
             "stone": 120
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_tier_2"
-          ]
+          }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 950,
             "lumber": 520,
             "stone": 170
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_tier_3"
-          ]
+          }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 1200,
             "lumber": 680,
             "stone": 230
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_tier_4"
-          ]
+          }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 1500,
             "lumber": 850,
             "stone": 300
-          },
-          "requirements": [],
-          "capabilities": [
-            "quest_tier_5"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "training",
-      "name": "Training Grounds",
-      "category": "core",
-      "level": 1,
-      "max_level": 5,
-      "description": "Improves hero training speed and raises training capacity.",
-      "progression": [
-        {
-          "level": 1,
-          "tier": 1,
-          "cost": {
-            "gold": 0,
-            "lumber": 0,
-            "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "training_tier_1"
-          ]
-        },
-        {
-          "level": 2,
-          "tier": 2,
-          "cost": {
-            "gold": 900,
-            "lumber": 600,
-            "stone": 150
-          },
-          "requirements": [],
-          "capabilities": [
-            "training_tier_2"
-          ]
-        },
-        {
-          "level": 3,
-          "tier": 3,
-          "cost": {
-            "gold": 1100,
-            "lumber": 740,
-            "stone": 190
-          },
-          "requirements": [],
-          "capabilities": [
-            "training_tier_3"
-          ]
-        },
-        {
-          "level": 4,
-          "tier": 4,
-          "cost": {
-            "gold": 1340,
-            "lumber": 900,
-            "stone": 230
-          },
-          "requirements": [],
-          "capabilities": [
-            "training_tier_4"
-          ]
-        },
-        {
-          "level": 5,
-          "tier": 5,
-          "cost": {
-            "gold": 1640,
-            "lumber": 1090,
-            "stone": 280
-          },
-          "requirements": [],
-          "capabilities": [
-            "training_tier_5"
-          ]
+          }
         }
       ]
     },
     {
       "id": "recruitment",
       "name": "Recruitment Hall",
-      "category": "core",
       "level": 1,
       "max_level": 5,
-      "description": "Improves faction-valid hero discovery. Roster capacity comes from Base Level.",
+      "description": "Recruit new heroes for the roster. Upgrades reveal more candidates.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
           },
-          "requirements": [],
-          "capabilities": [
-            "recruitment_tier_1"
-          ],
           "recruitment": {
             "discovery_limit": 2
           }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 1000,
             "lumber": 700,
             "stone": 250
           },
-          "requirements": [],
-          "capabilities": [
-            "recruitment_tier_2"
-          ],
           "recruitment": {
             "discovery_limit": 3
           }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 1220,
             "lumber": 860,
             "stone": 310
           },
-          "requirements": [],
-          "capabilities": [
-            "recruitment_tier_3"
-          ],
           "recruitment": {
             "discovery_limit": 4
           }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 1490,
             "lumber": 1050,
             "stone": 380
           },
-          "requirements": [],
-          "capabilities": [
-            "recruitment_tier_4"
-          ],
           "recruitment": {
             "discovery_limit": 5
           }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 1820,
             "lumber": 1280,
             "stone": 460
           },
-          "requirements": [],
-          "capabilities": [
-            "recruitment_tier_5"
-          ],
           "recruitment": {
             "discovery_limit": 6
           }
@@ -325,528 +167,343 @@
     {
       "id": "storehouse",
       "name": "Storehouse",
-      "category": "core",
       "level": 1,
       "max_level": 5,
-      "description": "Stores profession reagents and crafting materials.",
+      "description": "Holds profession reagents.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "reagent_storage_tier_1"
-          ]
+          }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 700,
             "lumber": 500,
             "stone": 200
-          },
-          "requirements": [],
-          "capabilities": [
-            "reagent_storage_tier_2"
-          ]
+          }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 860,
             "lumber": 610,
             "stone": 250
-          },
-          "requirements": [],
-          "capabilities": [
-            "reagent_storage_tier_3"
-          ]
+          }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 1050,
             "lumber": 750,
             "stone": 300
-          },
-          "requirements": [],
-          "capabilities": [
-            "reagent_storage_tier_4"
-          ]
+          }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 1280,
             "lumber": 910,
             "stone": 370
-          },
-          "requirements": [],
-          "capabilities": [
-            "reagent_storage_tier_5"
-          ]
+          }
         }
       ]
     },
     {
       "id": "bank",
       "name": "Bank",
-      "category": "core",
       "level": 1,
       "max_level": 5,
-      "description": "Holds meta-progression items, persistent currencies, and economy balances.",
+      "description": "Holds currencies and meta-progression.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "bank_tier_1"
-          ]
+          }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 800,
             "lumber": 550,
             "stone": 180
-          },
-          "requirements": [],
-          "capabilities": [
-            "bank_tier_2"
-          ]
+          }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 980,
             "lumber": 670,
             "stone": 220
-          },
-          "requirements": [],
-          "capabilities": [
-            "bank_tier_3"
-          ]
+          }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 1200,
             "lumber": 820,
             "stone": 270
-          },
-          "requirements": [],
-          "capabilities": [
-            "bank_tier_4"
-          ]
+          }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 1460,
             "lumber": 1000,
             "stone": 330
-          },
-          "requirements": [],
-          "capabilities": [
-            "bank_tier_5"
-          ]
+          }
         }
       ]
     },
     {
       "id": "armory",
       "name": "Armory",
-      "category": "core",
       "level": 1,
       "max_level": 5,
-      "description": "Holds owned hero equipment and gear.",
+      "description": "Holds owned equipment.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "armory_tier_1"
-          ]
+          }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 850,
             "lumber": 600,
             "stone": 220
-          },
-          "requirements": [],
-          "capabilities": [
-            "armory_tier_2"
-          ]
+          }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 1040,
             "lumber": 730,
             "stone": 270
-          },
-          "requirements": [],
-          "capabilities": [
-            "armory_tier_3"
-          ]
+          }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 1270,
             "lumber": 890,
             "stone": 330
-          },
-          "requirements": [],
-          "capabilities": [
-            "armory_tier_4"
-          ]
+          }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 1550,
             "lumber": 1090,
             "stone": 400
-          },
-          "requirements": [],
-          "capabilities": [
-            "armory_tier_5"
-          ]
+          }
         }
       ]
     },
     {
       "id": "artisans",
       "name": "Artisans Guild",
-      "category": "profession",
       "level": 1,
       "max_level": 5,
-      "description": "Central guild for all crafting professions.",
+      "description": "Trains heroes in an artisan profession.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "artisans_guild_tier_1"
-          ]
+          }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 1000,
             "lumber": 700,
             "stone": 250
-          },
-          "requirements": [],
-          "capabilities": [
-            "artisans_guild_tier_2"
-          ]
+          }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 1250,
             "lumber": 875,
             "stone": 315
-          },
-          "requirements": [],
-          "capabilities": [
-            "artisans_guild_tier_3"
-          ]
+          }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 1550,
             "lumber": 1080,
             "stone": 390
-          },
-          "requirements": [],
-          "capabilities": [
-            "artisans_guild_tier_4"
-          ]
+          }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 1900,
             "lumber": 1325,
             "stone": 480
-          },
-          "requirements": [],
-          "capabilities": [
-            "artisans_guild_tier_5"
-          ]
+          }
         }
-      ],
-      "assignment_slots": 3
+      ]
     },
     {
       "id": "classhall",
       "name": "Class Hall",
-      "category": "core",
       "level": 1,
       "max_level": 5,
-      "description": "Houses faction-valid class trainers for talent access and hero level training.",
+      "description": "Trains heroes with a full XP bar to their next level.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "class_hall_tier_1"
-          ]
+          }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 950,
             "lumber": 650,
             "stone": 180
-          },
-          "requirements": [],
-          "capabilities": [
-            "class_hall_tier_2"
-          ]
+          }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 1160,
             "lumber": 790,
             "stone": 220
-          },
-          "requirements": [],
-          "capabilities": [
-            "class_hall_tier_3"
-          ]
+          }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 1420,
             "lumber": 970,
             "stone": 270
-          },
-          "requirements": [],
-          "capabilities": [
-            "class_hall_tier_4"
-          ]
+          }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 1730,
             "lumber": 1180,
             "stone": 330
-          },
-          "requirements": [],
-          "capabilities": [
-            "class_hall_tier_5"
-          ]
+          }
         }
       ]
     },
     {
       "id": "gathering-camp",
       "name": "Gathering Camp",
-      "category": "profession",
-      "assignment_slots": 3,
       "level": 1,
       "max_level": 5,
-      "description": "Trains Mining, Skinning, and Herbalism and advances the shared Gathering profession tier.",
+      "description": "Trains heroes in Mining, Skinning, or Herbalism.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "gathering_camp_tier_1"
-          ]
+          }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 700,
             "lumber": 500,
             "stone": 150
-          },
-          "requirements": [],
-          "capabilities": [
-            "gathering_camp_tier_2"
-          ]
+          }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 900,
             "lumber": 650,
             "stone": 200
-          },
-          "requirements": [],
-          "capabilities": [
-            "gathering_camp_tier_3"
-          ]
+          }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 1150,
             "lumber": 820,
             "stone": 260
-          },
-          "requirements": [],
-          "capabilities": [
-            "gathering_camp_tier_4"
-          ]
+          }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 1450,
             "lumber": 1040,
             "stone": 330
-          },
-          "requirements": [],
-          "capabilities": [
-            "gathering_camp_tier_5"
-          ]
+          }
         }
       ]
     },
     {
       "id": "survival-lodge",
       "name": "Survival Lodge",
-      "category": "profession",
-      "assignment_slots": 3,
       "level": 1,
       "max_level": 5,
-      "description": "Trains Fishing, First Aid, and Cooking and advances the shared Survival profession tier.",
+      "description": "Trains heroes in Fishing, First Aid, or Cooking.",
       "progression": [
         {
           "level": 1,
-          "tier": 1,
           "cost": {
             "gold": 0,
             "lumber": 0,
             "stone": 0
-          },
-          "requirements": [],
-          "capabilities": [
-            "survival_lodge_tier_1"
-          ]
+          }
         },
         {
           "level": 2,
-          "tier": 2,
           "cost": {
             "gold": 650,
             "lumber": 450,
             "stone": 140
-          },
-          "requirements": [],
-          "capabilities": [
-            "survival_lodge_tier_2"
-          ]
+          }
         },
         {
           "level": 3,
-          "tier": 3,
           "cost": {
             "gold": 830,
             "lumber": 580,
             "stone": 180
-          },
-          "requirements": [],
-          "capabilities": [
-            "survival_lodge_tier_3"
-          ]
+          }
         },
         {
           "level": 4,
-          "tier": 4,
           "cost": {
             "gold": 1060,
             "lumber": 740,
             "stone": 230
-          },
-          "requirements": [],
-          "capabilities": [
-            "survival_lodge_tier_4"
-          ]
+          }
         },
         {
           "level": 5,
-          "tier": 5,
           "cost": {
             "gold": 1340,
             "lumber": 940,
             "stone": 300
-          },
-          "requirements": [],
-          "capabilities": [
-            "survival_lodge_tier_5"
-          ]
+          }
         }
       ]
     }

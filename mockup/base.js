@@ -1,5 +1,6 @@
 const Icons = window.WowUIIcons;
 const Tooltips = window.WowUITooltips;
+const Modal = window.WowUIModal;
 const Roster = window.WarcraftRoster;
 const Campaign = window.WarcraftCampaign;
 const CampaignClock = window.WarcraftCampaignClock;
@@ -28,7 +29,7 @@ let bankHoldings = null;
 let classHallData = null;
 let contentProgression = null;
 let armoryItems = [];
-let sidecarOrigin = null;
+let modalBody = null;
 
 function normalizeBuilding(raw) {
   const level = Number(raw.level);
@@ -98,12 +99,7 @@ function upgradeState(building) {
 
 const state = {
   selected: null,
-  questMessage: "",
-  recruitmentOpen: false,
-  recruitmentMessage: "",
-  professionOpen: null,
-  classHallMessage: "",
-  professionAssignmentMessage: ""
+  message: ""
 };
 
 function campaignResources() {
@@ -126,7 +122,6 @@ const all = selector => [...document.querySelectorAll(selector)];
 
 const buildingIconKeys = {
   keep: ["building", "keep"],
-  training: ["building", "training-grounds"],
   recruitment: ["building", "recruitment-hall"],
   storehouse: ["building", "storehouse"],
   bank: ["building", "bank"],
@@ -141,17 +136,9 @@ const buildingIconKeys = {
 const attentionIcons = {
   "quest-complete": ["status", "victory"],
   "quest-ready": ["status", "combat"],
-  "profession-action": ["status", "speed"],
   "upgrade-ready": ["status", "victory"],
   blocked: ["status", "critical"]
 };
-
-function professionActionAvailable(building) {
-  const current = currentProgression(building);
-  return Boolean(
-    building.category === "profession" && current && current.action_available === true
-  );
-}
 
 function currentQuestOffers() {
   if (!questOfferPool) return [];
@@ -196,14 +183,6 @@ function buildingAttentionState(building) {
         detail: "A quest in the current round can launch from the Embark bar."
       };
     if (quests.some(quest => quest.status === "active")) return null;
-  }
-
-  if (professionActionAvailable(building)) {
-    return {
-      key: "profession-action",
-      label: "Profession action available",
-      detail: "This profession building has an available action."
-    };
   }
 
   const upgrade = upgradeState(building);
@@ -275,11 +254,6 @@ function buildingIconSpec(building) {
   if (building && building.id === "keep" && variant && variant.keep_icon_key)
     return ["building", variant.keep_icon_key];
   return buildingIconKeys[building.id] || ["building", "keep"];
-}
-
-function buildingIconMarkup(building, size, extraClass) {
-  const icon = buildingIconSpec(building);
-  return iconMarkup(icon[0], icon[1], size, extraClass || "");
 }
 
 function labelize(value) {
@@ -384,215 +358,46 @@ function storageBrowserRows(building) {
   return [];
 }
 
-function storageBrowserHeading(building, rows) {
-  const labels = {
-    storehouse: ["REAGENTS", "Crafting materials"],
-    bank: ["BANK", "Meta progression & currencies"],
-    armory: ["ARMORY", "Owned equipment"]
-  };
-  const pair = labels[building.id] || ["STORAGE", "Holdings"];
-  return (
-    '<div class="base-sidecar__storage-head"><div><span class="wow-kicker">' +
-    pair[0] +
-    "</span><h3>" +
-    pair[1] +
-    "</h3></div><small>" +
-    rows.length +
-    " entries</small></div>"
-  );
+// Storehouse, Bank, and Armory: holdings as an icon grid; names and details live in tooltips.
+function storageItem(kind, item) {
+  const node = document.createElement("button");
+  node.type = "button";
+  node.className = "building-modal__item";
+  let icon;
+  let count = null;
+  let model;
+  if (kind === "reagent") {
+    icon =
+      '<span class="wow-icon-frame wow-icon-frame--sm"><img src="' +
+      Icons.iconUrl(item.icon_slug) +
+      '" alt=""></span>';
+    count = Number(item.quantity) || 0;
+    model = () => reagentTooltipModel(item);
+  } else if (kind === "bank") {
+    const spec = item.icon || { category: "currency", key: "gold" };
+    icon = iconMarkup(spec.category, spec.key, "sm");
+    count = Campaign.getBankHoldingQuantity(item.id);
+    model = () => bankTooltipModel(item);
+  } else {
+    icon =
+      '<span class="wow-icon-frame wow-icon-frame--sm wow-icon-frame--quality-' +
+      item.qualityKey +
+      '"><img src="' +
+      Icons.iconUrl(item.icon) +
+      '" alt=""></span>';
+    model = () => armoryItemTooltipModel(item);
+  }
+  node.setAttribute("aria-label", item.name + (count == null ? "" : ", " + fmt(count)));
+  node.innerHTML =
+    icon + (count == null ? "" : '<span class="building-modal__count">' + fmt(count) + "</span>");
+  Tooltips.attach(node, model, { anchor: "target" });
+  node.addEventListener("click", () => node.focus());
+  return node;
 }
 
-function renderStorageBrowser(building) {
-  const root = $("#storageBrowser");
-  if (!root || !building) return;
-  const rows = storageBrowserRows(building);
-  root.dataset.storageBuilding = building.id;
-  root.innerHTML =
-    storageBrowserHeading(building, rows) +
-    '<div class="base-sidecar__storage-grid" role="list"></div>';
-  const grid = root.querySelector(".base-sidecar__storage-grid");
-
-  rows.forEach(({ kind, item }) => {
-    const node = document.createElement("button");
-    node.type = "button";
-    node.className =
-      "base-sidecar__storage-item is-" +
-      kind +
-      (kind === "equipment" ? " wow-quality--" + item.qualityKey : "");
-    node.dataset.storageCategory = kind;
-    node.dataset.itemId = item.id;
-
-    if (kind === "reagent") {
-      node.setAttribute(
-        "aria-label",
-        item.name + ", quantity " + item.quantity + ", Tier " + item.tier + " reagent"
-      );
-      node.innerHTML =
-        '<span class="base-sidecar__storage-icon wow-icon-frame wow-icon-frame--sm"><img src="' +
-        Icons.iconUrl(item.icon_slug) +
-        '" alt=""></span>' +
-        '<span class="base-sidecar__storage-copy"><strong>' +
-        escapeHtml(item.name) +
-        "</strong><small>T" +
-        item.tier +
-        " · " +
-        escapeHtml(labelize(item.family)) +
-        "</small></span>" +
-        '<span class="base-sidecar__storage-count">×' +
-        fmt(Number(item.quantity) || 0) +
-        "</span>";
-      Tooltips.attach(node, () => reagentTooltipModel(item), { anchor: "target" });
-    } else if (kind === "bank") {
-      const icon = item.icon || { category: "currency", key: "gold" };
-      const balance = Campaign.getBankHoldingQuantity(item.id);
-      node.setAttribute(
-        "aria-label",
-        item.name + ", balance " + balance + ", " + labelize(item.category)
-      );
-      node.innerHTML =
-        iconMarkup(icon.category, icon.key, "sm", "base-sidecar__storage-icon") +
-        '<span class="base-sidecar__storage-copy"><strong>' +
-        escapeHtml(item.name) +
-        "</strong><small>" +
-        escapeHtml(labelize(item.category)) +
-        "</small></span>" +
-        '<span class="base-sidecar__storage-count">' +
-        fmt(balance) +
-        "</span>";
-      Tooltips.attach(node, () => bankTooltipModel(item), { anchor: "target" });
-    } else {
-      const holders = equippedBy(item.id);
-      node.classList.add("wow-icon-frame--quality-" + item.qualityKey);
-      node.setAttribute(
-        "aria-label",
-        item.name +
-          ", Tier " +
-          item.tier +
-          ", " +
-          item.quality +
-          (holders.length
-            ? ", equipped by " + holders.map(hero => hero.name).join(", ")
-            : ", stored")
-      );
-      node.innerHTML =
-        '<span class="base-sidecar__storage-icon wow-icon-frame wow-icon-frame--sm wow-icon-frame--quality-' +
-        item.qualityKey +
-        '"><img src="' +
-        Icons.iconUrl(item.icon) +
-        '" alt=""></span>' +
-        '<span class="base-sidecar__storage-copy"><strong>' +
-        escapeHtml(item.name) +
-        "</strong><small>T" +
-        item.tier +
-        " · " +
-        escapeHtml(item.slot) +
-        " · " +
-        escapeHtml(item.family) +
-        "</small></span>" +
-        '<span class="base-sidecar__storage-state">' +
-        (holders.length ? "Equipped" : "Stored") +
-        "</span>";
-      Tooltips.attach(node, () => armoryItemTooltipModel(item), { anchor: "target" });
-    }
-    node.addEventListener("click", event => event.currentTarget.focus());
-    grid.appendChild(node);
-  });
-
-  bindResolvedIcons(root);
-}
-
-const BUILDING_ACTIONS = Object.freeze({
-  keep: Object.freeze([
-    Object.freeze({
-      label: "Open Roster",
-      href: "./heroes.html",
-      icon: ["resource", "population"],
-      description: "Manage heroes, equipment, talents, and saved parties."
-    })
-  ]),
-  recruitment: Object.freeze([
-    Object.freeze({
-      label: "Recruit Heroes",
-      action: "recruitment",
-      icon: ["resource", "population"],
-      description:
-        "Discover heroes here; roster capacity is controlled by the active faction Base Level."
-    })
-  ]),
-  training: Object.freeze([]),
-  storehouse: Object.freeze([]),
-  bank: Object.freeze([]),
-  armory: Object.freeze([]),
-  questboard: Object.freeze([
-    Object.freeze({
-      label: "Open Quest Journal",
-      href: "./quest-journal.html",
-      icon: ["quest", "journal"],
-      description: "Review available, active, and completed quests."
-    })
-  ]),
-  artisans: Object.freeze([
-    Object.freeze({
-      label: "Open Artisan Professions",
-      action: "profession-track",
-      icon: ["building", "artisans-guild"],
-      description: "Open Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, and Engineer."
-    })
-  ]),
-  "gathering-camp": Object.freeze([
-    Object.freeze({
-      label: "Open Gathering Professions",
-      action: "profession-track",
-      icon: ["building", "gathering-camp"],
-      description: "Open Mining, Skinning, and Herbalism."
-    })
-  ]),
-  "survival-lodge": Object.freeze([
-    Object.freeze({
-      label: "Open Survival Professions",
-      action: "profession-track",
-      icon: ["building", "survival-lodge"],
-      description: "Open Fishing, First Aid, and Cooking."
-    })
-  ]),
-  classhall: Object.freeze([])
-});
-
-function buildingActions(building) {
-  return BUILDING_ACTIONS[building.id] || [];
-}
-
-function buildingActionMarkup(action) {
-  const content =
-    iconMarkup(action.icon[0], action.icon[1], "sm", "base-sidecar__menu-icon") +
-    '<span class="base-sidecar__menu-copy"><strong>' +
-    action.label +
-    "</strong><small>Open</small></span>";
-  const tooltip =
-    ' data-wow-tooltip="' +
-    action.label +
-    '" data-wow-tooltip-type="Building Action"' +
-    ' data-wow-tooltip-description="' +
-    action.description +
-    '" data-wow-tooltip-variant="control"';
-  if (action.href)
-    return (
-      '<a class="base-sidecar__menu-item base-sidecar__action" href="' +
-      action.href +
-      '"' +
-      tooltip +
-      ">" +
-      content +
-      "</a>"
-    );
-  return (
-    '<button class="base-sidecar__menu-item base-sidecar__action" type="button" data-building-action="' +
-    action.action +
-    '"' +
-    tooltip +
-    ">" +
-    content +
-    "</button>"
+function renderStorage(building) {
+  $("#storageGrid").replaceChildren(
+    ...storageBrowserRows(building).map(({ kind, item }) => storageItem(kind, item))
   );
 }
 
@@ -692,81 +497,41 @@ function recruitmentCandidateTooltip(candidate) {
   };
 }
 
-function renderRecruitmentWorkflow(building) {
-  const root = $("#recruitmentWorkflow");
-  if (!root || !building) return;
-  const config = recruitmentConfig(building);
-  const faction = currentFactionId();
-  const roster = currentFactionRoster();
-  const candidates = discoveredRecruitmentCandidates(building);
-  const capacity = Roster.getRosterCapacity();
-  const baseLevel = Campaign.getBaseLevel();
-  const full = roster.length >= capacity;
+function rosterStatus() {
+  return "Roster " + currentFactionRoster().length + " / " + Roster.getRosterCapacity();
+}
 
-  root.hidden = !state.recruitmentOpen;
-  if (!state.recruitmentOpen) return;
-
-  root.innerHTML =
-    '<div class="base-sidecar__recruitment-head">' +
-    "<span><strong>" +
-    roster.length +
-    " / " +
-    capacity +
-    "</strong><small>Roster · Base Level " +
-    baseLevel +
-    " cap</small></span>" +
-    "<span><strong>" +
-    candidates.length +
-    "</strong><small>Discovered</small></span>" +
-    "</div>" +
-    '<div id="recruitmentStatus" class="base-sidecar__recruitment-status" role="status" aria-live="polite">' +
-    (state.recruitmentMessage ||
-      (full ? "Recruitment capacity reached." : "Choose a discovered hero to recruit.")) +
-    "</div>" +
-    '<div class="base-sidecar__candidate-list"></div>';
-
-  const list = root.querySelector(".base-sidecar__candidate-list");
-  candidates.forEach(candidate => {
-    const existing = Roster.hero(candidate.id);
-    const row = document.createElement("article");
-    row.className = "base-sidecar__candidate" + (existing ? " is-recruited" : "");
-    row.innerHTML =
-      iconMarkup("race", candidate.race, "sm", "base-sidecar__candidate-icon") +
-      '<span class="base-sidecar__candidate-copy"><strong>' +
-      candidate.name +
-      "</strong><small>" +
-      candidate.race +
-      " · " +
-      candidate.classLabel +
-      " · " +
-      candidate.spec +
-      "</small></span>" +
-      '<button class="wow-button base-sidecar__recruit-button' +
-      (full || existing ? " is-disabled" : "") +
-      '" type="button" aria-disabled="' +
-      (full || existing ? "true" : "false") +
-      '">' +
-      (existing ? "Recruited" : "Recruit") +
-      "</button>";
-    const button = row.querySelector(".base-sidecar__recruit-button");
-    Tooltips.attach(row, () => recruitmentCandidateTooltip(candidate), { anchor: "target" });
-    button.addEventListener("click", () => {
-      if (button.getAttribute("aria-disabled") === "true") return;
-      try {
-        const factionLabel = faction === "horde" ? "Horde" : "Alliance";
-        Roster.recruitHero(Object.assign({}, candidate, { faction: factionLabel, level: 1 }));
-        state.recruitmentMessage = candidate.name + " joined the roster.";
-        state.recruitmentOpen = true;
-        renderSidecar();
-      } catch (error) {
-        state.recruitmentMessage = error.message;
-        state.recruitmentOpen = true;
-        renderSidecar();
-      }
-    });
-    list.appendChild(row);
+function recruitCandidate(candidate) {
+  runBuildingAction(() => {
+    const faction = currentFactionId() === "horde" ? "Horde" : "Alliance";
+    Roster.recruitHero(Object.assign({}, candidate, { faction, level: 1 }));
+    return candidate.name + " joined the roster.";
   });
-  bindResolvedIcons(root);
+}
+
+function renderRecruitment(building) {
+  const full = currentFactionRoster().length >= Roster.getRosterCapacity();
+  $("#recruitmentCandidates").replaceChildren(
+    ...discoveredRecruitmentCandidates(building).map(candidate => {
+      const recruited = Boolean(Roster.hero(candidate.id));
+      const row = document.createElement("div");
+      row.className = "building-modal__row" + (recruited ? " is-recruited" : "");
+      row.innerHTML =
+        iconMarkup("race", candidate.race, "sm") +
+        '<span class="building-modal__name">' +
+        escapeHtml(candidate.name) +
+        "</span>";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "wow-button";
+      button.textContent = recruited ? "Recruited" : "Recruit";
+      button.disabled = recruited || full;
+      button.addEventListener("click", () => recruitCandidate(candidate));
+      row.appendChild(button);
+      Tooltips.attach(row, () => recruitmentCandidateTooltip(candidate), { anchor: "target" });
+      return row;
+    })
+  );
 }
 
 function validateProfessionData(payload) {
@@ -839,16 +604,11 @@ function professionAssignmentData(track, hero) {
   };
 }
 
-function renderProfessionBuildingWorkflow(building) {
-  const root = $("#professionWorkflow");
-  if (!root || !building || !professionData || !Assignments) return;
+function renderProfessionBuilding(building) {
   const track = professionTrackForBuilding(building.id);
-  root.hidden = state.professionOpen !== building.id;
-  if (root.hidden || !track) return;
-
   const completions = Professions.processAssignments(building.id);
   if (completions.length)
-    state.professionAssignmentMessage = completions
+    state.message = completions
       .map(
         event =>
           event.heroName +
@@ -857,58 +617,6 @@ function renderProfessionBuildingWorkflow(building) {
           "."
       )
       .join(" ");
-
-  root.innerHTML =
-    '<div class="base-sidecar__artisan-head">' +
-    '<span class="wow-kicker">' +
-    escapeHtml(track.label.toUpperCase()) +
-    " PROFESSIONS</span>" +
-    "<small>" +
-    track.professions.length +
-    " professions · Level " +
-    building.level +
-    "</small>" +
-    "</div>" +
-    '<div class="base-sidecar__profession-list"></div>' +
-    '<div class="assignment-workflow__head"><span class="wow-kicker">HERO TRAINING</span><small>3 slots · drag hero · 1 campaign day</small></div>' +
-    '<div class="assignment-workflow__message" role="status">' +
-    escapeHtml(
-      state.professionAssignmentMessage ||
-        "Drag a hero from the roster into a slot, choose a " +
-          track.label +
-          " profession, then begin training."
-    ) +
-    "</div>" +
-    '<div id="professionAssignmentBoard" class="assignment-board"></div>';
-
-  const list = root.querySelector(".base-sidecar__profession-list");
-  track.professions
-    .map(id => professionData.professions.find(definition => definition.id === id))
-    .filter(Boolean)
-    .forEach(definition => {
-      const item = document.createElement("a");
-      item.className = "base-sidecar__profession-entry";
-      item.href =
-        "./profession.html?track=" +
-        encodeURIComponent(track.id) +
-        "&profession=" +
-        encodeURIComponent(definition.id);
-      item.setAttribute(
-        "aria-label",
-        "Open " + definition.label + ", " + track.label + " level " + building.level
-      );
-      item.innerHTML =
-        iconMarkup("profession", definition.icon_key, "sm", "base-sidecar__profession-icon") +
-        '<span class="base-sidecar__profession-copy"><strong>' +
-        definition.label +
-        "</strong><small>" +
-        escapeHtml(track.label) +
-        " · Level " +
-        building.level +
-        "</small></span>";
-      list.appendChild(item);
-    });
-
   const actionOptions = track.professions
     .map(id => professionData.professions.find(definition => definition.id === id))
     .filter(Boolean)
@@ -937,87 +645,47 @@ function renderProfessionBuildingWorkflow(building) {
     canStart: (hero, assignment) => ({
       enabled: Boolean(assignment.selectedProfessionId) && hero.availability === "available"
     }),
-    startLabel: "Begin " + track.label + " Training",
+    startLabel: "Begin Training",
     start: index => Professions.startProfessionTraining(building.id, index),
-    onChange: () => {
-      state.professionAssignmentMessage = "Assignment updated.";
-      renderSidecar();
-    },
-    onError: error => {
-      state.professionAssignmentMessage = error.message;
-      renderSidecar();
-    }
+    onChange: () => showMessage(""),
+    onError: error => showMessage(error.message)
   });
-  bindResolvedIcons(root);
 }
 
 function bindResolvedIcons(root) {
   (root || document).querySelectorAll(".wow-icon-frame img").forEach(Icons.bindFallback);
 }
 
+function costLabel(cost) {
+  return Object.entries(cost)
+    .map(([key, value]) => fmt(value) + " " + labelize(key))
+    .join(" · ");
+}
+
 function buildingTooltipModel(building) {
   const icon = buildingIconSpec(building);
-  const current = currentProgression(building);
-  const upgrade = upgradeState(building);
-  const attention = buildingAttentionState(building);
+  const next = nextProgression(building);
   return {
-    variant: building.category === "profession" ? "profession" : "building",
+    variant: "building",
     title: building.name,
-    type: building.category === "profession" ? "Profession building" : "Base building",
+    type: "Level " + building.level + " / " + building.max,
     icon: { category: icon[0], key: icon[1] },
     description: building.description,
-    stats: [
-      { label: "Level", value: building.level + " / 5" },
-      { label: "Progression tier", value: "Tier " + building.level },
-      { label: "Unlocks", value: (current.capabilities || []).join(", ") || "Base capability" }
-    ]
-      .concat(attention ? [{ label: attention.label, value: attention.detail }] : [])
-      .concat(
-        upgrade.next
-          ? Object.entries(upgrade.next.cost).map(([key, value]) => ({
-              label: "Next " + key,
-              value: fmt(value)
-            }))
-          : []
-      ),
-    meta: [
-      { label: "Category", value: building.category === "profession" ? "Profession" : "Core" },
-      { label: "Next level", value: upgrade.next ? String(upgrade.next.level) : "MAX" }
-    ].concat(attention ? [{ label: "Attention", value: attention.label }] : []),
-    locked:
-      attention && attention.key === "blocked"
-        ? [attention.detail]
-        : upgrade.reason
-          ? [upgrade.reason]
-          : []
+    stats: [{ label: "Next upgrade", value: next ? costLabel(next.cost) : "Max level" }]
   };
 }
 
 function upgradeTooltipModel(building) {
   const upgrade = upgradeState(building);
-  const icon = buildingIconSpec(building);
-  if (!upgrade.next) {
-    return {
-      variant: "control",
-      title: building.name + " · Max Level",
-      type: "Building upgrade",
-      icon: { category: icon[0], key: icon[1] },
-      description: "Maximum level reached.",
-      stats: [],
-      locked: []
-    };
-  }
-  const stats = Object.entries(upgrade.next.cost).map(([key, value]) => ({
-    label: labelize(key),
-    value: fmt(value)
-  }));
+  if (!upgrade.next)
+    return { variant: "control", title: building.name, description: "Maximum level reached." };
   return {
     variant: "control",
-    title: "Upgrade " + building.name,
-    type: upgrade.canUpgrade ? "Ready" : "Blocked",
-    icon: { category: icon[0], key: icon[1] },
-    description: upgrade.canUpgrade ? "Spend the listed resources to upgrade." : upgrade.reason,
-    stats,
+    title: "Upgrade to level " + upgrade.next.level,
+    stats: Object.entries(upgrade.next.cost).map(([key, value]) => ({
+      label: labelize(key),
+      value: fmt(value)
+    })),
     locked: upgrade.canUpgrade ? [] : [upgrade.reason]
   };
 }
@@ -1113,9 +781,8 @@ function syncMapBuildings() {
     const selected = state.selected === building.id;
     const attention = syncBuildingAttention(plot, building);
     plot.classList.toggle("selected", selected);
-    plot.setAttribute("aria-pressed", selected ? "true" : "false");
+    plot.setAttribute("aria-haspopup", "dialog");
     plot.setAttribute("aria-expanded", selected ? "true" : "false");
-    plot.setAttribute("aria-controls", "baseSidecar");
     plot.setAttribute(
       "aria-label",
       building.name +
@@ -1140,14 +807,11 @@ function questAutomationLevel() {
   return contentProgression.content.find(entry => entry.id === "quest").automation_base_level;
 }
 
-function runQuestAutomation(action) {
-  try {
-    action();
-    state.questMessage = "";
-  } catch (error) {
-    state.questMessage = error.message;
-  }
-  renderSidecar();
+function questBoardStatus() {
+  const unlockLevel = questAutomationLevel();
+  return Campaign.getBaseLevel() < unlockLevel
+    ? "Launch quests from the Embark bar. Auto quests unlock at Base Level " + unlockLevel + "."
+    : "";
 }
 
 function questAutomationSlot(assignment, index, offers) {
@@ -1182,37 +846,31 @@ function questAutomationSlot(assignment, index, offers) {
   }));
   if (hero)
     slot.addEventListener("click", () =>
-      runQuestAutomation(() => ContentAssignments.remove("quest", index))
+      runBuildingAction(() => {
+        ContentAssignments.remove("quest", index);
+      })
     );
   else
     window.WarcraftRosterSidecar.dropTarget(slot, heroId =>
-      runQuestAutomation(() =>
-        ContentAssignments.assign("quest", index, heroId, offer ? offer.id : "quest")
-      )
+      runBuildingAction(() => {
+        ContentAssignments.assign("quest", index, heroId, offer ? offer.id : "quest");
+      })
     );
   return slot;
 }
 
 function renderQuestAutomation() {
   const root = $("#questAutomationSlots");
-  const status = $("#questBoardStatus");
-  if (!root || !status) return;
-  const unlockLevel = questAutomationLevel();
-  if (Campaign.getBaseLevel() < unlockLevel) {
-    status.textContent =
-      "Launch quests from the Embark bar. Auto quests unlock at Base Level " + unlockLevel + ".";
+  if (Campaign.getBaseLevel() < questAutomationLevel()) {
     root.replaceChildren();
     return;
   }
-  status.textContent =
-    state.questMessage || "Drag heroes from the roster to quest on their own for one day.";
   const offers = currentQuestOffers();
   root.replaceChildren(
     ...ContentAssignments.state("quest").slots.map((assignment, index) =>
       questAutomationSlot(assignment, index, offers)
     )
   );
-  bindResolvedIcons(root);
 }
 
 function classHallSlotTooltip(hero) {
@@ -1250,25 +908,12 @@ function classHallHeroStatus(hero) {
   };
 }
 
-function renderClassHallWorkflow(building) {
-  const root = $("#classHallWorkflow");
-  if (!root || !building || !ClassHall || !Assignments || !classHallData) return;
+function renderClassHall() {
   const completions = ClassHall.processCompletions();
   if (completions.length)
-    state.classHallMessage = completions
+    state.message = completions
       .map(event => event.heroName + " reached level " + event.toLevel + ".")
       .join(" ");
-  root.hidden = false;
-  root.innerHTML =
-    '<div class="class-hall__head"><div><span class="wow-kicker">LEVEL TRAINING</span><h3>Class Hall</h3></div><small>3 slots · 1 day training</small></div>' +
-    '<div id="classHallMessage" class="class-hall__message" role="status">' +
-    escapeHtml(
-      state.classHallMessage ||
-        "Drag a hero from the roster into a slot to train with their class trainer."
-    ) +
-    "</div>" +
-    '<div id="classHallAssignmentBoard" class="assignment-board"></div>';
-
   Assignments.mount($("#classHallAssignmentBoard"), {
     buildingId: "classhall",
     label: "Class Hall",
@@ -1290,21 +935,75 @@ function renderClassHallWorkflow(building) {
     },
     startLabel: "Start Level Training",
     start: index => ClassHall.startLevelTraining(index),
-    href: hero => ClassHall.openTalentsHref(hero.id),
-    hrefLabel: "Open Talents",
     tooltip: classHallSlotTooltip,
-    onChange: () => {
-      state.classHallMessage = "Class Hall assignment updated.";
-      renderSidecar();
-    },
-    onError: error => {
-      state.classHallMessage = error.message;
-      renderSidecar();
-    }
+    onChange: () => showMessage(""),
+    onError: error => showMessage(error.message)
   });
-
-  bindResolvedIcons(root);
 }
+
+// The Keep's function is the Base Level: which content it unlocks and how many heroes fit.
+function renderKeep() {
+  const baseLevel = Campaign.getBaseLevel();
+  $("#keepUnlocks").replaceChildren(
+    ...contentProgression.content.map(entry => {
+      const locked = baseLevel < entry.unlock_base_level;
+      const chip = document.createElement("span");
+      chip.className = "building-modal__unlock" + (locked ? " is-locked" : "");
+      chip.tabIndex = 0;
+      chip.textContent = entry.label;
+      Tooltips.attach(
+        chip,
+        () => ({
+          title: entry.label,
+          description: locked
+            ? "Unlocks at Base Level " + entry.unlock_base_level + "."
+            : "Unlocked at Base Level " + entry.unlock_base_level + "."
+        }),
+        { anchor: "target" }
+      );
+      return chip;
+    })
+  );
+}
+
+const PROFESSION_VIEW = {
+  markup: '<div id="professionAssignmentBoard" class="assignment-board"></div>',
+  render: renderProfessionBuilding
+};
+const STORAGE_VIEW = {
+  markup: '<div id="storageGrid" class="building-modal__grid"></div>',
+  render: renderStorage
+};
+// Each building's one function, rendered into the building modal above its upgrade button.
+const BUILDING_VIEWS = {
+  keep: {
+    markup:
+      '<div class="building-modal__unlocks"><span class="building-modal__label">Content</span>' +
+      '<span id="keepUnlocks" class="building-modal__unlocks"></span></div>',
+    render: renderKeep,
+    status: rosterStatus
+  },
+  recruitment: {
+    markup: '<div id="recruitmentCandidates" class="building-modal__rows"></div>',
+    render: renderRecruitment,
+    status: rosterStatus
+  },
+  questboard: {
+    markup: '<div id="questAutomationSlots" class="quest-automation"></div>',
+    render: renderQuestAutomation,
+    status: questBoardStatus
+  },
+  classhall: {
+    markup: '<div id="classHallAssignmentBoard" class="assignment-board"></div>',
+    render: renderClassHall
+  },
+  storehouse: STORAGE_VIEW,
+  bank: STORAGE_VIEW,
+  armory: STORAGE_VIEW,
+  artisans: PROFESSION_VIEW,
+  "gathering-camp": PROFESSION_VIEW,
+  "survival-lodge": PROFESSION_VIEW
+};
 
 function toast(message) {
   const node = $("#baseToast");
@@ -1314,160 +1013,72 @@ function toast(message) {
   toast.timer = setTimeout(() => (node.hidden = true), 1800);
 }
 
-function renderSidecar() {
-  const sidecar = $("#baseSidecar");
-  const body = $("#baseSidecarBody");
-  const building = buildings.find(item => item.id === state.selected);
-  if (!sidecar || !body || !building) return;
+function showMessage(message) {
+  state.message = message;
+  renderBuildingModal();
+}
 
-  const current = currentProgression(building);
+// Runs a building action and shows the message it returns, or its error.
+function runBuildingAction(action) {
+  try {
+    showMessage(action() || "");
+  } catch (error) {
+    showMessage(error.message);
+  }
+}
+
+function renderUpgradeButton(building) {
   const upgrade = upgradeState(building);
-  const actions = buildingActions(building);
-
-  $("#baseSidecarIcon").innerHTML = buildingIconMarkup(
-    building,
-    "lg",
-    "base-sidecar__building-icon"
-  );
-  $("#baseSidecarCategory").textContent =
-    building.category === "profession" ? "PROFESSION BUILDING" : "CORE BUILDING";
-  $("#baseSidecarTitle").textContent = building.name;
-  $("#baseSidecarLevel").textContent =
-    "Level " + building.level + " / " + building.max + " · Tier " + current.tier;
-  const upgradeButton = $("#baseSidecarUpgrade");
-  const upgradeLabel = $("#baseSidecarUpgradeLabel");
-  if (upgradeButton) {
-    upgradeButton.classList.toggle("is-disabled", !upgrade.canUpgrade);
-    upgradeButton.setAttribute("aria-disabled", upgrade.canUpgrade ? "false" : "true");
-    upgradeButton.setAttribute(
-      "aria-label",
-      upgrade.next
-        ? upgrade.canUpgrade
-          ? "Upgrade " + building.name
-          : "Upgrade " + building.name + ", blocked"
-        : building.name + ", maximum level"
-    );
-  }
-  if (upgradeLabel) upgradeLabel.textContent = upgrade.next ? "Upgrade" : "Max";
-
-  body.innerHTML = actions.length
-    ? '<div class="base-sidecar__menu" aria-label="' +
-      building.name +
-      ' actions">' +
-      actions.map(buildingActionMarkup).join("") +
-      "</div>"
-    : "";
-
-  if (["storehouse", "bank", "armory"].includes(building.id)) {
-    body.insertAdjacentHTML(
-      "beforeend",
-      '<section id="storageBrowser" class="base-sidecar__section base-sidecar__storage" aria-label="' +
-        building.name +
-        ' holdings"></section>'
-    );
-  }
-
-  if (building.id === "recruitment") {
-    body.insertAdjacentHTML(
-      "beforeend",
-      '<section id="recruitmentWorkflow" class="base-sidecar__section base-sidecar__recruitment" hidden></section>'
-    );
-  }
-
-  if (["artisans", "gathering-camp", "survival-lodge"].includes(building.id)) {
-    body.insertAdjacentHTML(
-      "beforeend",
-      '<section id="professionWorkflow" class="base-sidecar__section base-sidecar__artisans" hidden></section>'
-    );
-  }
-
-  if (building.id === "classhall") {
-    body.insertAdjacentHTML(
-      "beforeend",
-      '<section id="classHallWorkflow" class="base-sidecar__section class-hall" aria-label="Class Hall trainers and assignments"></section>'
-    );
-  }
-
-  if (building.id === "questboard") {
-    body.insertAdjacentHTML(
-      "beforeend",
-      '<section class="base-sidecar__section base-sidecar__quests">' +
-        '<div class="base-sidecar__quest-head"><div><span class="wow-kicker">AUTO QUESTS</span><h3>Quest Board</h3></div><small>Round ' +
-        Roster.getQuestBoardState().round +
-        "</small></div>" +
-        '<div class="quest-board-campaign-time campaign-clock" data-campaign-clock role="status" aria-live="polite"></div>' +
-        '<div id="questBoardStatus" class="base-sidecar__quest-status" role="status" aria-live="polite"></div>' +
-        '<div id="questAutomationSlots" class="quest-automation" aria-label="Auto quest slots"></div>' +
-        "</section>"
-    );
-  }
-
-  bindResolvedIcons(sidecar);
-  if (CampaignClock) CampaignClock.hydrate(sidecar);
-  Tooltips.hydrate(sidecar);
-  if (["storehouse", "bank", "armory"].includes(building.id)) renderStorageBrowser(building);
-  if (building.id === "classhall") renderClassHallWorkflow(building);
-  if (building.id === "questboard") renderQuestAutomation();
-  if (building.id === "recruitment") {
-    renderRecruitmentWorkflow(building);
-    const recruitmentAction = sidecar.querySelector('[data-building-action="recruitment"]');
-    if (recruitmentAction)
-      recruitmentAction.addEventListener("click", () => {
-        state.recruitmentOpen = true;
-        state.recruitmentMessage = "";
-        renderSidecar();
-      });
-  }
-  if (["artisans", "gathering-camp", "survival-lodge"].includes(building.id)) {
-    renderProfessionBuildingWorkflow(building);
-    const professionAction = sidecar.querySelector('[data-building-action="profession-track"]');
-    if (professionAction)
-      professionAction.addEventListener("click", () => {
-        state.professionOpen = building.id;
-        renderSidecar();
-      });
-  }
-
-  if (upgradeButton) {
-    Tooltips.attach(upgradeButton, () => upgradeTooltipModel(building), { anchor: "target" });
-    upgradeButton.onclick = () => upgradeBuilding(building.id);
-  }
+  const button = $("#buildingUpgrade");
+  button.textContent = upgrade.next ? "Upgrade" : "Max level";
+  button.classList.toggle("wow-button--primary", upgrade.canUpgrade);
+  button.setAttribute("aria-disabled", upgrade.canUpgrade ? "false" : "true");
+  button.onclick = () => upgradeBuilding(building.id);
+  Tooltips.attach(button, () => upgradeTooltipModel(building), { anchor: "target" });
 }
 
-function openSidecar(id, origin) {
-  const building = buildings.find(item => item.id === id);
-  const sidecar = $("#baseSidecar");
-  if (!building || !sidecar) return;
+function renderBuildingModal() {
+  const building = buildings.find(entry => entry.id === state.selected);
+  if (!building || !modalBody) return;
+  const view = BUILDING_VIEWS[building.id];
+  const focusedId = modalBody.contains(document.activeElement) ? document.activeElement.id : "";
+  modalBody.innerHTML =
+    '<p id="buildingStatus" class="building-modal__status" role="status"></p>' +
+    view.markup +
+    '<footer class="building-modal__footer"><span>' +
+    (building.id === "keep" ? "Base Level " : "Level ") +
+    building.level +
+    " / " +
+    building.max +
+    '</span><button id="buildingUpgrade" class="wow-button" type="button"></button></footer>';
+  view.render(building);
+  const status = $("#buildingStatus");
+  status.textContent = state.message || (view.status ? view.status(building) : "");
+  status.hidden = !status.textContent;
+  renderUpgradeButton(building);
+  bindResolvedIcons(modalBody);
+  if (focusedId) $("#" + focusedId)?.focus();
+}
 
-  if (state.selected !== id) {
-    state.recruitmentOpen = false;
-    state.recruitmentMessage = "";
-    state.professionOpen = null;
-    state.questMessage = "";
-  }
+// Building modals float (modal: false) so heroes can be dragged in from the roster sidecar
+// and another plot on the map can be opened directly.
+function openBuilding(id) {
+  const building = buildings.find(entry => entry.id === id);
+  if (!building) return;
+  if (state.selected !== id) state.message = "";
+  modalBody = Modal.open({
+    title: building.name,
+    modal: false,
+    onClose: () => {
+      if (state.selected !== id) return;
+      state.selected = null;
+      modalBody = null;
+      syncMapBuildings();
+    }
+  });
   state.selected = id;
-  sidecarOrigin = origin || sidecarOrigin;
+  renderBuildingModal();
   syncMapBuildings();
-  renderSidecar();
-  sidecar.hidden = false;
-  const body = $("#baseSidecarBody");
-  if (body) body.scrollTop = 0;
-  $("#baseSidecarClose")?.focus({ preventScroll: true });
-}
-
-function closeSidecar(options = {}) {
-  const sidecar = $("#baseSidecar");
-  if (!sidecar || sidecar.hidden) return;
-
-  const restoreFocus = options.restoreFocus !== false;
-  sidecar.hidden = true;
-  state.selected = null;
-  syncMapBuildings();
-
-  if (restoreFocus && sidecarOrigin && typeof sidecarOrigin.focus === "function") {
-    sidecarOrigin.focus({ preventScroll: true });
-  }
-  sidecarOrigin = null;
 }
 
 function upgradeBuilding(id) {
@@ -1479,7 +1090,6 @@ function upgradeBuilding(id) {
     return;
   }
   if (!up.canUpgrade) {
-    renderSidecar();
     toast(up.reason);
     return;
   }
@@ -1489,54 +1099,31 @@ function upgradeBuilding(id) {
   Campaign.applyBaseUpgrade(b.id, up.next.level, up.next.cost);
   b.level = Campaign.getBuildingLevel(b.id, up.next.level);
   if (b.id === "artisans") Professions.setGuildLevel(b.level);
+  state.message = "";
   syncResourceBar();
-  syncMapBuildings();
-  renderSidecar();
+  renderBuildingModal();
   toast(b.name + " upgraded to level " + b.level + ".");
 }
 
 $("#baseMap").addEventListener("click", event => {
   const plot = event.target.closest("[data-building]");
-  if (plot) {
-    openSidecar(plot.dataset.building, plot);
-    return;
-  }
-  closeSidecar({ restoreFocus: false });
-});
-
-$("#baseSidecarClose").addEventListener("click", () => closeSidecar());
-
-document.addEventListener("keydown", event => {
-  if (event.key === "Escape" && !$("#baseSidecar").hidden) {
-    event.preventDefault();
-    closeSidecar();
-  }
+  if (plot) openBuilding(plot.dataset.building);
+  else Modal.close();
 });
 
 window.addEventListener("warcraft:roster-changed", () => {
   applyCampaignProgression();
   syncResourceBar();
   applyBasePresentation();
-  if (state.selected && !$("#baseSidecar").hidden) renderSidecar();
+  renderBuildingModal();
 });
 
 window.addEventListener("warcraft:campaign-changed", event => {
   const reason = event && event.detail && event.detail.reason;
   if (["clock", "faction", "reset"].includes(reason)) syncResourceBar();
-  if (
-    ["classhall", "artisans", "gathering-camp", "survival-lodge"].includes(state.selected) &&
-    !$("#baseSidecar").hidden &&
-    ["clock", "building-assignment", "profession-selection"].includes(reason)
-  )
-    renderSidecar();
+  renderBuildingModal();
 });
-window.addEventListener("warcraft:assignments-changed", () => {
-  if (
-    ["classhall", "artisans", "gathering-camp", "survival-lodge"].includes(state.selected) &&
-    !$("#baseSidecar").hidden
-  )
-    renderSidecar();
-});
+window.addEventListener("warcraft:assignments-changed", renderBuildingModal);
 
 window.addEventListener("resize", () => {
   if (basePresentation) applyBasePresentation();
@@ -1618,13 +1205,7 @@ async function initBase() {
     );
     syncResourceBar();
     applyBasePresentation();
-    $("#baseSidecar").hidden = true;
-    const params = new URLSearchParams(window.location.search);
-    const requestedBuilding = params.get("building");
-    if (requestedBuilding && buildings.some(entry => entry.id === requestedBuilding)) {
-      const origin = document.querySelector('[data-building="' + requestedBuilding + '"]');
-      openSidecar(requestedBuilding, origin);
-    }
+    openBuilding(new URLSearchParams(window.location.search).get("building"));
   } catch (error) {
     toast(error.message);
   }

@@ -7,6 +7,7 @@ import {
   plain,
   readJson,
   reload,
+  settle,
   sharedModules
 } from "./harness.mjs";
 
@@ -225,21 +226,33 @@ test("every equipment slot and item has a real icon", () => {
   }
 });
 
-test("the shared modal opens, closes, and reports blocking vs floating", () => {
+test("the shared modal opens, swaps, and closes blocking and floating panels", async () => {
   const browser = createBrowser().load("mockup/ui/wow-modal.js");
-  const Modal = browser.window.WowUIModal;
+  const { WowUIModal: Modal, document } = browser.window;
+  const closed = [];
   let rendered = null;
-  let closed = 0;
-  Modal.open({ title: "Class Hall", render: body => (rendered = body), onClose: () => closed++ });
+  Modal.open({
+    title: "Keep",
+    render: body => (rendered = body),
+    onClose: () => closed.push("Keep")
+  });
   assert.equal(Modal.isOpen(), true);
   assert.ok(rendered, "render receives the modal body");
   Modal.close();
+  await settle();
   assert.equal(Modal.isOpen(), false);
-  assert.equal(closed, 1);
-  Modal.open({ title: "Storehouse", modal: false });
-  assert.equal(Modal.isOpen(), true);
-  Modal.close();
-  assert.equal(closed, 1, "onClose belongs to the open call that set it");
+  assert.deepEqual(closed, ["Keep"]);
+
+  Modal.open({ title: "Class Hall", modal: false, onClose: () => closed.push("Class Hall") });
+  Modal.open({ title: "Storehouse", modal: false, onClose: () => closed.push("Storehouse") });
+  await settle();
+  assert.equal(Modal.isOpen(), true, "the swapped-out panel's late close event is ignored");
+  assert.deepEqual(closed, ["Keep", "Class Hall"]);
+
+  document.dispatchEvent({ type: "keydown", key: "Escape" });
+  await settle();
+  assert.equal(Modal.isOpen(), false, "Escape closes a floating panel wherever focus is");
+  assert.deepEqual(closed, ["Keep", "Class Hall", "Storehouse"]);
 });
 
 test("the roster sidecar lists the active faction and hands heroes to drop targets", () => {

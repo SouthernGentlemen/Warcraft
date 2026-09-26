@@ -258,6 +258,7 @@ test("Quest Board automation takes heroes dragged from the roster sidecar", asyn
 
   drop(slots()[1], "druid");
   assert.equal(Roster.hero("druid").availability, "assigned");
+  assert.equal(base.element("buildingStatus").textContent, "", "no message after a drop");
   slots()[1].dispatchEvent({ type: "click" });
   assert.equal(Roster.hero("druid").availability, "available", "clicking a filled slot recalls");
 
@@ -268,4 +269,88 @@ test("Quest Board automation takes heroes dragged from the roster sidecar", asyn
   embarkQuest(Campaign);
   assert.equal(Roster.hero("hunter").availability, "available");
   assert.equal(Roster.getHeroProgress("hunter").xp, xp + 1, "an automated quest grants Quest XP");
+});
+
+const upgrade = base => base.element("buildingUpgrade").onclick();
+
+function discoveryLimit(level) {
+  const hall = readJson("data/base/buildings.json").buildings.find(b => b.id === "recruitment");
+  return hall.progression.find(step => step.level === level).recruitment.discovery_limit;
+}
+
+test("every Base building opens a modal with its one function and an upgrade button", async () => {
+  const buildings = readJson("data/base/buildings.json").buildings;
+  const expected = {
+    keep: ["keepUnlocks", readJson("data/content/progression.json").content.length],
+    recruitment: ["recruitmentCandidates", discoveryLimit(1)],
+    questboard: ["questAutomationSlots", 0],
+    storehouse: ["storageGrid", readJson("data/items/reagents/holdings.json").items.length],
+    bank: ["storageGrid", readJson("data/items/economy/holdings.json").holdings.length],
+    armory: ["storageGrid", null],
+    classhall: ["classHallAssignmentBoard", 3],
+    artisans: ["professionAssignmentBoard", 3],
+    "gathering-camp": ["professionAssignmentBoard", 3],
+    "survival-lodge": ["professionAssignmentBoard", 3]
+  };
+  assert.deepEqual(buildings.map(b => b.id).sort(), Object.keys(expected).sort());
+  for (const { id } of buildings) {
+    const base = await bootBuilding(new MemoryStorage(), id);
+    const [container, count] = expected[id];
+    assert.equal(base.window.WowUIModal.isOpen(), true, id);
+    assert.equal(
+      base.element(container).children.length,
+      count ?? base.window.WarcraftEquipment.owned().length,
+      id
+    );
+    assert.equal(base.element("buildingUpgrade").textContent, "Upgrade", id);
+    assert.equal(
+      base.element("buildingUpgrade").getAttribute("aria-disabled"),
+      id === "keep" ? "false" : "true",
+      id + ": only the Keep can outgrow the Keep"
+    );
+  }
+});
+
+test("building modals recruit heroes and upgrade their building", async () => {
+  const storage = new MemoryStorage();
+  const hall = await bootBuilding(storage, "recruitment");
+  const { WarcraftRoster: Roster, WarcraftCampaign: Campaign } = hall.window;
+  const heroes = Roster.getState().heroes.length;
+  click(hall.element("recruitmentCandidates"), "Recruit");
+  assert.equal(Roster.getState().heroes.length, heroes + 1);
+  upgrade(hall);
+  assert.equal(Campaign.getBuildingLevel("recruitment"), 1, "the Keep gates other upgrades");
+
+  const keep = await bootBuilding(storage, "keep");
+  const locked = () =>
+    keep.element("keepUnlocks").children.filter(chip => chip.className.includes("is-locked"));
+  assert.equal(locked().length, 4, "Base Level 1 unlocks Quests only");
+  for (let level = 2; level <= 5; level += 1) upgrade(keep);
+  assert.equal(keep.window.WarcraftCampaign.getBaseLevel(), 5);
+  assert.equal(locked().length, 0);
+  assert.equal(keep.element("buildingUpgrade").textContent, "Max level");
+
+  const upgraded = await bootBuilding(storage, "recruitment");
+  upgrade(upgraded);
+  assert.equal(upgraded.window.WarcraftCampaign.getBuildingLevel("recruitment"), 2);
+  assert.equal(
+    upgraded.element("recruitmentCandidates").children.length,
+    discoveryLimit(2),
+    "an upgrade reveals more candidates"
+  );
+});
+
+test("profession buildings train heroes dragged into their modal", async () => {
+  const storage = new MemoryStorage();
+  const base = await bootBuilding(storage, "gathering-camp");
+  const { WarcraftProfessions: Professions, WarcraftCampaign: Campaign } = base.window;
+  const slots = () => base.element("professionAssignmentBoard").children;
+  drop(slots()[0], "hunter");
+  click(slots()[0], "Begin Training");
+  embarkQuest(Campaign);
+  embarkQuest(Campaign);
+  const gathering = readJson("data/base/profession-buildings/index.json").tracks.find(
+    track => track.id === "gathering"
+  );
+  assert.equal(Professions.getHeroProfessions("hunter").gathering, gathering.professions[0]);
 });

@@ -47,7 +47,11 @@ Developer-only (linked from `dev.html`): `gear.html` and `talent-calculator.html
   Base, buildings, resources, roster, loadouts, professions, assignments, and clock. Heroes never
   cross factions.
 - **Base Level** is the Keep level (1–5). It sets roster capacity (10 per level) and unlocks
-  content: Quest 1, Incursion 2, Dungeon 3, Raid 4, Siege 5.
+  content: Quest 1, Incursion 2, Dungeon 3, Raid 4, Siege 5. No other building can be upgraded
+  past it.
+- **Buildings** open a modal with their one function and an Upgrade button: the Keep shows what
+  the Base Level unlocks, the Recruitment Hall recruits, the Storehouse, Bank, and Armory show
+  their holdings, and the rest take heroes into slots.
 - **Hero XP:** a 20-point bar per level. Victories grant Quest +1, Incursion +2, Dungeon +3,
   Raid/Siege +0. A full bar makes a hero eligible to train; leveling happens only through the
   Class Hall and never above the Base Level. Max hero level is 5.

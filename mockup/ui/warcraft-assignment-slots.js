@@ -330,12 +330,7 @@
         training = Boolean(hero && assignment.status === "training");
       const slot = element(
         "article",
-        "assignment-slot" + (hero ? " is-filled" : " is-empty") + (training ? " is-training" : ""),
-        '<div class="assignment-slot__label"><span>SLOT ' +
-          (index + 1) +
-          "</span><small>" +
-          (training ? "Training" : hero ? "Assigned" : "Drop hero") +
-          "</small></div>"
+        "assignment-slot" + (hero ? " is-filled" : " is-empty") + (training ? " is-training" : "")
       );
       slot.dataset.assignmentSlot = String(index);
       if (!training)
@@ -431,13 +426,6 @@
           })
         )
       );
-      const href = typeof options.href === "function" ? options.href(hero, assignment) : null;
-      if (href) {
-        const link = element("a", "wow-button assignment-slot__link");
-        link.href = href;
-        link.textContent = options.hrefLabel || "Open";
-        actions.prepend(link);
-      }
       return slot;
     }
     root.setAttribute("aria-label", (options.label || id) + " assignment slots");
