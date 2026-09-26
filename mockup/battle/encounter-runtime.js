@@ -114,6 +114,7 @@ async function heroDefinition(hero,classIndex,team=0,formationMeta=null){
     race:hero.race,
     faction:hero.faction,
     availability:hero.availability,
+    formationGroup:formationMeta&&formationMeta.groupId||null,
     formationSlot:formationMeta&&formationMeta.slotId||null,
     formationTargetWeight:formationMeta?Math.max(0,integer(formationMeta.targetWeight)):0
   });
