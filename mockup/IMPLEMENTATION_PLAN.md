@@ -2368,7 +2368,7 @@ Build twenty-player Siege Loadouts from four five-player Party groups using the 
 
 ### WOWUI-085 — Formation-Aware Deterministic Aggro
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-081, WOWUI-083, WOWUI-084
 
