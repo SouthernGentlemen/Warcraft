@@ -1308,6 +1308,7 @@ function renderSidecar() {
           '<button id="questBoardOffersTab" class="wow-tab" type="button" aria-pressed="true">Quest Offers</button>'+
           '<button id="questBoardDungeonsTab" class="wow-tab" type="button" aria-pressed="false">Dungeon Map</button>'+
         '</div>'+
+        '<div class="quest-board-campaign-time campaign-clock" data-campaign-clock role="status" aria-live="polite"></div>'+
         '<div id="questBoardStatus" class="base-sidecar__quest-status" role="status" aria-live="polite"></div>'+
         '<div id="questOffersView">'+
           '<div id="questOfferList" class="quest-offer-list"></div>'+
@@ -1320,6 +1321,7 @@ function renderSidecar() {
   }
 
   bindResolvedIcons(sidecar);
+  if (CampaignClock) CampaignClock.hydrate(sidecar);
   Tooltips.hydrate(sidecar);
   if (['storehouse','bank','armory'].includes(building.id)) renderStorageBrowser(building);
   if (building.id === 'classhall') renderClassHallWorkflow(building);
