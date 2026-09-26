@@ -333,7 +333,7 @@ function applyEncounterLabels() {
   if(enemyName)enemyName.textContent=encounter.dungeonName||"NPC Encounter";
   $(state.playerSide+"Team").setAttribute("aria-label",encounter.partySize+" player hero"+(encounter.partySize===1?"":"es"));
   $(state.enemySide+"Team").setAttribute("aria-label",(encounter.dungeonName||"Encounter")+" NPC enemies");
-  $("battleEncounterType").textContent=String(encounter.kind||"dungeon").toUpperCase();
+  $("battleEncounterType").textContent=encounter.kind==="quest"?"QUEST":encounter.kind==="raid"?"RAID":encounter.kind==="siege"?"SIEGE":"DUNGEON";
   $("battleEncounterName").textContent=encounter.encounterName||encounter.dungeonName||encounter.dungeonId||"Encounter";
   $("battleEncounterParty").textContent=encounter.partySize+" hero"+(encounter.partySize===1?"":"es")+" · seed "+encounter.seed;
   const frame=document.querySelector(".battle-frame");
