@@ -2226,7 +2226,7 @@ Add the deterministic campaign clock that drives one-day training/assignment pro
 
 ### WOWUI-081 — Five-Hero Formation Data Contract
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-070
 
