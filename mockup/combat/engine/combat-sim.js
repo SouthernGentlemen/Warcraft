@@ -1,5 +1,5 @@
 import { BP, FPS, FNV_OFFSET_BASIS, FNV_PRIME, ULTIMATE_MAX, clampInt, mulBp } from "./constants.js";
-import { rollBasisPoints } from "./rng.js";
+import { randomRange, rollBasisPoints } from "./rng.js";
 
 function hashInt(hash, value) {
   let h = hash >>> 0;
@@ -378,11 +378,22 @@ export class CombatSimulation {
     return best;
   }
 
+  weightedHostileTarget(index) {
+    const hostiles=this.livingHostiles(index);
+    if(!hostiles.length)return -1;
+    const weights=hostiles.map(target=>Math.max(0,Math.trunc(this.defs[target].formationTargetWeight||0)));
+    const total=weights.reduce((sum,weight)=>sum+weight,0);
+    if(total<=0)return hostiles[0];
+    let roll=randomRange(this.state,1,total);
+    for(let i=0;i<hostiles.length;i+=1){roll-=weights[i];if(roll<=0)return hostiles[i];}
+    return hostiles[hostiles.length-1];
+  }
+
   targetsFor(index, action) {
     if (action.target === "self") return [index];
     if (action.target === "enemy") {
-      const hostiles = this.livingHostiles(index);
-      return hostiles.length ? [hostiles[0]] : [];
+      const target=this.weightedHostileTarget(index);
+      return target>=0?[target]:[];
     }
     if (action.target === "all-enemies") return this.livingHostiles(index);
     if (action.target === "lowest-ally") {

@@ -9,7 +9,9 @@ export const SUPPORTED_PARTY_SIZES = Object.freeze([1,3,5,10,20]);
 const CLASS_DATA_ROOT = "../../data/heroes/classes/";
 const NPC_CATALOG_ROOT = "../../data/npcs/catalog.json";
 const NPC_POOLS_ROOT = "../../data/npcs/dungeon-pools.json";
+const FORMATION_ROOT = "../../data/combat/formations.json";
 const CLASS_INDEX_ROOT = CLASS_DATA_ROOT + "index.json";
+const PARTY_FORMATION_SLOT_IDS=Object.freeze(["rear-left","rear-right","middle-left","middle-right","front"]);
 
 function integer(value,fallback=0){const next=Number(value);return Number.isFinite(next)?Math.trunc(next):fallback;}
 async function fetchJson(path){
@@ -20,6 +22,29 @@ async function fetchJson(path){
 function normalizeSpecId(value){return String(value||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-");}
 function heroFaction(hero){return String(hero.faction||"").toLowerCase();}
 function uniqueIds(ids){return [...new Set((ids||[]).map(String))];}
+function normalizePartyFormation(formation,heroIds,faction){
+  const ids=uniqueIds(heroIds);
+  if(ids.length!==5)return null;
+  const source=formation&&Array.isArray(formation.slots)?formation.slots:null;
+  const slots=PARTY_FORMATION_SLOT_IDS.map((id,index)=>{
+    const record=source&&source.find(slot=>slot&&String(slot.id)===id);
+    const heroId=record&&record.heroId!=null?String(record.heroId):ids[index]||null;
+    return {id,heroId};
+  });
+  const slotted=slots.map(slot=>slot.heroId).filter(Boolean);
+  if(slotted.length!==5||new Set(slotted).size!==5||JSON.stringify(slotted)!==JSON.stringify(ids))throw new Error("Five-hero encounter formation must match hero order and fill every authored slot.");
+  return {type:"party",faction:String(faction||""),slots};
+}
+function validateFormationConfig(payload){
+  const party=payload&&payload.party,slots=party&&Array.isArray(party.slots)?party.slots:[];
+  if(!party||Number(party.size)!==5||JSON.stringify(party.slot_order)!==JSON.stringify(PARTY_FORMATION_SLOT_IDS))throw new Error("Formation config must author the five 2 / 2 / 1 party slots.");
+  const byId=new Map(slots.map(slot=>[String(slot.id),slot]));
+  if(PARTY_FORMATION_SLOT_IDS.some(id=>!byId.has(id)))throw new Error("Formation config is missing a party slot.");
+  const weights=PARTY_FORMATION_SLOT_IDS.map(id=>Math.max(0,integer(byId.get(id).target_weight)));
+  const frontWeight=weights[PARTY_FORMATION_SLOT_IDS.indexOf("front")];
+  if(frontWeight<=0||weights.some(weight=>weight<=0)||weights.some((weight,index)=>index!==PARTY_FORMATION_SLOT_IDS.indexOf("front")&&weight>=frontWeight))throw new Error("Front must have the unique highest positive target weight.");
+  return payload;
+}
 
 export function validatePartySize(size){
   const next=integer(size);
@@ -30,8 +55,9 @@ export function validatePartySize(size){
 export function validateEncounterHandoff(encounter,roster){
   if(!encounter||typeof encounter!=="object")throw new Error("Battle encounter configuration is required.");
   const loadout=encounter.loadoutId&&roster.getState().loadouts.find(entry=>entry.id===encounter.loadoutId);
-  const heroIds=uniqueIds(encounter.heroIds&&encounter.heroIds.length?encounter.heroIds:(loadout?loadout.heroIds:[]));
-  const partySize=validatePartySize(encounter.partySize||(loadout&&loadout.size)||heroIds.length);
+  const loadoutIds=loadout?(typeof roster.partyHeroIds==="function"?roster.partyHeroIds(loadout):(loadout.heroIds||[])):[];
+  const heroIds=uniqueIds(encounter.heroIds&&encounter.heroIds.length?encounter.heroIds:loadoutIds);
+  const partySize=validatePartySize(encounter.partySize||(loadout?5:heroIds.length));
   if(heroIds.length!==partySize)throw new Error("Encounter requires exactly "+partySize+" unique heroes.");
   const heroes=heroIds.map(id=>roster.hero(id));
   if(heroes.some(hero=>!hero))throw new Error("Encounter references an unknown roster hero.");
@@ -40,10 +66,12 @@ export function validateEncounterHandoff(encounter,roster){
   const unavailable=heroes.filter(hero=>hero.availability!=="available"&&!(assignment&&committed.has(hero.id)));
   if(unavailable.length)throw new Error("Every battle hero must be available.");
   if(!encounter.npcPoolId)throw new Error("Encounter requires an NPC pool.");
-  return Object.assign({},encounter,{partySize,heroIds,seed:integer(encounter.seed,0x5eed)});
+  const sourceFormation=encounter.formation||(loadout&&typeof roster.partyFormation==="function"?roster.partyFormation(loadout):null);
+  const formation=partySize===5?normalizePartyFormation(sourceFormation,heroIds,encounter.faction||roster.getFaction()):null;
+  return Object.assign({},encounter,{partySize,heroIds,formation,seed:integer(encounter.seed,0x5eed)});
 }
 
-async function heroDefinition(hero,classIndex,team=0){
+async function heroDefinition(hero,classIndex,team=0,formationMeta=null){
   const classMeta=classIndex.classes.find(entry=>entry.id===hero.classId);
   if(!classMeta)throw new Error("Unknown hero class: "+hero.classId);
   const wantedSpec=normalizeSpecId(hero.talentBuild&&hero.talentBuild.primarySpec||hero.spec);
@@ -76,7 +104,9 @@ async function heroDefinition(hero,classIndex,team=0){
   }),{
     race:hero.race,
     faction:hero.faction,
-    availability:hero.availability
+    availability:hero.availability,
+    formationSlot:formationMeta&&formationMeta.slotId||null,
+    formationTargetWeight:formationMeta?Math.max(0,integer(formationMeta.targetWeight)):0
   });
 }
 
@@ -98,12 +128,18 @@ export function expandNpcGroup(poolEnemies,count){
 
 export async function resolveEncounter({encounter,roster}){
   const config=validateEncounterHandoff(encounter,roster);
-  const [classIndex,npcCatalog,npcPools]=await Promise.all([
+  const [classIndex,npcCatalog,npcPools,formationConfig]=await Promise.all([
     fetchJson(CLASS_INDEX_ROOT),
     fetchJson(NPC_CATALOG_ROOT),
-    fetchJson(NPC_POOLS_ROOT)
+    fetchJson(NPC_POOLS_ROOT),
+    fetchJson(FORMATION_ROOT)
   ]);
-  const heroes=await Promise.all(config.heroIds.map(id=>heroDefinition(roster.hero(id),classIndex,0)));
+  const formations=validateFormationConfig(formationConfig),partySlots=new Map((formations.party.slots||[]).map(slot=>[String(slot.id),slot]));
+  const heroFormation=new Map(config.formation&&Array.isArray(config.formation.slots)?config.formation.slots.filter(slot=>slot&&slot.heroId).map(slot=>[String(slot.heroId),String(slot.id)]):[]);
+  const heroes=await Promise.all(config.heroIds.map(id=>{
+    const slotId=heroFormation.get(id)||null,slot=slotId&&partySlots.get(slotId);
+    return heroDefinition(roster.hero(id),classIndex,0,slotId?{slotId,targetWeight:slot&&slot.target_weight}:null);
+  }));
   const poolEnemies=resolveNpcPoolDefinitions({catalog:npcCatalog,pools:npcPools,poolId:config.npcPoolId,team:1});
   const enemyCount=Math.max(1,integer(config.enemyCount,poolEnemies.length));
   const enemies=expandNpcGroup(poolEnemies,enemyCount);
@@ -113,7 +149,7 @@ export async function resolveEncounter({encounter,roster}){
     heroes,
     enemies,
     actors:[...heroes,...enemies],
-    sources:Object.freeze({players:"WarcraftRoster",enemies:"data/npcs/catalog.json"})
+    sources:Object.freeze({players:"WarcraftRoster",enemies:"data/npcs/catalog.json",formations:"data/combat/formations.json"})
   };
 }
 

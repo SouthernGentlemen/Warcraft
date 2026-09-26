@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "combat-formation-config",
+  "party": {
+    "id": "party-2-2-1",
+    "size": 5,
+    "geometry": "rear-to-front 2 / 2 / 1",
+    "slot_order": [
+      "rear-left",
+      "rear-right",
+      "middle-left",
+      "middle-right",
+      "front"
+    ],
+    "slots": [
+      {
+        "id": "rear-left",
+        "row": "rear",
+        "column": "left",
+        "target_weight": 10
+      },
+      {
+        "id": "rear-right",
+        "row": "rear",
+        "column": "right",
+        "target_weight": 10
+      },
+      {
+        "id": "middle-left",
+        "row": "middle",
+        "column": "left",
+        "target_weight": 20
+      },
+      {
+        "id": "middle-right",
+        "row": "middle",
+        "column": "right",
+        "target_weight": 20
+      },
+      {
+        "id": "front",
+        "row": "front",
+        "column": "center",
+        "target_weight": 40
+      }
+    ]
+  }
+}
