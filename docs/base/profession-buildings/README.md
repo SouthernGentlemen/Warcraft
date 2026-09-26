@@ -39,7 +39,7 @@ All three buildings use normal five-level Keep-gated Base progression. A profess
 
 Hero profession selections are stored inside the active faction campaign and are keyed by hero ID as independent `artisan`, `gathering`, and `survival` values. Cross-faction hero references are rejected by the campaign state boundary.
 
-Artisans Guild, Gathering Camp, and Survival Lodge each author three future hero assignment slots. WOWUI-079 supplies the shared drag/drop assignment and timed-training interaction; the track catalog already declares the slot count and replace-same-track training rule so that task does not need to redefine profession ownership.
+Artisans Guild, Gathering Camp, and Survival Lodge each expose exactly three hero assignment slots through the shared building-assignment runtime. The active-faction roster supplies draggable heroes. Before training begins, a slot may be removed or replaced; a hero cannot occupy a second building slot elsewhere. Starting training persists the selected profession/action and current campaign phase, marks the hero unavailable, and completes after two campaign phase advances. Completion applies only the selected profession track and then frees the slot.
 
 ## Shared Direction
 

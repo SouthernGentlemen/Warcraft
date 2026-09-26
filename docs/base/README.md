@@ -40,7 +40,7 @@ Training Grounds remains a general training-support building. Hero level-up auth
 
 ### Class Hall
 
-Houses faction-valid class trainers and owns hero level training. The Class Hall exposes three hero assignment slots. A hero at 20 / 20 XP may begin one full campaign day of level training only when the next hero level does not exceed the active faction Base Level. Successful completion increases the hero by one level and resets next-level XP to 0. Assigned heroes open the shared Roster Talents view rather than a separate talent interface.
+Houses faction-valid class trainers and owns hero level training. The Class Hall uses the shared three-slot building assignment system. A hero at 20 / 20 XP may begin one full campaign day of level training only when the next hero level does not exceed the active faction Base Level. Successful completion increases the hero by one level and resets next-level XP to 0. Assigned heroes open the shared Roster Talents view rather than a separate talent interface.
 
 ### Recruitment
 
@@ -58,14 +58,19 @@ Controls how many resources and crafted items can be held.
 
 Profession buildings are documented under [profession-buildings](./profession-buildings/README.md).
 
-Current profession buildings:
+Current Base profession buildings:
 
-- [Blacksmith](./profession-buildings/blacksmith/README.md)
-- [Alchemist](./profession-buildings/alchemist/README.md)
-- [Enchanter](./profession-buildings/enchanter/README.md)
-- [Tailor](./profession-buildings/tailor/README.md)
-- [Leatherworker](./profession-buildings/leatherworker/README.md)
-- [Engineer](./profession-buildings/engineer/README.md)
+- **Artisans Guild** — Blacksmith, Alchemist, Enchanter, Tailor, Leatherworker, Engineer
+- **Gathering Camp** — Mining, Skinning, Herbalism
+- **Survival Lodge** — Fishing, First Aid, Cooking
+
+All three use the same shared three-slot assignment system as Class Hall.
+
+## Shared Building Assignments
+
+Class Hall, Artisans Guild, Gathering Camp, and Survival Lodge each expose exactly three assignment slots through one reusable assignment runtime. A slot stores its building ID, slot index, hero ID, selected trainer/profession/action, campaign start phase, and remaining campaign phases.
+
+A hero cannot occupy more than one building assignment slot at a time. Pre-start assignments may be removed or replaced. Once training starts, the hero becomes unavailable for content/formation launch and the slot is locked until completion. One assignment lasts one full campaign day, represented deterministically as two campaign phase advances; real-world timers are not used. Assignment state is faction-scoped and persists through reload.
 
 ## Building Progression
 

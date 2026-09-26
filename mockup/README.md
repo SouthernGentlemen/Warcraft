@@ -126,6 +126,12 @@ Hero advancement uses a faction-persistent **0–20 level-progress XP** field. S
 
 The faction Base **Class Hall** owns hero level training and talent-trainer access. `data/base/class-hall.json` authors one shared trainer catalog, filtered to the classes valid for the active faction, plus exactly three persisted assignment slots and a one-day / two-campaign-phase training duration. Assigned heroes link directly to `heroes.html?hero=<hero-id>&tab=talents`; the Class Hall does not implement a second talent tree. Level training starts only at 20 / 20 XP when the next level is within the faction Keep/Base Level, marks the hero unavailable while training, completes after two campaign phase advances, then calls the Class-Hall-authorized level transition and frees the slot.
 
+### Shared building assignment slots
+
+`ui/warcraft-assignment-slots.js` is the single assignment-state and drag/drop interaction layer for Class Hall, Artisans Guild, Gathering Camp, and Survival Lodge. Every building exposes exactly three slots. The active-faction roster is rendered as draggable hero cards; dropping a hero fills or replaces a pre-start slot, while active training cannot be replaced or removed.
+
+A hero may occupy only one building assignment slot at a time across all four buildings. Starting an assignment records the selected trainer/profession/action plus the current campaign day/phase and a two-phase duration, then changes the hero availability to `training`. Existing formation/Embark launch validation therefore rejects that hero until completion. Assignment progress reads only `WarcraftCampaign.getClock().phaseAdvances`; there are no wall-clock timers. Reload preserves the slot and remaining phase state, and completion releases the hero and frees the slot. The shared `assignment-slots.css` empty/drop/filled/training visual language is intentionally reusable by later Quest Board automation.
+
 `WarcraftRoster` and `WarcraftProfessions` are compatibility-facing adapters over the active campaign rather than separate global save files. Switching faction changes the records returned by those APIs without copying or mutating the inactive campaign. Fresh state seeds the existing sample heroes into their authored faction only. A legacy `warcraft.mockup.roster.v1` / `warcraft.mockup.professions.v1` save migrates once into its previously active faction; the opposite campaign is left independent and legacy hero IDs are never cloned into both campaigns.
 
 ### Shared roster state
@@ -220,7 +226,7 @@ The profession system has three independent hero tracks. **Artisan** remains in 
 
 Each hero can own one choice from each track simultaneously. `WarcraftProfessions.setHeroProfession(heroId, track, professionId)` uses the active faction's hero-scoped `professionSelections` record; choosing another profession in the same track replaces only that track. The other two choices are preserved. Cross-faction hero IDs are rejected by `WarcraftCampaign`.
 
-All three profession buildings are normal five-level, Keep-gated Base buildings. The shared `profession.html` workspace is track-aware, filters the profession list to the owning building, uses that building's level as the track level, and exposes the current faction roster for learn/change actions. Each track authors three assignment slots and a `replace_same_track` rule for the shared WOWUI-079 assignment framework.
+All three profession buildings are normal five-level, Keep-gated Base buildings. The shared `profession.html` workspace remains track-aware for profession inspection and hero track state. Artisans Guild, Gathering Camp, and Survival Lodge now use the same three-slot assignment board as Class Hall for actual timed training. Each slot persists building ID, slot index, hero ID, selected profession/action, start phase, and remaining campaign phases.
 
 ### Randomized Quest Board rounds
 
