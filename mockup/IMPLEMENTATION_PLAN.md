@@ -2441,7 +2441,7 @@ Define the intended manual-to-automated content ladder before building the new E
 
 ### WOWUI-087 — Quest Board Auto-Assignment Slots
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-079, WOWUI-080, WOWUI-086
 
