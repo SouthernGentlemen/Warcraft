@@ -3,7 +3,9 @@
 const Campaign=global.WarcraftCampaign;if(!Campaign)throw new Error("WarcraftCampaign must load before WarcraftRoster.");
 const PARTY_SIZE=5;
 const PARTY_SIZES=Object.freeze([PARTY_SIZE]);
-const PARTY_SLOT_IDS=Object.freeze(["rear-left","rear-right","middle-left","middle-right","front"]);\nconst RAID_SIZE=10;\nconst RAID_GROUP_IDS=Object.freeze(["group-a","group-b"]);
+const PARTY_SLOT_IDS=Object.freeze(["rear-left","rear-right","middle-left","middle-right","front"]);
+const RAID_SIZE=10;
+const RAID_GROUP_IDS=Object.freeze(["group-a","group-b"]);
 const HERO_LEVEL_MAX=5;
 const HERO_XP_MAX=20;
 const HERO_XP_REWARDS=Object.freeze({quest:1,incursion:2,dungeon:3,raid:0,siege:0});
