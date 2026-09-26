@@ -2401,7 +2401,7 @@ Make saved formation position matter in deterministic combat targeting.
 
 ### WOWUI-086 — Tiered Content Progression Contract
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-069, WOWUI-076
 
