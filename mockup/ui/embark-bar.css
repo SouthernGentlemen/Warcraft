@@ -1,0 +1,57 @@
+/* Embark bar: content, a 2 / 2 / 1 party, and Embark, docked under the Base map. */
+.embark-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--wow-space-3);
+  padding: var(--wow-space-2) var(--wow-space-3);
+  border-width: 1px 0 0;
+  border-radius: 0;
+}
+
+.embark-bar__content {
+  max-width: 260px;
+}
+
+.embark-bar__party {
+  display: flex;
+  gap: var(--wow-space-1);
+}
+
+/* Rear pair, middle pair, front: left to right toward the enemy. */
+.embark-bar__party.is-formation .embark-bar__slot:nth-child(2),
+.embark-bar__party.is-formation .embark-bar__slot:nth-child(4) {
+  margin-right: var(--wow-space-3);
+}
+
+.embark-bar__slot {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px dashed var(--wow-inset-line);
+  border-radius: var(--wow-radius-control);
+}
+
+.embark-bar__slot.is-filled {
+  border-style: solid;
+  cursor: pointer;
+}
+
+.embark-bar__slot.is-drop-target {
+  border-color: var(--wow-gold);
+  background: var(--wow-surface-hover);
+}
+
+.embark-bar__saved {
+  max-width: 160px;
+}
+
+.embark-bar__status {
+  color: var(--wow-text-muted);
+  font-size: 12px;
+}
+
+.embark-bar__go {
+  margin-left: auto;
+}

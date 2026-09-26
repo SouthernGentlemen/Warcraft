@@ -2,13 +2,13 @@ import { BP, DEFAULT_AUTO_TICKS, mulBp } from "./constants.js";
 import { compileTalentHooks, defaultTalentNames } from "./talent-hooks.js";
 
 const COMBAT_RATING_BASELINES = Object.freeze({
-  1: Object.freeze({crit:0,haste:0,hit:0,mastery:0}),
-  2: Object.freeze({crit:1,haste:1,hit:1,mastery:0}),
-  3: Object.freeze({crit:2,haste:2,hit:2,mastery:1}),
-  4: Object.freeze({crit:4,haste:4,hit:3,mastery:2}),
-  5: Object.freeze({crit:6,haste:6,hit:4,mastery:4})
+  1: Object.freeze({ crit: 0, haste: 0, hit: 0, mastery: 0 }),
+  2: Object.freeze({ crit: 1, haste: 1, hit: 1, mastery: 0 }),
+  3: Object.freeze({ crit: 2, haste: 2, hit: 2, mastery: 1 }),
+  4: Object.freeze({ crit: 4, haste: 4, hit: 3, mastery: 2 }),
+  5: Object.freeze({ crit: 6, haste: 6, hit: 4, mastery: 4 })
 });
-const PRIMARY_STAT_KEYS=Object.freeze(["strength","agility","intellect","stamina","spirit"]);
+const PRIMARY_STAT_KEYS = Object.freeze(["strength", "agility", "intellect", "stamina", "spirit"]);
 
 function normalizeResource(identityResource) {
   const value = String(identityResource || "").toLowerCase();
@@ -45,24 +45,54 @@ function primaryKey(specData) {
   return "intellect";
 }
 
-function buildBaseStats(level,classMeta){
-  const resolvedLevel=Math.max(1,Math.min(5,Number(level)||1));
-  const row=classMeta&&classMeta.base_stats&&classMeta.base_stats[String(resolvedLevel)];
-  if(!row)throw new Error("Missing authored base stats for "+String(classMeta&&classMeta.id||"unknown")+" level "+resolvedLevel+".");
-  const base={};
-  for(const key of PRIMARY_STAT_KEYS){
-    const value=Number(row[key]);
-    if(!Number.isFinite(value))throw new Error("Invalid authored "+key+" for "+String(classMeta&&classMeta.id||"unknown")+" level "+resolvedLevel+".");
-    base[key]=value;
+function buildBaseStats(level, classMeta) {
+  const resolvedLevel = Math.max(1, Math.min(5, Number(level) || 1));
+  const row = classMeta && classMeta.base_stats && classMeta.base_stats[String(resolvedLevel)];
+  if (!row)
+    throw new Error(
+      "Missing authored base stats for " +
+        String((classMeta && classMeta.id) || "unknown") +
+        " level " +
+        resolvedLevel +
+        "."
+    );
+  const base = {};
+  for (const key of PRIMARY_STAT_KEYS) {
+    const value = Number(row[key]);
+    if (!Number.isFinite(value))
+      throw new Error(
+        "Invalid authored " +
+          key +
+          " for " +
+          String((classMeta && classMeta.id) || "unknown") +
+          " level " +
+          resolvedLevel +
+          "."
+      );
+    base[key] = value;
   }
   return base;
 }
 
-function normalizeEquipmentStats(value){const source=value&&typeof value==="object"?value:{};const keys=["strength","agility","intellect","stamina","spirit","crit","haste","hitRating","mastery"];return Object.fromEntries(keys.map(key=>[key,Number(source[key])||0]));}
+function normalizeEquipmentStats(value) {
+  const source = value && typeof value === "object" ? value : {};
+  const keys = [
+    "strength",
+    "agility",
+    "intellect",
+    "stamina",
+    "spirit",
+    "crit",
+    "haste",
+    "hitRating",
+    "mastery"
+  ];
+  return Object.fromEntries(keys.map(key => [key, Number(source[key]) || 0]));
+}
 
-function buildStats(level,classMeta,specData,equipmentStats={}) {
-  const baseStats=buildBaseStats(level,classMeta);
-  const ratings=COMBAT_RATING_BASELINES[level] || COMBAT_RATING_BASELINES[5];
+function buildStats(level, classMeta, specData, equipmentStats = {}) {
+  const baseStats = buildBaseStats(level, classMeta);
+  const ratings = COMBAT_RATING_BASELINES[level] || COMBAT_RATING_BASELINES[5];
   const stats = {
     ...baseStats,
     crit: ratings.crit,
@@ -73,8 +103,10 @@ function buildStats(level,classMeta,specData,equipmentStats={}) {
     mastery: ratings.mastery
   };
 
-  const equipment=normalizeEquipmentStats(equipmentStats);
-  Object.entries(equipment).forEach(([key,value])=>{if(Object.prototype.hasOwnProperty.call(stats,key))stats[key]+=value;});
+  const equipment = normalizeEquipmentStats(equipmentStats);
+  Object.entries(equipment).forEach(([key, value]) => {
+    if (Object.prototype.hasOwnProperty.call(stats, key)) stats[key] += value;
+  });
 
   const role = String(specData.identity?.role || "").toLowerCase();
   if (role.includes("spell") || role.includes("shadow") || role.includes("elemental")) {
@@ -84,7 +116,7 @@ function buildStats(level,classMeta,specData,equipmentStats={}) {
     stats.healingPower = level * 3;
   }
 
-  return {baseStats,equipmentStats:equipment,stats};
+  return { baseStats, equipmentStats: equipment, stats };
 }
 
 function buildDerived(stats, hooks) {
@@ -109,16 +141,27 @@ function buildDerived(stats, hooks) {
   };
 }
 
-function autoAction(specData,classMeta) {
+function autoAction(specData, classMeta) {
   const text = String(specData.identity?.auto_attack || "Auto Attack");
-  const specLabel=String(specData.specialization||"").toLowerCase();
-  const specMeta=(classMeta.specs||[]).find(spec=>spec.id===specLabel||String(spec.label||"").toLowerCase()===specLabel);
-  const iconSlug=String(specMeta?.auto_attack_icon_slug||specData.identity?.auto_attack_icon_slug||"");
-  if(!iconSlug)throw new Error("Missing authored Auto Attack icon for "+classMeta.id+"/"+String(specMeta?.id||specData.specialization||"unknown")+".");
+  const specLabel = String(specData.specialization || "").toLowerCase();
+  const specMeta = (classMeta.specs || []).find(
+    spec => spec.id === specLabel || String(spec.label || "").toLowerCase() === specLabel
+  );
+  const iconSlug = String(
+    specMeta?.auto_attack_icon_slug || specData.identity?.auto_attack_icon_slug || ""
+  );
+  if (!iconSlug)
+    throw new Error(
+      "Missing authored Auto Attack icon for " +
+        classMeta.id +
+        "/" +
+        String(specMeta?.id || specData.specialization || "unknown") +
+        "."
+    );
   const name = text.split(" — ")[0].trim() || "Auto Attack";
   const healing = /heal/i.test(text);
   const primary = primaryKey(specData);
-  const school = healing ? "healing" : (primary === "intellect" ? "spell" : "physical");
+  const school = healing ? "healing" : primary === "intellect" ? "spell" : "physical";
 
   return {
     id: "auto",
@@ -134,7 +177,9 @@ function autoAction(specData,classMeta) {
     effect: "none",
     icon_slug: iconSlug,
     icon_source: specMeta?.auto_attack_icon_source || "Wowhead CDN",
-    icon_source_url: specMeta?.auto_attack_icon_source_url || ("https://wow.zamimg.com/images/wow/icons/large/"+iconSlug+".jpg"),
+    icon_source_url:
+      specMeta?.auto_attack_icon_source_url ||
+      "https://wow.zamimg.com/images/wow/icons/large/" + iconSlug + ".jpg",
     canCrit: true,
     canMiss: !healing
   };
@@ -159,17 +204,27 @@ export function createHeroDefinition({
 }) {
   const talents = selectedTalentNames || defaultTalentNames(specData, level);
   const talentHooks = compileTalentHooks(specData, talents);
-  const {baseStats,equipmentStats:resolvedEquipmentStats,stats} = buildStats(level, classMeta, specData, equipmentStats);
+  const {
+    baseStats,
+    equipmentStats: resolvedEquipmentStats,
+    stats
+  } = buildStats(level, classMeta, specData, equipmentStats);
   const derived = buildDerived(stats, talentHooks);
   const resourceType = normalizeResource(specData.identity?.resource);
 
-  const cooldownPool = (abilityData.cooldowns || []).filter(action => compatibleCooldown(action, resourceType));
+  const cooldownPool = (abilityData.cooldowns || []).filter(action =>
+    compatibleCooldown(action, resourceType)
+  );
   const requestedCooldownIds = Array.isArray(selectedCooldownIds)
     ? [...new Set(selectedCooldownIds.map(String))]
     : [];
-  if (requestedCooldownIds.length !== 2) throw new Error("Hero combat loadout requires exactly two unique cooldown abilities.");
-  const cooldowns = requestedCooldownIds.map(actionId => cooldownPool.find(action => action.id === actionId));
-  if (cooldowns.some(action => !action)) throw new Error("Hero combat loadout references an unknown or incompatible cooldown ability.");
+  if (requestedCooldownIds.length !== 2)
+    throw new Error("Hero combat loadout requires exactly two unique cooldown abilities.");
+  const cooldowns = requestedCooldownIds.map(actionId =>
+    cooldownPool.find(action => action.id === actionId)
+  );
+  if (cooldowns.some(action => !action))
+    throw new Error("Hero combat loadout references an unknown or incompatible cooldown ability.");
 
   const resolvedCooldowns = cooldowns.map(copyAction);
   const ultimates = (abilityData.ultimates || []).map(copyAction);
@@ -177,14 +232,10 @@ export function createHeroDefinition({
   if (!ultimate) throw new Error("Hero combat loadout references an unknown ultimate ability.");
 
   const maxResource =
-    resourceType === "mana" ? derived.maxMana :
-    resourceType === "energy" ? 100 :
-    100;
+    resourceType === "mana" ? derived.maxMana : resourceType === "energy" ? 100 : 100;
 
   const resourceRegenPerSecond =
-    resourceType === "mana" ? derived.manaRegenPerSecond :
-    resourceType === "energy" ? 10 :
-    0;
+    resourceType === "mana" ? derived.manaRegenPerSecond : resourceType === "energy" ? 10 : 0;
 
   return {
     id,
@@ -194,16 +245,18 @@ export function createHeroDefinition({
     level,
     classId: classMeta.id,
     className: classMeta.label,
-    specId: classMeta.specs.find(s => s.label === specData.specialization)?.id || specData.specialization.toLowerCase(),
+    specId:
+      classMeta.specs.find(s => s.label === specData.specialization)?.id ||
+      specData.specialization.toLowerCase(),
     specName: specData.specialization,
     baseStats,
-    equipmentStats:resolvedEquipmentStats,
+    equipmentStats: resolvedEquipmentStats,
     stats,
     derived,
     resourceType,
     maxResource,
     resourceRegenPerSecond,
-    auto: autoAction(specData,classMeta),
+    auto: autoAction(specData, classMeta),
     cooldowns: resolvedCooldowns,
     ultimate,
     combatLoadout: {
@@ -214,85 +267,5 @@ export function createHeroDefinition({
     },
     selectedTalents: talents,
     talentHooks
-  };
-}
-
-export function createEnemyDefinition(partySize = 1) {
-  const raid = partySize >= 3;
-  const maxHealth = raid ? 22_000 : 6_500;
-  const physicalPower = raid ? 350 : 180;
-
-  const cooldowns = raid ? [{
-    id: "cleave",
-    name: "Dungeon Cleave",
-    kind: "damage",
-    school: "physical",
-    target: "all-enemies",
-    power: 110,
-    coefficient_bp: 6_000,
-    cooldown_ticks: 360,
-    resource: "none",
-    cost: 0,
-    effect: "none",
-    canCrit: true,
-    canMiss: true
-  }] : [];
-
-  return {
-    id: "enemy-0",
-    name: raid ? "Dungeon Captain" : "Training Raider",
-    kind: "enemy",
-    team: 1,
-    level: raid ? 5 : 3,
-    classId: "enemy",
-    className: "Enemy",
-    specId: "enemy",
-    specName: raid ? "Dungeon" : "Training",
-    stats: {
-      spirit:0, stamina:0, strength:0, agility:0, intellect:0,
-      crit:0, haste:0, spellPower:0, healingPower:0, hitRating:0, mastery:0
-    },
-    derived: {
-      maxHealth,
-      physicalPower,
-      spellPower: physicalPower,
-      healingPower: 0,
-      maxMana: 0,
-      manaRegenPerSecond: 0,
-      critBp: raid ? 800 : 500,
-      hitBp: 10_000,
-      hasteBp: 0,
-      masteryBp: 0
-    },
-    resourceType: "none",
-    maxResource: 0,
-    resourceRegenPerSecond: 0,
-    auto: {
-      id:"auto",
-      name: raid ? "Captain's Strike" : "Training Strike",
-      kind:"damage",
-      school:"physical",
-      target:"enemy",
-      power: raid ? 150 : 70,
-      coefficient_bp: raid ? 7_000 : 6_000,
-      base_ticks: raid ? 120 : 150,
-      resource:"none",
-      cost:0,
-      effect:"none",
-      canCrit:true,
-      canMiss:true
-    },
-    cooldowns,
-    ultimate: null,
-    selectedTalents: [],
-    talentHooks: {
-      autoOutputBp:0,
-      autoHasteBp:0,
-      autoCritBp:0,
-      maxManaBp:0,
-      resourceCostReductionBp:0,
-      implemented:[],
-      unimplemented:[]
-    }
   };
 }

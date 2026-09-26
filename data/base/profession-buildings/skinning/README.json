@@ -1,9 +1,0 @@
-{
-  "schema_version": 1,
-  "source_path": "docs/base/profession-buildings/skinning/README.md",
-  "kind": "profession",
-  "title": "Skinning",
-  "track": "gathering",
-  "owner_building": "Gathering Camp",
-  "source_markdown": "# Skinning\n\n## Purpose\n\nHarvest hides and leather reagents from defeated beasts.\n\n## Track\n\n- Track: **Gathering**\n- Owning building: **Gathering Camp**\n- Hero rule: one Gathering profession per hero\n- Change rule: learning another Gathering profession replaces only the Gathering choice\n\n## Progression\n\nSkinning has authored levels 1–5 in `data/base/profession-buildings/progression.json`. Its effective level mirrors the owning Gathering Camp level.\n\nAssignment timing and drag/drop training are supplied by the shared building-assignment framework in WOWUI-079.\n"
-}

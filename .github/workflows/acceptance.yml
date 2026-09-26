@@ -7,7 +7,7 @@ on:
       - "mockup/**/*.html"
       - "mockup/**/*.css"
       - "data/**"
-      - "scripts/integration-acceptance.mjs"
+      - "scripts/**"
       - "package.json"
       - "dev-server.mjs"
       - ".github/workflows/**"
@@ -17,7 +17,7 @@ on:
       - "mockup/**/*.html"
       - "mockup/**/*.css"
       - "data/**"
-      - "scripts/integration-acceptance.mjs"
+      - "scripts/**"
       - "package.json"
       - "dev-server.mjs"
       - ".github/workflows/**"
@@ -29,6 +29,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
       - name: Run integration and combat acceptance
         run: npm test

@@ -1,140 +1,1748 @@
-(function(global){
-"use strict";
-const Campaign=global.WarcraftCampaign;if(!Campaign)throw new Error("WarcraftCampaign must load before WarcraftRoster.");
-const PARTY_SIZE=5;
-const PARTY_SIZES=Object.freeze([PARTY_SIZE]);
-const PARTY_SLOT_IDS=Object.freeze(["rear-left","rear-right","middle-left","middle-right","front"]);
-const RAID_SIZE=10;
-const RAID_GROUP_IDS=Object.freeze(["group-a","group-b"]);
-const SIEGE_SIZE=20;
-const SIEGE_GROUP_IDS=Object.freeze(["group-a","group-b","group-c","group-d"]);
-const HERO_LEVEL_MAX=5;
-const HERO_XP_MAX=20;
-const HERO_XP_REWARDS=Object.freeze({quest:1,incursion:2,dungeon:3,raid:0,siege:0});
-const CLASS_COMBAT_SEEDS=Object.freeze({
-druid:Object.freeze({abilityIds:Object.freeze(["starfire","shred","regrowth","mangle"]),ultimateIds:Object.freeze(["capstone-moonkin-form","capstone-leader-of-the-pack","capstone-swiftmend"]),bySpec:Object.freeze({balance:Object.freeze(["starfire","regrowth"]),feral:Object.freeze(["shred","mangle"]),restoration:Object.freeze(["starfire","regrowth"])}),bySpecUltimate:Object.freeze({balance:"capstone-moonkin-form",feral:"capstone-leader-of-the-pack",restoration:"capstone-swiftmend"}),bySpecCapstone:Object.freeze({balance:"Moonkin Form",feral:"Leader of the Pack",restoration:"Swiftmend"})}),
-hunter:Object.freeze({abilityIds:Object.freeze(["kill-command","aimed-shot","explosive-trap","survival-instinct"]),ultimateIds:Object.freeze(["capstone-bestial-wrath","capstone-trueshot-aura","capstone-wyvern-sting"]),bySpecUltimate:Object.freeze({"beast-mastery":"capstone-bestial-wrath",marksmanship:"capstone-trueshot-aura",survival:"capstone-wyvern-sting"}),bySpecCapstone:Object.freeze({"beast-mastery":"Bestial Wrath",marksmanship:"Trueshot Aura",survival:"Wyvern Sting"})}),
-mage:Object.freeze({abilityIds:Object.freeze(["arcane-barrage","fire-blast","frost-nova","ice-barrier"]),ultimateIds:Object.freeze(["capstone-arcane-power","capstone-combustion","capstone-ice-barrier"]),bySpecUltimate:Object.freeze({arcane:"capstone-arcane-power",fire:"capstone-combustion",frost:"capstone-ice-barrier"}),bySpecCapstone:Object.freeze({arcane:"Arcane Power",fire:"Combustion",frost:"Ice Barrier"})}),
-paladin:Object.freeze({abilityIds:Object.freeze(["holy-shock","shield-of-the-righteous","templars-verdict","consecration"]),ultimateIds:Object.freeze(["capstone-holy-shock","capstone-holy-shield","capstone-repentence"]),bySpecUltimate:Object.freeze({holy:"capstone-holy-shock",protection:"capstone-holy-shield",retribution:"capstone-repentence"}),bySpecCapstone:Object.freeze({holy:"Holy Shock",protection:"Holy Shield",retribution:"Repentence"})}),
-priest:Object.freeze({abilityIds:Object.freeze(["penance","flash-heal","mind-blast","power-word-shield"]),ultimateIds:Object.freeze(["capstone-power-infusion","capstone-lightwell","capstone-shadowform"]),bySpecUltimate:Object.freeze({discipline:"capstone-power-infusion",holy:"capstone-lightwell",shadow:"capstone-shadowform"}),bySpecCapstone:Object.freeze({discipline:"Power Infusion",holy:"Lightwell",shadow:"Shadowform"})}),
-rogue:Object.freeze({abilityIds:Object.freeze(["mutilate","sinister-strike","backstab","evasion"]),ultimateIds:Object.freeze(["capstone-vigor","capstone-adrenaline-rush","capstone-premeditation"]),bySpecUltimate:Object.freeze({assassination:"capstone-vigor",combat:"capstone-adrenaline-rush",subtlety:"capstone-premeditation"}),bySpecCapstone:Object.freeze({assassination:"Vigor",combat:"Adrenaline Rush",subtlety:"Premeditation"})}),
-shaman:Object.freeze({abilityIds:Object.freeze(["lava-burst","stormstrike","riptide","chain-lightning"]),ultimateIds:Object.freeze(["capstone-elemental-mastery","capstone-stormstrike","capstone-mana-tide-totem"]),bySpecUltimate:Object.freeze({elemental:"capstone-elemental-mastery",enhancement:"capstone-stormstrike",restoration:"capstone-mana-tide-totem"}),bySpecCapstone:Object.freeze({elemental:"Elemental Mastery",enhancement:"Stormstrike",restoration:"Mana Tide Totem"})}),
-warlock:Object.freeze({abilityIds:Object.freeze(["haunt","hand-of-guldan","conflagrate","drain-life"]),ultimateIds:Object.freeze(["capstone-dark-pact","capstone-improved-spellstone","capstone-conflagrate"]),bySpecUltimate:Object.freeze({affliction:"capstone-dark-pact",demonology:"capstone-improved-spellstone",destruction:"capstone-conflagrate"}),bySpecCapstone:Object.freeze({affliction:"Dark Pact",demonology:"Improved Spellstone",destruction:"Conflagrate"})}),
-warrior:Object.freeze({abilityIds:Object.freeze(["mortal-strike","bloodthirst","shield-slam","thunder-clap"]),ultimateIds:Object.freeze(["capstone-mortal-strike","capstone-bloodthirst","capstone-shield-slam"]),bySpecUltimate:Object.freeze({arms:"capstone-mortal-strike",fury:"capstone-bloodthirst",protection:"capstone-shield-slam"}),bySpecCapstone:Object.freeze({arms:"Mortal Strike",fury:"Bloodthirst",protection:"Shield Slam"})})
-});
-const DEFAULT_HEROES=[
-{id:"mage",name:"Elowen",race:"Human",faction:"Alliance",classId:"mage",classLabel:"Mage",level:5,spec:"Fire",primary:"Intellect",availability:"available"},
-{id:"rogue",name:"Valeera",race:"Undead",faction:"Horde",classId:"rogue",classLabel:"Rogue",level:4,spec:"Combat",primary:"Agility",availability:"available"},
-{id:"warlock",name:"Mordren",race:"Undead",faction:"Horde",classId:"warlock",classLabel:"Warlock",level:3,spec:"Demonology",primary:"Intellect",availability:"on-quest"},
-{id:"warrior",name:"Brom",race:"Dwarf",faction:"Alliance",classId:"warrior",classLabel:"Warrior",level:5,spec:"Arms",primary:"Strength",availability:"available"},
-{id:"priest",name:"Sister Anwen",race:"Human",faction:"Alliance",classId:"priest",classLabel:"Priest",level:2,spec:"Holy",primary:"Intellect",availability:"available"},
-{id:"druid",name:"Thorn",race:"Night Elf",faction:"Alliance",classId:"druid",classLabel:"Druid",level:4,spec:"Feral",primary:"Agility",availability:"available"},
-{id:"hunter",name:"Rifleman Keg",race:"Dwarf",faction:"Alliance",classId:"hunter",classLabel:"Hunter",level:3,spec:"Marksmanship",primary:"Agility",availability:"available"},
-{id:"paladin",name:"Arthoran",race:"Human",faction:"Alliance",classId:"paladin",classLabel:"Paladin",level:5,spec:"Retribution",primary:"Strength",availability:"on-quest"},
-{id:"shaman",name:"Gorak",race:"Tauren",faction:"Horde",classId:"shaman",classLabel:"Shaman",level:1,spec:"Enhancement",primary:"Agility",availability:"available"}
-];
-function blankEquipment(){return {Head:null,Chest:null,Pants:null,Feet:null,Gloves:null,Weapon:null,Trinket:null};}
-function specKey(value){return String(value||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"-");}
-function combatSeed(heroRecord){const seed=CLASS_COMBAT_SEEDS[heroRecord.classId];if(!seed)throw new Error("Unknown combat ability seed for "+heroRecord.classId+".");const activeSpec=specKey(heroRecord.talentBuild&&heroRecord.talentBuild.primarySpec||heroRecord.spec);const compatible=seed.bySpec&&seed.bySpec[activeSpec]||seed.abilityIds;const requiredUltimateId=seed.bySpecUltimate&&seed.bySpecUltimate[activeSpec]||seed.ultimateIds[0];const capstoneName=seed.bySpecCapstone&&seed.bySpecCapstone[activeSpec]||null;return {abilityIds:[...seed.abilityIds],compatibleAbilityIds:[...compatible],ultimateIds:[...seed.ultimateIds],requiredUltimateId,capstoneName,allCapstoneNames:Object.values(seed.bySpecCapstone||{})};}
-function normalizeCombatState(heroRecord){const seed=combatSeed(heroRecord);const learned=[...new Set((Array.isArray(heroRecord.learnedAbilityIds)?heroRecord.learnedAbilityIds:seed.abilityIds).map(String))].filter(id=>seed.abilityIds.includes(id));for(const id of seed.compatibleAbilityIds)if(seed.compatibleAbilityIds.filter(known=>learned.includes(known)).length<2&&!learned.includes(id))learned.push(id);const learnedUltimates=[...new Set((Array.isArray(heroRecord.learnedUltimateIds)?heroRecord.learnedUltimateIds:seed.ultimateIds).map(String))].filter(id=>seed.ultimateIds.includes(id));if(!learnedUltimates.includes(seed.requiredUltimateId))learnedUltimates.push(seed.requiredUltimateId);const compatible=seed.compatibleAbilityIds.filter(id=>learned.includes(id));const prior=heroRecord.combatLoadout&&typeof heroRecord.combatLoadout==="object"?heroRecord.combatLoadout:{};let ability1=compatible.includes(prior.ability1Id)?prior.ability1Id:compatible[0];let ability2=compatible.includes(prior.ability2Id)&&prior.ability2Id!==ability1?prior.ability2Id:compatible.find(id=>id!==ability1);if(!ability1||!ability2)throw new Error("Hero combat loadout requires two compatible learned abilities.");const talentBuild=Object.assign({primarySpec:heroRecord.spec,picks:[]},heroRecord.talentBuild||{});let picks=[...new Set(Array.isArray(talentBuild.picks)?talentBuild.picks.map(String):[])].filter(name=>!seed.allCapstoneNames.includes(name));if(seed.capstoneName&&!picks.includes(seed.capstoneName))picks.push(seed.capstoneName);talentBuild.picks=picks;talentBuild.capstone=seed.capstoneName;talentBuild.capstoneUltimateId=seed.requiredUltimateId;return {talentBuild,learnedAbilityIds:learned,learnedUltimateIds:learnedUltimates,combatLoadout:{autoAttackId:"auto",ability1Id:ability1,ability2Id:ability2,ultimateId:seed.requiredUltimateId}};}
-function compatibleLearnedAbilityIds(heroRecord){const seed=combatSeed(heroRecord);return seed.compatibleAbilityIds.filter(id=>(heroRecord.learnedAbilityIds||[]).includes(id));}
-function clampHeroLevel(value){return Math.max(1,Math.min(HERO_LEVEL_MAX,Math.floor(Number(value)||1)));}
-function normalizeHeroXp(value,level){if(clampHeroLevel(level)>=HERO_LEVEL_MAX)return 0;return Math.max(0,Math.min(HERO_XP_MAX,Math.floor(Number(value)||0)));}
-function heroProgressRecord(h){if(!h)return null;const level=clampHeroLevel(h.level),xp=normalizeHeroXp(h.levelProgressXp,level),baseLevel=Campaign.getBaseLevel(),levelCapped=level>=HERO_LEVEL_MAX,readyToTrain=!levelCapped&&xp>=HERO_XP_MAX,nextLevel=levelCapped?HERO_LEVEL_MAX:level+1,baseBlocked=readyToTrain&&nextLevel>baseLevel;return {heroId:h.id,level,xp,maxXp:HERO_XP_MAX,readyToTrain,levelCapped,nextLevel,baseLevel,baseBlocked,canTrain:readyToTrain&&!baseBlocked};}
-function applyHeroXpReward(heroIds,contentKind,victory=true){const kind=String(contentKind||"").toLowerCase(),reward=Object.prototype.hasOwnProperty.call(HERO_XP_REWARDS,kind)?HERO_XP_REWARDS[kind]:0;Campaign.validateHeroIds(heroIds||[]);return [...new Set((heroIds||[]).map(String))].map(id=>{const h=hero(id);if(!h)throw new Error("Unknown hero "+id+".");const level=clampHeroLevel(h.level),before=normalizeHeroXp(h.levelProgressXp,level),requested=victory&&level<HERO_LEVEL_MAX?reward:0,after=Math.min(HERO_XP_MAX,before+requested),amount=after-before;h.levelProgressXp=after;const progress=heroProgressRecord(h);return {type:"hero_xp",heroId:h.id,heroName:h.name,contentKind:kind,requested,amount,before,after,maxXp:HERO_XP_MAX,readyToTrain:progress.readyToTrain,levelCapped:progress.levelCapped,baseBlocked:progress.baseBlocked};});}
-function awardHeroXp(heroIds,contentKind,options={}){state=getState();const events=applyHeroXpReward(heroIds,contentKind,options.victory!==false);save();return events;}
-function getHeroProgress(id){return heroProgressRecord(hero(id));}
-function completeHeroLevelTraining(id,options={}){state=getState();if(!options||options.source!=="classhall")throw new Error("Hero levels change only through Class Hall training.");const h=hero(id);if(!h)throw new Error("Unknown hero "+id+".");const progress=heroProgressRecord(h);if(progress.levelCapped)throw new Error(h.name+" is already level "+HERO_LEVEL_MAX+".");if(!progress.readyToTrain)throw new Error(h.name+" requires "+HERO_XP_MAX+" / "+HERO_XP_MAX+" XP before training.");if(progress.baseBlocked)throw new Error("Base Level "+progress.baseLevel+" cannot train "+h.name+" to level "+progress.nextLevel+".");h.level=progress.nextLevel;h.levelProgressXp=0;save();return heroProgressRecord(h);}
-function defaultQuestBoard(){return {round:1,seed:"questboard-v1",offerIds:[]};}
-function emptyPartySlots(){return PARTY_SLOT_IDS.map(id=>({id,heroId:null}));}
-function normalizePartySlots(source,heroes){
-  const owned=new Set((heroes||[]).map(h=>String(h.id))),seen=new Set(),slots=emptyPartySlots();
-  const authored=Array.isArray(source&&source.slots)?source.slots:null;
-  if(authored){
-    const byId=new Map(authored.filter(slot=>slot&&PARTY_SLOT_IDS.includes(String(slot.id))).map(slot=>[String(slot.id),slot]));
-    slots.forEach(slot=>{
-      const record=byId.get(slot.id),heroId=record&&record.heroId!=null?String(record.heroId):null;
-      if(heroId&&owned.has(heroId)&&!seen.has(heroId)){slot.heroId=heroId;seen.add(heroId);}
+(function (global) {
+  "use strict";
+  const Campaign = global.WarcraftCampaign;
+  if (!Campaign) throw new Error("WarcraftCampaign must load before WarcraftRoster.");
+  const PARTY_SIZE = 5;
+  const PARTY_SIZES = Object.freeze([PARTY_SIZE]);
+  const PARTY_SLOT_IDS = Object.freeze([
+    "rear-left",
+    "rear-right",
+    "middle-left",
+    "middle-right",
+    "front"
+  ]);
+  const RAID_SIZE = 10;
+  const RAID_GROUP_IDS = Object.freeze(["group-a", "group-b"]);
+  const SIEGE_SIZE = 20;
+  const SIEGE_GROUP_IDS = Object.freeze(["group-a", "group-b", "group-c", "group-d"]);
+  const HERO_LEVEL_MAX = 5;
+  const HERO_XP_MAX = 20;
+  const HERO_XP_REWARDS = Object.freeze({ quest: 1, incursion: 2, dungeon: 3, raid: 0, siege: 0 });
+  const CLASS_COMBAT_SEEDS = Object.freeze({
+    druid: Object.freeze({
+      abilityIds: Object.freeze(["starfire", "shred", "regrowth", "mangle"]),
+      ultimateIds: Object.freeze([
+        "capstone-moonkin-form",
+        "capstone-leader-of-the-pack",
+        "capstone-swiftmend"
+      ]),
+      bySpec: Object.freeze({
+        balance: Object.freeze(["starfire", "regrowth"]),
+        feral: Object.freeze(["shred", "mangle"]),
+        restoration: Object.freeze(["starfire", "regrowth"])
+      }),
+      bySpecUltimate: Object.freeze({
+        balance: "capstone-moonkin-form",
+        feral: "capstone-leader-of-the-pack",
+        restoration: "capstone-swiftmend"
+      }),
+      bySpecCapstone: Object.freeze({
+        balance: "Moonkin Form",
+        feral: "Leader of the Pack",
+        restoration: "Swiftmend"
+      })
+    }),
+    hunter: Object.freeze({
+      abilityIds: Object.freeze([
+        "kill-command",
+        "aimed-shot",
+        "explosive-trap",
+        "survival-instinct"
+      ]),
+      ultimateIds: Object.freeze([
+        "capstone-bestial-wrath",
+        "capstone-trueshot-aura",
+        "capstone-wyvern-sting"
+      ]),
+      bySpecUltimate: Object.freeze({
+        "beast-mastery": "capstone-bestial-wrath",
+        marksmanship: "capstone-trueshot-aura",
+        survival: "capstone-wyvern-sting"
+      }),
+      bySpecCapstone: Object.freeze({
+        "beast-mastery": "Bestial Wrath",
+        marksmanship: "Trueshot Aura",
+        survival: "Wyvern Sting"
+      })
+    }),
+    mage: Object.freeze({
+      abilityIds: Object.freeze(["arcane-barrage", "fire-blast", "frost-nova", "ice-barrier"]),
+      ultimateIds: Object.freeze([
+        "capstone-arcane-power",
+        "capstone-combustion",
+        "capstone-ice-barrier"
+      ]),
+      bySpecUltimate: Object.freeze({
+        arcane: "capstone-arcane-power",
+        fire: "capstone-combustion",
+        frost: "capstone-ice-barrier"
+      }),
+      bySpecCapstone: Object.freeze({
+        arcane: "Arcane Power",
+        fire: "Combustion",
+        frost: "Ice Barrier"
+      })
+    }),
+    paladin: Object.freeze({
+      abilityIds: Object.freeze([
+        "holy-shock",
+        "shield-of-the-righteous",
+        "templars-verdict",
+        "consecration"
+      ]),
+      ultimateIds: Object.freeze([
+        "capstone-holy-shock",
+        "capstone-holy-shield",
+        "capstone-repentence"
+      ]),
+      bySpecUltimate: Object.freeze({
+        holy: "capstone-holy-shock",
+        protection: "capstone-holy-shield",
+        retribution: "capstone-repentence"
+      }),
+      bySpecCapstone: Object.freeze({
+        holy: "Holy Shock",
+        protection: "Holy Shield",
+        retribution: "Repentence"
+      })
+    }),
+    priest: Object.freeze({
+      abilityIds: Object.freeze(["penance", "flash-heal", "mind-blast", "power-word-shield"]),
+      ultimateIds: Object.freeze([
+        "capstone-power-infusion",
+        "capstone-lightwell",
+        "capstone-shadowform"
+      ]),
+      bySpecUltimate: Object.freeze({
+        discipline: "capstone-power-infusion",
+        holy: "capstone-lightwell",
+        shadow: "capstone-shadowform"
+      }),
+      bySpecCapstone: Object.freeze({
+        discipline: "Power Infusion",
+        holy: "Lightwell",
+        shadow: "Shadowform"
+      })
+    }),
+    rogue: Object.freeze({
+      abilityIds: Object.freeze(["mutilate", "sinister-strike", "backstab", "evasion"]),
+      ultimateIds: Object.freeze([
+        "capstone-vigor",
+        "capstone-adrenaline-rush",
+        "capstone-premeditation"
+      ]),
+      bySpecUltimate: Object.freeze({
+        assassination: "capstone-vigor",
+        combat: "capstone-adrenaline-rush",
+        subtlety: "capstone-premeditation"
+      }),
+      bySpecCapstone: Object.freeze({
+        assassination: "Vigor",
+        combat: "Adrenaline Rush",
+        subtlety: "Premeditation"
+      })
+    }),
+    shaman: Object.freeze({
+      abilityIds: Object.freeze(["lava-burst", "stormstrike", "riptide", "chain-lightning"]),
+      ultimateIds: Object.freeze([
+        "capstone-elemental-mastery",
+        "capstone-stormstrike",
+        "capstone-mana-tide-totem"
+      ]),
+      bySpecUltimate: Object.freeze({
+        elemental: "capstone-elemental-mastery",
+        enhancement: "capstone-stormstrike",
+        restoration: "capstone-mana-tide-totem"
+      }),
+      bySpecCapstone: Object.freeze({
+        elemental: "Elemental Mastery",
+        enhancement: "Stormstrike",
+        restoration: "Mana Tide Totem"
+      })
+    }),
+    warlock: Object.freeze({
+      abilityIds: Object.freeze(["haunt", "hand-of-guldan", "conflagrate", "drain-life"]),
+      ultimateIds: Object.freeze([
+        "capstone-dark-pact",
+        "capstone-improved-spellstone",
+        "capstone-conflagrate"
+      ]),
+      bySpecUltimate: Object.freeze({
+        affliction: "capstone-dark-pact",
+        demonology: "capstone-improved-spellstone",
+        destruction: "capstone-conflagrate"
+      }),
+      bySpecCapstone: Object.freeze({
+        affliction: "Dark Pact",
+        demonology: "Improved Spellstone",
+        destruction: "Conflagrate"
+      })
+    }),
+    warrior: Object.freeze({
+      abilityIds: Object.freeze(["mortal-strike", "bloodthirst", "shield-slam", "thunder-clap"]),
+      ultimateIds: Object.freeze([
+        "capstone-mortal-strike",
+        "capstone-bloodthirst",
+        "capstone-shield-slam"
+      ]),
+      bySpecUltimate: Object.freeze({
+        arms: "capstone-mortal-strike",
+        fury: "capstone-bloodthirst",
+        protection: "capstone-shield-slam"
+      }),
+      bySpecCapstone: Object.freeze({
+        arms: "Mortal Strike",
+        fury: "Bloodthirst",
+        protection: "Shield Slam"
+      })
+    })
+  });
+  const DEFAULT_HEROES = [
+    {
+      id: "mage",
+      name: "Elowen",
+      race: "Human",
+      faction: "Alliance",
+      classId: "mage",
+      classLabel: "Mage",
+      level: 5,
+      spec: "Fire",
+      primary: "Intellect",
+      availability: "available"
+    },
+    {
+      id: "rogue",
+      name: "Valeera",
+      race: "Undead",
+      faction: "Horde",
+      classId: "rogue",
+      classLabel: "Rogue",
+      level: 4,
+      spec: "Combat",
+      primary: "Agility",
+      availability: "available"
+    },
+    {
+      id: "warlock",
+      name: "Mordren",
+      race: "Undead",
+      faction: "Horde",
+      classId: "warlock",
+      classLabel: "Warlock",
+      level: 3,
+      spec: "Demonology",
+      primary: "Intellect",
+      availability: "on-quest"
+    },
+    {
+      id: "warrior",
+      name: "Brom",
+      race: "Dwarf",
+      faction: "Alliance",
+      classId: "warrior",
+      classLabel: "Warrior",
+      level: 5,
+      spec: "Arms",
+      primary: "Strength",
+      availability: "available"
+    },
+    {
+      id: "priest",
+      name: "Sister Anwen",
+      race: "Human",
+      faction: "Alliance",
+      classId: "priest",
+      classLabel: "Priest",
+      level: 2,
+      spec: "Holy",
+      primary: "Intellect",
+      availability: "available"
+    },
+    {
+      id: "druid",
+      name: "Thorn",
+      race: "Night Elf",
+      faction: "Alliance",
+      classId: "druid",
+      classLabel: "Druid",
+      level: 4,
+      spec: "Feral",
+      primary: "Agility",
+      availability: "available"
+    },
+    {
+      id: "hunter",
+      name: "Rifleman Keg",
+      race: "Dwarf",
+      faction: "Alliance",
+      classId: "hunter",
+      classLabel: "Hunter",
+      level: 3,
+      spec: "Marksmanship",
+      primary: "Agility",
+      availability: "available"
+    },
+    {
+      id: "paladin",
+      name: "Arthoran",
+      race: "Human",
+      faction: "Alliance",
+      classId: "paladin",
+      classLabel: "Paladin",
+      level: 5,
+      spec: "Retribution",
+      primary: "Strength",
+      availability: "on-quest"
+    },
+    {
+      id: "shaman",
+      name: "Gorak",
+      race: "Tauren",
+      faction: "Horde",
+      classId: "shaman",
+      classLabel: "Shaman",
+      level: 1,
+      spec: "Enhancement",
+      primary: "Agility",
+      availability: "available"
+    }
+  ];
+  function blankEquipment() {
+    return {
+      Head: null,
+      Chest: null,
+      Pants: null,
+      Feet: null,
+      Gloves: null,
+      Weapon: null,
+      Trinket: null
+    };
+  }
+  function specKey(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-");
+  }
+  function combatSeed(heroRecord) {
+    const seed = CLASS_COMBAT_SEEDS[heroRecord.classId];
+    if (!seed) throw new Error("Unknown combat ability seed for " + heroRecord.classId + ".");
+    const activeSpec = specKey(
+      (heroRecord.talentBuild && heroRecord.talentBuild.primarySpec) || heroRecord.spec
+    );
+    const compatible = (seed.bySpec && seed.bySpec[activeSpec]) || seed.abilityIds;
+    const requiredUltimateId =
+      (seed.bySpecUltimate && seed.bySpecUltimate[activeSpec]) || seed.ultimateIds[0];
+    const capstoneName = (seed.bySpecCapstone && seed.bySpecCapstone[activeSpec]) || null;
+    return {
+      abilityIds: [...seed.abilityIds],
+      compatibleAbilityIds: [...compatible],
+      ultimateIds: [...seed.ultimateIds],
+      requiredUltimateId,
+      capstoneName,
+      allCapstoneNames: Object.values(seed.bySpecCapstone || {})
+    };
+  }
+  function normalizeCombatState(heroRecord) {
+    const seed = combatSeed(heroRecord);
+    const learned = [
+      ...new Set(
+        (Array.isArray(heroRecord.learnedAbilityIds)
+          ? heroRecord.learnedAbilityIds
+          : seed.abilityIds
+        ).map(String)
+      )
+    ].filter(id => seed.abilityIds.includes(id));
+    for (const id of seed.compatibleAbilityIds)
+      if (
+        seed.compatibleAbilityIds.filter(known => learned.includes(known)).length < 2 &&
+        !learned.includes(id)
+      )
+        learned.push(id);
+    const learnedUltimates = [
+      ...new Set(
+        (Array.isArray(heroRecord.learnedUltimateIds)
+          ? heroRecord.learnedUltimateIds
+          : seed.ultimateIds
+        ).map(String)
+      )
+    ].filter(id => seed.ultimateIds.includes(id));
+    if (!learnedUltimates.includes(seed.requiredUltimateId))
+      learnedUltimates.push(seed.requiredUltimateId);
+    const compatible = seed.compatibleAbilityIds.filter(id => learned.includes(id));
+    const prior =
+      heroRecord.combatLoadout && typeof heroRecord.combatLoadout === "object"
+        ? heroRecord.combatLoadout
+        : {};
+    let ability1 = compatible.includes(prior.ability1Id) ? prior.ability1Id : compatible[0];
+    let ability2 =
+      compatible.includes(prior.ability2Id) && prior.ability2Id !== ability1
+        ? prior.ability2Id
+        : compatible.find(id => id !== ability1);
+    if (!ability1 || !ability2)
+      throw new Error("Hero combat loadout requires two compatible learned abilities.");
+    const talentBuild = Object.assign(
+      { primarySpec: heroRecord.spec, picks: [] },
+      heroRecord.talentBuild || {}
+    );
+    let picks = [
+      ...new Set(Array.isArray(talentBuild.picks) ? talentBuild.picks.map(String) : [])
+    ].filter(name => !seed.allCapstoneNames.includes(name));
+    if (seed.capstoneName && !picks.includes(seed.capstoneName)) picks.push(seed.capstoneName);
+    talentBuild.picks = picks;
+    talentBuild.capstone = seed.capstoneName;
+    talentBuild.capstoneUltimateId = seed.requiredUltimateId;
+    return {
+      talentBuild,
+      learnedAbilityIds: learned,
+      learnedUltimateIds: learnedUltimates,
+      combatLoadout: {
+        autoAttackId: "auto",
+        ability1Id: ability1,
+        ability2Id: ability2,
+        ultimateId: seed.requiredUltimateId
+      }
+    };
+  }
+  function compatibleLearnedAbilityIds(heroRecord) {
+    const seed = combatSeed(heroRecord);
+    return seed.compatibleAbilityIds.filter(id =>
+      (heroRecord.learnedAbilityIds || []).includes(id)
+    );
+  }
+  function clampHeroLevel(value) {
+    return Math.max(1, Math.min(HERO_LEVEL_MAX, Math.floor(Number(value) || 1)));
+  }
+  function normalizeHeroXp(value, level) {
+    if (clampHeroLevel(level) >= HERO_LEVEL_MAX) return 0;
+    return Math.max(0, Math.min(HERO_XP_MAX, Math.floor(Number(value) || 0)));
+  }
+  function heroProgressRecord(h) {
+    if (!h) return null;
+    const level = clampHeroLevel(h.level),
+      xp = normalizeHeroXp(h.levelProgressXp, level),
+      baseLevel = Campaign.getBaseLevel(),
+      levelCapped = level >= HERO_LEVEL_MAX,
+      readyToTrain = !levelCapped && xp >= HERO_XP_MAX,
+      nextLevel = levelCapped ? HERO_LEVEL_MAX : level + 1,
+      baseBlocked = readyToTrain && nextLevel > baseLevel;
+    return {
+      heroId: h.id,
+      level,
+      xp,
+      maxXp: HERO_XP_MAX,
+      readyToTrain,
+      levelCapped,
+      nextLevel,
+      baseLevel,
+      baseBlocked,
+      canTrain: readyToTrain && !baseBlocked
+    };
+  }
+  function applyHeroXpReward(heroIds, contentKind, victory = true) {
+    const kind = String(contentKind || "").toLowerCase(),
+      reward = Object.prototype.hasOwnProperty.call(HERO_XP_REWARDS, kind)
+        ? HERO_XP_REWARDS[kind]
+        : 0;
+    Campaign.validateHeroIds(heroIds || []);
+    return [...new Set((heroIds || []).map(String))].map(id => {
+      const h = hero(id);
+      if (!h) throw new Error("Unknown hero " + id + ".");
+      const level = clampHeroLevel(h.level),
+        before = normalizeHeroXp(h.levelProgressXp, level),
+        requested = victory && level < HERO_LEVEL_MAX ? reward : 0,
+        after = Math.min(HERO_XP_MAX, before + requested),
+        amount = after - before;
+      h.levelProgressXp = after;
+      const progress = heroProgressRecord(h);
+      return {
+        type: "hero_xp",
+        heroId: h.id,
+        heroName: h.name,
+        contentKind: kind,
+        requested,
+        amount,
+        before,
+        after,
+        maxXp: HERO_XP_MAX,
+        readyToTrain: progress.readyToTrain,
+        levelCapped: progress.levelCapped,
+        baseBlocked: progress.baseBlocked
+      };
+    });
+  }
+  function awardHeroXp(heroIds, contentKind, options = {}) {
+    state = getState();
+    const events = applyHeroXpReward(heroIds, contentKind, options.victory !== false);
+    save();
+    return events;
+  }
+  function getHeroProgress(id) {
+    return heroProgressRecord(hero(id));
+  }
+  function completeHeroLevelTraining(id, options = {}) {
+    state = getState();
+    if (!options || options.source !== "classhall")
+      throw new Error("Hero levels change only through Class Hall training.");
+    const h = hero(id);
+    if (!h) throw new Error("Unknown hero " + id + ".");
+    const progress = heroProgressRecord(h);
+    if (progress.levelCapped) throw new Error(h.name + " is already level " + HERO_LEVEL_MAX + ".");
+    if (!progress.readyToTrain)
+      throw new Error(
+        h.name + " requires " + HERO_XP_MAX + " / " + HERO_XP_MAX + " XP before training."
+      );
+    if (progress.baseBlocked)
+      throw new Error(
+        "Base Level " +
+          progress.baseLevel +
+          " cannot train " +
+          h.name +
+          " to level " +
+          progress.nextLevel +
+          "."
+      );
+    h.level = progress.nextLevel;
+    h.levelProgressXp = 0;
+    save();
+    return heroProgressRecord(h);
+  }
+  function defaultQuestBoard() {
+    return { round: 1, seed: "questboard-v1", offerIds: [] };
+  }
+  function emptyPartySlots() {
+    return PARTY_SLOT_IDS.map(id => ({ id, heroId: null }));
+  }
+  function normalizePartySlots(source, heroes) {
+    const owned = new Set((heroes || []).map(h => String(h.id))),
+      seen = new Set(),
+      slots = emptyPartySlots();
+    const authored = Array.isArray(source && source.slots) ? source.slots : null;
+    if (authored) {
+      const byId = new Map(
+        authored
+          .filter(slot => slot && PARTY_SLOT_IDS.includes(String(slot.id)))
+          .map(slot => [String(slot.id), slot])
+      );
+      slots.forEach(slot => {
+        const record = byId.get(slot.id),
+          heroId = record && record.heroId != null ? String(record.heroId) : null;
+        if (heroId && owned.has(heroId) && !seen.has(heroId)) {
+          slot.heroId = heroId;
+          seen.add(heroId);
+        }
+      });
+      return slots;
+    }
+    const listed = [
+      ...new Set((Array.isArray(source && source.heroIds) ? source.heroIds : []).map(String))
+    ]
+      .filter(id => owned.has(id))
+      .slice(0, PARTY_SIZE);
+    listed.forEach((heroId, index) => {
+      slots[index].heroId = heroId;
     });
     return slots;
   }
-  const legacy=[...new Set((Array.isArray(source&&source.heroIds)?source.heroIds:[]).map(String))].filter(id=>owned.has(id)).slice(0,PARTY_SIZE);
-  legacy.forEach((heroId,index)=>{slots[index].heroId=heroId;});
-  return slots;
-}
-function partyHeroIds(loadout){return PARTY_SLOT_IDS.map(slotId=>{const slot=loadout&&Array.isArray(loadout.slots)?loadout.slots.find(entry=>entry&&entry.id===slotId):null;return slot&&slot.heroId?String(slot.heroId):null;}).filter(Boolean);}
-function partyFormation(loadout){return {type:"party",faction:String(loadout&&loadout.faction||""),slots:PARTY_SLOT_IDS.map(id=>{const slot=loadout&&Array.isArray(loadout.slots)?loadout.slots.find(entry=>entry&&entry.id===id):null;return {id,heroId:slot&&slot.heroId?String(slot.heroId):null};})};}
-function formationFromHeroIds(heroIds,faction){const slots=emptyPartySlots(),ids=[...new Set((heroIds||[]).map(String))].slice(0,PARTY_SIZE);ids.forEach((heroId,index)=>{slots[index].heroId=heroId;});return {type:"party",faction:String(faction||""),slots};}
-function attachPartyAliases(loadout){
-  if(!loadout||typeof loadout!=="object")return loadout;
-  if(!Object.prototype.hasOwnProperty.call(loadout,"heroIds"))Object.defineProperty(loadout,"heroIds",{configurable:true,enumerable:false,get(){return partyHeroIds(loadout);}});
-  if(!Object.prototype.hasOwnProperty.call(loadout,"size"))Object.defineProperty(loadout,"size",{configurable:true,enumerable:false,get(){return PARTY_SIZE;}});
-  return loadout;
-}
-function emptyRaidGroup(){return {partyId:null,overrides:Object.fromEntries(PARTY_SLOT_IDS.map(id=>[id,null]))};}
-function defaultRaidLoadouts(faction){const id=String(faction||"alliance").toLowerCase();return Array.from({length:3},(_,i)=>({id:"raid-"+(i+1),name:"Raid "+(i+1),type:"raid",faction:id,groups:RAID_GROUP_IDS.map(groupId=>Object.assign({id:groupId},emptyRaidGroup())),ready:false}));}
-function defaultSiegeLoadouts(faction){const id=String(faction||"alliance").toLowerCase();return Array.from({length:3},(_,i)=>({id:"siege-"+(i+1),name:"Siege "+(i+1),type:"siege",faction:id,groups:SIEGE_GROUP_IDS.map(groupId=>Object.assign({id:groupId},emptyRaidGroup())),ready:false}));}
-function normalizeGroupedLoadout(source,faction,parties,heroes,index,type,groupIds){const raw=source&&typeof source==="object"?source:{},groups=groupIds.map(groupId=>{const saved=(Array.isArray(raw.groups)?raw.groups:[]).find(g=>g&&g.id===groupId)||{};const partyId=parties.some(p=>p.id===saved.partyId)?saved.partyId:null,overrides={};PARTY_SLOT_IDS.forEach(slotId=>{const heroId=saved.overrides&&saved.overrides[slotId]?String(saved.overrides[slotId]):null;overrides[slotId]=heroId&&heroes.some(h=>h.id===heroId&&String(h.faction||"").toLowerCase()===faction)?heroId:null;});return {id:groupId,partyId,overrides};});return {id:String(raw.id||type+"-"+(index+1)),name:String(raw.name||(type==="siege"?"Siege ":"Raid ")+(index+1)).slice(0,40),type,faction,groups,ready:Boolean(raw.ready)};}
-function normalizeSiegeLoadout(source,faction,parties,heroes,index){return normalizeGroupedLoadout(source,faction,parties,heroes,index,"siege",SIEGE_GROUP_IDS);}
-function normalizeRaidLoadout(source,faction,parties,heroes,index){return normalizeGroupedLoadout(source,faction,parties,heroes,index,"raid",RAID_GROUP_IDS);}
-function resolveRaidGroup(group,parties){parties=parties||getState().loadouts;const party=parties.find(p=>p.id===group.partyId)||null;return PARTY_SLOT_IDS.map(slotId=>{const inherited=party&&party.slots.find(s=>s.id===slotId)?.heroId||null,override=group.overrides&&group.overrides[slotId]||null;return {id:slotId,heroId:override||inherited,inheritedHeroId:inherited,overrideHeroId:override};});}
-function resolveRaidLoadout(raid,parties){parties=parties||getState().loadouts;return raid.groups.flatMap(group=>resolveRaidGroup(group,parties));}
-function groupedFormation(loadout,parties){parties=parties||getState().loadouts;return {type:loadout.type,faction:loadout.faction,groups:loadout.groups.map(group=>({id:group.id,slots:resolveRaidGroup(group,parties).map(slot=>({id:slot.id,heroId:slot.heroId}))}))};}
-function validateSiegeLoadoutAgainst(siege,heroes,parties,checkAvailability){if(!siege||siege.type!=="siege"||siege.groups.length!==4)return {valid:false,reason:"Siege requires four formation groups."};const slots=resolveRaidLoadout(siege,parties),ids=slots.map(s=>s.heroId).filter(Boolean);if(ids.length!==SIEGE_SIZE)return {valid:false,reason:"Fill all twenty Siege slots."};if(new Set(ids).size!==SIEGE_SIZE)return {valid:false,reason:"Siege requires twenty unique heroes."};const resolved=ids.map(id=>heroes.find(h=>h.id===id)||null);if(resolved.some(h=>!h))return {valid:false,reason:"Siege contains an unknown hero."};if(resolved.some(h=>String(h.faction||"").toLowerCase()!==siege.faction))return {valid:false,reason:"Siege contains a hero from another faction."};if(checkAvailability&&resolved.some(h=>h.availability!=="available"))return {valid:false,reason:"Siege contains unavailable heroes."};return {valid:true,reason:"Ready"};}
-function validateRaidLoadoutAgainst(raid,heroes,parties,checkAvailability){if(!raid||raid.type!=="raid"||raid.groups.length!==2)return {valid:false,reason:"Raid requires two formation groups."};const slots=resolveRaidLoadout(raid,parties),ids=slots.map(s=>s.heroId).filter(Boolean);if(ids.length!==RAID_SIZE)return {valid:false,reason:"Fill all ten Raid slots."};if(new Set(ids).size!==RAID_SIZE)return {valid:false,reason:"Raid requires ten unique heroes."};const resolved=ids.map(id=>heroes.find(h=>h.id===id)||null);if(resolved.some(h=>!h))return {valid:false,reason:"Raid contains an unknown hero."};if(resolved.some(h=>String(h.faction||"").toLowerCase()!==raid.faction))return {valid:false,reason:"Raid contains a hero from another faction."};if(checkAvailability&&resolved.some(h=>h.availability!=="available"))return {valid:false,reason:"Raid contains unavailable heroes."};return {valid:true,reason:"Ready"};}
-function defaultLoadouts(faction){const id=String(faction||"alliance").toLowerCase();return Array.from({length:5},(_,i)=>attachPartyAliases({id:"party-"+(i+1),name:"Party "+(i+1),type:"party",faction:id,slots:emptyPartySlots(),isDefault:i===0,ready:false}));}
-function defaults(faction,seedHeroes=true){const id=String(faction||"alliance").toLowerCase();return {faction:id,heroes:(seedHeroes?DEFAULT_HEROES.filter(h=>String(h.faction||"").toLowerCase()===id):[]).map(h=>normalizeHeroRecord(Object.assign({},h,{equipment:blankEquipment(),talentBuild:{primarySpec:h.spec,picks:[]}}))),loadouts:defaultLoadouts(id),questBoard:defaultQuestBoard(),quests:[],pendingEncounter:null,dungeonRuns:[],endgameRuns:[],raidLoadouts:defaultRaidLoadouts(id),siegeLoadouts:defaultSiegeLoadouts(id)};}
-function normalizeHeroRecord(heroRecord,fallback){const source=Object.assign({},fallback||{},heroRecord||{}),level=clampHeroLevel(source.level);const normalized=Object.assign({},source,{level,levelProgressXp:normalizeHeroXp(source.levelProgressXp??source.xp,level),equipment:Object.assign(blankEquipment(),source.equipment||{}),talentBuild:Object.assign({primarySpec:source.spec,picks:[]},source.talentBuild||{})});delete normalized.xp;return Object.assign(normalized,normalizeCombatState(normalized));}
-function normalizeQuestRecord(record,heroes){const q=Object.assign({},record||{});const legacyDifficulty=q.tier;delete q.tier;const status=["available","active","completed"].includes(q.status)?q.status:"available";const ids=[...new Set(q.heroIds||[])].filter(id=>heroes.some(h=>h.id===id));const reward=Object.assign({gold:0,meta:"quest_marks",amount:0},q.reward||{});const difficulty=Number(q.difficulty??legacyDifficulty)||1;return Object.assign({},q,{id:String(q.id||""),title:String(q.title||("Quest Board Assignment · Difficulty "+difficulty)),difficulty,requiredHeroes:Number(q.requiredHeroes||q.partySize)||1,partySize:Number(q.partySize||q.requiredHeroes)||1,status,heroIds:ids,completedCount:Number(q.completedCount)||0,reward:{gold:Number(reward.gold)||0,meta:String(reward.meta||reward.meta_currency||"quest_marks"),amount:Number(reward.amount||reward.meta_amount)||0},round:Number(q.round)||0,sourceOfferId:q.sourceOfferId?String(q.sourceOfferId):null});}
-function normalizeCampaignRoster(raw,faction,seedHeroes){const base=defaults(faction,seedHeroes),saved=raw&&typeof raw==="object"?raw:{};const savedHeroes=(Array.isArray(saved.heroes)?saved.heroes:[]).filter(hero=>String(hero&&hero.faction||"").toLowerCase()===faction);const byId=new Map(savedHeroes.map(h=>[h.id,h]));const seededIds=new Set(base.heroes.map(h=>h.id));base.heroes=base.heroes.map(h=>normalizeHeroRecord(byId.get(h.id),h));savedHeroes.filter(h=>h&&h.id&&!seededIds.has(h.id)).forEach(h=>base.heroes.push(normalizeHeroRecord(h)));const ls=Array.isArray(saved.formations&&saved.formations.party)?saved.formations.party:Array.isArray(saved.loadouts)?saved.loadouts:[];let defaultSeen=false;base.loadouts=base.loadouts.map((l,i)=>{const source=ls[i]||{},candidate=attachPartyAliases({id:String(source.id||l.id),name:String(source.name||l.name).slice(0,40),type:"party",faction,slots:normalizePartySlots(source,base.heroes),isDefault:Boolean(source.isDefault),ready:Boolean(source.ready)});if(candidate.isDefault&&!defaultSeen)defaultSeen=true;else if(candidate.isDefault)candidate.isDefault=false;return candidate;});if(!defaultSeen&&base.loadouts[0])base.loadouts[0].isDefault=true;base.loadouts.forEach(loadout=>{if(loadout.ready&&!validateLoadoutAgainst(loadout,base.heroes,false).valid)loadout.ready=false;});const savedRaids=Array.isArray(saved.formations&&saved.formations.raid)?saved.formations.raid:[];base.raidLoadouts=defaultRaidLoadouts(faction).map((raid,i)=>normalizeRaidLoadout(savedRaids[i],faction,base.loadouts,base.heroes,i));base.raidLoadouts.forEach(raid=>{raid.ready=validateRaidLoadoutAgainst(raid,base.heroes,base.loadouts,false).valid;});const savedSieges=Array.isArray(saved.formations&&saved.formations.siege)?saved.formations.siege:[];base.siegeLoadouts=defaultSiegeLoadouts(faction).map((siege,i)=>normalizeSiegeLoadout(savedSieges[i],faction,base.loadouts,base.heroes,i));base.siegeLoadouts.forEach(siege=>{siege.ready=validateSiegeLoadoutAgainst(siege,base.heroes,base.loadouts,false).valid;});const savedBoard=saved.questBoard&&typeof saved.questBoard==="object"?saved.questBoard:{};base.questBoard={round:Math.max(1,Number(savedBoard.round)||1),seed:String(savedBoard.seed||"questboard-v1"),offerIds:[...new Set((savedBoard.offerIds||[]).map(String))]};const savedQuests=Array.isArray(saved.quests)?saved.quests:[];base.quests=savedQuests.filter(q=>q&&q.id&&!(String(q.id).startsWith("quest-tier-")&&q.status==="available")).map(q=>normalizeQuestRecord(q,base.heroes));const encounter=saved.pendingEncounter&&typeof saved.pendingEncounter==="object"?saved.pendingEncounter:null;if(encounter){const heroIds=[...new Set(encounter.heroIds||[])].filter(id=>base.heroes.some(hero=>hero.id===id));base.pendingEncounter=Object.assign({},encounter,{heroIds,partySize:Number(encounter.partySize)||heroIds.length});}const dungeonRuns=Array.isArray(saved.dungeonRuns)?saved.dungeonRuns:[];base.dungeonRuns=dungeonRuns.filter(run=>run&&run.dungeonId).slice(-50).map(run=>({dungeonId:String(run.dungeonId),dungeonName:String(run.dungeonName||run.dungeonId),partySize:Number(run.partySize)||5,heroIds:[...new Set(run.heroIds||[])].filter(id=>base.heroes.some(hero=>hero.id===id)),loadoutId:run.loadoutId?String(run.loadoutId):null,faction:String(run.faction||faction),formation:run.formation&&typeof run.formation==="object"?run.formation:null,seed:Number(run.seed)||0,winnerTeam:Number(run.winnerTeam),victory:Boolean(run.victory),frame:Number(run.frame)||0,attempt:Number(run.attempt)||1}));return base;}
-function attachLoadoutAlias(campaign){campaign.formations.party=(campaign.formations.party||[]).map(attachPartyAliases);if(!Object.prototype.hasOwnProperty.call(campaign,"loadouts"))Object.defineProperty(campaign,"loadouts",{configurable:true,enumerable:false,get(){return campaign.formations.party;},set(value){campaign.formations.party=(value||[]).map(attachPartyAliases);}});return campaign;}
-function applyNormalizedCampaign(faction,normalized){const campaign=Campaign.getCampaign(faction);campaign.heroes=normalized.heroes;campaign.formations.party=normalized.loadouts;campaign.formations.raid=normalized.raidLoadouts;campaign.formations.siege=normalized.siegeLoadouts;campaign.questBoard=normalized.questBoard;campaign.quests=normalized.quests;campaign.pendingEncounter=normalized.pendingEncounter;campaign.dungeonRuns=normalized.dungeonRuns;attachLoadoutAlias(campaign);return campaign;}
-function initializeCampaignRosters(){const migration=Campaign.getMigration();const seedHeroes=!migration.completed;Campaign.FACTIONS.forEach(faction=>{applyNormalizedCampaign(faction,normalizeCampaignRoster(Campaign.getCampaign(faction),faction,seedHeroes));});const preferred=migration.completed&&migration.targetFaction?[migration.targetFaction,...Campaign.FACTIONS.filter(f=>f!==migration.targetFaction)]:Array.from(Campaign.FACTIONS);const seen=new Set();preferred.forEach(faction=>{const campaign=Campaign.getCampaign(faction);campaign.heroes=campaign.heroes.filter(hero=>{if(seen.has(hero.id))return false;seen.add(hero.id);return true;});});Campaign.FACTIONS.forEach(faction=>{const campaign=Campaign.sanitizeFactionReferences(faction);campaign.formations.party.forEach(loadout=>{if(loadout.ready&&!validateLoadoutAgainst(loadout,campaign.heroes,false).valid)loadout.ready=false;});});Campaign.commit("roster-init");}
-initializeCampaignRosters();
-let state=attachLoadoutAlias(Campaign.getActiveCampaign());
-function queueRosterChanged(){if(!queueRosterChanged.queued){queueRosterChanged.queued=true;queueMicrotask(()=>{queueRosterChanged.queued=false;global.dispatchEvent(new CustomEvent("warcraft:roster-changed",{detail:getState()}));});}}
-function save(){Campaign.commit("roster");queueRosterChanged();}
-function getState(){state=attachLoadoutAlias(Campaign.getActiveCampaign());return state;}
-function getQuestBoardState(){return getState().questBoard;}
-function getPendingEncounter(){return getState().pendingEncounter;}
-function getDungeonRuns(){return getState().dungeonRuns;}
-function getLatestDungeonRun(dungeonId){state=getState();for(let index=state.dungeonRuns.length-1;index>=0;index-=1){if(state.dungeonRuns[index].dungeonId===dungeonId)return state.dungeonRuns[index];}return null;}
-function setPendingEncounter(encounter){state=getState();if(!encounter||typeof encounter!=="object")throw new Error("Encounter handoff is required.");const loadout=encounter.loadoutId?state.loadouts.find(entry=>entry.id===encounter.loadoutId):null;if(encounter.loadoutId&&!loadout)throw new Error("Unknown saved party.");const sourceIds=Array.isArray(encounter.heroIds)&&encounter.heroIds.length?encounter.heroIds:(loadout?partyHeroIds(loadout):[]),originalIds=sourceIds.map(String);Campaign.validateHeroIds(originalIds);const heroIds=[...new Set(originalIds)];if(!heroIds.length)throw new Error("Encounter requires a party.");if(heroIds.some(id=>!hero(id)))throw new Error("Encounter party contains an unknown hero.");const partySize=Number(encounter.partySize)||(loadout?PARTY_SIZE:heroIds.length);if(heroIds.length!==partySize||originalIds.length!==partySize)throw new Error("Encounter requires exactly "+partySize+" unique heroes.");if(encounter.kind==="dungeon"){const unavailable=heroIds.map(hero).filter(h=>!h||h.availability!=="available");if(unavailable.length)throw new Error("Every dungeon hero must be available.");if(loadout){const check=validateLoadout(loadout,true);if(!check.valid)throw new Error(check.reason);if(partySize!==PARTY_SIZE||JSON.stringify(partyHeroIds(loadout))!==JSON.stringify(heroIds))throw new Error("Saved party does not match encounter heroes.");}}let formation=null;if(partySize===PARTY_SIZE){formation=loadout?partyFormation(loadout):formationFromHeroIds(heroIds,getFaction());const formationIds=formation.slots.map(slot=>slot.heroId).filter(Boolean);if(JSON.stringify(formationIds)!==JSON.stringify(heroIds))throw new Error("Party formation does not match encounter heroes.");}state.pendingEncounter=Object.assign({},encounter,{faction:getFaction(),heroIds,partySize,formation,status:"pending",result:null});save();return state.pendingEncounter;}
-function clearPendingEncounter(){state=getState();if(state.pendingEncounter==null)return;state.pendingEncounter=null;save();}
-function getQuestRoundStatus(){state=getState();const round=state.questBoard.round,offerIds=state.questBoard.offerIds.slice();const unresolvedOfferIds=offerIds.filter(offerId=>{const quest=state.quests.find(q=>q.round===round&&q.sourceOfferId===offerId);return !quest||quest.status!=="completed";});return {round,offerIds,unresolvedOfferIds,resolved:offerIds.length>0&&unresolvedOfferIds.length===0};}
-function setQuestBoardOffers(offerIds){state=getState();if(!Array.isArray(offerIds))throw new Error("Quest Board offers must be an array.");const next=[...new Set(offerIds.map(String))];if(state.questBoard.offerIds.length&&JSON.stringify(state.questBoard.offerIds)!==JSON.stringify(next))throw new Error("Current Quest Board round already has offers.");if(JSON.stringify(state.questBoard.offerIds)===JSON.stringify(next))return state.questBoard;state.questBoard.offerIds=next;save();return state.questBoard;}
-function transitionQuestRound(offerIds){state=getState();if(!Array.isArray(offerIds)||!offerIds.length)throw new Error("Next Quest Board round requires offers.");const status=getQuestRoundStatus();if(!status.resolved)throw new Error("Current Quest Board round still has unresolved offers.");state.questBoard.round+=1;state.questBoard.offerIds=[...new Set(offerIds.map(String))];save();return state.questBoard;}
-function getFaction(){return Campaign.getActiveFaction();}
-function getRosterCapacity(){return Campaign.getRosterCapacity();}
-function getRosterCount(){return getState().heroes.length;}
-function setFaction(faction){const next=String(faction||"").toLowerCase();if(!Campaign.FACTIONS.includes(next))throw new Error("Faction must be Alliance or Horde.");Campaign.setActiveFaction(next);state=attachLoadoutAlias(Campaign.getActiveCampaign());return next;}
-function validateRaceClass(raceLabel,classLabel,raceIndex){for(const faction of Object.values(raceIndex.factions||{})){const race=(faction.races||[]).find(r=>r.label===raceLabel);if(race)return race.available_classes.includes(classLabel);}return false;}
-function hero(id){state=getState();return state.heroes.find(h=>h.id===id)||null;}
-function recruitHero(candidate){state=getState();const next=Object.assign({},candidate||{});const required=["id","name","race","faction","classId","classLabel","spec","primary"];const missing=required.filter(key=>!next[key]);if(missing.length)throw new Error("Recruitment candidate missing: "+missing.join(", ")+".");const faction=String(next.faction).toLowerCase();if(faction!==getFaction())throw new Error("Candidate does not belong to the active faction.");if(hero(next.id))throw new Error(next.name+" is already on the roster.");const otherFaction=Campaign.FACTIONS.find(name=>name!==getFaction()&&Campaign.getCampaign(name).heroes.some(existing=>String(existing.id)===String(next.id)));if(otherFaction)throw new Error("Hero "+next.id+" already belongs to the "+(otherFaction==="horde"?"Horde":"Alliance")+" campaign.");const capacity=getRosterCapacity();if(state.heroes.length>=capacity)throw new Error("Recruitment capacity reached at Base Level "+Campaign.getBaseLevel()+".");const recruitLevel=clampHeroLevel(next.level||1);if(recruitLevel>Campaign.getBaseLevel())throw new Error("Recruit level "+recruitLevel+" exceeds Base Level "+Campaign.getBaseLevel()+".");const recruited=normalizeHeroRecord(Object.assign({},next,{level:recruitLevel,levelProgressXp:0,availability:"available",source:"recruitment"}));state.heroes.push(recruited);save();return recruited;}
-function updateHero(id,patch,options){const h=hero(id);if(!h)return null;const changes=patch&&typeof patch==="object"?patch:{};if(Object.prototype.hasOwnProperty.call(changes,"faction"))throw new Error("Hero faction is immutable.");if(Object.prototype.hasOwnProperty.call(changes,"level")&&clampHeroLevel(changes.level)!==clampHeroLevel(h.level))throw new Error("Hero levels change only through Class Hall training.");if(Object.prototype.hasOwnProperty.call(changes,"levelProgressXp"))throw new Error("Hero XP changes only through the content reward pipeline.");const next=Object.assign({},h,changes);if(options&&options.raceIndex&&!validateRaceClass(next.race,next.classLabel,options.raceIndex))throw new Error(next.race+" cannot be "+next.classLabel+".");Object.assign(h,changes);if(changes.classId!=null||changes.spec!=null||changes.talentBuild!=null)Object.assign(h,normalizeCombatState(h));save();return h;}
-function setEquipment(id,equipment){const h=hero(id);if(!h)return;const next=Object.assign(blankEquipment(),equipment||{});if(Object.keys(next).some(k=>!Object.prototype.hasOwnProperty.call(blankEquipment(),k)))throw new Error("Unknown equipment slot.");h.equipment=next;save();}
-function setTalentBuild(id,build){const h=hero(id);if(!h)return;h.talentBuild=Object.assign({},h.talentBuild,build||{});if(build&&build.primarySpec)h.spec=build.primarySpec;Object.assign(h,normalizeCombatState(h));save();}
-function setCombatLoadout(id,patch){const h=hero(id);if(!h)return null;const next=Object.assign({},h.combatLoadout,patch||{});if(next.autoAttackId!=="auto")throw new Error("Auto Attack is fixed and cannot be removed or replaced.");const compatible=compatibleLearnedAbilityIds(h);if(!compatible.includes(next.ability1Id)||!compatible.includes(next.ability2Id))throw new Error("Ability slots must use learned abilities compatible with the active specialization.");if(next.ability1Id===next.ability2Id)throw new Error("Ability 1 and Ability 2 must be different.");const capstoneUltimateId=h.talentBuild&&h.talentBuild.capstoneUltimateId;if(next.ultimateId!==capstoneUltimateId)throw new Error("Ultimate is defined by the active specialization capstone.");h.combatLoadout={autoAttackId:"auto",ability1Id:next.ability1Id,ability2Id:next.ability2Id,ultimateId:capstoneUltimateId};save();return h.combatLoadout;}
-function validateLoadoutAgainst(loadout,heroes,checkAvailability){if(!loadout||loadout.type!=="party")return {valid:false,reason:"Party formation is required."};if(!Campaign.FACTIONS.includes(String(loadout.faction||"")))return {valid:false,reason:"Party faction is required."};const slots=Array.isArray(loadout.slots)?loadout.slots:[],slotIds=slots.map(slot=>slot&&String(slot.id));if(slots.length!==PARTY_SIZE||PARTY_SLOT_IDS.some(id=>!slotIds.includes(id))||new Set(slotIds).size!==PARTY_SIZE)return {valid:false,reason:"Party requires the authored five formation slots."};const ids=partyHeroIds(loadout);if(ids.length!==PARTY_SIZE)return {valid:false,reason:"Fill all five formation slots."};if(new Set(ids).size!==ids.length)return {valid:false,reason:"Duplicate heroes are not allowed."};const resolved=ids.map(id=>heroes.find(h=>h.id===id)||null);if(resolved.some(h=>!h))return {valid:false,reason:"Party contains an unknown hero."};const wrongFaction=resolved.filter(h=>String(h.faction||"").toLowerCase()!==loadout.faction);if(wrongFaction.length)return {valid:false,reason:"Party contains a hero from another faction."};if(checkAvailability){const unavailable=resolved.filter(h=>h.availability!=="available");if(unavailable.length)return {valid:false,reason:"Unavailable now: "+unavailable.map(h=>h.name).join(", ")};}return {valid:true,reason:"Ready"};}
-function validateLoadout(loadout,checkAvailability){state=getState();return validateLoadoutAgainst(loadout,state.heroes,checkAvailability);}
-function updateLoadout(index,patch){state=getState();if(index<0||index>=5)return null;const current=state.loadouts[index],change=patch&&typeof patch==="object"?patch:{};if(change.size!=null&&Number(change.size)!==PARTY_SIZE)throw new Error("Party Loadouts always contain five formation slots.");if(change.faction&&String(change.faction).toLowerCase()!==current.faction)throw new Error("Party faction ownership cannot be changed.");let slots=current.slots.map(slot=>({id:slot.id,heroId:slot.heroId||null}));if(change.heroIds!=null){Campaign.validateHeroIds(change.heroIds);slots=normalizePartySlots({heroIds:change.heroIds},state.heroes);}if(change.slots!=null){const requestedIds=(Array.isArray(change.slots)?change.slots:[]).map(slot=>slot&&slot.heroId).filter(Boolean);Campaign.validateHeroIds(requestedIds);slots=normalizePartySlots({slots:change.slots},state.heroes);}const existing=new Set(partyHeroIds(current)),nextIds=slots.map(slot=>slot.heroId).filter(Boolean),added=nextIds.filter(id=>!existing.has(id)),unavailable=added.map(hero).filter(h=>!h||h.availability!=="available");if(unavailable.length)throw new Error("Cannot assign unavailable heroes: "+unavailable.map(h=>h?h.name:"Unknown").join(", ")+".");const next=attachPartyAliases({id:current.id,name:String(Object.prototype.hasOwnProperty.call(change,"name")?change.name:current.name).slice(0,40),type:"party",faction:current.faction,slots,isDefault:Object.prototype.hasOwnProperty.call(change,"isDefault")?Boolean(change.isDefault):Boolean(current.isDefault),ready:Object.prototype.hasOwnProperty.call(change,"ready")?Boolean(change.ready):Boolean(current.ready)});if(next.isDefault)state.loadouts.forEach((loadout,i)=>{if(i!==index)loadout.isDefault=false;});if(!next.isDefault&&current.isDefault&&!state.loadouts.some((loadout,i)=>i!==index&&loadout.isDefault))next.isDefault=true;if(next.ready&&!validateLoadoutAgainst(next,state.heroes,false).valid)next.ready=false;state.loadouts[index]=next;save();return next;}
-function getDefaultParty(){state=getState();return state.loadouts.find(loadout=>loadout.isDefault)||state.loadouts[0]||null;}
-function setDefaultParty(identifier){state=getState();const index=typeof identifier==="number"?identifier:state.loadouts.findIndex(loadout=>loadout.id===String(identifier));if(index<0||index>=state.loadouts.length)throw new Error("Unknown Party Loadout.");state.loadouts.forEach((loadout,i)=>{loadout.isDefault=i===index;});save();return state.loadouts[index];}
-function getRaidLoadouts(){state=getState();return state.formations.raid||[];}
-function validateRaidLoadout(raid,checkAvailability){state=getState();return validateRaidLoadoutAgainst(raid,state.heroes,state.loadouts,checkAvailability);}
-function updateRaidLoadout(index,patch){state=getState();const raids=state.formations.raid||[];if(index<0||index>=raids.length)return null;const current=raids[index],change=patch&&typeof patch==="object"?patch:{},next=normalizeRaidLoadout(Object.assign({},current,change),current.faction,state.loadouts,state.heroes,index);next.ready=validateRaidLoadoutAgainst(next,state.heroes,state.loadouts,false).valid;raids[index]=next;save();return next;}
-function setRaidGroupParty(raidIndex,groupId,partyId){state=getState();const raids=state.formations.raid||[],raid=raids[raidIndex],group=raid&&raid.groups.find(g=>g.id===groupId);if(!group)throw new Error("Unknown Raid group.");if(partyId&&!state.loadouts.some(p=>p.id===partyId))throw new Error("Unknown Party Loadout.");group.partyId=partyId||null;raid.ready=validateRaidLoadoutAgainst(raid,state.heroes,state.loadouts,false).valid;save();return raid;}
-function setRaidOverride(raidIndex,groupId,slotId,heroId){state=getState();const raids=state.formations.raid||[],raid=raids[raidIndex],group=raid&&raid.groups.find(g=>g.id===groupId);if(!group||!PARTY_SLOT_IDS.includes(slotId))throw new Error("Unknown Raid slot.");if(heroId){Campaign.validateHeroIds([heroId]);const h=hero(heroId);if(!h||String(h.faction||"").toLowerCase()!==raid.faction)throw new Error("Raid hero must belong to the active faction.");if(h.availability!=="available")throw new Error("Cannot assign an unavailable hero.");}group.overrides[slotId]=heroId||null;raid.ready=validateRaidLoadoutAgainst(raid,state.heroes,state.loadouts,false).valid;save();return raid;}
-function getSiegeLoadouts(){state=getState();return state.formations.siege||[];}
-function validateSiegeLoadout(siege,checkAvailability){state=getState();return validateSiegeLoadoutAgainst(siege,state.heroes,state.loadouts,checkAvailability);}
-function updateSiegeLoadout(index,patch){state=getState();const sieges=state.formations.siege||[];if(index<0||index>=sieges.length)return null;const current=sieges[index],change=patch&&typeof patch==="object"?patch:{},next=normalizeSiegeLoadout(Object.assign({},current,change),current.faction,state.loadouts,state.heroes,index);next.ready=validateSiegeLoadoutAgainst(next,state.heroes,state.loadouts,false).valid;sieges[index]=next;save();return next;}
-function setSiegeGroupParty(index,groupId,partyId){state=getState();const siege=(state.formations.siege||[])[index],group=siege&&siege.groups.find(g=>g.id===groupId);if(!group)throw new Error("Unknown Siege group.");if(partyId&&!state.loadouts.some(p=>p.id===partyId))throw new Error("Unknown Party Loadout.");group.partyId=partyId||null;siege.ready=validateSiegeLoadoutAgainst(siege,state.heroes,state.loadouts,false).valid;save();return siege;}
-function setSiegeOverride(index,groupId,slotId,heroId){state=getState();const siege=(state.formations.siege||[])[index],group=siege&&siege.groups.find(g=>g.id===groupId);if(!group||!PARTY_SLOT_IDS.includes(slotId))throw new Error("Unknown Siege slot.");if(heroId){Campaign.validateHeroIds([heroId]);const h=hero(heroId);if(!h||String(h.faction||"").toLowerCase()!==siege.faction)throw new Error("Siege hero must belong to the active faction.");if(h.availability!=="available")throw new Error("Cannot assign an unavailable hero.");}group.overrides[slotId]=heroId||null;siege.ready=validateSiegeLoadoutAgainst(siege,state.heroes,state.loadouts,false).valid;save();return siege;}
-function dispatchQuest(offer,heroIds){state=getState();if(!offer||typeof offer!=="object"||!offer.id)throw new Error("Quest dispatch requires a Quest Board offer.");Campaign.validateHeroIds(heroIds||[]);const ids=[...new Set(heroIds||[])];const required=Number(offer.party_size||offer.requiredHeroes)||1;if(ids.length!==required)throw new Error((offer.title||"Quest")+" requires exactly "+required+" hero"+(required===1?"":"es")+".");const prior=state.quests.find(q=>q.round===state.questBoard.round&&q.sourceOfferId===offer.id);if(prior&&prior.status!=="available")throw new Error("This quest offer is already active or completed this round.");const selected=ids.map(hero);if(selected.some(h=>!h||h.availability!=="available"))throw new Error("Every dispatched hero must be available.");let quest=prior;if(prior){quest.status="active";quest.heroIds=ids;quest.lastResult=null;}else{quest=normalizeQuestRecord({id:"assignment-r"+state.questBoard.round+"-"+offer.id,sourceOfferId:offer.id,round:state.questBoard.round,title:offer.title,description:offer.description,difficulty:Number(offer.difficulty)||1,requiredHeroes:required,partySize:required,status:"active",heroIds:ids,completedCount:0,reward:{gold:Number(offer.reward&&offer.reward.gold)||0,meta:(offer.reward&&offer.reward.meta_currency)||"quest_marks",amount:Number(offer.reward&&offer.reward.meta_amount)||0}},state.heroes);state.quests.push(quest);}selected.forEach(h=>h.availability="on-quest");save();return quest;}
-function completeQuest(identifier){state=getState();const quest=state.quests.find(q=>q.id===String(identifier));if(!quest||quest.status!=="active")return null;const heroIds=quest.heroIds.slice();heroIds.map(hero).filter(Boolean).forEach(h=>h.availability="available");quest.status="completed";quest.completedCount=(quest.completedCount||0)+1;quest.lastResult="victory";quest.lastXpEvents=applyHeroXpReward(heroIds,"quest",true);quest.heroIds=[];save();return quest;}
-function resolveQuestEncounter(identifier,victory){state=getState();const quest=state.quests.find(q=>q.id===identifier);if(!quest||quest.status!=="active")return quest||null;const heroIds=quest.heroIds.slice();heroIds.map(hero).filter(Boolean).forEach(h=>h.availability="available");quest.lastResult=victory?"victory":"defeat";quest.attemptCount=(quest.attemptCount||0)+1;quest.lastXpEvents=applyHeroXpReward(heroIds,"quest",Boolean(victory));if(victory){quest.status="completed";quest.completedCount=(quest.completedCount||0)+1;}else{quest.status="available";}quest.heroIds=[];save();return quest;}
-function resolvePendingEncounterResult(result){state=getState();const encounter=state.pendingEncounter;if(!encounter)return null;if(encounter.status==="resolved"&&encounter.result)return encounter;const normalized={winnerTeam:Number(result&&result.winnerTeam),victory:Number(result&&result.winnerTeam)===0,frame:Number(result&&result.frame)||0,heroXpEvents:[]};if(encounter.questAssignmentId){const quest=resolveQuestEncounter(encounter.questAssignmentId,normalized.victory);normalized.heroXpEvents=Array.isArray(quest&&quest.lastXpEvents)?quest.lastXpEvents.map(event=>Object.assign({},event)):[];}else{normalized.heroXpEvents=applyHeroXpReward(encounter.heroIds||[],encounter.kind,normalized.victory);}state=getState();if(["raid","siege"].includes(encounter.kind)){state.endgameRuns=Array.isArray(state.endgameRuns)?state.endgameRuns:[];state.endgameRuns.push({kind:encounter.kind,encounterId:encounter.encounterId||null,encounterName:encounter.encounterName||encounter.kind,heroIds:(encounter.heroIds||[]).slice(),loadoutId:encounter.loadoutId||null,faction:encounter.faction||getFaction(),formation:encounter.formation?JSON.parse(JSON.stringify(encounter.formation)):null,seed:Number(encounter.seed)||0,winnerTeam:normalized.winnerTeam,victory:normalized.victory,frame:normalized.frame,heroXpEvents:normalized.heroXpEvents.slice()});state.endgameRuns=state.endgameRuns.slice(-50);}if(encounter.kind==="dungeon"&&encounter.dungeonId){const attempt=state.dungeonRuns.filter(run=>run.dungeonId===encounter.dungeonId).length+1;state.dungeonRuns.push({dungeonId:encounter.dungeonId,dungeonName:encounter.dungeonName||encounter.dungeonId,partySize:Number(encounter.partySize)||encounter.heroIds.length,heroIds:(encounter.heroIds||[]).slice(),loadoutId:encounter.loadoutId||null,faction:encounter.faction||getFaction(),formation:encounter.formation?JSON.parse(JSON.stringify(encounter.formation)):null,seed:Number(encounter.seed)||0,winnerTeam:normalized.winnerTeam,victory:normalized.victory,frame:normalized.frame,attempt});state.dungeonRuns=state.dungeonRuns.slice(-50);}state.pendingEncounter=Object.assign({},encounter,{status:"resolved",result:normalized});save();return state.pendingEncounter;}
-function reset(){state=getState();const fresh=defaults(getFaction(),true);state.heroes=fresh.heroes;state.formations.party=fresh.loadouts;state.formations.raid=fresh.raidLoadouts;state.formations.siege=fresh.siegeLoadouts;state.questBoard=fresh.questBoard;state.quests=fresh.quests;state.pendingEncounter=null;state.dungeonRuns=[];state.endgameRuns=[];save();return state;}
-if(typeof global.addEventListener==="function")global.addEventListener("warcraft:campaign-changed",event=>{const reason=event&&event.detail&&event.detail.reason;if(["faction","base","base-init"].includes(reason)){state=attachLoadoutAlias(Campaign.getActiveCampaign());queueRosterChanged();}});
-global.WarcraftRoster=Object.freeze({PARTY_SIZE,PARTY_SIZES,PARTY_SLOT_IDS,RAID_SIZE,RAID_GROUP_IDS,SIEGE_SIZE,SIEGE_GROUP_IDS,HERO_LEVEL_MAX,HERO_XP_MAX,HERO_XP_REWARDS,getState,getQuestBoardState,getQuestRoundStatus,getPendingEncounter,getDungeonRuns,getLatestDungeonRun,setPendingEncounter,clearPendingEncounter,resolvePendingEncounterResult,setQuestBoardOffers,transitionQuestRound,getFaction,setFaction,getRosterCapacity,getRosterCount,hero,getHeroProgress,awardHeroXp,completeHeroLevelTraining,recruitHero,validateRaceClass,updateHero,setEquipment,setTalentBuild,setCombatLoadout,partyHeroIds,partyFormation,getDefaultParty,setDefaultParty,validateLoadout,updateLoadout,getRaidLoadouts,resolveRaidGroup,resolveRaidLoadout,groupedFormation,validateRaidLoadout,updateRaidLoadout,setRaidGroupParty,setRaidOverride,getSiegeLoadouts,validateSiegeLoadout,updateSiegeLoadout,setSiegeGroupParty,setSiegeOverride,dispatchQuest,completeQuest,resolveQuestEncounter,reset});
+  function partyHeroIds(loadout) {
+    return PARTY_SLOT_IDS.map(slotId => {
+      const slot =
+        loadout && Array.isArray(loadout.slots)
+          ? loadout.slots.find(entry => entry && entry.id === slotId)
+          : null;
+      return slot && slot.heroId ? String(slot.heroId) : null;
+    }).filter(Boolean);
+  }
+  function partyFormation(loadout) {
+    return {
+      type: "party",
+      faction: String((loadout && loadout.faction) || ""),
+      slots: PARTY_SLOT_IDS.map(id => {
+        const slot =
+          loadout && Array.isArray(loadout.slots)
+            ? loadout.slots.find(entry => entry && entry.id === id)
+            : null;
+        return { id, heroId: slot && slot.heroId ? String(slot.heroId) : null };
+      })
+    };
+  }
+  function formationFromHeroIds(heroIds, faction) {
+    const slots = emptyPartySlots(),
+      ids = [...new Set((heroIds || []).map(String))].slice(0, PARTY_SIZE);
+    ids.forEach((heroId, index) => {
+      slots[index].heroId = heroId;
+    });
+    return { type: "party", faction: String(faction || ""), slots };
+  }
+  function attachPartyAliases(loadout) {
+    if (!loadout || typeof loadout !== "object") return loadout;
+    if (!Object.prototype.hasOwnProperty.call(loadout, "heroIds"))
+      Object.defineProperty(loadout, "heroIds", {
+        configurable: true,
+        enumerable: false,
+        get() {
+          return partyHeroIds(loadout);
+        }
+      });
+    if (!Object.prototype.hasOwnProperty.call(loadout, "size"))
+      Object.defineProperty(loadout, "size", {
+        configurable: true,
+        enumerable: false,
+        get() {
+          return PARTY_SIZE;
+        }
+      });
+    return loadout;
+  }
+  function emptyRaidGroup() {
+    return { partyId: null, overrides: Object.fromEntries(PARTY_SLOT_IDS.map(id => [id, null])) };
+  }
+  function defaultRaidLoadouts(faction) {
+    const id = String(faction || "alliance").toLowerCase();
+    return Array.from({ length: 3 }, (_, i) => ({
+      id: "raid-" + (i + 1),
+      name: "Raid " + (i + 1),
+      type: "raid",
+      faction: id,
+      groups: RAID_GROUP_IDS.map(groupId => Object.assign({ id: groupId }, emptyRaidGroup())),
+      ready: false
+    }));
+  }
+  function defaultSiegeLoadouts(faction) {
+    const id = String(faction || "alliance").toLowerCase();
+    return Array.from({ length: 3 }, (_, i) => ({
+      id: "siege-" + (i + 1),
+      name: "Siege " + (i + 1),
+      type: "siege",
+      faction: id,
+      groups: SIEGE_GROUP_IDS.map(groupId => Object.assign({ id: groupId }, emptyRaidGroup())),
+      ready: false
+    }));
+  }
+  function normalizeGroupedLoadout(source, faction, parties, heroes, index, type, groupIds) {
+    const raw = source && typeof source === "object" ? source : {},
+      groups = groupIds.map(groupId => {
+        const saved =
+          (Array.isArray(raw.groups) ? raw.groups : []).find(g => g && g.id === groupId) || {};
+        const partyId = parties.some(p => p.id === saved.partyId) ? saved.partyId : null,
+          overrides = {};
+        PARTY_SLOT_IDS.forEach(slotId => {
+          const heroId =
+            saved.overrides && saved.overrides[slotId] ? String(saved.overrides[slotId]) : null;
+          overrides[slotId] =
+            heroId &&
+            heroes.some(h => h.id === heroId && String(h.faction || "").toLowerCase() === faction)
+              ? heroId
+              : null;
+        });
+        return { id: groupId, partyId, overrides };
+      });
+    return {
+      id: String(raw.id || type + "-" + (index + 1)),
+      name: String(raw.name || (type === "siege" ? "Siege " : "Raid ") + (index + 1)).slice(0, 40),
+      type,
+      faction,
+      groups,
+      ready: Boolean(raw.ready)
+    };
+  }
+  function normalizeSiegeLoadout(source, faction, parties, heroes, index) {
+    return normalizeGroupedLoadout(
+      source,
+      faction,
+      parties,
+      heroes,
+      index,
+      "siege",
+      SIEGE_GROUP_IDS
+    );
+  }
+  function normalizeRaidLoadout(source, faction, parties, heroes, index) {
+    return normalizeGroupedLoadout(source, faction, parties, heroes, index, "raid", RAID_GROUP_IDS);
+  }
+  function resolveRaidGroup(group, parties) {
+    parties = parties || getState().loadouts;
+    const party = parties.find(p => p.id === group.partyId) || null;
+    return PARTY_SLOT_IDS.map(slotId => {
+      const inherited = (party && party.slots.find(s => s.id === slotId)?.heroId) || null,
+        override = (group.overrides && group.overrides[slotId]) || null;
+      return {
+        id: slotId,
+        heroId: override || inherited,
+        inheritedHeroId: inherited,
+        overrideHeroId: override
+      };
+    });
+  }
+  function resolveRaidLoadout(raid, parties) {
+    parties = parties || getState().loadouts;
+    return raid.groups.flatMap(group => resolveRaidGroup(group, parties));
+  }
+  function groupedFormation(loadout, parties) {
+    parties = parties || getState().loadouts;
+    return {
+      type: loadout.type,
+      faction: loadout.faction,
+      groups: loadout.groups.map(group => ({
+        id: group.id,
+        slots: resolveRaidGroup(group, parties).map(slot => ({ id: slot.id, heroId: slot.heroId }))
+      }))
+    };
+  }
+  function validateSiegeLoadoutAgainst(siege, heroes, parties, checkAvailability) {
+    if (!siege || siege.type !== "siege" || siege.groups.length !== 4)
+      return { valid: false, reason: "Siege requires four formation groups." };
+    const slots = resolveRaidLoadout(siege, parties),
+      ids = slots.map(s => s.heroId).filter(Boolean);
+    if (ids.length !== SIEGE_SIZE) return { valid: false, reason: "Fill all twenty Siege slots." };
+    if (new Set(ids).size !== SIEGE_SIZE)
+      return { valid: false, reason: "Siege requires twenty unique heroes." };
+    const resolved = ids.map(id => heroes.find(h => h.id === id) || null);
+    if (resolved.some(h => !h)) return { valid: false, reason: "Siege contains an unknown hero." };
+    if (resolved.some(h => String(h.faction || "").toLowerCase() !== siege.faction))
+      return { valid: false, reason: "Siege contains a hero from another faction." };
+    if (checkAvailability && resolved.some(h => h.availability !== "available"))
+      return { valid: false, reason: "Siege contains unavailable heroes." };
+    return { valid: true, reason: "Ready" };
+  }
+  function validateRaidLoadoutAgainst(raid, heroes, parties, checkAvailability) {
+    if (!raid || raid.type !== "raid" || raid.groups.length !== 2)
+      return { valid: false, reason: "Raid requires two formation groups." };
+    const slots = resolveRaidLoadout(raid, parties),
+      ids = slots.map(s => s.heroId).filter(Boolean);
+    if (ids.length !== RAID_SIZE) return { valid: false, reason: "Fill all ten Raid slots." };
+    if (new Set(ids).size !== RAID_SIZE)
+      return { valid: false, reason: "Raid requires ten unique heroes." };
+    const resolved = ids.map(id => heroes.find(h => h.id === id) || null);
+    if (resolved.some(h => !h)) return { valid: false, reason: "Raid contains an unknown hero." };
+    if (resolved.some(h => String(h.faction || "").toLowerCase() !== raid.faction))
+      return { valid: false, reason: "Raid contains a hero from another faction." };
+    if (checkAvailability && resolved.some(h => h.availability !== "available"))
+      return { valid: false, reason: "Raid contains unavailable heroes." };
+    return { valid: true, reason: "Ready" };
+  }
+  function defaultLoadouts(faction) {
+    const id = String(faction || "alliance").toLowerCase();
+    return Array.from({ length: 5 }, (_, i) =>
+      attachPartyAliases({
+        id: "party-" + (i + 1),
+        name: "Party " + (i + 1),
+        type: "party",
+        faction: id,
+        slots: emptyPartySlots(),
+        isDefault: i === 0,
+        ready: false
+      })
+    );
+  }
+  function defaults(faction) {
+    const id = String(faction || "alliance").toLowerCase();
+    return {
+      faction: id,
+      heroes: DEFAULT_HEROES.filter(h => String(h.faction || "").toLowerCase() === id).map(h =>
+        normalizeHeroRecord(
+          Object.assign({}, h, {
+            equipment: blankEquipment(),
+            talentBuild: { primarySpec: h.spec, picks: [] }
+          })
+        )
+      ),
+      loadouts: defaultLoadouts(id),
+      questBoard: defaultQuestBoard(),
+      quests: [],
+      pendingEncounter: null,
+      dungeonRuns: [],
+      endgameRuns: [],
+      raidLoadouts: defaultRaidLoadouts(id),
+      siegeLoadouts: defaultSiegeLoadouts(id)
+    };
+  }
+  function normalizeHeroRecord(heroRecord, fallback) {
+    const source = Object.assign({}, fallback || {}, heroRecord || {}),
+      level = clampHeroLevel(source.level);
+    const normalized = Object.assign({}, source, {
+      level,
+      levelProgressXp: normalizeHeroXp(source.levelProgressXp ?? source.xp, level),
+      equipment: Object.assign(blankEquipment(), source.equipment || {}),
+      talentBuild: Object.assign({ primarySpec: source.spec, picks: [] }, source.talentBuild || {})
+    });
+    delete normalized.xp;
+    return Object.assign(normalized, normalizeCombatState(normalized));
+  }
+  function normalizeQuestRecord(record, heroes) {
+    const q = Object.assign({}, record || {});
+    const status = ["available", "active", "completed"].includes(q.status) ? q.status : "available";
+    const ids = [...new Set(q.heroIds || [])].filter(id => heroes.some(h => h.id === id));
+    const reward = Object.assign({ gold: 0, meta: "quest_marks", amount: 0 }, q.reward || {});
+    const difficulty = Number(q.difficulty) || 1;
+    return Object.assign({}, q, {
+      id: String(q.id || ""),
+      title: String(q.title || "Quest Board Assignment · Difficulty " + difficulty),
+      difficulty,
+      requiredHeroes: Number(q.requiredHeroes || q.partySize) || 1,
+      partySize: Number(q.partySize || q.requiredHeroes) || 1,
+      status,
+      heroIds: ids,
+      completedCount: Number(q.completedCount) || 0,
+      reward: {
+        gold: Number(reward.gold) || 0,
+        meta: String(reward.meta || reward.meta_currency || "quest_marks"),
+        amount: Number(reward.amount || reward.meta_amount) || 0
+      },
+      round: Number(q.round) || 0,
+      sourceOfferId: q.sourceOfferId ? String(q.sourceOfferId) : null
+    });
+  }
+  function normalizeCampaignRoster(raw, faction) {
+    const base = defaults(faction),
+      saved = raw && typeof raw === "object" ? raw : {};
+    const savedHeroes = (Array.isArray(saved.heroes) ? saved.heroes : []).filter(
+      hero => String((hero && hero.faction) || "").toLowerCase() === faction
+    );
+    const byId = new Map(savedHeroes.map(h => [h.id, h]));
+    const seededIds = new Set(base.heroes.map(h => h.id));
+    base.heroes = base.heroes.map(h => normalizeHeroRecord(byId.get(h.id), h));
+    savedHeroes
+      .filter(h => h && h.id && !seededIds.has(h.id))
+      .forEach(h => base.heroes.push(normalizeHeroRecord(h)));
+    const ls = Array.isArray(saved.formations && saved.formations.party)
+      ? saved.formations.party
+      : Array.isArray(saved.loadouts)
+        ? saved.loadouts
+        : [];
+    let defaultSeen = false;
+    base.loadouts = base.loadouts.map((l, i) => {
+      const source = ls[i] || {},
+        candidate = attachPartyAliases({
+          id: String(source.id || l.id),
+          name: String(source.name || l.name).slice(0, 40),
+          type: "party",
+          faction,
+          slots: normalizePartySlots(source, base.heroes),
+          isDefault: Boolean(source.isDefault),
+          ready: Boolean(source.ready)
+        });
+      if (candidate.isDefault && !defaultSeen) defaultSeen = true;
+      else if (candidate.isDefault) candidate.isDefault = false;
+      return candidate;
+    });
+    if (!defaultSeen && base.loadouts[0]) base.loadouts[0].isDefault = true;
+    base.loadouts.forEach(loadout => {
+      if (loadout.ready && !validateLoadoutAgainst(loadout, base.heroes, false).valid)
+        loadout.ready = false;
+    });
+    const savedRaids = Array.isArray(saved.formations && saved.formations.raid)
+      ? saved.formations.raid
+      : [];
+    base.raidLoadouts = defaultRaidLoadouts(faction).map((raid, i) =>
+      normalizeRaidLoadout(savedRaids[i], faction, base.loadouts, base.heroes, i)
+    );
+    base.raidLoadouts.forEach(raid => {
+      raid.ready = validateRaidLoadoutAgainst(raid, base.heroes, base.loadouts, false).valid;
+    });
+    const savedSieges = Array.isArray(saved.formations && saved.formations.siege)
+      ? saved.formations.siege
+      : [];
+    base.siegeLoadouts = defaultSiegeLoadouts(faction).map((siege, i) =>
+      normalizeSiegeLoadout(savedSieges[i], faction, base.loadouts, base.heroes, i)
+    );
+    base.siegeLoadouts.forEach(siege => {
+      siege.ready = validateSiegeLoadoutAgainst(siege, base.heroes, base.loadouts, false).valid;
+    });
+    const savedBoard =
+      saved.questBoard && typeof saved.questBoard === "object" ? saved.questBoard : {};
+    base.questBoard = {
+      round: Math.max(1, Number(savedBoard.round) || 1),
+      seed: String(savedBoard.seed || "questboard-v1"),
+      offerIds: [...new Set((savedBoard.offerIds || []).map(String))]
+    };
+    const savedQuests = Array.isArray(saved.quests) ? saved.quests : [];
+    base.quests = savedQuests
+      .filter(
+        q => q && q.id && !(String(q.id).startsWith("quest-tier-") && q.status === "available")
+      )
+      .map(q => normalizeQuestRecord(q, base.heroes));
+    const encounter =
+      saved.pendingEncounter && typeof saved.pendingEncounter === "object"
+        ? saved.pendingEncounter
+        : null;
+    if (encounter) {
+      const heroIds = [...new Set(encounter.heroIds || [])].filter(id =>
+        base.heroes.some(hero => hero.id === id)
+      );
+      base.pendingEncounter = Object.assign({}, encounter, {
+        heroIds,
+        partySize: Number(encounter.partySize) || heroIds.length
+      });
+    }
+    const dungeonRuns = Array.isArray(saved.dungeonRuns) ? saved.dungeonRuns : [];
+    base.dungeonRuns = dungeonRuns
+      .filter(run => run && run.dungeonId)
+      .slice(-50)
+      .map(run => ({
+        dungeonId: String(run.dungeonId),
+        dungeonName: String(run.dungeonName || run.dungeonId),
+        partySize: Number(run.partySize) || 5,
+        heroIds: [...new Set(run.heroIds || [])].filter(id =>
+          base.heroes.some(hero => hero.id === id)
+        ),
+        loadoutId: run.loadoutId ? String(run.loadoutId) : null,
+        faction: String(run.faction || faction),
+        formation: run.formation && typeof run.formation === "object" ? run.formation : null,
+        seed: Number(run.seed) || 0,
+        winnerTeam: Number(run.winnerTeam),
+        victory: Boolean(run.victory),
+        frame: Number(run.frame) || 0,
+        attempt: Number(run.attempt) || 1
+      }));
+    return base;
+  }
+  function attachLoadoutAlias(campaign) {
+    campaign.formations.party = (campaign.formations.party || []).map(attachPartyAliases);
+    if (!Object.prototype.hasOwnProperty.call(campaign, "loadouts"))
+      Object.defineProperty(campaign, "loadouts", {
+        configurable: true,
+        enumerable: false,
+        get() {
+          return campaign.formations.party;
+        },
+        set(value) {
+          campaign.formations.party = (value || []).map(attachPartyAliases);
+        }
+      });
+    return campaign;
+  }
+  function applyNormalizedCampaign(faction, normalized) {
+    const campaign = Campaign.getCampaign(faction);
+    campaign.heroes = normalized.heroes;
+    campaign.formations.party = normalized.loadouts;
+    campaign.formations.raid = normalized.raidLoadouts;
+    campaign.formations.siege = normalized.siegeLoadouts;
+    campaign.questBoard = normalized.questBoard;
+    campaign.quests = normalized.quests;
+    campaign.pendingEncounter = normalized.pendingEncounter;
+    campaign.dungeonRuns = normalized.dungeonRuns;
+    attachLoadoutAlias(campaign);
+    return campaign;
+  }
+  function initializeCampaignRosters() {
+    Campaign.FACTIONS.forEach(faction => {
+      applyNormalizedCampaign(
+        faction,
+        normalizeCampaignRoster(Campaign.getCampaign(faction), faction)
+      );
+    });
+    const seen = new Set();
+    Campaign.FACTIONS.forEach(faction => {
+      const campaign = Campaign.getCampaign(faction);
+      campaign.heroes = campaign.heroes.filter(hero => {
+        if (seen.has(hero.id)) return false;
+        seen.add(hero.id);
+        return true;
+      });
+    });
+    Campaign.FACTIONS.forEach(faction => {
+      const campaign = Campaign.sanitizeFactionReferences(faction);
+      campaign.formations.party.forEach(loadout => {
+        if (loadout.ready && !validateLoadoutAgainst(loadout, campaign.heroes, false).valid)
+          loadout.ready = false;
+      });
+    });
+    Campaign.commit("roster-init");
+  }
+  initializeCampaignRosters();
+  let state = attachLoadoutAlias(Campaign.getActiveCampaign());
+  function queueRosterChanged() {
+    if (!queueRosterChanged.queued) {
+      queueRosterChanged.queued = true;
+      queueMicrotask(() => {
+        queueRosterChanged.queued = false;
+        global.dispatchEvent(new CustomEvent("warcraft:roster-changed", { detail: getState() }));
+      });
+    }
+  }
+  function save() {
+    Campaign.commit("roster");
+    queueRosterChanged();
+  }
+  function getState() {
+    state = attachLoadoutAlias(Campaign.getActiveCampaign());
+    return state;
+  }
+  function getQuestBoardState() {
+    return getState().questBoard;
+  }
+  function getPendingEncounter() {
+    return getState().pendingEncounter;
+  }
+  function getLatestDungeonRun(dungeonId) {
+    state = getState();
+    for (let index = state.dungeonRuns.length - 1; index >= 0; index -= 1) {
+      if (state.dungeonRuns[index].dungeonId === dungeonId) return state.dungeonRuns[index];
+    }
+    return null;
+  }
+  function setPendingEncounter(encounter) {
+    state = getState();
+    if (!encounter || typeof encounter !== "object")
+      throw new Error("Encounter handoff is required.");
+    const grouped = encounter.kind === "raid" || encounter.kind === "siege";
+    const saved = grouped ? state.formations[encounter.kind] || [] : state.loadouts;
+    const loadout = encounter.loadoutId
+      ? saved.find(entry => entry.id === encounter.loadoutId)
+      : null;
+    if (encounter.loadoutId && !loadout)
+      throw new Error(
+        grouped ? "Unknown saved " + encounter.kind + " loadout." : "Unknown saved party."
+      );
+    const loadoutHeroIds = loadout
+      ? grouped
+        ? groupedFormation(loadout).groups.flatMap(group => group.slots.map(slot => slot.heroId))
+        : partyHeroIds(loadout)
+      : [];
+    const sourceIds =
+        Array.isArray(encounter.heroIds) && encounter.heroIds.length
+          ? encounter.heroIds
+          : loadoutHeroIds,
+      originalIds = sourceIds.map(String);
+    Campaign.validateHeroIds(originalIds);
+    const heroIds = [...new Set(originalIds)];
+    if (!heroIds.length) throw new Error("Encounter requires a party.");
+    if (heroIds.some(id => !hero(id))) throw new Error("Encounter party contains an unknown hero.");
+    const partySize = Number(encounter.partySize) || (loadout ? PARTY_SIZE : heroIds.length);
+    if (heroIds.length !== partySize || originalIds.length !== partySize)
+      throw new Error("Encounter requires exactly " + partySize + " unique heroes.");
+    if (encounter.kind === "dungeon") {
+      const unavailable = heroIds.map(hero).filter(h => !h || h.availability !== "available");
+      if (unavailable.length) throw new Error("Every dungeon hero must be available.");
+      if (loadout) {
+        const check = validateLoadout(loadout, true);
+        if (!check.valid) throw new Error(check.reason);
+        if (
+          partySize !== PARTY_SIZE ||
+          JSON.stringify(partyHeroIds(loadout)) !== JSON.stringify(heroIds)
+        )
+          throw new Error("Saved party does not match encounter heroes.");
+      }
+    }
+    let formation = null;
+    if (grouped && loadout) {
+      formation = groupedFormation(loadout);
+      if (JSON.stringify(loadoutHeroIds) !== JSON.stringify(heroIds))
+        throw new Error("Saved " + encounter.kind + " loadout does not match encounter heroes.");
+    } else if (partySize === PARTY_SIZE) {
+      formation = loadout ? partyFormation(loadout) : formationFromHeroIds(heroIds, getFaction());
+      const formationIds = formation.slots.map(slot => slot.heroId).filter(Boolean);
+      if (JSON.stringify(formationIds) !== JSON.stringify(heroIds))
+        throw new Error("Party formation does not match encounter heroes.");
+    }
+    state.pendingEncounter = Object.assign({}, encounter, {
+      faction: getFaction(),
+      heroIds,
+      partySize,
+      formation,
+      status: "pending",
+      result: null
+    });
+    save();
+    return state.pendingEncounter;
+  }
+  function getQuestRoundStatus() {
+    state = getState();
+    const round = state.questBoard.round,
+      offerIds = state.questBoard.offerIds.slice();
+    const unresolvedOfferIds = offerIds.filter(offerId => {
+      const quest = state.quests.find(q => q.round === round && q.sourceOfferId === offerId);
+      return !quest || quest.status !== "completed";
+    });
+    return {
+      round,
+      offerIds,
+      unresolvedOfferIds,
+      resolved: offerIds.length > 0 && unresolvedOfferIds.length === 0
+    };
+  }
+  function setQuestBoardOffers(offerIds) {
+    state = getState();
+    if (!Array.isArray(offerIds)) throw new Error("Quest Board offers must be an array.");
+    const next = [...new Set(offerIds.map(String))];
+    if (
+      state.questBoard.offerIds.length &&
+      JSON.stringify(state.questBoard.offerIds) !== JSON.stringify(next)
+    )
+      throw new Error("Current Quest Board round already has offers.");
+    if (JSON.stringify(state.questBoard.offerIds) === JSON.stringify(next)) return state.questBoard;
+    state.questBoard.offerIds = next;
+    save();
+    return state.questBoard;
+  }
+  function transitionQuestRound(offerIds) {
+    state = getState();
+    if (!Array.isArray(offerIds) || !offerIds.length)
+      throw new Error("Next Quest Board round requires offers.");
+    const status = getQuestRoundStatus();
+    if (!status.resolved) throw new Error("Current Quest Board round still has unresolved offers.");
+    state.questBoard.round += 1;
+    state.questBoard.offerIds = [...new Set(offerIds.map(String))];
+    save();
+    return state.questBoard;
+  }
+  function getFaction() {
+    return Campaign.getActiveFaction();
+  }
+  function getRosterCapacity() {
+    return Campaign.getRosterCapacity();
+  }
+  function setFaction(faction) {
+    const next = String(faction || "").toLowerCase();
+    if (!Campaign.FACTIONS.includes(next)) throw new Error("Faction must be Alliance or Horde.");
+    Campaign.setActiveFaction(next);
+    state = attachLoadoutAlias(Campaign.getActiveCampaign());
+    return next;
+  }
+  function validateRaceClass(raceLabel, classLabel, raceIndex) {
+    for (const faction of Object.values(raceIndex.factions || {})) {
+      const race = (faction.races || []).find(r => r.label === raceLabel);
+      if (race) return race.available_classes.includes(classLabel);
+    }
+    return false;
+  }
+  function hero(id) {
+    state = getState();
+    return state.heroes.find(h => h.id === id) || null;
+  }
+  function recruitHero(candidate) {
+    state = getState();
+    const next = Object.assign({}, candidate || {});
+    const required = ["id", "name", "race", "faction", "classId", "classLabel", "spec", "primary"];
+    const missing = required.filter(key => !next[key]);
+    if (missing.length)
+      throw new Error("Recruitment candidate missing: " + missing.join(", ") + ".");
+    const faction = String(next.faction).toLowerCase();
+    if (faction !== getFaction())
+      throw new Error("Candidate does not belong to the active faction.");
+    if (hero(next.id)) throw new Error(next.name + " is already on the roster.");
+    const otherFaction = Campaign.FACTIONS.find(
+      name =>
+        name !== getFaction() &&
+        Campaign.getCampaign(name).heroes.some(existing => String(existing.id) === String(next.id))
+    );
+    if (otherFaction)
+      throw new Error(
+        "Hero " +
+          next.id +
+          " already belongs to the " +
+          (otherFaction === "horde" ? "Horde" : "Alliance") +
+          " campaign."
+      );
+    const capacity = getRosterCapacity();
+    if (state.heroes.length >= capacity)
+      throw new Error(
+        "Recruitment capacity reached at Base Level " + Campaign.getBaseLevel() + "."
+      );
+    const recruitLevel = clampHeroLevel(next.level || 1);
+    if (recruitLevel > Campaign.getBaseLevel())
+      throw new Error(
+        "Recruit level " + recruitLevel + " exceeds Base Level " + Campaign.getBaseLevel() + "."
+      );
+    const recruited = normalizeHeroRecord(
+      Object.assign({}, next, {
+        level: recruitLevel,
+        levelProgressXp: 0,
+        availability: "available",
+        source: "recruitment"
+      })
+    );
+    state.heroes.push(recruited);
+    save();
+    return recruited;
+  }
+  function updateHero(id, patch, options) {
+    const h = hero(id);
+    if (!h) return null;
+    const changes = patch && typeof patch === "object" ? patch : {};
+    if (Object.prototype.hasOwnProperty.call(changes, "faction"))
+      throw new Error("Hero faction is immutable.");
+    if (
+      Object.prototype.hasOwnProperty.call(changes, "level") &&
+      clampHeroLevel(changes.level) !== clampHeroLevel(h.level)
+    )
+      throw new Error("Hero levels change only through Class Hall training.");
+    if (Object.prototype.hasOwnProperty.call(changes, "levelProgressXp"))
+      throw new Error("Hero XP changes only through the content reward pipeline.");
+    const next = Object.assign({}, h, changes);
+    if (
+      options &&
+      options.raceIndex &&
+      !validateRaceClass(next.race, next.classLabel, options.raceIndex)
+    )
+      throw new Error(next.race + " cannot be " + next.classLabel + ".");
+    Object.assign(h, changes);
+    if (changes.classId != null || changes.spec != null || changes.talentBuild != null)
+      Object.assign(h, normalizeCombatState(h));
+    save();
+    return h;
+  }
+  function setEquipment(id, equipment) {
+    const h = hero(id);
+    if (!h) return;
+    const next = Object.assign(blankEquipment(), equipment || {});
+    if (Object.keys(next).some(k => !Object.prototype.hasOwnProperty.call(blankEquipment(), k)))
+      throw new Error("Unknown equipment slot.");
+    h.equipment = next;
+    save();
+  }
+  function setTalentBuild(id, build) {
+    const h = hero(id);
+    if (!h) return;
+    h.talentBuild = Object.assign({}, h.talentBuild, build || {});
+    if (build && build.primarySpec) h.spec = build.primarySpec;
+    Object.assign(h, normalizeCombatState(h));
+    save();
+  }
+  function setCombatLoadout(id, patch) {
+    const h = hero(id);
+    if (!h) return null;
+    const next = Object.assign({}, h.combatLoadout, patch || {});
+    if (next.autoAttackId !== "auto")
+      throw new Error("Auto Attack is fixed and cannot be removed or replaced.");
+    const compatible = compatibleLearnedAbilityIds(h);
+    if (!compatible.includes(next.ability1Id) || !compatible.includes(next.ability2Id))
+      throw new Error(
+        "Ability slots must use learned abilities compatible with the active specialization."
+      );
+    if (next.ability1Id === next.ability2Id)
+      throw new Error("Ability 1 and Ability 2 must be different.");
+    const capstoneUltimateId = h.talentBuild && h.talentBuild.capstoneUltimateId;
+    if (next.ultimateId !== capstoneUltimateId)
+      throw new Error("Ultimate is defined by the active specialization capstone.");
+    h.combatLoadout = {
+      autoAttackId: "auto",
+      ability1Id: next.ability1Id,
+      ability2Id: next.ability2Id,
+      ultimateId: capstoneUltimateId
+    };
+    save();
+    return h.combatLoadout;
+  }
+  function validateLoadoutAgainst(loadout, heroes, checkAvailability) {
+    if (!loadout || loadout.type !== "party")
+      return { valid: false, reason: "Party formation is required." };
+    if (!Campaign.FACTIONS.includes(String(loadout.faction || "")))
+      return { valid: false, reason: "Party faction is required." };
+    const slots = Array.isArray(loadout.slots) ? loadout.slots : [],
+      slotIds = slots.map(slot => slot && String(slot.id));
+    if (
+      slots.length !== PARTY_SIZE ||
+      PARTY_SLOT_IDS.some(id => !slotIds.includes(id)) ||
+      new Set(slotIds).size !== PARTY_SIZE
+    )
+      return { valid: false, reason: "Party requires the authored five formation slots." };
+    const ids = partyHeroIds(loadout);
+    if (ids.length !== PARTY_SIZE)
+      return { valid: false, reason: "Fill all five formation slots." };
+    if (new Set(ids).size !== ids.length)
+      return { valid: false, reason: "Duplicate heroes are not allowed." };
+    const resolved = ids.map(id => heroes.find(h => h.id === id) || null);
+    if (resolved.some(h => !h)) return { valid: false, reason: "Party contains an unknown hero." };
+    const wrongFaction = resolved.filter(
+      h => String(h.faction || "").toLowerCase() !== loadout.faction
+    );
+    if (wrongFaction.length)
+      return { valid: false, reason: "Party contains a hero from another faction." };
+    if (checkAvailability) {
+      const unavailable = resolved.filter(h => h.availability !== "available");
+      if (unavailable.length)
+        return {
+          valid: false,
+          reason: "Unavailable now: " + unavailable.map(h => h.name).join(", ")
+        };
+    }
+    return { valid: true, reason: "Ready" };
+  }
+  function validateLoadout(loadout, checkAvailability) {
+    state = getState();
+    return validateLoadoutAgainst(loadout, state.heroes, checkAvailability);
+  }
+  function updateLoadout(index, patch) {
+    state = getState();
+    if (index < 0 || index >= 5) return null;
+    const current = state.loadouts[index],
+      change = patch && typeof patch === "object" ? patch : {};
+    if (change.size != null && Number(change.size) !== PARTY_SIZE)
+      throw new Error("Party Loadouts always contain five formation slots.");
+    if (change.faction && String(change.faction).toLowerCase() !== current.faction)
+      throw new Error("Party faction ownership cannot be changed.");
+    let slots = current.slots.map(slot => ({ id: slot.id, heroId: slot.heroId || null }));
+    if (change.heroIds != null) {
+      Campaign.validateHeroIds(change.heroIds);
+      slots = normalizePartySlots({ heroIds: change.heroIds }, state.heroes);
+    }
+    if (change.slots != null) {
+      const requestedIds = (Array.isArray(change.slots) ? change.slots : [])
+        .map(slot => slot && slot.heroId)
+        .filter(Boolean);
+      Campaign.validateHeroIds(requestedIds);
+      slots = normalizePartySlots({ slots: change.slots }, state.heroes);
+    }
+    const existing = new Set(partyHeroIds(current)),
+      nextIds = slots.map(slot => slot.heroId).filter(Boolean),
+      added = nextIds.filter(id => !existing.has(id)),
+      unavailable = added.map(hero).filter(h => !h || h.availability !== "available");
+    if (unavailable.length)
+      throw new Error(
+        "Cannot assign unavailable heroes: " +
+          unavailable.map(h => (h ? h.name : "Unknown")).join(", ") +
+          "."
+      );
+    const next = attachPartyAliases({
+      id: current.id,
+      name: String(
+        Object.prototype.hasOwnProperty.call(change, "name") ? change.name : current.name
+      ).slice(0, 40),
+      type: "party",
+      faction: current.faction,
+      slots,
+      isDefault: Object.prototype.hasOwnProperty.call(change, "isDefault")
+        ? Boolean(change.isDefault)
+        : Boolean(current.isDefault),
+      ready: Object.prototype.hasOwnProperty.call(change, "ready")
+        ? Boolean(change.ready)
+        : Boolean(current.ready)
+    });
+    if (next.isDefault)
+      state.loadouts.forEach((loadout, i) => {
+        if (i !== index) loadout.isDefault = false;
+      });
+    if (
+      !next.isDefault &&
+      current.isDefault &&
+      !state.loadouts.some((loadout, i) => i !== index && loadout.isDefault)
+    )
+      next.isDefault = true;
+    if (next.ready && !validateLoadoutAgainst(next, state.heroes, false).valid) next.ready = false;
+    state.loadouts[index] = next;
+    save();
+    return next;
+  }
+  function setDefaultParty(identifier) {
+    state = getState();
+    const index =
+      typeof identifier === "number"
+        ? identifier
+        : state.loadouts.findIndex(loadout => loadout.id === String(identifier));
+    if (index < 0 || index >= state.loadouts.length) throw new Error("Unknown Party Loadout.");
+    state.loadouts.forEach((loadout, i) => {
+      loadout.isDefault = i === index;
+    });
+    save();
+    return state.loadouts[index];
+  }
+  function getRaidLoadouts() {
+    state = getState();
+    return state.formations.raid || [];
+  }
+  function validateRaidLoadout(raid, checkAvailability) {
+    state = getState();
+    return validateRaidLoadoutAgainst(raid, state.heroes, state.loadouts, checkAvailability);
+  }
+  function updateRaidLoadout(index, patch) {
+    state = getState();
+    const raids = state.formations.raid || [];
+    if (index < 0 || index >= raids.length) return null;
+    const current = raids[index],
+      change = patch && typeof patch === "object" ? patch : {},
+      next = normalizeRaidLoadout(
+        Object.assign({}, current, change),
+        current.faction,
+        state.loadouts,
+        state.heroes,
+        index
+      );
+    next.ready = validateRaidLoadoutAgainst(next, state.heroes, state.loadouts, false).valid;
+    raids[index] = next;
+    save();
+    return next;
+  }
+  function setRaidGroupParty(raidIndex, groupId, partyId) {
+    state = getState();
+    const raids = state.formations.raid || [],
+      raid = raids[raidIndex],
+      group = raid && raid.groups.find(g => g.id === groupId);
+    if (!group) throw new Error("Unknown Raid group.");
+    if (partyId && !state.loadouts.some(p => p.id === partyId))
+      throw new Error("Unknown Party Loadout.");
+    group.partyId = partyId || null;
+    raid.ready = validateRaidLoadoutAgainst(raid, state.heroes, state.loadouts, false).valid;
+    save();
+    return raid;
+  }
+  function setRaidOverride(raidIndex, groupId, slotId, heroId) {
+    state = getState();
+    const raids = state.formations.raid || [],
+      raid = raids[raidIndex],
+      group = raid && raid.groups.find(g => g.id === groupId);
+    if (!group || !PARTY_SLOT_IDS.includes(slotId)) throw new Error("Unknown Raid slot.");
+    if (heroId) {
+      Campaign.validateHeroIds([heroId]);
+      const h = hero(heroId);
+      if (!h || String(h.faction || "").toLowerCase() !== raid.faction)
+        throw new Error("Raid hero must belong to the active faction.");
+      if (h.availability !== "available") throw new Error("Cannot assign an unavailable hero.");
+    }
+    group.overrides[slotId] = heroId || null;
+    raid.ready = validateRaidLoadoutAgainst(raid, state.heroes, state.loadouts, false).valid;
+    save();
+    return raid;
+  }
+  function getSiegeLoadouts() {
+    state = getState();
+    return state.formations.siege || [];
+  }
+  function validateSiegeLoadout(siege, checkAvailability) {
+    state = getState();
+    return validateSiegeLoadoutAgainst(siege, state.heroes, state.loadouts, checkAvailability);
+  }
+  function updateSiegeLoadout(index, patch) {
+    state = getState();
+    const sieges = state.formations.siege || [];
+    if (index < 0 || index >= sieges.length) return null;
+    const current = sieges[index],
+      change = patch && typeof patch === "object" ? patch : {},
+      next = normalizeSiegeLoadout(
+        Object.assign({}, current, change),
+        current.faction,
+        state.loadouts,
+        state.heroes,
+        index
+      );
+    next.ready = validateSiegeLoadoutAgainst(next, state.heroes, state.loadouts, false).valid;
+    sieges[index] = next;
+    save();
+    return next;
+  }
+  function setSiegeGroupParty(index, groupId, partyId) {
+    state = getState();
+    const siege = (state.formations.siege || [])[index],
+      group = siege && siege.groups.find(g => g.id === groupId);
+    if (!group) throw new Error("Unknown Siege group.");
+    if (partyId && !state.loadouts.some(p => p.id === partyId))
+      throw new Error("Unknown Party Loadout.");
+    group.partyId = partyId || null;
+    siege.ready = validateSiegeLoadoutAgainst(siege, state.heroes, state.loadouts, false).valid;
+    save();
+    return siege;
+  }
+  function setSiegeOverride(index, groupId, slotId, heroId) {
+    state = getState();
+    const siege = (state.formations.siege || [])[index],
+      group = siege && siege.groups.find(g => g.id === groupId);
+    if (!group || !PARTY_SLOT_IDS.includes(slotId)) throw new Error("Unknown Siege slot.");
+    if (heroId) {
+      Campaign.validateHeroIds([heroId]);
+      const h = hero(heroId);
+      if (!h || String(h.faction || "").toLowerCase() !== siege.faction)
+        throw new Error("Siege hero must belong to the active faction.");
+      if (h.availability !== "available") throw new Error("Cannot assign an unavailable hero.");
+    }
+    group.overrides[slotId] = heroId || null;
+    siege.ready = validateSiegeLoadoutAgainst(siege, state.heroes, state.loadouts, false).valid;
+    save();
+    return siege;
+  }
+  function seedHash(value) {
+    let hash = 2166136261;
+    for (let index = 0; index < value.length; index += 1) {
+      hash ^= value.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return hash >>> 0;
+  }
+  function seededRandom(seed) {
+    let value = seed >>> 0;
+    return function () {
+      value += 0x6d2b79f5;
+      let next = value;
+      next = Math.imul(next ^ (next >>> 15), next | 1);
+      next ^= next + Math.imul(next ^ (next >>> 7), next | 61);
+      return ((next ^ (next >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function questOfferIds(pool, round, boardLevel) {
+    const eligible = pool.offers.filter(offer => offer.min_board_level <= boardLevel);
+    const random = seededRandom(
+      seedHash(getQuestBoardState().seed + ":" + round + ":" + boardLevel)
+    );
+    const shuffled = eligible.slice();
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+      const swap = Math.floor(random() * (index + 1));
+      [shuffled[index], shuffled[swap]] = [shuffled[swap], shuffled[index]];
+    }
+    return shuffled.slice(0, Math.min(pool.offer_count, shuffled.length)).map(offer => offer.id);
+  }
+  // Guarantees the current Quest Board round has offers (a fresh save gets round 1).
+  function ensureQuestRound(pool, boardLevel) {
+    const board = getQuestBoardState();
+    if (board.offerIds.length) return board.offerIds;
+    const offerIds = questOfferIds(pool, board.round, boardLevel);
+    setQuestBoardOffers(offerIds);
+    return offerIds;
+  }
+  // Moves a fully resolved round to the next one, never repeating the same offer set.
+  function advanceQuestRound(pool, boardLevel) {
+    const status = getQuestRoundStatus();
+    if (!status.resolved) return false;
+    let nextIds = questOfferIds(pool, status.round + 1, boardLevel);
+    const sameSet =
+      nextIds.length === status.offerIds.length &&
+      nextIds.every(id => status.offerIds.includes(id));
+    const replacement =
+      sameSet &&
+      pool.offers.find(
+        offer => offer.min_board_level <= boardLevel && !status.offerIds.includes(offer.id)
+      );
+    if (replacement && nextIds.length) nextIds = nextIds.slice(0, -1).concat(replacement.id);
+    transitionQuestRound(nextIds);
+    return true;
+  }
+  function dispatchQuest(offer, heroIds) {
+    state = getState();
+    if (!offer || typeof offer !== "object" || !offer.id)
+      throw new Error("Quest dispatch requires a Quest Board offer.");
+    Campaign.validateHeroIds(heroIds || []);
+    const ids = [...new Set(heroIds || [])];
+    const required = Number(offer.party_size || offer.requiredHeroes) || 1;
+    if (ids.length !== required)
+      throw new Error(
+        (offer.title || "Quest") +
+          " requires exactly " +
+          required +
+          " hero" +
+          (required === 1 ? "" : "es") +
+          "."
+      );
+    const prior = state.quests.find(
+      q => q.round === state.questBoard.round && q.sourceOfferId === offer.id
+    );
+    if (prior && prior.status !== "available")
+      throw new Error("This quest offer is already active or completed this round.");
+    const selected = ids.map(hero);
+    if (selected.some(h => !h || h.availability !== "available"))
+      throw new Error("Every dispatched hero must be available.");
+    let quest = prior;
+    if (prior) {
+      quest.status = "active";
+      quest.heroIds = ids;
+      quest.lastResult = null;
+    } else {
+      quest = normalizeQuestRecord(
+        {
+          id: "assignment-r" + state.questBoard.round + "-" + offer.id,
+          sourceOfferId: offer.id,
+          round: state.questBoard.round,
+          title: offer.title,
+          description: offer.description,
+          difficulty: Number(offer.difficulty) || 1,
+          requiredHeroes: required,
+          partySize: required,
+          status: "active",
+          heroIds: ids,
+          completedCount: 0,
+          reward: {
+            gold: Number(offer.reward && offer.reward.gold) || 0,
+            meta: (offer.reward && offer.reward.meta_currency) || "quest_marks",
+            amount: Number(offer.reward && offer.reward.meta_amount) || 0
+          }
+        },
+        state.heroes
+      );
+      state.quests.push(quest);
+    }
+    selected.forEach(h => (h.availability = "on-quest"));
+    save();
+    return quest;
+  }
+  function completeQuest(identifier) {
+    state = getState();
+    const quest = state.quests.find(q => q.id === String(identifier));
+    if (!quest || quest.status !== "active") return null;
+    const heroIds = quest.heroIds.slice();
+    heroIds
+      .map(hero)
+      .filter(Boolean)
+      .forEach(h => (h.availability = "available"));
+    quest.status = "completed";
+    quest.completedCount = (quest.completedCount || 0) + 1;
+    quest.lastResult = "victory";
+    quest.lastXpEvents = applyHeroXpReward(heroIds, "quest", true);
+    quest.heroIds = [];
+    save();
+    return quest;
+  }
+  function resolveQuestEncounter(identifier, victory) {
+    state = getState();
+    const quest = state.quests.find(q => q.id === identifier);
+    if (!quest || quest.status !== "active") return quest || null;
+    const heroIds = quest.heroIds.slice();
+    heroIds
+      .map(hero)
+      .filter(Boolean)
+      .forEach(h => (h.availability = "available"));
+    quest.lastResult = victory ? "victory" : "defeat";
+    quest.attemptCount = (quest.attemptCount || 0) + 1;
+    quest.lastXpEvents = applyHeroXpReward(heroIds, "quest", Boolean(victory));
+    if (victory) {
+      quest.status = "completed";
+      quest.completedCount = (quest.completedCount || 0) + 1;
+    } else {
+      quest.status = "available";
+    }
+    quest.heroIds = [];
+    save();
+    return quest;
+  }
+  function resolvePendingEncounterResult(result) {
+    state = getState();
+    const encounter = state.pendingEncounter;
+    if (!encounter) return null;
+    if (encounter.status === "resolved" && encounter.result) return encounter;
+    const normalized = {
+      winnerTeam: Number(result && result.winnerTeam),
+      victory: Number(result && result.winnerTeam) === 0,
+      frame: Number(result && result.frame) || 0,
+      heroXpEvents: []
+    };
+    if (encounter.questAssignmentId) {
+      const quest = resolveQuestEncounter(encounter.questAssignmentId, normalized.victory);
+      normalized.heroXpEvents = Array.isArray(quest && quest.lastXpEvents)
+        ? quest.lastXpEvents.map(event => Object.assign({}, event))
+        : [];
+    } else {
+      normalized.heroXpEvents = applyHeroXpReward(
+        encounter.heroIds || [],
+        encounter.kind,
+        normalized.victory
+      );
+    }
+    state = getState();
+    if (["raid", "siege"].includes(encounter.kind)) {
+      state.endgameRuns = Array.isArray(state.endgameRuns) ? state.endgameRuns : [];
+      state.endgameRuns.push({
+        kind: encounter.kind,
+        encounterId: encounter.encounterId || null,
+        encounterName: encounter.encounterName || encounter.kind,
+        heroIds: (encounter.heroIds || []).slice(),
+        loadoutId: encounter.loadoutId || null,
+        faction: encounter.faction || getFaction(),
+        formation: encounter.formation ? JSON.parse(JSON.stringify(encounter.formation)) : null,
+        seed: Number(encounter.seed) || 0,
+        winnerTeam: normalized.winnerTeam,
+        victory: normalized.victory,
+        frame: normalized.frame,
+        heroXpEvents: normalized.heroXpEvents.slice()
+      });
+      state.endgameRuns = state.endgameRuns.slice(-50);
+    }
+    if (encounter.kind === "dungeon" && encounter.dungeonId) {
+      const attempt =
+        state.dungeonRuns.filter(run => run.dungeonId === encounter.dungeonId).length + 1;
+      state.dungeonRuns.push({
+        dungeonId: encounter.dungeonId,
+        dungeonName: encounter.dungeonName || encounter.dungeonId,
+        partySize: Number(encounter.partySize) || encounter.heroIds.length,
+        heroIds: (encounter.heroIds || []).slice(),
+        loadoutId: encounter.loadoutId || null,
+        faction: encounter.faction || getFaction(),
+        formation: encounter.formation ? JSON.parse(JSON.stringify(encounter.formation)) : null,
+        seed: Number(encounter.seed) || 0,
+        winnerTeam: normalized.winnerTeam,
+        victory: normalized.victory,
+        frame: normalized.frame,
+        attempt
+      });
+      state.dungeonRuns = state.dungeonRuns.slice(-50);
+    }
+    state.pendingEncounter = Object.assign({}, encounter, {
+      status: "resolved",
+      result: normalized
+    });
+    save();
+    return state.pendingEncounter;
+  }
+  function reset() {
+    state = getState();
+    const fresh = defaults(getFaction());
+    state.heroes = fresh.heroes;
+    state.formations.party = fresh.loadouts;
+    state.formations.raid = fresh.raidLoadouts;
+    state.formations.siege = fresh.siegeLoadouts;
+    state.questBoard = fresh.questBoard;
+    state.quests = fresh.quests;
+    state.pendingEncounter = null;
+    state.dungeonRuns = [];
+    state.endgameRuns = [];
+    save();
+    return state;
+  }
+  if (typeof global.addEventListener === "function")
+    global.addEventListener("warcraft:campaign-changed", event => {
+      const reason = event && event.detail && event.detail.reason;
+      if (["faction", "base", "base-init"].includes(reason)) {
+        state = attachLoadoutAlias(Campaign.getActiveCampaign());
+        queueRosterChanged();
+      }
+    });
+  global.WarcraftRoster = Object.freeze({
+    PARTY_SIZE,
+    PARTY_SIZES,
+    PARTY_SLOT_IDS,
+    RAID_SIZE,
+    SIEGE_SIZE,
+    HERO_XP_MAX,
+    getState,
+    getQuestBoardState,
+    getQuestRoundStatus,
+    getPendingEncounter,
+    getLatestDungeonRun,
+    setPendingEncounter,
+    resolvePendingEncounterResult,
+    setQuestBoardOffers,
+    ensureQuestRound,
+    advanceQuestRound,
+    transitionQuestRound,
+    getFaction,
+    setFaction,
+    getRosterCapacity,
+    hero,
+    getHeroProgress,
+    awardHeroXp,
+    completeHeroLevelTraining,
+    recruitHero,
+    updateHero,
+    setEquipment,
+    setTalentBuild,
+    setCombatLoadout,
+    partyHeroIds,
+    partyFormation,
+    setDefaultParty,
+    validateLoadout,
+    updateLoadout,
+    getRaidLoadouts,
+    resolveRaidGroup,
+    resolveRaidLoadout,
+    groupedFormation,
+    validateRaidLoadout,
+    updateRaidLoadout,
+    setRaidGroupParty,
+    setRaidOverride,
+    getSiegeLoadouts,
+    validateSiegeLoadout,
+    updateSiegeLoadout,
+    setSiegeGroupParty,
+    setSiegeOverride,
+    dispatchQuest,
+    completeQuest,
+    resolveQuestEncounter,
+    reset
+  });
 })(window);

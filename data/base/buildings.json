@@ -1,18 +1,10 @@
 {
   "schema_version": 1,
   "kind": "building_progression",
-  "level_tier_mapping": {
-    "1": 1,
-    "2": 2,
-    "3": 3,
-    "4": 4,
-    "5": 5
-  },
   "buildings": [
     {
       "id": "keep",
       "name": "Headquarters (Keep)",
-      "short": "Keep",
       "category": "core",
       "level": 1,
       "max_level": 5,
@@ -30,8 +22,7 @@
           "capabilities": [
             "quest_board_tier_1",
             "missions_tier_1"
-          ],
-          "roster_capacity": 10
+          ]
         },
         {
           "level": 2,
@@ -45,8 +36,7 @@
           "capabilities": [
             "quest_board_tier_2",
             "missions_tier_2"
-          ],
-          "roster_capacity": 20
+          ]
         },
         {
           "level": 3,
@@ -60,8 +50,7 @@
           "capabilities": [
             "quest_board_tier_3",
             "missions_tier_3"
-          ],
-          "roster_capacity": 30
+          ]
         },
         {
           "level": 4,
@@ -75,8 +64,7 @@
           "capabilities": [
             "quest_board_tier_4",
             "missions_tier_4"
-          ],
-          "roster_capacity": 40
+          ]
         },
         {
           "level": 5,
@@ -90,15 +78,13 @@
           "capabilities": [
             "quest_board_tier_5",
             "missions_tier_5"
-          ],
-          "roster_capacity": 50
+          ]
         }
       ]
     },
     {
       "id": "questboard",
       "name": "Quest Board",
-      "short": "Quest Board",
       "category": "core",
       "level": 1,
       "max_level": 5,
@@ -115,8 +101,7 @@
           "requirements": [],
           "capabilities": [
             "quest_tier_1"
-          ],
-          "quest_dispatch_size": 1
+          ]
         },
         {
           "level": 2,
@@ -129,8 +114,7 @@
           "requirements": [],
           "capabilities": [
             "quest_tier_2"
-          ],
-          "quest_dispatch_size": 3
+          ]
         },
         {
           "level": 3,
@@ -143,8 +127,7 @@
           "requirements": [],
           "capabilities": [
             "quest_tier_3"
-          ],
-          "quest_dispatch_size": 5
+          ]
         },
         {
           "level": 4,
@@ -157,8 +140,7 @@
           "requirements": [],
           "capabilities": [
             "quest_tier_4"
-          ],
-          "quest_dispatch_size": 10
+          ]
         },
         {
           "level": 5,
@@ -171,15 +153,13 @@
           "requirements": [],
           "capabilities": [
             "quest_tier_5"
-          ],
-          "quest_dispatch_size": 20
+          ]
         }
       ]
     },
     {
       "id": "training",
       "name": "Training Grounds",
-      "short": "Training Grounds",
       "category": "core",
       "level": 1,
       "max_level": 5,
@@ -255,7 +235,6 @@
     {
       "id": "recruitment",
       "name": "Recruitment Hall",
-      "short": "Recruitment Hall",
       "category": "core",
       "level": 1,
       "max_level": 5,
@@ -346,7 +325,6 @@
     {
       "id": "storehouse",
       "name": "Storehouse",
-      "short": "Storehouse",
       "category": "core",
       "level": 1,
       "max_level": 5,
@@ -422,7 +400,6 @@
     {
       "id": "bank",
       "name": "Bank",
-      "short": "Bank",
       "category": "core",
       "level": 1,
       "max_level": 5,
@@ -498,7 +475,6 @@
     {
       "id": "armory",
       "name": "Armory",
-      "short": "Armory",
       "category": "core",
       "level": 1,
       "max_level": 5,
@@ -574,7 +550,6 @@
     {
       "id": "artisans",
       "name": "Artisans Guild",
-      "short": "Artisans Guild",
       "category": "profession",
       "level": 1,
       "max_level": 5,
@@ -646,13 +621,11 @@
           ]
         }
       ],
-      "profession_track": "artisan",
       "assignment_slots": 3
     },
     {
       "id": "classhall",
       "name": "Class Hall",
-      "short": "Class Hall",
       "category": "core",
       "level": 1,
       "max_level": 5,
@@ -728,9 +701,7 @@
     {
       "id": "gathering-camp",
       "name": "Gathering Camp",
-      "short": "Gathering Camp",
       "category": "profession",
-      "profession_track": "gathering",
       "assignment_slots": 3,
       "level": 1,
       "max_level": 5,
@@ -806,9 +777,7 @@
     {
       "id": "survival-lodge",
       "name": "Survival Lodge",
-      "short": "Survival Lodge",
       "category": "profession",
-      "profession_track": "survival",
       "assignment_slots": 3,
       "level": 1,
       "max_level": 5,

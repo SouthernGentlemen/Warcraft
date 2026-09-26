@@ -3,56 +3,65 @@
  * Links remain ordinary static HTML anchors; this layer adds semantic icons,
  * shared tooltips, and active-screen state.
  */
-(function(global) {
+(function (global) {
   "use strict";
   const DESTINATIONS = Object.freeze({
-    heroes:Object.freeze({
-      label:"Heroes",
-      title:"Heroes / Race Selector",
-      description:"Review factions, races, body presentation, racial talents, and class availability.",
-      icon:Object.freeze({category:"race", key:"human"})
+    heroes: Object.freeze({
+      label: "Heroes",
+      title: "Heroes / Race Selector",
+      description:
+        "Review factions, races, body presentation, racial talents, and class availability.",
+      icon: Object.freeze({ category: "race", key: "human" })
     }),
-    profession:Object.freeze({
-      label:"Professions",
-      title:"Artisans Guild Professions",
-      description:"Open any profession; every profession mirrors the shared Artisans Guild level.",
-      icon:Object.freeze({category:"building", key:"artisans-guild"})
+    profession: Object.freeze({
+      label: "Professions",
+      title: "Artisans Guild Professions",
+      description: "Open any profession; every profession mirrors the shared Artisans Guild level.",
+      icon: Object.freeze({ category: "building", key: "artisans-guild" })
     }),
-    inventory:Object.freeze({
-      label:"Inventory",
-      title:"Global Inventory",
-      description:"Browse owned equipment across the roster without duplicating hero equipment state.",
-      icon:Object.freeze({category:"equipment-slot", key:"chest"})
+    inventory: Object.freeze({
+      label: "Inventory",
+      title: "Global Inventory",
+      description:
+        "Browse owned equipment across the roster without duplicating hero equipment state.",
+      icon: Object.freeze({ category: "equipment-slot", key: "chest" })
     }),
-    journal:Object.freeze({
-      label:"Quest Journal",
-      title:"Quest Journal",
-      description:"Review available, active, and completed Quest Board assignments from authoritative roster state.",
-      icon:Object.freeze({category:"quest", key:"journal"})
+    journal: Object.freeze({
+      label: "Quest Journal",
+      title: "Quest Journal",
+      description:
+        "Review available, active, and completed Quest Board assignments from authoritative roster state.",
+      icon: Object.freeze({ category: "quest", key: "journal" })
     }),
-    embark:Object.freeze({label:"Embark",title:"Embark",description:"Choose available Quest, Incursion, or Dungeon content and launch the active faction into Battle.",icon:Object.freeze({category:"battle",key:"combat"})}),
-    endgame:Object.freeze({label:"Raids & Sieges",title:"Raids & Sieges",description:"Launch saved ten-player Raid and twenty-player Siege formations.",icon:Object.freeze({category:"battle",key:"combat"})}),
-    battle:Object.freeze({
-      label:"Battle",
-      title:"Battle Mockup",
-      description:"Review the six-on-six battleground presentation and interactive combat controls.",
-      icon:Object.freeze({category:"battle", key:"combat"})
+    endgame: Object.freeze({
+      label: "Raids & Sieges",
+      title: "Raids & Sieges",
+      description: "Launch saved ten-player Raid and twenty-player Siege formations.",
+      icon: Object.freeze({ category: "battle", key: "combat" })
     }),
-    base:Object.freeze({
-      label:"Base",
-      title:"Base Management",
-      description:"Review the persistent stronghold, buildings, professions, resources, and upgrade hooks.",
-      icon:Object.freeze({category:"building", key:"keep"})
+    battle: Object.freeze({
+      label: "Battle",
+      title: "Battle Mockup",
+      description:
+        "Review the six-on-six battleground presentation and interactive combat controls.",
+      icon: Object.freeze({ category: "battle", key: "combat" })
+    }),
+    base: Object.freeze({
+      label: "Base",
+      title: "Base Management",
+      description:
+        "Review the persistent stronghold, buildings, professions, resources, and upgrade hooks.",
+      icon: Object.freeze({ category: "building", key: "keep" })
     })
   });
 
   function tooltipModel(destination) {
     return {
-      variant:"control",
-      title:destination.title,
-      type:"Mockup destination",
-      icon:destination.icon,
-      description:destination.description
+      variant: "control",
+      title: destination.title,
+      type: "Mockup destination",
+      icon: destination.icon,
+      description: destination.description
     };
   }
 
@@ -60,7 +69,9 @@
     const Icons = global.WowUIIcons;
     if (!Icons) return;
 
-    let frame = element.querySelector(launcher ? ".wow-launcher-entry__icon" : ".wow-game-nav__icon");
+    let frame = element.querySelector(
+      launcher ? ".wow-launcher-entry__icon" : ".wow-game-nav__icon"
+    );
     if (!frame) {
       frame = document.createElement("span");
       frame.className = launcher
@@ -77,7 +88,11 @@
       frame.appendChild(image);
     }
 
-    image.src = Icons.resolve(destination.icon.category, destination.icon.key, destination.icon.context || {});
+    image.src = Icons.resolve(
+      destination.icon.category,
+      destination.icon.key,
+      destination.icon.context || {}
+    );
     Icons.bindFallback(image);
   }
 
@@ -92,7 +107,7 @@
       let label = element.querySelector(".wow-game-nav__label");
       if (!label) {
         const existing = element.textContent.trim() || destination.label;
-        Array.from(element.childNodes).forEach(function(node) {
+        Array.from(element.childNodes).forEach(function (node) {
           if (node.nodeType === Node.TEXT_NODE) node.remove();
         });
         label = document.createElement("span");
@@ -103,9 +118,13 @@
     }
 
     if (global.WowUITooltips) {
-      global.WowUITooltips.attach(element, function() {
-        return tooltipModel(destination);
-      }, {anchor:"target"});
+      global.WowUITooltips.attach(
+        element,
+        function () {
+          return tooltipModel(destination);
+        },
+        { anchor: "target" }
+      );
     }
   }
 
@@ -124,25 +143,36 @@
       selector.className = "wow-faction-switcher";
       selector.setAttribute("role", "group");
       selector.setAttribute("aria-label", "Active campaign faction");
-      Campaign.FACTIONS.forEach(function(faction) {
+      Campaign.FACTIONS.forEach(function (faction) {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "wow-faction-switcher__button";
         button.dataset.faction = faction;
-        button.setAttribute("aria-label", "Switch to " + (faction === "horde" ? "Horde" : "Alliance") + " campaign");
+        button.setAttribute(
+          "aria-label",
+          "Switch to " + (faction === "horde" ? "Horde" : "Alliance") + " campaign"
+        );
         const icon = global.WowUIIcons
-          ? '<span class="wow-faction-switcher__crest wow-icon-frame wow-icon-frame--xs"><img src="' + global.WowUIIcons.resolve("faction", faction) + '" alt=""></span>'
+          ? '<span class="wow-faction-switcher__crest wow-icon-frame wow-icon-frame--xs"><img src="' +
+            global.WowUIIcons.resolve("faction", faction) +
+            '" alt=""></span>'
           : "";
-        button.innerHTML = icon + '<span class="wow-faction-switcher__label">' + (faction === "horde" ? "Horde" : "Alliance") + "</span>";
+        button.innerHTML =
+          icon +
+          '<span class="wow-faction-switcher__label">' +
+          (faction === "horde" ? "Horde" : "Alliance") +
+          "</span>";
         const image = button.querySelector("img");
         if (image && global.WowUIIcons) global.WowUIIcons.bindFallback(image);
-        button.addEventListener("click", function() { Campaign.setActiveFaction(faction); });
+        button.addEventListener("click", function () {
+          Campaign.setActiveFaction(faction);
+        });
         selector.appendChild(button);
       });
       action.prepend(selector);
     }
     const active = Campaign.getActiveFaction();
-    selector.querySelectorAll("[data-faction]").forEach(function(button) {
+    selector.querySelectorAll("[data-faction]").forEach(function (button) {
       const selected = button.dataset.faction === active;
       button.classList.toggle("is-active", selected);
       button.setAttribute("aria-pressed", selected ? "true" : "false");
@@ -153,9 +183,12 @@
   function hydrate(root) {
     const scope = root || document;
 
-    scope.querySelectorAll(".wow-game-shell").forEach(function(shell) {
+    scope.querySelectorAll(".wow-game-shell").forEach(function (shell) {
       const activeKey = shell.dataset.wowNavActive || "";
-      const selectorSuppressed = activeKey === "battle" || activeKey === "dev-inspection" || document.body.classList.contains("race-page");
+      const selectorSuppressed =
+        activeKey === "battle" ||
+        activeKey === "dev-inspection" ||
+        document.body.classList.contains("race-page");
       if (!selectorSuppressed) ensureFactionSelector(shell);
       const brand = shell.querySelector(".wow-game-shell__brand");
       if (brand) {
@@ -165,7 +198,7 @@
         else brand.removeAttribute("aria-current");
       }
 
-      shell.querySelectorAll(".wow-game-nav__link[data-wow-nav-key]").forEach(function(link) {
+      shell.querySelectorAll(".wow-game-nav__link[data-wow-nav-key]").forEach(function (link) {
         const key = link.dataset.wowNavKey;
         const isActive = key === activeKey;
         link.classList.toggle("is-active", isActive);
@@ -175,24 +208,30 @@
       });
     });
 
-    scope.querySelectorAll(".wow-launcher-entry[data-wow-nav-key]").forEach(function(entry) {
+    scope.querySelectorAll(".wow-launcher-entry[data-wow-nav-key]").forEach(function (entry) {
       enhanceDestination(entry, entry.dataset.wowNavKey, true);
     });
   }
 
   global.WowUINavigation = Object.freeze({
-    destinations:DESTINATIONS,
-    hydrate:hydrate
+    destinations: DESTINATIONS,
+    hydrate: hydrate
   });
 
   if (typeof global.addEventListener === "function") {
-    global.addEventListener("warcraft:campaign-changed", function(event) {
+    global.addEventListener("warcraft:campaign-changed", function (event) {
       if (event && event.detail && event.detail.reason === "faction") hydrate(document);
     });
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function() { hydrate(document); }, {once:true});
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
+        hydrate(document);
+      },
+      { once: true }
+    );
   } else {
     hydrate(document);
   }

@@ -4,7 +4,7 @@
   min-height: 100vh;
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 50% -14%, rgba(183,139,59,.07), transparent 26%),
+    radial-gradient(circle at 50% -14%, rgba(183, 139, 59, 0.07), transparent 26%),
     var(--wow-bg-canvas);
   color: var(--wow-text);
   font-family: var(--wow-font-ui);
@@ -19,7 +19,7 @@
 .wow-topline {
   min-height: 78px;
   display: grid;
-  grid-template-columns: minmax(220px,1fr) auto;
+  grid-template-columns: minmax(220px, 1fr) auto;
   align-items: center;
   gap: 22px;
   margin-bottom: 8px;
@@ -83,7 +83,7 @@
 .wow-build-strip {
   min-height: 46px;
   display: grid;
-  grid-template-columns: auto minmax(0,1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 18px;
   margin-bottom: 7px;
@@ -110,26 +110,28 @@
   color: var(--wow-text-dim);
   font-size: 8px !important;
   font-weight: 800;
-  letter-spacing: .04em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .wow-tree-board {
   min-height: 610px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(330px,1fr));
+  grid-template-columns: repeat(3, minmax(330px, 1fr));
   gap: 7px;
   padding: 7px;
   overflow-x: auto;
   border: var(--wow-border) solid var(--wow-frame-outer);
   background: #07090b;
-  box-shadow: inset 0 0 0 1px var(--wow-frame-edge), var(--wow-shadow-frame);
+  box-shadow:
+    inset 0 0 0 1px var(--wow-frame-edge),
+    var(--wow-shadow-frame);
 }
 
 .wow-spec-panel {
   --tree-accent: var(--wow-gold-muted);
-  --tree-glow: rgba(183,139,59,.34);
-  --tree-tint: rgba(77,66,38,.36);
+  --tree-glow: rgba(183, 139, 59, 0.34);
+  --tree-tint: rgba(77, 66, 38, 0.36);
   position: relative;
   min-width: 0;
   min-height: 596px;
@@ -139,20 +141,20 @@
 
 .wow-spec-panel--1 {
   --tree-accent: var(--wow-success);
-  --tree-glow: rgba(61,133,73,.38);
-  --tree-tint: rgba(32,83,49,.34);
+  --tree-glow: rgba(61, 133, 73, 0.38);
+  --tree-tint: rgba(32, 83, 49, 0.34);
 }
 
 .wow-spec-panel--2 {
   --tree-accent: var(--wow-rarity-epic);
-  --tree-glow: rgba(163,53,238,.24);
-  --tree-tint: rgba(79,35,100,.32);
+  --tree-glow: rgba(163, 53, 238, 0.24);
+  --tree-tint: rgba(79, 35, 100, 0.32);
 }
 
 .wow-spec-panel--3 {
   --tree-accent: var(--wow-gold);
-  --tree-glow: rgba(183,139,59,.36);
-  --tree-tint: rgba(101,79,29,.32);
+  --tree-glow: rgba(183, 139, 59, 0.36);
+  --tree-tint: rgba(101, 79, 29, 0.32);
 }
 
 .wow-spec-panel::before {
@@ -160,14 +162,21 @@
   position: absolute;
   inset: 64px 0 0;
   background-image:
-    radial-gradient(circle at 50% 42%, transparent 0 15%, rgba(0,0,0,.22) 58%, rgba(0,0,0,.78) 100%),
-    linear-gradient(var(--tree-tint), rgba(0,0,0,.62)),
-    var(--spec-art);
+    radial-gradient(
+      circle at 50% 42%,
+      transparent 0 15%,
+      rgba(0, 0, 0, 0.22) 58%,
+      rgba(0, 0, 0, 0.78) 100%
+    ),
+    linear-gradient(var(--tree-tint), rgba(0, 0, 0, 0.62)), var(--spec-art);
   background-position: center, center, center;
-  background-size: cover, cover, 430px 430px;
+  background-size:
+    cover,
+    cover,
+    430px 430px;
   background-repeat: no-repeat;
   filter: saturate(1.15) contrast(1.08);
-  opacity: .62;
+  opacity: 0.62;
 }
 
 .wow-spec-panel::after {
@@ -175,18 +184,24 @@
   position: absolute;
   inset: 64px 0 0;
   background:
-    linear-gradient(90deg, rgba(0,0,0,.38), transparent 16%, transparent 84%, rgba(0,0,0,.4)),
-    linear-gradient(180deg, rgba(0,0,0,.18), transparent 28%, rgba(0,0,0,.34));
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.38),
+      transparent 16%,
+      transparent 84%,
+      rgba(0, 0, 0, 0.4)
+    ),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.18), transparent 28%, rgba(0, 0, 0, 0.34));
   pointer-events: none;
 }
 
 .wow-spec-panel.spec-locked::before {
-  filter: grayscale(.8) brightness(.56);
-  opacity: .42;
+  filter: grayscale(0.8) brightness(0.56);
+  opacity: 0.42;
 }
 
 .wow-spec-panel.spec-locked::after {
-  background: rgba(2,4,6,.24);
+  background: rgba(2, 4, 6, 0.24);
 }
 
 .wow-spec-panel.primary-spec {
@@ -202,7 +217,7 @@
   z-index: 5;
   height: 64px;
   display: grid;
-  grid-template-columns: 50px minmax(0,1fr) auto;
+  grid-template-columns: 50px minmax(0, 1fr) auto;
   align-items: center;
   gap: 9px;
   padding: 6px 10px;
@@ -258,7 +273,7 @@
   bottom: 0;
   width: 38px;
   display: grid;
-  grid-template-rows: repeat(3,1fr);
+  grid-template-rows: repeat(3, 1fr);
   align-items: center;
   pointer-events: none;
 }
@@ -266,10 +281,10 @@
 .wow-tier-markers span {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  color: rgba(234,214,140,.34);
+  color: rgba(234, 214, 140, 0.34);
   font-size: 8px;
   font-weight: 800;
-  letter-spacing: .13em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 
@@ -280,17 +295,23 @@
   right: 20px;
   height: 82px;
   display: grid;
-  grid-template-columns: repeat(3,62px);
+  grid-template-columns: repeat(3, 62px);
   justify-content: space-around;
   align-items: center;
 }
 
-.wow-talent-row.row-1 { top: 52px; }
-.wow-talent-row.row-2 { top: 208px; }
-.wow-talent-row.row-3 { top: 370px; }
+.wow-talent-row.row-1 {
+  top: 52px;
+}
+.wow-talent-row.row-2 {
+  top: 208px;
+}
+.wow-talent-row.row-3 {
+  top: 370px;
+}
 
 .wow-talent-row.capstone-row {
-  grid-template-columns: repeat(2,62px);
+  grid-template-columns: repeat(2, 62px);
   justify-content: center;
   gap: 72px;
 }
@@ -317,15 +338,24 @@
   position: absolute;
   z-index: -1;
   inset: 1px;
-  border: 1px solid rgba(214,182,95,.17);
-  background: rgba(5,7,8,.62);
-  clip-path: polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px);
+  border: 1px solid rgba(214, 182, 95, 0.17);
+  background: rgba(5, 7, 8, 0.62);
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    10px 100%,
+    0 calc(100% - 10px),
+    0 10px
+  );
 }
 
 .wow-talent-node.capstone::before {
   inset: 7px;
   border: 2px solid var(--tree-accent);
-  background: rgba(7,9,10,.74);
+  background: rgba(7, 9, 10, 0.74);
   clip-path: none;
   transform: rotate(45deg);
   box-shadow: 0 0 8px var(--tree-glow);
@@ -336,7 +366,7 @@
   border-color: var(--tree-accent);
   box-shadow:
     0 0 0 2px #060708,
-    inset 0 0 0 1px rgba(255,255,255,.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1),
     0 0 10px var(--tree-glow);
 }
 
@@ -349,7 +379,16 @@
   position: absolute;
   inset: -2px;
   border: 1px solid var(--tree-accent);
-  clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px);
+  clip-path: polygon(
+    8px 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% calc(100% - 8px),
+    calc(100% - 8px) 100%,
+    8px 100%,
+    0 calc(100% - 8px),
+    0 8px
+  );
   box-shadow: 0 0 8px var(--tree-glow);
   pointer-events: none;
 }
@@ -364,7 +403,7 @@
 }
 
 .wow-talent-node.locked::before {
-  border-color: rgba(100,108,118,.24);
+  border-color: rgba(100, 108, 118, 0.24);
   box-shadow: none;
 }
 
@@ -392,7 +431,7 @@
   }
 
   .wow-tree-board {
-    grid-template-columns: repeat(3,340px);
+    grid-template-columns: repeat(3, 340px);
   }
 }
 
@@ -417,7 +456,7 @@
   }
 
   .wow-tree-board {
-    grid-template-columns: repeat(3,330px);
+    grid-template-columns: repeat(3, 330px);
   }
 
   .wow-build-strip {
@@ -440,4 +479,13 @@
   }
 }
 
-.wow-tier-model-note { position:absolute; right:10px; bottom:8px; z-index:4; color:var(--wow-text-dim); font-size:7px; letter-spacing:.08em; text-transform:uppercase; }
+.wow-tier-model-note {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  z-index: 4;
+  color: var(--wow-text-dim);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

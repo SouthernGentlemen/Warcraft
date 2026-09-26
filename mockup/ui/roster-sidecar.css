@@ -1,0 +1,67 @@
+/* Roster sidecar: hero list on the left, icon strip clamped to its right edge. */
+.roster-sidecar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  width: 220px;
+  min-height: 0;
+  border-width: 0 1px 0 0;
+  border-radius: 0;
+}
+
+.roster-sidecar__list {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--wow-space-2);
+}
+
+.roster-sidecar__hero {
+  display: flex;
+  align-items: center;
+  gap: var(--wow-space-2);
+  padding: 3px var(--wow-space-1);
+  border-radius: var(--wow-radius-control);
+  cursor: grab;
+}
+
+.roster-sidecar__hero:hover,
+.roster-sidecar__hero:focus-visible {
+  background: var(--wow-surface-hover);
+}
+
+.roster-sidecar__hero.is-unavailable {
+  opacity: 0.45;
+  cursor: pointer;
+}
+
+.roster-sidecar__name {
+  overflow: hidden;
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.roster-sidecar__actions {
+  display: grid;
+  align-content: start;
+  gap: var(--wow-space-2);
+  padding: var(--wow-space-2);
+  border-left: 1px solid var(--wow-frame-edge);
+}
+
+.roster-sidecar__action {
+  display: block;
+  line-height: 0;
+}
+
+@media (max-width: 700px) {
+  .roster-sidecar {
+    width: auto;
+  }
+
+  .roster-sidecar__name {
+    display: none;
+  }
+}

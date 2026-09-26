@@ -1,6 +1,5 @@
 {
   "schema_version": 2,
-  "availability_rule": "Class availability is authoritative per race. A hero class is valid only when it appears in that race entry's available_classes array.",
   "body_types": [
     {
       "id": "body-1",
@@ -154,6 +153,5 @@
         }
       ]
     }
-  },
-  "runtime_source": "authored"
+  }
 }

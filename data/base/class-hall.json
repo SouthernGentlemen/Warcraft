@@ -87,10 +87,5 @@
         "horde"
       ]
     }
-  ],
-  "rules": {
-    "faction_filter": "A trainer is shown only when its class is valid for at least one race in the active faction.",
-    "level_up": "A hero may start level training only at 20 / 20 XP when the next hero level does not exceed the active faction Base Level.",
-    "talents": "Assigned heroes open the shared Roster Talents tab; Class Hall does not own a second talent editor."
-  }
+  ]
 }

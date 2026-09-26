@@ -1,10 +1,133 @@
-const Campaign=window.WarcraftCampaign,Roster=window.WarcraftRoster,$=id=>document.getElementById(id);let catalog=[],selectedKind=null,selectedLoadout=null;
-function config(kind){return catalog.find(e=>e.kind===kind);}
-function loadouts(kind){return kind==="raid"?Roster.getRaidLoadouts():Roster.getSiegeLoadouts();}
-function validate(kind,l){return kind==="raid"?Roster.validateRaidLoadout(l,true):Roster.validateSiegeLoadout(l,true);}
-function unlocked(kind){return Campaign.getBaseLevel()>=config(kind).unlock_base_level;}
-function choose(kind){selectedKind=kind;selectedLoadout=loadouts(kind).find(l=>validate(kind,l).valid)||null;render();}
-function render(){const root=$("endgameEncounters"),level=Campaign.getBaseLevel();$("endgameFaction").textContent=(Campaign.getActiveFaction()==="horde"?"Horde":"Alliance")+" · Base Level "+level;root.innerHTML="";for(const kind of ["raid","siege"]){const e=config(kind),ready=loadouts(kind).filter(l=>validate(kind,l).valid);const b=document.createElement("button");b.type="button";b.className="endgame-card"+(selectedKind===kind?" is-selected":"");b.disabled=!unlocked(kind);b.innerHTML="<strong>"+e.display_name+"</strong><span>"+kind.toUpperCase()+" · "+e.party_size+" heroes · Base "+e.unlock_base_level+"</span><small>"+(unlocked(kind)?ready.length+" ready loadout(s)":"Locked")+"</small>";b.onclick=()=>choose(kind);root.appendChild(b);}renderPreview();}
-function renderPreview(){const root=$("formationPreview");if(!selectedLoadout){root.innerHTML="<p>Select unlocked content with a ready saved loadout.</p>";return;}const formation=Roster.groupedFormation(selectedLoadout);root.innerHTML='<div class="formation-groups">'+formation.groups.map(g=>'<section class="formation-group"><strong>'+g.id+'</strong><div class="formation-slots">'+g.slots.map(s=>{const h=s.heroId&&Roster.hero(s.heroId);return '<div class="formation-slot" data-slot="'+s.id+'"><small>'+s.id+'</small><b>'+(h?h.name:"Empty")+'</b></div>';}).join("")+"</div></section>").join("")+"</div>";}
-function launch(){try{if(!selectedKind||!selectedLoadout)throw new Error("Select a ready Raid or Siege loadout.");if(!unlocked(selectedKind))throw new Error(selectedKind+" is locked.");const valid=validate(selectedKind,selectedLoadout);if(!valid.valid)throw new Error(valid.reason);const e=config(selectedKind),formation=Roster.groupedFormation(selectedLoadout),heroIds=formation.groups.flatMap(g=>g.slots.map(s=>s.heroId));Campaign.validateHeroIds(heroIds);const encounter={kind:selectedKind,encounterId:e.id,encounterName:e.display_name,npcPoolId:e.npc_pool_id,partySize:e.party_size,heroIds,faction:Campaign.getActiveFaction(),seed:e.seed+Campaign.getClock().phaseAdvances,loadoutId:selectedLoadout.id,formation,source:"endgame",returnTo:"endgame.html"};Roster.setPendingEncounter(encounter);Campaign.confirmEmbark(encounter);location.href="./battle.html?encounter="+selectedKind;}catch(e){$("endgameError").textContent=e.message;}}
-async function init(){catalog=(await fetch("../data/content/endgame-encounters.json").then(r=>r.json())).encounters;render();$("launchEndgame").onclick=launch;window.addEventListener("warcraft:campaign-changed",e=>{if(e.detail?.reason==="faction"){selectedKind=null;selectedLoadout=null;render();}});}init();
+const Campaign = window.WarcraftCampaign,
+  Roster = window.WarcraftRoster,
+  $ = id => document.getElementById(id);
+let catalog = [],
+  selectedKind = null,
+  selectedLoadout = null;
+function config(kind) {
+  return catalog.find(e => e.kind === kind);
+}
+function loadouts(kind) {
+  return kind === "raid" ? Roster.getRaidLoadouts() : Roster.getSiegeLoadouts();
+}
+function validate(kind, l) {
+  return kind === "raid"
+    ? Roster.validateRaidLoadout(l, true)
+    : Roster.validateSiegeLoadout(l, true);
+}
+function unlocked(kind) {
+  return Campaign.getBaseLevel() >= config(kind).unlock_base_level;
+}
+function choose(kind) {
+  selectedKind = kind;
+  selectedLoadout = loadouts(kind).find(l => validate(kind, l).valid) || null;
+  render();
+}
+function render() {
+  const root = $("endgameEncounters"),
+    level = Campaign.getBaseLevel();
+  $("endgameFaction").textContent =
+    (Campaign.getActiveFaction() === "horde" ? "Horde" : "Alliance") + " · Base Level " + level;
+  root.innerHTML = "";
+  for (const kind of ["raid", "siege"]) {
+    const e = config(kind),
+      ready = loadouts(kind).filter(l => validate(kind, l).valid);
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "endgame-card" + (selectedKind === kind ? " is-selected" : "");
+    b.disabled = !unlocked(kind);
+    b.innerHTML =
+      "<strong>" +
+      e.display_name +
+      "</strong><span>" +
+      kind.toUpperCase() +
+      " · " +
+      e.party_size +
+      " heroes · Base " +
+      e.unlock_base_level +
+      "</span><small>" +
+      (unlocked(kind) ? ready.length + " ready loadout(s)" : "Locked") +
+      "</small>";
+    b.onclick = () => choose(kind);
+    root.appendChild(b);
+  }
+  renderPreview();
+}
+function renderPreview() {
+  const root = $("formationPreview");
+  if (!selectedLoadout) {
+    root.innerHTML = "<p>Select unlocked content with a ready saved loadout.</p>";
+    return;
+  }
+  const formation = Roster.groupedFormation(selectedLoadout);
+  root.innerHTML =
+    '<div class="formation-groups">' +
+    formation.groups
+      .map(
+        g =>
+          '<section class="formation-group"><strong>' +
+          g.id +
+          '</strong><div class="formation-slots">' +
+          g.slots
+            .map(s => {
+              const h = s.heroId && Roster.hero(s.heroId);
+              return (
+                '<div class="formation-slot" data-slot="' +
+                s.id +
+                '"><small>' +
+                s.id +
+                "</small><b>" +
+                (h ? h.name : "Empty") +
+                "</b></div>"
+              );
+            })
+            .join("") +
+          "</div></section>"
+      )
+      .join("") +
+    "</div>";
+}
+function launch() {
+  try {
+    if (!selectedKind || !selectedLoadout) throw new Error("Select a ready Raid or Siege loadout.");
+    if (!unlocked(selectedKind)) throw new Error(selectedKind + " is locked.");
+    const valid = validate(selectedKind, selectedLoadout);
+    if (!valid.valid) throw new Error(valid.reason);
+    const e = config(selectedKind),
+      formation = Roster.groupedFormation(selectedLoadout),
+      heroIds = formation.groups.flatMap(g => g.slots.map(s => s.heroId));
+    Campaign.validateHeroIds(heroIds);
+    const encounter = {
+      kind: selectedKind,
+      encounterId: e.id,
+      encounterName: e.display_name,
+      npcPoolId: e.npc_pool_id,
+      partySize: e.party_size,
+      heroIds,
+      faction: Campaign.getActiveFaction(),
+      seed: e.seed + Campaign.getClock().phaseAdvances,
+      loadoutId: selectedLoadout.id,
+      formation,
+      source: "endgame",
+      returnTo: "endgame.html"
+    };
+    Roster.setPendingEncounter(encounter);
+    Campaign.confirmEmbark(encounter);
+    location.href = "./battle.html?encounter=" + selectedKind;
+  } catch (e) {
+    $("endgameError").textContent = e.message;
+  }
+}
+async function init() {
+  catalog = (await fetch("../data/content/endgame-encounters.json").then(r => r.json())).encounters;
+  render();
+  $("launchEndgame").onclick = launch;
+  window.addEventListener("warcraft:campaign-changed", e => {
+    if (e.detail?.reason === "faction") {
+      selectedKind = null;
+      selectedLoadout = null;
+      render();
+    }
+  });
+}
+init();

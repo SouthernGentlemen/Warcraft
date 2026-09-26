@@ -13,7 +13,11 @@ const state = {
 };
 
 const $ = id => document.getElementById(id);
-const escapeHtml = (s="") => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const escapeHtml = (s = "") =>
+  String(s).replace(
+    /[&<>"']/g,
+    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
+  );
 
 async function loadJson(path) {
   const res = await fetch(path);
@@ -28,24 +32,34 @@ function showError(message) {
 
 function validateTalentData(spec) {
   const talents = spec?.talents || {};
-  const expected = {tier_1:2,tier_2:2,capstones:1};
-  Object.entries(expected).forEach(([tier,count]) => {
+  const expected = { tier_1: 2, tier_2: 2, capstones: 1 };
+  Object.entries(expected).forEach(([tier, count]) => {
     if (!Array.isArray(talents[tier]) || talents[tier].length !== count) {
-      throw new Error((spec?.specialization || "Specialization") + " must define exactly 2 Tier 1, 2 Tier 2, and 1 capstone talent");
+      throw new Error(
+        (spec?.specialization || "Specialization") +
+          " must define exactly 2 Tier 1, 2 Tier 2, and 1 capstone talent"
+      );
     }
   });
-  const records = [...talents.tier_1,...talents.tier_2,...talents.capstones];
+  const records = [...talents.tier_1, ...talents.tier_2, ...talents.capstones];
   const names = records.map(item => String(item?.name || "").trim());
   if (names.some(name => !name) || new Set(names).size !== 5) {
-    throw new Error((spec?.specialization || "Specialization") + " must define five unique talent names");
+    throw new Error(
+      (spec?.specialization || "Specialization") + " must define five unique talent names"
+    );
   }
   records.forEach(item => {
     if (!item.icon_slug || !item.canonical_tree || !item.canonical_source) {
-      throw new Error((spec?.specialization || "Specialization") + " has incomplete canonical talent metadata");
+      throw new Error(
+        (spec?.specialization || "Specialization") + " has incomplete canonical talent metadata"
+      );
     }
   });
   if (!talents.capstones[0].ultimate_id) {
-    throw new Error((spec?.specialization || "Specialization") + " capstone is missing its Ultimate action mapping");
+    throw new Error(
+      (spec?.specialization || "Specialization") +
+        " capstone is missing its Ultimate action mapping"
+    );
   }
   return spec;
 }
@@ -53,21 +67,21 @@ function validateTalentData(spec) {
 function blankPicks() {
   const out = {};
   state.classMeta.specs.forEach(spec => {
-    out[spec.id] = {tier_1:null, tier_2:null, capstones:null};
+    out[spec.id] = { tier_1: null, tier_2: null, capstones: null };
   });
   return out;
 }
 
 function pointCount() {
   return Object.values(state.picks).reduce(
-    (sum, picks) => sum + ["tier_1","tier_2","capstones"].filter(key => picks[key]).length,
+    (sum, picks) => sum + ["tier_1", "tier_2", "capstones"].filter(key => picks[key]).length,
     0
   );
 }
 
 function pointsInSpec(specId) {
   const picks = state.picks[specId];
-  return ["tier_1","tier_2","capstones"].filter(key => picks?.[key]).length;
+  return ["tier_1", "tier_2", "capstones"].filter(key => picks?.[key]).length;
 }
 
 function primaryComplete() {
@@ -89,7 +103,9 @@ function requirementFor(specId, tier) {
   const picks = state.picks[specId];
 
   if (specLocked(specId)) {
-    const label = state.classMeta.specs.find(s => s.id === state.primarySpec)?.label || "primary specialization";
+    const label =
+      state.classMeta.specs.find(s => s.id === state.primarySpec)?.label ||
+      "primary specialization";
     return `Requires ${label} capstone`;
   }
 
@@ -123,7 +139,7 @@ function choose(specId, tier, name) {
 function clearOffspecs() {
   state.classMeta.specs.forEach(spec => {
     if (spec.id !== state.primarySpec) {
-      state.picks[spec.id] = {tier_1:null, tier_2:null, capstones:null};
+      state.picks[spec.id] = { tier_1: null, tier_2: null, capstones: null };
     }
   });
 }
@@ -173,26 +189,26 @@ function talentTooltipModel(specId, tier, item, selected, iconUrl) {
   const capstone = tier === "capstones";
 
   return {
-    variant:"talent",
-    title:item.name,
-    type:capstone ? "Capstone Choice" : "Choice Talent",
-    badge:selected ? "Learned" : "",
-    icon:{url:iconUrl, classId:state.classMeta.id},
-    requirements:[
-      {label:"Class", value:state.classMeta.label},
-      {label:"Tree spend to unlock", value:String(threshold)}
+    variant: "talent",
+    title: item.name,
+    type: capstone ? "Capstone Choice" : "Choice Talent",
+    badge: selected ? "Learned" : "",
+    icon: { url: iconUrl, classId: state.classMeta.id },
+    requirements: [
+      { label: "Class", value: state.classMeta.label },
+      { label: "Tree spend to unlock", value: String(threshold) }
     ],
-    description:item.effect,
-    meta:[
-      {label:"Specialization", value:spec.specialization},
-      {label:"Tier", value:tierLabel(tier)},
-      {label:"State", value:selected ? "Learned" : requirement ? "Locked" : "Available"}
+    description: item.effect,
+    meta: [
+      { label: "Specialization", value: spec.specialization },
+      { label: "Tier", value: tierLabel(tier) },
+      { label: "State", value: selected ? "Learned" : requirement ? "Locked" : "Available" }
     ],
-    locked:requirement ? [requirement] : []
+    locked: requirement ? [requirement] : []
   };
 }
 
-function createTalentNode(specId, tier, item, index, capstone=false) {
+function createTalentNode(specId, tier, item, index, capstone = false) {
   const selected = state.picks[specId][tier] === item.name;
   const canUse = canUseTier(specId, tier) || selected;
   const button = document.createElement("button");
@@ -209,7 +225,13 @@ function createTalentNode(specId, tier, item, index, capstone=false) {
   button.setAttribute("aria-pressed", selected ? "true" : "false");
   button.setAttribute("aria-disabled", canUse || selected ? "false" : "true");
   const requirement = tooltipRequirement(specId, tier, selected);
-  button.setAttribute("aria-label", item.name + ", " + tierLabel(tier) + (selected ? ", learned" : requirement ? ", locked: " + requirement : ", available"));
+  button.setAttribute(
+    "aria-label",
+    item.name +
+      ", " +
+      tierLabel(tier) +
+      (selected ? ", learned" : requirement ? ", locked: " + requirement : ", available")
+  );
   const talentIconUrl = Icons.iconUrl(item.icon_slug);
   button.innerHTML = `
     <span class="wow-icon-frame${selected ? " is-selected" : ""}${canUse ? "" : " is-locked"}">
@@ -250,10 +272,12 @@ function createTalentRow(specId, tier, items, rowNumber) {
 
 function renderSpecPanel(meta, panelIndex) {
   const spec = state.specs.get(meta.id);
-  const specIcon = Icons.resolve("spec", meta.id, {classId:state.classMeta.id});
+  const specIcon = Icons.resolve("spec", meta.id, { classId: state.classMeta.id });
   const panel = document.createElement("article");
 
-  panel.className = "wow-spec-panel wow-frame wow-spec-panel--" + ((panelIndex % 3) + 1) +
+  panel.className =
+    "wow-spec-panel wow-frame wow-spec-panel--" +
+    ((panelIndex % 3) + 1) +
     (specLocked(meta.id) ? " spec-locked" : "") +
     (meta.id === state.primarySpec ? " primary-spec" : "");
 
@@ -360,13 +384,13 @@ async function init() {
     });
     $("resetBuild").addEventListener("click", resetBuild);
 
-    const firstHero=Roster.getState().heroes[0];
-    state.rosterHeroId=firstHero ? firstHero.id : null;
-    const initialClass=firstHero ? firstHero.classId : state.index.classes[0].id;
-    $("classSelect").value=initialClass;
+    const firstHero = Roster.getState().heroes[0];
+    state.rosterHeroId = firstHero ? firstHero.id : null;
+    const initialClass = firstHero ? firstHero.classId : state.index.classes[0].id;
+    $("classSelect").value = initialClass;
     await changeClass(initialClass);
   } catch (error) {
-    showError(error.message + ". Serve the repository over HTTP; see mockup/README.md.");
+    showError(error.message + ". Serve the repository over HTTP with npm run dev.");
   }
 }
 

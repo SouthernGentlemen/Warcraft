@@ -4,13 +4,7 @@
   "variants": {
     "alliance": {
       "label": "Alliance",
-      "map_name": "Stormvale Stronghold",
-      "subtitle": "Alliance stronghold · Tier II",
       "map_class": "is-alliance",
-      "crest": {
-        "category": "faction",
-        "key": "alliance"
-      },
       "keep_icon_key": "keep-alliance",
       "positions": {
         "keep": {
@@ -107,13 +101,7 @@
     },
     "horde": {
       "label": "Horde",
-      "map_name": "Durotar Warcamp",
-      "subtitle": "Horde stronghold · Tier II",
       "map_class": "is-horde",
-      "crest": {
-        "category": "faction",
-        "key": "horde"
-      },
       "keep_icon_key": "keep-horde",
       "positions": {
         "keep": {

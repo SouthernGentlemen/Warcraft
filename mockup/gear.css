@@ -10,11 +10,13 @@
 .gear-shell {
   min-height: calc(100vh - var(--wow-nav-height));
   background:
-    radial-gradient(circle at 50% -20%, rgba(183,139,59,.08), transparent 32%),
+    radial-gradient(circle at 50% -20%, rgba(183, 139, 59, 0.08), transparent 32%),
     var(--wow-bg-deep);
 }
 
-.gear-error { margin: var(--wow-space-2); }
+.gear-error {
+  margin: var(--wow-space-2);
+}
 
 .gear-workspace {
   min-height: calc(100vh - var(--wow-nav-height));
@@ -66,7 +68,7 @@
   color: var(--wow-gold-bright);
   font-size: var(--wow-type-xs);
   font-weight: 800;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
 }
 
 .gear-count {
@@ -150,7 +152,9 @@
   z-index: 8;
 }
 
-.roster-copy { min-width: 0; }
+.roster-copy {
+  min-width: 0;
+}
 .roster-copy strong,
 .roster-copy small,
 .roster-copy em {
@@ -173,11 +177,19 @@
   font-size: 8px;
   font-style: normal;
   font-weight: 800;
-  letter-spacing: .035em;
+  letter-spacing: 0.035em;
   text-transform: uppercase;
 }
-.roster-arrow { width: 8px; height: 8px; border-top: 2px solid var(--wow-text-dim); border-right: 2px solid var(--wow-text-dim); transform: rotate(45deg); }
-.hero-roster-card.active .roster-arrow { border-color: var(--wow-gold-bright); }
+.roster-arrow {
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid var(--wow-text-dim);
+  border-right: 2px solid var(--wow-text-dim);
+  transform: rotate(45deg);
+}
+.hero-roster-card.active .roster-arrow {
+  border-color: var(--wow-gold-bright);
+}
 
 .gear-character-panel {
   min-width: 0;
@@ -185,7 +197,7 @@
   display: grid;
   grid-template-rows: 76px minmax(0, 1fr);
   background:
-    radial-gradient(circle at 50% 31%, rgba(183,139,59,.08), transparent 34%),
+    radial-gradient(circle at 50% 31%, rgba(183, 139, 59, 0.08), transparent 34%),
     linear-gradient(180deg, var(--wow-surface), var(--wow-bg-deep) 78%);
 }
 
@@ -214,13 +226,15 @@
   flex: 0 0 44px;
 }
 
-.gear-hero-identity { min-width: 0; }
+.gear-hero-identity {
+  min-width: 0;
+}
 .gear-race {
   display: block;
   color: var(--wow-text-muted);
   font-size: 8px;
   font-weight: 800;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .gear-hero-title h2 {
@@ -249,11 +263,13 @@
 .gear-class-identity strong {
   color: var(--wow-text);
   font-size: 10px;
-  letter-spacing: .06em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.gear-class-icon { --wow-icon-size: 34px; }
+.gear-class-icon {
+  --wow-icon-size: 34px;
+}
 
 .gear-level-block {
   width: 56px;
@@ -270,7 +286,7 @@
 .gear-level-block span {
   color: var(--wow-gold-muted);
   font-size: 8px;
-  letter-spacing: .12em;
+  letter-spacing: 0.12em;
 }
 .gear-level-block strong {
   color: var(--wow-gold-bright);
@@ -294,11 +310,11 @@
   border: var(--wow-border) solid var(--wow-inset-edge);
   border-radius: var(--wow-radius-tight);
   background:
-    radial-gradient(circle at 50% 38%, rgba(183,139,59,.10), transparent 29%),
+    radial-gradient(circle at 50% 38%, rgba(183, 139, 59, 0.1), transparent 29%),
     linear-gradient(180deg, #171b18, #0b0e0d 78%);
   box-shadow:
     inset 0 0 0 1px var(--wow-inset-line),
-    inset 0 0 48px rgba(0,0,0,.55);
+    inset 0 0 48px rgba(0, 0, 0, 0.55);
 }
 
 .gear-slot-column {
@@ -333,7 +349,7 @@
   color: var(--wow-text-dim);
   font-size: 8px;
   font-weight: 800;
-  letter-spacing: .08em;
+  letter-spacing: 0.08em;
   line-height: 13px;
   text-overflow: ellipsis;
   text-transform: uppercase;
@@ -342,38 +358,22 @@
 
 .gear-slot-icon {
   --wow-icon-size: 58px;
-  transition: filter .12s ease, transform .12s ease;
+  transition:
+    filter 0.12s ease,
+    transform 0.12s ease;
 }
 
-.gear-slot.empty { opacity: .68; }
-.gear-slot.filled { cursor: pointer; }
+.gear-slot.empty {
+  opacity: 0.68;
+}
+.gear-slot.filled {
+  cursor: pointer;
+}
 .gear-slot.filled:hover .gear-slot-icon,
 .gear-slot.filled:focus-visible .gear-slot-icon {
   filter: brightness(1.16);
   transform: translateY(-1px);
 }
-
-.gear-slot-remove {
-  position: absolute;
-  top: 10px;
-  right: 0;
-  z-index: 9;
-  min-width: 46px;
-  min-height: 18px;
-  padding: 1px 4px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--wow-error-deep);
-  border-radius: var(--wow-radius-tight);
-  background: #170a0a;
-  color: #ff8b8b;
-  font: 800 8px var(--wow-font-ui);
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  opacity: 0;
-}
-.gear-slot.filled:hover .gear-slot-remove,
-.gear-slot.filled:focus-visible .gear-slot-remove { opacity: 1; }
 
 .gear-portrait-stage {
   min-height: 360px;
@@ -381,7 +381,7 @@
   justify-items: center;
   align-content: center;
   gap: 12px;
-  border-inline: var(--wow-border-thin) solid rgba(183,139,59,.12);
+  border-inline: var(--wow-border-thin) solid rgba(183, 139, 59, 0.12);
 }
 
 .gear-character-portrait {
@@ -400,13 +400,13 @@
   box-shadow:
     0 0 0 4px var(--wow-surface-inset),
     0 0 0 5px var(--wow-frame-edge),
-    0 16px 32px rgba(0,0,0,.5);
+    0 16px 32px rgba(0, 0, 0, 0.5);
 }
 .gear-portrait-ring::after {
   content: "";
   position: absolute;
   inset: 8px;
-  border: 1px solid rgba(234,214,140,.25);
+  border: 1px solid rgba(234, 214, 140, 0.25);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -434,12 +434,14 @@
   font: 700 15px var(--wow-font-display);
 }
 
-.gear-proficiency { text-align: center; }
+.gear-proficiency {
+  text-align: center;
+}
 .gear-proficiency span {
   display: block;
   color: var(--wow-text-dim);
   font-size: 8px;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .gear-proficiency strong {
@@ -463,7 +465,9 @@
   color: var(--wow-text-muted);
   font-size: 8px;
 }
-.gear-loadout-meta b { color: var(--wow-gold-bright); }
+.gear-loadout-meta b {
+  color: var(--wow-gold-bright);
+}
 
 .gear-stats {
   margin-top: 10px;
@@ -485,19 +489,26 @@
   font: 700 15px var(--wow-font-display);
 }
 
-.gear-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+.gear-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
 .gear-stat {
   padding: 8px 10px;
   border-right: var(--wow-border-thin) solid var(--wow-inset-line);
   border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
 }
-.gear-stat:nth-child(4n) { border-right: 0; }
-.gear-stat:nth-last-child(-n+4) { border-bottom: 0; }
+.gear-stat:nth-child(4n) {
+  border-right: 0;
+}
+.gear-stat:nth-last-child(-n + 4) {
+  border-bottom: 0;
+}
 .gear-stat span {
   display: block;
   color: var(--wow-text-dim);
   font-size: 8px;
-  letter-spacing: .07em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
 }
 .gear-stat strong {
@@ -515,15 +526,23 @@
   border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
   background: var(--wow-surface-inset);
 }
-.gear-filters .wow-field { display: grid; min-width: 0; gap: 3px; }
-.gear-filters .wow-label { font-size: 8px; }
+.gear-filters .wow-field {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+.gear-filters .wow-label {
+  font-size: 8px;
+}
 .gear-filters .wow-select,
 .gear-filters .wow-input {
   height: 32px;
   min-height: 32px;
   font-size: 10px;
 }
-.gear-search-label { grid-column: 1 / -1; }
+.gear-search-label {
+  grid-column: 1 / -1;
+}
 .gear-check {
   grid-column: 1 / -1;
   min-height: 28px;
@@ -550,7 +569,9 @@
   background: var(--wow-surface-inset);
   font-size: 8px;
 }
-.gear-tier-legend em { font-style: normal; }
+.gear-tier-legend em {
+  font-style: normal;
+}
 
 .armory-list.armory-grid {
   min-height: 0;
@@ -583,7 +604,9 @@
 
 .armory-grid .armory-item-icon {
   --wow-icon-size: 54px;
-  transition: filter .12s ease, transform .12s ease;
+  transition:
+    filter 0.12s ease,
+    transform 0.12s ease;
 }
 
 .armory-grid .armory-item:hover .armory-item-icon,
@@ -592,9 +615,11 @@
   transform: translateY(-1px);
 }
 
-.armory-grid .armory-item.equipped { background: transparent; }
+.armory-grid .armory-item.equipped {
+  background: transparent;
+}
 .armory-grid .armory-item.locked {
-  opacity: .52;
+  opacity: 0.52;
   cursor: not-allowed;
 }
 
@@ -611,7 +636,9 @@
   border-radius: 50%;
   background: #0b2110;
   color: var(--wow-success);
-  font: 900 9px Arial, sans-serif;
+  font:
+    900 9px Arial,
+    sans-serif;
   box-shadow: 0 1px 3px #000;
 }
 
@@ -629,96 +656,389 @@
   color: var(--wow-text-muted);
   font: 700 15px var(--wow-font-display);
 }
-.armory-empty span { font-size: 10px; }
+.armory-empty span {
+  font-size: 10px;
+}
 
 @media (max-width: 1200px) {
-  .gear-workspace { grid-template-columns: 210px minmax(480px, 1fr) 330px; }
-  .gear-paperdoll { grid-template-columns: 72px minmax(210px, 1fr) 72px; gap: 10px; padding-inline: 12px; }
-  .gear-slot { width: 66px; }
-  .gear-slot-icon { --wow-icon-size: 54px; }
-  .armory-list.armory-grid { grid-template-columns: repeat(auto-fill, 54px); grid-auto-rows: 54px; gap: 6px; }
-  .armory-grid .armory-item { width: 54px; height: 54px; }
-  .armory-grid .armory-item-icon { --wow-icon-size: 50px; }
+  .gear-workspace {
+    grid-template-columns: 210px minmax(480px, 1fr) 330px;
+  }
+  .gear-paperdoll {
+    grid-template-columns: 72px minmax(210px, 1fr) 72px;
+    gap: 10px;
+    padding-inline: 12px;
+  }
+  .gear-slot {
+    width: 66px;
+  }
+  .gear-slot-icon {
+    --wow-icon-size: 54px;
+  }
+  .armory-list.armory-grid {
+    grid-template-columns: repeat(auto-fill, 54px);
+    grid-auto-rows: 54px;
+    gap: 6px;
+  }
+  .armory-grid .armory-item {
+    width: 54px;
+    height: 54px;
+  }
+  .armory-grid .armory-item-icon {
+    --wow-icon-size: 50px;
+  }
 }
 
 @media (max-width: 930px) {
-  .gear-workspace { height: auto; grid-template-columns: 190px minmax(0, 1fr); }
-  .gear-roster-panel { min-height: 600px; }
+  .gear-workspace {
+    height: auto;
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+  .gear-roster-panel {
+    min-height: 600px;
+  }
   .gear-armory-panel {
     grid-column: 1 / -1;
     min-height: 430px;
     border-left: 0;
     border-top: var(--wow-border) solid var(--wow-frame-edge);
   }
-  .gear-paperdoll { grid-template-columns: 72px minmax(220px, 1fr) 72px; }
+  .gear-paperdoll {
+    grid-template-columns: 72px minmax(220px, 1fr) 72px;
+  }
 }
 
 @media (max-width: 700px) {
-  .gear-workspace { grid-template-columns: 1fr; }
+  .gear-workspace {
+    grid-template-columns: 1fr;
+  }
   .gear-roster-panel {
     min-height: 330px;
     border-right: 0;
     border-bottom: var(--wow-border) solid var(--wow-frame-edge);
   }
-  .hero-roster { max-height: 270px; }
-  .gear-character-panel { min-height: 0; }
+  .hero-roster {
+    max-height: 270px;
+  }
+  .gear-character-panel {
+    min-height: 0;
+  }
   .gear-paperdoll {
     grid-template-columns: 64px minmax(190px, 1fr) 64px;
     min-height: 380px;
     padding: 12px 8px;
   }
-  .gear-slot { width: 60px; height: 72px; }
-  .gear-slot-icon { --wow-icon-size: 50px; }
-  .gear-portrait-ring { width: 145px; height: 145px; }
-  .gear-class-identity strong { display: none; }
-  .gear-character-head { padding-inline: 10px; }
-  .gear-stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .gear-slot {
+    width: 60px;
+    height: 72px;
+  }
+  .gear-slot-icon {
+    --wow-icon-size: 50px;
+  }
+  .gear-portrait-ring {
+    width: 145px;
+    height: 145px;
+  }
+  .gear-class-identity strong {
+    display: none;
+  }
+  .gear-character-head {
+    padding-inline: 10px;
+  }
+  .gear-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .gear-stat:nth-child(n) {
     border-right: var(--wow-border-thin) solid var(--wow-inset-line);
     border-bottom: var(--wow-border-thin) solid var(--wow-inset-line);
   }
-  .gear-stat:nth-child(2n) { border-right: 0; }
-  .gear-stat:nth-last-child(-n+2) { border-bottom: 0; }
+  .gear-stat:nth-child(2n) {
+    border-right: 0;
+  }
+  .gear-stat:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
 }
 
 @media (max-width: 480px) {
-  .gear-character-head { gap: 6px; }
-  .gear-paperdoll { grid-template-columns: 58px minmax(150px, 1fr) 58px; gap: 5px; }
-  .gear-slot { width: 54px; height: 68px; }
-  .gear-slot-icon { --wow-icon-size: 46px; }
-  .gear-slot-label { font-size: 7px; }
-  .gear-portrait-ring { width: 122px; height: 122px; }
-  .gear-faction-badge { display: none; }
-  .gear-class-identity { margin-left: 4px; padding-left: 6px; }
-  .gear-level-block { width: 48px; flex-basis: 48px; }
-  .gear-filters { grid-template-columns: 1fr; }
+  .gear-character-head {
+    gap: 6px;
+  }
+  .gear-paperdoll {
+    grid-template-columns: 58px minmax(150px, 1fr) 58px;
+    gap: 5px;
+  }
+  .gear-slot {
+    width: 54px;
+    height: 68px;
+  }
+  .gear-slot-icon {
+    --wow-icon-size: 46px;
+  }
+  .gear-slot-label {
+    font-size: 7px;
+  }
+  .gear-portrait-ring {
+    width: 122px;
+    height: 122px;
+  }
+  .gear-faction-badge {
+    display: none;
+  }
+  .gear-class-identity {
+    margin-left: 4px;
+    padding-left: 6px;
+  }
+  .gear-level-block {
+    width: 48px;
+    flex-basis: 48px;
+  }
+  .gear-filters {
+    grid-template-columns: 1fr;
+  }
   .gear-search-label,
-  .gear-check { grid-column: 1; }
-  .armory-list.armory-grid { grid-template-columns: repeat(auto-fill, 50px); grid-auto-rows: 50px; gap: 6px; }
-  .armory-grid .armory-item { width: 50px; height: 50px; }
-  .armory-grid .armory-item-icon { --wow-icon-size: 46px; }
+  .gear-check {
+    grid-column: 1;
+  }
+  .armory-list.armory-grid {
+    grid-template-columns: repeat(auto-fill, 50px);
+    grid-auto-rows: 50px;
+    gap: 6px;
+  }
+  .armory-grid .armory-item {
+    width: 50px;
+    height: 50px;
+  }
+  .armory-grid .armory-item-icon {
+    --wow-icon-size: 46px;
+  }
 }
 
-
 /* WOWUI-014 slot-first equipment picker */
-.gear-slot.empty { cursor:pointer; }
-.gear-slot.empty:hover .gear-slot-icon,.gear-slot.empty:focus-visible .gear-slot-icon { filter:brightness(1.16); opacity:1; transform:translateY(-1px); }
-.gear-slot-picker { position:fixed; z-index:1200; max-height:min(420px,calc(100vh - 16px)); overflow:hidden; background:var(--wow-surface); box-shadow:0 14px 34px rgba(0,0,0,.72); }
-.gear-slot-picker__head { display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:8px 10px; border-bottom:var(--wow-border-thin) solid var(--wow-frame-edge); background:var(--wow-surface-raised); }
-.gear-slot-picker__head strong { color:var(--wow-gold-pale); font:700 14px var(--wow-font-display); }
-.gear-slot-picker__head span { color:var(--wow-text-dim); font-size:8px; text-transform:uppercase; letter-spacing:.08em; }
-.gear-slot-picker__list { max-height:360px; overflow:auto; padding:5px; }
-.gear-picker-item,.gear-picker-unequip { width:100%; min-height:46px; display:grid; grid-template-columns:38px minmax(0,1fr) auto; align-items:center; gap:8px; padding:5px 7px; border:var(--wow-border-thin) solid transparent; background:var(--wow-surface-inset); color:var(--wow-text); text-align:left; cursor:pointer; }
-.gear-picker-item + .gear-picker-item { margin-top:3px; }
-.gear-picker-item:hover,.gear-picker-item:focus-visible { border-color:var(--wow-gold-muted); background:var(--wow-surface-hover); outline:none; }
-.gear-picker-item.is-equipped { border-color:var(--wow-gold); }
-.gear-picker-item strong,.gear-picker-item small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.gear-picker-item strong { font-size:10px; }
-.gear-picker-item small { margin-top:2px; color:var(--wow-text-muted); font-size:8px; }
-.gear-picker-item em { color:var(--wow-success); font-size:8px; font-style:normal; text-transform:uppercase; }
-.gear-picker-unequip { grid-template-columns:1fr; min-height:34px; margin-top:6px; border-color:var(--wow-error-deep); color:#ff9c9c; text-align:center; }
-.gear-picker-unequip:hover,.gear-picker-unequip:focus-visible { border-color:var(--wow-error); outline:none; }
-
+.gear-slot.empty {
+  cursor: pointer;
+}
+.gear-slot.empty:hover .gear-slot-icon,
+.gear-slot.empty:focus-visible .gear-slot-icon {
+  filter: brightness(1.16);
+  opacity: 1;
+  transform: translateY(-1px);
+}
+.gear-slot-picker {
+  position: fixed;
+  z-index: 1200;
+  max-height: min(420px, calc(100vh - 16px));
+  overflow: hidden;
+  background: var(--wow-surface);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.72);
+}
+.gear-slot-picker__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 10px;
+  border-bottom: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface-raised);
+}
+.gear-slot-picker__head strong {
+  color: var(--wow-gold-pale);
+  font: 700 14px var(--wow-font-display);
+}
+.gear-slot-picker__head span {
+  color: var(--wow-text-dim);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.gear-slot-picker__list {
+  max-height: 360px;
+  overflow: auto;
+  padding: 5px;
+}
+.gear-picker-item,
+.gear-picker-unequip {
+  width: 100%;
+  min-height: 46px;
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 7px;
+  border: var(--wow-border-thin) solid transparent;
+  background: var(--wow-surface-inset);
+  color: var(--wow-text);
+  text-align: left;
+  cursor: pointer;
+}
+.gear-picker-item + .gear-picker-item {
+  margin-top: 3px;
+}
+.gear-picker-item:hover,
+.gear-picker-item:focus-visible {
+  border-color: var(--wow-gold-muted);
+  background: var(--wow-surface-hover);
+  outline: none;
+}
+.gear-picker-item.is-equipped {
+  border-color: var(--wow-gold);
+}
+.gear-picker-item strong,
+.gear-picker-item small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gear-picker-item strong {
+  font-size: 10px;
+}
+.gear-picker-item small {
+  margin-top: 2px;
+  color: var(--wow-text-muted);
+  font-size: 8px;
+}
+.gear-picker-item em {
+  color: var(--wow-success);
+  font-size: 8px;
+  font-style: normal;
+  text-transform: uppercase;
+}
+.gear-picker-unequip {
+  grid-template-columns: 1fr;
+  min-height: 34px;
+  margin-top: 6px;
+  border-color: var(--wow-error-deep);
+  color: #ff9c9c;
+  text-align: center;
+}
+.gear-picker-unequip:hover,
+.gear-picker-unequip:focus-visible {
+  border-color: var(--wow-error);
+  outline: none;
+}
 
 /* WOWUI-016 authoritative roster and saved parties */
-.roster-tools{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:6px}.roster-tools .wow-select{min-width:0;font-size:8px}.hero-roster-card.is-unavailable{opacity:.62}.roster-state{display:block;margin-top:2px;color:var(--wow-text-dim);font-size:8px}.hero-roster-card.is-unavailable .roster-state{color:#e3a06e}.party-manager{margin:8px;max-height:48vh;overflow:auto}.party-manager-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}.party-manager-head h2{margin:0;color:var(--wow-gold-pale);font-size:13px}.party-loadout{padding:6px;border:var(--wow-border-thin) solid var(--wow-frame-edge);background:var(--wow-surface-inset)}.party-loadout+.party-loadout{margin-top:6px}.party-loadout.is-ready{border-color:var(--wow-success)}.party-loadout-head{display:grid;grid-template-columns:minmax(0,1fr) 86px auto;gap:4px;align-items:center}.party-loadout-head strong{font-size:8px;color:var(--wow-text-dim);text-transform:uppercase}.party-members{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;margin-top:5px}.party-member{display:flex;align-items:center;gap:5px;min-width:0;padding:3px;border:1px solid transparent;background:var(--wow-surface);color:var(--wow-text);text-align:left;cursor:pointer}.party-member:hover,.party-member:focus-visible{border-color:var(--wow-gold-muted);outline:none}.party-member.is-selected{border-color:var(--wow-gold)}.party-member.is-unavailable{opacity:.52}.party-member>span:last-child{min-width:0;font-size:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.party-member small{display:block;color:var(--wow-text-dim);font-size:7px}.party-status{margin:5px 0;color:var(--wow-text-dim);font-size:8px}.party-loadout.is-ready .party-status{color:var(--wow-success)}.party-ready{width:100%;min-height:26px;font-size:8px}@media(max-width:900px){.roster-tools{grid-template-columns:1fr}.party-members{grid-template-columns:1fr}}
+.roster-tools {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  margin-top: 6px;
+}
+.roster-tools .wow-select {
+  min-width: 0;
+  font-size: 8px;
+}
+.hero-roster-card.is-unavailable {
+  opacity: 0.62;
+}
+.roster-state {
+  display: block;
+  margin-top: 2px;
+  color: var(--wow-text-dim);
+  font-size: 8px;
+}
+.hero-roster-card.is-unavailable .roster-state {
+  color: #e3a06e;
+}
+.party-manager {
+  margin: 8px;
+  max-height: 48vh;
+  overflow: auto;
+}
+.party-manager-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.party-manager-head h2 {
+  margin: 0;
+  color: var(--wow-gold-pale);
+  font-size: 13px;
+}
+.party-loadout {
+  padding: 6px;
+  border: var(--wow-border-thin) solid var(--wow-frame-edge);
+  background: var(--wow-surface-inset);
+}
+.party-loadout + .party-loadout {
+  margin-top: 6px;
+}
+.party-loadout.is-ready {
+  border-color: var(--wow-success);
+}
+.party-loadout-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 86px auto;
+  gap: 4px;
+  align-items: center;
+}
+.party-loadout-head strong {
+  font-size: 8px;
+  color: var(--wow-text-dim);
+  text-transform: uppercase;
+}
+.party-members {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  margin-top: 5px;
+}
+.party-member {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 3px;
+  border: 1px solid transparent;
+  background: var(--wow-surface);
+  color: var(--wow-text);
+  text-align: left;
+  cursor: pointer;
+}
+.party-member:hover,
+.party-member:focus-visible {
+  border-color: var(--wow-gold-muted);
+  outline: none;
+}
+.party-member.is-selected {
+  border-color: var(--wow-gold);
+}
+.party-member.is-unavailable {
+  opacity: 0.52;
+}
+.party-member > span:last-child {
+  min-width: 0;
+  font-size: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.party-member small {
+  display: block;
+  color: var(--wow-text-dim);
+  font-size: 7px;
+}
+.party-status {
+  margin: 5px 0;
+  color: var(--wow-text-dim);
+  font-size: 8px;
+}
+.party-loadout.is-ready .party-status {
+  color: var(--wow-success);
+}
+.party-ready {
+  width: 100%;
+  min-height: 26px;
+  font-size: 8px;
+}
+@media (max-width: 900px) {
+  .roster-tools {
+    grid-template-columns: 1fr;
+  }
+  .party-members {
+    grid-template-columns: 1fr;
+  }
+}
