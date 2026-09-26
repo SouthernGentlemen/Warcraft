@@ -1,86 +1,31 @@
 # Progression
 
-## Purpose
+## Canonical Five-Level Loop
 
-This section defines how the player advances through the full game and how the major systems unlock one another.
+Keep level is the faction campaign's canonical Base Level. Alliance and Horde own independent Base, roster, formation, assignment, clock, Embark, and result state.
 
-## Five-Tier Progression
+| Base Level | Roster Cap | Manual Content | Automated Content |
+| --- | ---: | --- | --- |
+| 1 | 10 | Quest | — |
+| 2 | 20 | Quest, Incursion | Quest |
+| 3 | 30 | Quest, Incursion, Dungeon | Quest, Incursion |
+| 4 | 40 | Quest, Incursion, Dungeon, Raid | Quest, Incursion, Dungeon |
+| 5 | 50 | Quest, Incursion, Dungeon, Raid, Siege | Quest, Incursion, Dungeon |
 
-The game is organized around five tiers.
+Quest/Incursion/Dungeon award 1/2/3 hero XP on victory. Raid and Siege award 0. Hero XP is capped at 20 toward the next level; only Class Hall one-day training may convert 20/20 XP into a hero level, and the next hero level cannot exceed Base Level.
 
-| Tier | Hero Level | New Group Content | Talent Threshold | Crafted Gear |
-| --- | ---: | --- | --- | --- |
-| 1 | 1 | Quest / Incursion | First point chooses specialization; Tier 1 | White, no stat lines |
-| 2 | 2 | Assault | Tier 2 in chosen specialization | Green, 1 primary stat |
-| 3 | 3 | Dungeon | Choose 1 of 2 capstones; other trees unlock afterward | Blue, 2 primary stats |
-| 4 | 4 | Raid | One additional legal talent, including off-spec Tier 1 | Epic, 2 primary + 1 tertiary |
-| 5 | 5 | Siege | One additional legal talent | Epic, 2 primary + 2 tertiary |
+## Formations
 
-## Talent Progression Gate
+Party is exactly five positional slots in a 2 / 2 / 1 layout. Raid is two five-player groups with Party-default inheritance and per-slot overrides. Siege is four such groups. The front slot has the highest deterministic weighted enemy aggro, but is not guaranteed to be targeted.
 
-The first three talent points are structurally committed to the specialization selected by the first point:
+## Campaign Time
 
-1. Level 1 — Tier 1 selects the specialization.
-2. Level 2 — Tier 2 advances that specialization.
-3. Level 3 — Tier 3 selects one of two capstones.
+A confirmed manual Embark advances the active faction one deterministic Day/Night phase. Two phase advances equal one campaign day. Class Hall, profession, and automated content assignments consume campaign phases rather than wall-clock time.
 
-Only after the Level 3 capstone is selected do the other two class talent trees unlock.
+## Professions
 
-Levels 4 and 5 provide two additional talent points that may be spent wherever tree prerequisites allow.
-
-## Progression Philosophy
-
-Advancement should require growth across several connected systems:
-
-- hero levels
-- talent progression
-- roster size
-- equipment
-- base development
-- crafting
-- content completion
-
-The goal is to avoid a progression model where one overpowered hero can bypass the need to develop the wider roster.
-
-## Content Availability
-
-Earlier activity types remain available at higher tiers.
-
-This creates a growing set of options rather than replacing the entire game whenever a new tier is unlocked.
-
-## Crafting Progression
-
-Known five-tier material paths include:
-
-- Copper -> Iron -> Steel -> Mithril -> Thorium
-- Linen -> Wool -> Silk -> Mageweave -> Runecloth
-
-Other professions will follow comparable progression structures.
-
-## Base Progression
-
-The base is expected to gate or support access to higher hero levels, profession tiers, roster capacity, and content.
-
-The exact unlock dependencies remain to be designed.
+Every hero may hold one Artisan, one Gathering, and one Survival profession. Artisans Guild, Gathering Camp, and Survival Lodge each provide three one-day assignment slots.
 
 ## Endgame
 
-Tier 5 culminates in twenty-hero Sieges.
-
-What follows Tier 5 is intentionally undefined for now.
-
-Potential long-term systems such as prestige, seasons, or additional tiers should not be designed until the core Tier 1–5 game is coherent.
-
-## Open Areas
-
-Later progression design must define:
-
-- tier unlock requirements
-- hero XP
-- roster requirements
-- base requirements
-- crafting requirements
-- pacing
-- expected time per tier
-- first-clear gates
-- endgame progression
+Raid unlocks at Base 4 and Siege at Base 5. Both launch only through the dedicated Raids & Sieges surface with ready grouped formations and neither grants hero XP.
