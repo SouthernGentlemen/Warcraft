@@ -109,13 +109,7 @@ Different classes should create different ways to satisfy encounter requirements
 
 ## Content Scale
 
-Combat must support:
-
-- solo encounters
-- 3-hero groups
-- 5-hero groups
-- 10-hero groups
-- 20-hero groups
+Combat runtime may simulate authored encounter sizes, but saved player formation contracts are canonical: five-player Party, ten-player Raid (two Party groups), and twenty-player Siege (four Party groups). Raid/Siege group and slot identity is preserved into Battle. Legacy generic 3/5/10/20 saved-party editing is not a supported player model.
 
 The same underlying real-time combat model should scale across these group sizes.
 

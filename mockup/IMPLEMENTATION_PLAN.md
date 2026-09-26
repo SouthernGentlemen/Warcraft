@@ -2556,7 +2556,7 @@ Give 10- and 20-player endgame content its own player destination instead of for
 
 ### WOWUI-090 — New Progression Phase Integration, Migration, and Regression Coverage
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-072, WOWUI-074, WOWUI-075, WOWUI-077, WOWUI-078, WOWUI-085, WOWUI-088, WOWUI-089
 

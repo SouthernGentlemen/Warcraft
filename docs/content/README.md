@@ -1,15 +1,7 @@
 # Content Definitions
 
-## Purpose
+Runtime content progression is authored in `data/content/progression.json`. Availability is cumulative: Quest unlocks at Base 1, Incursion at Base 2, Dungeon at Base 3, Raid at Base 4, and Siege at Base 5. Quest automation unlocks at Base 2, Incursion automation at Base 3, and Dungeon automation at Base 4; Raid and Siege are never auto-run by the current contract.
 
-This section holds shared definitions used by gameplay content when those definitions do not belong exclusively to heroes, combat, crafting, or items.
+Hero XP on victory is Quest +1, Incursion +2, Dungeon +3, Raid +0, Siege +0. Manual Quest/Incursion/Dungeon launch from Embark; Raid/Siege launch from the dedicated endgame surface. All launch, automation, and result state belongs to the active faction campaign.
 
-This is intentionally a narrow systems-reference section rather than a return to a broad content-design tree.
-
-## Current Definitions
-
-- [Stats](./stats/README.md) — primary and tertiary stat families used by heroes, equipment, crafting, and combat
-
-## Rule
-
-Content definitions should be added here only when multiple systems depend on the same vocabulary or rule set.
+See [Stats](./stats/README.md) for shared combat-stat definitions.
