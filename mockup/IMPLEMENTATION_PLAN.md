@@ -2263,7 +2263,7 @@ Replace unordered five-player membership lists with authored positional formatio
 
 ### WOWUI-082 — Drag-and-Drop Party Loadout Editor
 
-Status: planned
+Status: complete
 
 Depends on: WOWUI-081
 
